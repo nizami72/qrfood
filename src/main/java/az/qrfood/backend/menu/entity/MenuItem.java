@@ -1,47 +1,35 @@
 package az.qrfood.backend.menu.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import az.qrfood.backend.category.entity.Category;
+import az.qrfood.backend.common.entity.BaseEntity;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import java.math.BigDecimal;
+import lombok.Setter;
 
-/**
- * Represents a menu item (dish or drink) available in a restaurant.
- */
+import java.math.BigDecimal;
+import java.util.List;
+
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "menu_item")
-public class MenuItem {
-
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class MenuItem extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
-    private MenuCategory category;
-
-    @Column(nullable = false)
-    private String name;
-
-    private String description;
+    private Category category;
 
     @Column(nullable = false)
     private BigDecimal price;
 
     private String imageUrl;
 
-    private boolean isAvailable = true;;
+    private boolean isAvailable = true;
 
+    @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<MenuItemTranslation> translations;
 }
