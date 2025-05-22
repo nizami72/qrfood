@@ -33,7 +33,7 @@ INSERT INTO restaurant_phone (phone, restaurant_id) VALUES
                                                         ('+994 50 261 20 20', (SELECT id FROM restaurant WHERE name = 'Mangal Steak House')),
                                                         ('+994 50 207 27 87', (SELECT id FROM restaurant WHERE name = 'Caffeine Baku'));
 
--- SQL script to fill MenuCategory and MenuItem tables with fake data
+-- SQL script to fill Category and MenuItem tables with fake data
 
 CREATE TABLE common_category (
                                  id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -57,7 +57,7 @@ CREATE TABLE common_category_translation (
 -- If not, you may need to create a restaurant first or adjust the restaurant_id
 
 -- Insert 10 menu categories
-INSERT INTO qrfood.menu_category (restaurant_id, name) VALUES
+INSERT INTO qrfood.menu_category (eatery_id, name) VALUES
                                                    (6, 'Breads & Pastries'),
                                                    (6, 'Breakfast Dishes'),
                                                    (6, 'Desserts & Sweets'),

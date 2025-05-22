@@ -1,0 +1,69 @@
+<configuration>
+
+    <variable name="logPath" value="${LOG_FILE_PATH}/" />
+    <property name="prefix" value="-->" />
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{HH:mm:ss:SSS} %highlight(%-5level) [%.20t] %logger{24}.%M ${prefix} %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+
+    <!--    <logger name="mypackagename.myappname" level="TRACE"/>-->
+    <!--    <logger name="org.hibernate.SQL" level="DEBUG" />-->
+    <!--    <logger name="org.hibernate.type" level="TRACE" />-->
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}info.log</file>
+        <append>true</append>
+        <immediateFlush>true</immediateFlush>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}info_%d{dd-MM-yy}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %d{dd/MM HH:mm:ss} [%-5level] %logger{24}.%M ${prefix} %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE_DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}debug.log</file>
+        <append>true</append>
+        <immediateFlush>true</immediateFlush>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}debug_%d{dd-MM-yy}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %d{dd/MM HH:mm:ss} [%-5level] %logger{24}.%M ${prefix} %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- Define a logger for your packages -->
+    <logger name="az.qrfood.backend" level="DEBUG">
+        <appender-ref ref="FILE_DEBUG" />
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <root level="info">
+<!--            <root level="debug">-->
+        <appender-ref ref="FILE" />
+    </root>
+
+</configuration>

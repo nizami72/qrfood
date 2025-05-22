@@ -19,4 +19,6 @@ public class Util {
         BeanUtils.copyProperties(source, target);
         return target;
     }
+
+    String s = new String();
 }

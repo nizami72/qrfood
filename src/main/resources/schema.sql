@@ -21,7 +21,7 @@ CREATE TABLE table_qr (
                           FOREIGN KEY (restaurant_id) REFERENCES restaurant(id)
 );
 
-CREATE TABLE menuCategory (
+CREATE TABLE category (
                           id BIGINT PRIMARY KEY AUTO_INCREMENT,
                           restaurant_id BIGINT NOT NULL,
                           name VARCHAR(255) NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE menu_item (
                            price DECIMAL(10,2) NOT NULL,
                            is_available BOOLEAN DEFAULT TRUE,
                            FOREIGN KEY (restaurant_id) REFERENCES restaurant(id),
-                           FOREIGN KEY (category_id) REFERENCES menuCategory(id)
+                           FOREIGN KEY (category_id) REFERENCES category(id)
 );
 
 CREATE TABLE customer_order (

@@ -1,5 +1,7 @@
 -- Ресторан
-INSERT INTO restaurant (id, name, address, phone)
+create database qrfood;
+
+INSERT INTO eatery (id, name, address, phone)
 VALUES (1, 'Burger House', 'Baku, Nizami street', '+994-55-123-45-67');
 
 -- Столы
@@ -12,7 +14,7 @@ VALUES
     (5, 5, 'https://example.com/qr?table=5', 1);
 
 -- Категории
-INSERT INTO menuCategory (id, name, restaurant_id)
+INSERT INTO category (id, name, restaurant_id)
 VALUES
     (1, 'Бургеры', 1),
     (2, 'Напитки', 1);
@@ -24,3 +26,18 @@ VALUES
     (2, 'Биг Бургер', 'Двойной мясной', 8.00, true, 1),
     (3, 'Кола', '0.5л холодная', 1.50, true, 2),
     (4, 'Спрайт', '0.5л', 1.50, true, 2);
+
+
+create table `order`
+(
+    id         bigint auto_increment
+        primary key,
+    created_at datetime(6)                                                    null,
+    notes      varchar(255)                                                   null,
+    status     enum ('CANCELLED', 'DELIVERED', 'IN_PROGRESS', 'NEW', 'READY') null,
+    table_id   bigint                                                         not null,
+    constraint FKunsbex1d87n849uscsv0lloc
+        foreign key (table_id) references table_in_restaurant (id)
+)
+    charset = utf8mb4;
+
