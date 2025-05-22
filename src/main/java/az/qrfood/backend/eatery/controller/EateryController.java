@@ -24,21 +24,44 @@ public class EateryController {
         this.restaurantService = restaurantService;
     }
 
+    /**
+     * Get all eatery.
+
+     * @return list of eatery
+     */
     @GetMapping
     public ResponseEntity<List<EateryDto>> getAllRestaurants() {
         return ResponseEntity.ok(restaurantService.getAllRestaurants());
     }
 
+    /**
+     * Get eatery by id.
+
+     * @param id eatery ID
+     */
     @GetMapping("/{eatery-id}")
     public ResponseEntity<EateryDto> getEateryById(@PathVariable("eatery-id") Long id) {
-        return ResponseEntity.ok(restaurantService.getRestaurantById(id));
+        return ResponseEntity.ok(restaurantService.getEateryById(id));
     }
 
+    /**
+     * Create a new eatery.
+
+     * @param restaurantDTO cretaed eatery data
+     * @return
+     */
     @PostMapping(consumes="application/json")
     public ResponseEntity<EateryDto> createRestaurant(@RequestBody EateryDto restaurantDTO) {
-        return ResponseEntity.ok(restaurantService.createRestaurant(restaurantDTO));
+        log.debug("Request to create eatery [{}]", restaurantDTO);
+        return ResponseEntity.ok(restaurantService.createEatery(restaurantDTO));
     }
 
+    /**
+     * Delete the eatery by ID.
+
+     * @param id deleted eatery ID
+     * @return todo
+     */
     @DeleteMapping("/{eatery-id}")
     public ResponseEntity<Long> deleteEatery(@PathVariable("eatery-id") Long id) {
         return ResponseEntity.ok(restaurantService.deleteEatery(id));

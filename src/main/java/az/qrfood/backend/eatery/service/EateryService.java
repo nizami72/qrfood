@@ -11,11 +11,11 @@ import az.qrfood.backend.table.entity.TableInEatery;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class EateryService {
@@ -36,7 +36,7 @@ public class EateryService {
                 .collect(Collectors.toList());
     }
 
-    public EateryDto getRestaurantById(Long id) {
+    public EateryDto getEateryById(Long id) {
         Eatery restaurant = eateryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Eatery with id %s not found", id)));
@@ -44,43 +44,49 @@ public class EateryService {
     }
 
 
-    public EateryDto createRestaurant(EateryDto restaurantDTO) {
+    public EateryDto createEatery(EateryDto restaurantDTO) {
 
         Eatery r = Util.copyProperties(restaurantDTO, Eatery.class);
-        r.setTables(new ArrayList<>());
-
         r = eateryRepository.save(r);
         populatePhoneEntities(r, restaurantDTO.getPhones());
-        populateTables(r, restaurantDTO.getTables());
-//        convertToEntity(restaurantDTO, r);
+        populateTables(r, restaurantDTO.getTablesAmount());
         r = eateryRepository.save(r);
         return convertToDTO(r);
     }
 
     private EateryDto convertToDTO(Eatery eatery) {
 
-        List<String> phoneNumbers = eatery.getPhones().stream()
-                .map(EateryPhone::getPhoneNumber)
-                .collect(Collectors.toList());
         EateryDto dto = Util.copyProperties(eatery, EateryDto.class);
-        dto.setEateryId(eatery.getId());
-        dto.setPhones(phoneNumbers);
-        dto.setTables(eatery.getTables().size());
-        dto.setCategories(new ArrayList<>());
+        eatery.getPhones().forEach(phone -> {
+            dto.getPhones().add(phone.getPhoneNumber());
+        });
 
-        for (Category menuCategory: eatery.getCategories()) {
-            dto.getCategories().add("" + menuCategory.getId());
+//        List<TableInEatery> tables = eatery.getTables();
+//        if(!tables.isEmpty()) {
+        eatery.getTables().forEach(table -> {
+            dto.getTableIds().add(table.getId());
+        });
+//        }
+
+
+        dto.setEateryId(eatery.getId());
+        dto.setTablesAmount(eatery.getTables().size());
+
+        List<Category> categories = eatery.getCategories();
+        if (!categories.isEmpty()) {
+            eatery.getCategories().forEach(category -> {
+                dto.getCategoryIds().add(category.getId());
+            });
         }
-        dto.setPhones(phoneNumbers);
         return dto;
     }
 
-    private void populatePhoneEntities(Eatery restaurant, List<String> phoneNumbers) {
-        List<EateryPhone> restaurantPhones = restaurant.getPhones();
+    private void populatePhoneEntities(Eatery eatery, List<String> phoneNumbers) {
+        List<EateryPhone> restaurantPhones = eatery.getPhones();
         phoneNumbers.forEach(phoneNumber -> {
             EateryPhone restaurantPhone = new EateryPhone();
             restaurantPhone.setPhoneNumber(phoneNumber);
-            restaurantPhone.setRestaurant(restaurant);
+            restaurantPhone.setRestaurant(eatery);
             restaurantPhones.add(restaurantPhone);
         });
     }
@@ -88,7 +94,7 @@ public class EateryService {
     private void populateTables(Eatery eatery, int tables) {
         List<TableInEatery> tableList = eatery.getTables();
         AtomicInteger idx = new AtomicInteger();
-        List.of(0, tables).forEach(table -> {
+        IntStream.range(0, tables).forEach(table -> {
             TableInEatery tableInEatery = TableInEatery.builder()
                     .tableNumber(String.valueOf(idx.incrementAndGet()))
                     .restaurant(eatery)
@@ -98,7 +104,7 @@ public class EateryService {
         });
     }
 
-    private byte [] populateQrCode(long eateryId, int tableNumber) {
+    private byte[] populateQrCode(long eateryId, int tableNumber) {
         String qrContent = baseUrl + "/" + eateryId + "/" + tableNumber;
         try {
             return QrCodeGenerator.generateQRCode(qrContent, 250, 250);
@@ -109,7 +115,7 @@ public class EateryService {
 
     public Long deleteEatery(Long id) {
         Optional<Eatery> eateryOptional = eateryRepository.findById(id);
-        if(eateryOptional.isEmpty()) {
+        if (eateryOptional.isEmpty()) {
             throw new EntityNotFoundException(String.format("Eatery id [%s] not found", id));
         }
         eateryRepository.deleteById(id);

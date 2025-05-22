@@ -20,6 +20,6 @@ client.global.set("name", getRandom(names));
 client.global.set("address", getRandom(addresses));
 client.global.set("phones", JSON.stringify(getRandom(phonePool)));
 client.global.set("categories", JSON.stringify(getRandom(categoryPool)));
-client.global.set("tablesAmount", Math.floor(Math.random() * 20) + 1);
+client.global.set("tablesAmount", Math.floor(Math.random() * 4) + 1);
 client.global.set("geoLat", (Math.random() * (40.99999 - 40.00001) + 40.00001).toFixed(6));
 client.global.set("geoLng", (Math.random() * (49.99999 - 49.00001) + 49.00001).toFixed(6));

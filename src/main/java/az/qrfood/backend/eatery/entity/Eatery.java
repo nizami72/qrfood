@@ -22,7 +22,6 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "eatery")
 public class Eatery {
@@ -44,8 +43,14 @@ public class Eatery {
      */
     private String address;
 
+    public Eatery() {
+        this.phones = new ArrayList<>();
+        this.tables = new ArrayList<>();
+        this.categories = new ArrayList<>();
+    }
+
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EateryPhone> phones = new ArrayList<>();
+    private List<EateryPhone> phones;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     private List<TableInEatery> tables;
