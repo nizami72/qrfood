@@ -1,0 +1,39 @@
+### ---------------------- CREATE RANDOM
+< scripts/category/create.js
+POST {{url}}/api/category/create/eatery/{{eateryId}}
+Content-Type: application/json
+
+{
+  "nameAz": "{{nameAz}}",
+  "nameEn": "{{nameEn}}",
+  "nameRu": "{{nameRu}}"
+}
+
+### ---------------------- CREATE FOR EARERY
+< scripts/category/create.js
+POST {{url}}/api/category/create/eatery/12
+Content-Type: application/json
+
+{
+  "nameAz": "{{nameAz}}",
+  "nameEn": "{{nameEn}}",
+  "nameRu": "{{nameRu}}"
+}
+
+### ---------------------- GET ALL CATEGORIES
+GET {{url}}/api/category/categories
+
+### ---------------------- GET CATEGORIES FOR EATERY
+GET {{url}}/api/category/categories/by-eatery?eateryId=11
+
+### ---------------------- GET CATEGORIES BY ID
+GET {{url}}/api/category?category-id=51
+
+
+
+### ---------------------- DELETE CATEGORY
+DELETE {{url}}/api/category/15
+
+
+
+
