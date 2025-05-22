@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -31,6 +30,12 @@ public class CategoryService {
         this.eateryRepository = eateryRepository;
     }
 
+    /**
+     * Create new Category for particular eatery.
+
+     * @param menuCategoryDto category data
+     * @return Category
+     */
     public Category createCategory(MenuCategoryDto menuCategoryDto) {
 
         Long eateryId = menuCategoryDto.getEateryId();
@@ -42,21 +47,28 @@ public class CategoryService {
                     "Cant create category for eatery %s, eatery not found", eateryId));
         }
 
-        Category menuCategory = Category.builder()
+        Category category = Category.builder()
                 .eatery(eateryOp.get())
                 .iconUrl(null)
                 .build();
 
         List<CategoryTranslation> categoryTranslations = List.of(
-                new CategoryTranslation(menuCategory, Language.AZ.name(), menuCategoryDto.getNameAz()),
-                new CategoryTranslation(menuCategory, Language.EN.name(), menuCategoryDto.getNameEn()),
-                new CategoryTranslation(menuCategory, Language.RU.name(), menuCategoryDto.getNameRu())
+                new CategoryTranslation(category, Language.AZ.name(), menuCategoryDto.getNameAz()),
+                new CategoryTranslation(category, Language.EN.name(), menuCategoryDto.getNameEn()),
+                new CategoryTranslation(category, Language.RU.name(), menuCategoryDto.getNameRu())
         );
 
-        menuCategory.setTranslations(categoryTranslations);
-        Category category = categoryRepository.save(menuCategory);
-        log.debug("Menu category created [{}]", menuCategory);
-        return menuCategory;
+        category.setTranslations(categoryTranslations);
+        category.setHash(category.hashCode());
+        Optional<Category> mayExistCategory = categoryRepository.findByHash(category.hashCode());
+        if(mayExistCategory.isPresent()) {
+            Category c = mayExistCategory.get();
+            log.debug("The category with the same eatery ID and translation already exists, id [{}]", c.getId());
+            return c;
+        }
+        categoryRepository.save(category);
+        log.debug("Menu category created [{}]", category);
+        return category;
     }
 
 
@@ -157,16 +169,6 @@ public class CategoryService {
             });
 
         return dto;
-    }
-
-    private MenuCategoryDto  populateMenuCategory(MenuItemDto menuItemDto) {
-        return  MenuCategoryDto.builder()
-//                .eateryId(menuItemDto.getEateryId())
-                .nameEn(menuItemDto.getNameEn())
-                .nameRu(menuItemDto.getNameRu())
-                .nameAz(menuItemDto.getNameAz())
-                .build();
-
     }
 
     public ResponseEntity<String> deleteCategory(Long categoryId) {

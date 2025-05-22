@@ -20,6 +20,17 @@ Content-Type: application/json
   "nameRu": "{{nameRu}}"
 }
 
+### ---------------------- CREATE CATEGORY FOR EATERY same content
+< scripts/category/create.js
+POST {{url}}/api/category/create/eatery/22
+Content-Type: application/json
+
+{
+  "nameAz": "a",
+  "nameEn": "b",
+  "nameRu": "c"
+}
+
 ### ---------------------- GET ALL CATEGORIES
 GET {{url}}/api/category/categories
 

@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -22,6 +23,9 @@ public class Category extends BaseEntity {
     private Eatery eatery;
 
     private String iconUrl;
+
+    @Column(name = "hash")
+    private int hash;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<MenuItem> items;
@@ -39,4 +43,10 @@ public class Category extends BaseEntity {
                 "  itemsCount=" + (items != null ? items.size() : 0) + "\n" +
                 '}';
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTranslations(), getEatery().getId());
+    }
+
 }

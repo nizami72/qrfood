@@ -3,6 +3,7 @@ package az.qrfood.backend.category.entity;
 import az.qrfood.backend.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -13,6 +14,7 @@ import lombok.*;
 @Table(name = "category_translation", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"category_id", "lang"})
 })
+@EqualsAndHashCode(of = {"language", "name"})
 public class CategoryTranslation extends BaseEntity {
 
     @ManyToOne
@@ -32,5 +34,19 @@ public class CategoryTranslation extends BaseEntity {
                 ", lang='" + lang + '\'' +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(lang, name);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CategoryTranslation)) return false;
+        CategoryTranslation that = (CategoryTranslation) o;
+        return Objects.equals(lang, that.lang) &&
+                Objects.equals(name, that.name);
     }
 }
