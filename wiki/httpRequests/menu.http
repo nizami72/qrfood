@@ -18,7 +18,7 @@ Content-Type: application/json
 
 ### ---------------------- ADD MENU TO CATEGORY(DEFINED)
 < scripts/api-menu-create.js
-POST {{url}}/api/menu/category-id/54
+POST {{url}}/api/menu/category-id/63
 Content-Type: application/json
 
 {

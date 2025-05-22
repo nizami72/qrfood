@@ -66,6 +66,7 @@ public class EateryService {
         dto.setEateryId(eatery.getId());
         dto.setPhones(phoneNumbers);
         dto.setTables(eatery.getTables().size());
+        dto.setCategories(new ArrayList<>());
 
         for (Category menuCategory: eatery.getCategories()) {
             dto.getCategories().add("" + menuCategory.getId());

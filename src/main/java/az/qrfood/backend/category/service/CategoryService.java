@@ -132,10 +132,10 @@ public class CategoryService {
     public List<MenuCategoryDto> findAllCategoryForEatery(long eateryId) {
 
         Optional<Eatery> eateryOp = eateryRepository.findById(eateryId);
-        if (eateryOp.isEmpty()) {throw new IllegalArgumentException("Eatery not found"); }
+        if (eateryOp.isEmpty()) {throw new EntityNotFoundException("Eatery not found"); }
 
         List<Category> categories = eateryOp.get().getCategories();
-        if (categories.isEmpty()) { throw new IllegalArgumentException("Category not found"); }
+        if (categories.isEmpty()) { throw new EntityNotFoundException("Category not found"); }
 
         return convertMenuCategoryToDto(categories);
     }
