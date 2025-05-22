@@ -2,16 +2,11 @@ package az.qrfood.backend.eatery.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 public class EateryDto {
-
-    public EateryDto() {
-        this.categories = new ArrayList<String>();
-    }
 
     private Long eateryId;
     private String name;

@@ -1,7 +1,7 @@
 package az.qrfood.backend.table.entity;
 
 import az.qrfood.backend.order.entity.Order;
-import az.qrfood.backend.restaurant.entity.Restaurant;
+import az.qrfood.backend.eatery.entity.Eatery;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,10 +9,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;
@@ -21,23 +23,29 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "table_in_restaurant")
-public class TableInRestaurant {
+@Table(name = "table_in_eaery")
+@Builder
+public class TableInEatery {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "restaurant_id", nullable = false)
-    private Restaurant restaurant;
+    @JoinColumn(name = "eatery_id", nullable = false)
+    private Eatery restaurant;
 
     @Column(name = "table_number")
     private String tableNumber;
 
-    @Column(name = "qr_code", unique = true, nullable = false)
-    private String qrCode;
+    @Column(name = "qr_code", columnDefinition = "BLOB" , nullable = false)
+    @Lob
+    private byte[] qrCode;
 
     @OneToMany(mappedBy = "table", cascade = CascadeType.ALL)
     private List<Order> orders;
+
+    public String toString() {
+        return "ID = " + id;
+    }
 }

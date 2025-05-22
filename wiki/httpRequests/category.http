@@ -1,4 +1,4 @@
-### ---------------------- CREATE RANDOM
+### ---------------------- CREATE CATEGORY RANDOM
 < scripts/category/create.js
 POST {{url}}/api/category/create/eatery/{{eateryId}}
 Content-Type: application/json
@@ -9,9 +9,9 @@ Content-Type: application/json
   "nameRu": "{{nameRu}}"
 }
 
-### ---------------------- CREATE FOR EARERY
+### ---------------------- CREATE CATEGORY FOR EARERY
 < scripts/category/create.js
-POST {{url}}/api/category/create/eatery/12
+POST {{url}}/api/category/create/eatery/23
 Content-Type: application/json
 
 {
@@ -27,7 +27,7 @@ GET {{url}}/api/category/categories
 GET {{url}}/api/category/categories/by-eatery?eateryId=11
 
 ### ---------------------- GET CATEGORIES BY ID
-GET {{url}}/api/category?category-id=51
+GET {{url}}/api/category?category-id=54
 
 
 

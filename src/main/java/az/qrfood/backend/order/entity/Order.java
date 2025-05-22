@@ -1,7 +1,7 @@
 package az.qrfood.backend.order.entity;
 
 import az.qrfood.backend.order.OrderStatus;
-import az.qrfood.backend.table.entity.TableInRestaurant;
+import az.qrfood.backend.table.entity.TableInEatery;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,7 +33,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "table_id", nullable = false)
-    private TableInRestaurant table;
+    private TableInEatery table;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();

@@ -29,7 +29,7 @@ public class QrCode {
 
     @ManyToOne
     @JoinColumn(name = "table_id", nullable = false)
-    private TableInRestaurant table;
+    private TableInEatery table;
 
     private LocalDateTime validFrom;
     private LocalDateTime validTo;

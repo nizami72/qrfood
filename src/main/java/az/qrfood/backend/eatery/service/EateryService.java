@@ -1,7 +1,6 @@
 package az.qrfood.backend.eatery.service;
 
 import az.qrfood.backend.category.entity.Category;
-import az.qrfood.backend.category.entity.CategoryTranslation;
 import az.qrfood.backend.common.QrCodeGenerator;
 import az.qrfood.backend.common.Util;
 import az.qrfood.backend.eatery.dto.EateryDto;
@@ -11,7 +10,6 @@ import az.qrfood.backend.eatery.repository.EateryRepository;
 import az.qrfood.backend.table.entity.TableInEatery;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +37,6 @@ public class EateryService {
     }
 
     public EateryDto getRestaurantById(Long id) {
-        String lang = "en";
         Eatery restaurant = eateryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Eatery with id %s not found", id)));
@@ -72,21 +69,9 @@ public class EateryService {
 
         for (Category menuCategory: eatery.getCategories()) {
             dto.getCategories().add("" + menuCategory.getId());
-            List<CategoryTranslation> translations = menuCategory.getTranslations();
         }
         dto.setPhones(phoneNumbers);
         return dto;
-    }
-
-    private Eatery convertToEntity(EateryDto restaurantDTO, Eatery restaurant) {
-        restaurant.setName(restaurantDTO.getName());
-        restaurant.setAddress(restaurantDTO.getAddress());
-
-        List<String> phoneNumbers = restaurant.getPhones().stream()
-                .map(EateryPhone::getPhoneNumber)
-                .toList();
-        populatePhoneEntities(restaurant, phoneNumbers);
-        return restaurant;
     }
 
     private void populatePhoneEntities(Eatery restaurant, List<String> phoneNumbers) {

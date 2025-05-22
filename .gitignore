@@ -38,3 +38,5 @@ build/
 /.mvn/
 /frontend/
 /package-lock.json
+/wiki/db_dumps/
+/logs/

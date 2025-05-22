@@ -18,7 +18,7 @@ Content-Type: application/json
 
 ### ---------------------- ADD MENU TO CATEGORY(DEFINED)
 < scripts/api-menu-create.js
-POST {{url}}/api/menu/category-id/51
+POST {{url}}/api/menu/category-id/54
 Content-Type: application/json
 
 {
@@ -28,17 +28,19 @@ Content-Type: application/json
   "descriptionAz": "{{descriptionAz}}",
   "descriptionEn": "{{descriptionEn}}",
   "descriptionRu": "{{descriptionRu}}",
-  "price": "{{price}}",
+  "price": {{price}},
   "imageUrl": "https://example.com/images/lentil-soup.jpg",
   "isAvailable": true
 }
 
-### ---------------------- FIND MENU ITEM BY ID
+### ---------------------- GET MENU ITEM BY ID
 GET {{url}}/api/menu/menu_id/16
 
 
 ### ---------------------- GET ALL MENU ITEMS OF A CATEGORY(DEFINED)
-GET {{url}}/api/menu/category_id/16
+GET {{url}}/api/menu/category_id/54
+
+
 
 
 ### ---------------------- DELETE MENU ITEM BY ID
