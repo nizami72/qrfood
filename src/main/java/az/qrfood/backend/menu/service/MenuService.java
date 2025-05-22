@@ -52,7 +52,7 @@ public class MenuService {
 
 
     public MenuItem addMenuItem(MenuItemDto dto) {
-        Optional<Category> optionalCategory = categoryRepository.findById(dto.getMenuCategoryId());
+        Optional<Category> optionalCategory = categoryRepository.findById(dto.getCategoryId());
         if (optionalCategory.isEmpty()) {
             throw new IllegalArgumentException("Category not found");
         }
@@ -76,7 +76,7 @@ public class MenuService {
 
     private MenuCategoryDto convertDtoToEntity(MenuItemDto menuItemDto) {
         return MenuCategoryDto.builder()
-                .eateryId(menuItemDto.getMenuCategoryId())
+                .eateryId(menuItemDto.getCategoryId())
                 .nameEn(menuItemDto.getNameEn())
                 .nameRu(menuItemDto.getNameRu())
                 .nameAz(menuItemDto.getNameAz())
@@ -86,7 +86,7 @@ public class MenuService {
     public static MenuItemDto convertEntityToDto(MenuItem menuItem) {
         MenuItemDto dto = MenuItemDto.builder()
                 .menuId(menuItem.getId())
-                .menuCategoryId(menuItem.getCategory().getId())
+                .categoryId(menuItem.getCategory().getId())
                 .price(menuItem.getPrice())
                 .imageUrl(menuItem.getImageUrl())
                 .isAvailable(menuItem.isAvailable())

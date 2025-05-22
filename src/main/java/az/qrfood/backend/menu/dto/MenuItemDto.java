@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 public class MenuItemDto {
 
     private Long menuId;
-    private Long menuCategoryId;
+    private Long categoryId;
     private String nameAz;
     private String nameEn;
     private String nameRu;
@@ -44,7 +44,7 @@ public class MenuItemDto {
             isAvailable   : %s
         }
         """,
-                menuCategoryId, nameAz, nameEn, nameRu, descriptionAz,
+                categoryId, nameAz, nameEn, nameRu, descriptionAz,
                 descriptionEn, descriptionRu, price, imageUrl, isAvailable
         );
     }

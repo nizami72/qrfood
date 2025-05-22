@@ -41,7 +41,7 @@ public class MenuController {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Restaurant was not found")
     })
-    @GetMapping("/{categoryId}")
+    @GetMapping("/category_id/{categoryId}")
     public ResponseEntity<List<MenuItemDto>> getMenu(@PathVariable Long categoryId) {
         log.debug("Retrieve the category menu by ID");
 
@@ -55,9 +55,9 @@ public class MenuController {
      * @param menuItemDto - menu item DTO
      * @return Response entity
      */
-    @PostMapping(value = "/create/for_category/{categoryId}", consumes = "application/json")
+    @PostMapping(value = "/category-id/{categoryId}", consumes = "application/json")
     public ResponseEntity<Long> createMenuItem(@PathVariable Long categoryId, @RequestBody MenuItemDto menuItemDto) {
-        menuItemDto.setMenuCategoryId(categoryId);
+        menuItemDto.setCategoryId(categoryId);
         log.debug("Request to create menu item: {}", menuItemDto);
         MenuItem menuItem = menuService.addMenuItem(menuItemDto);
         return ResponseEntity.ok(menuItem.getId());
@@ -69,7 +69,7 @@ public class MenuController {
      * @param menuId the menu item ID
      * @return menu item dto
      */
-    @GetMapping("/by_id/{menuId}")
+    @GetMapping("/menu_id/{menuId}")
     public MenuItemDto getMenuItemById(@PathVariable Long menuId) {
         Optional<MenuItem> menuItem = menuItemRepository.findById(menuId);
         if(menuItem.isEmpty()) {
@@ -79,7 +79,7 @@ public class MenuController {
     }
 
 
-    @DeleteMapping("/by_id/{menuId}")
+    @DeleteMapping("/menu_id/{menuId}")
     public ResponseEntity<String> deleteMenuItemById(@PathVariable Long menuId) {
         log.debug("Request to delete menu item with id {}", menuId);
         menuItemRepository.deleteById(menuId);
