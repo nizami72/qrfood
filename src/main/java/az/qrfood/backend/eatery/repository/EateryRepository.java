@@ -1,0 +1,10 @@
+package az.qrfood.backend.eatery.repository;
+
+import az.qrfood.backend.eatery.entity.Eatery;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface EateryRepository extends JpaRepository<Eatery, Long> {
+//    Optional<Restaurant> findByName(String name);
+}

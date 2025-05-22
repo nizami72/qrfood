@@ -1,0 +1,36 @@
+
+### CREATE EATERY--------------------------------------------------------
+< scripts/eatery/create_eatery.js
+POST {{url}}/api/eatery
+Content-Type: application/json
+
+{
+  "name": "{{name}}",
+  "address": "{{address}}",
+  "phones": {{phones}},
+  "tablesAmount": {{tablesAmount}},
+  "categories": {{categories}},
+  "geoLat": {{geoLat}},
+  "geoLng": {{geoLng}}
+}
+
+
+
+### FIND ALL ------------------------------------------------------------
+GET {{url}}/api/eatery
+
+
+
+### GET FIND BY RANDOM ID------------------------------------------------
+< scripts/eatery/findRandom.js
+GET {{url}}/api/eatery/{{eateryId}}
+
+
+
+### GET BY DEFINED ID-----------------------------------------------------
+GET {{url}}/api/eatery/23
+
+
+
+### DELETE EATERY -----------------------------------------------------------
+DELETE {{url}}/api/eatery/21

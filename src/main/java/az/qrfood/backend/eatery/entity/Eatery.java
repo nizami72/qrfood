@@ -1,7 +1,7 @@
-package az.qrfood.backend.restaurant.entity;
+package az.qrfood.backend.eatery.entity;
 
-import az.qrfood.backend.table.entity.TableInRestaurant;
-import az.qrfood.backend.menu.entity.MenuCategory;
+import az.qrfood.backend.table.entity.TableInEatery;
+import az.qrfood.backend.category.entity.Category;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,9 +10,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,11 +20,12 @@ import java.util.List;
  * Represents a restaurant that uses the QR food ordering system.
  */
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "restaurant")
-public class Restaurant {
+@Table(name = "eatery")
+public class Eatery {
 
     /**
      * Unique identifier for the restaurant.
@@ -44,13 +45,13 @@ public class Restaurant {
     private String address;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RestaurantPhone> phones = new ArrayList<>();
+    private List<EateryPhone> phones = new ArrayList<>();
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-    private List<TableInRestaurant> tables;
+    private List<TableInEatery> tables;
 
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-    private List<MenuCategory> categories;
+    @OneToMany(mappedBy = "eatery", cascade = CascadeType.ALL)
+    private List<Category> categories;
 
     /**
      * Latitude coordinate of the restaurant (for location validation, optional).
@@ -62,5 +63,18 @@ public class Restaurant {
      */
     private Double geoLng;
 
+    @Override
+    public String toString() {
+        return "Eatery {\n" +
+                "  id=" + id + ",\n" +
+                "  name='" + name + "',\n" +
+                "  address='" + address + "',\n" +
+                "  geoLat=" + geoLat + ",\n" +
+                "  geoLng=" + geoLng + ",\n" +
+                "  phonesCount=" + (phones != null ? phones.size() : 0) + ",\n" +
+                "  tablesCount=" + (tables != null ? tables.size() : 0) + ",\n" +
+                "  categoriesCount=" + (categories != null ? categories.size() : 0) + "\n" +
+                '}';
+    }
 
 }

@@ -1,4 +1,4 @@
-package az.qrfood.backend.restaurant.entity;
+package az.qrfood.backend.eatery.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,14 +11,17 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "restaurant_phone")
-public class RestaurantPhone {
+@Table(name = "eatery_phone")
+public class EateryPhone {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,8 +31,8 @@ public class RestaurantPhone {
     private String phoneNumber;
 
     @ManyToOne
-    @JoinColumn(name = "restaurant_id", nullable = false)
-    private Restaurant restaurant;
+    @JoinColumn(name = "eatery_id", nullable = false)
+    private Eatery restaurant;
 
     public String toString() {
         return phoneNumber;
