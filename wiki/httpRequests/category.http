@@ -1,5 +1,6 @@
 
-### ---------------------- ADD CATEGORY RANDOM
+### ADD CATEGORY RANDOM
+//_____________________________________________________________________
 < scripts/category/create.js
 POST {{url}}/api/category/create/eatery/{{eateryId}}
 Content-Type: application/json
@@ -14,9 +15,10 @@ Content-Type: application/json
 
 
 
-### ---------------------- ADD CATEGORY TO EARERY
+### ADD CATEGORY TO EARERY
+//_____________________________________________________________________
 < scripts/category/create.js
-POST {{url}}/api/category/create/eatery/22
+POST {{url}}/api/category/create/eatery/9
 Content-Type: application/json
 
 {
@@ -28,14 +30,16 @@ Content-Type: application/json
 
 
 
-### ---------------------- GET CATEGORIES FOR EATERY
+### GET CATEGORIES FOR EATERY
+//_____________________________________________________________________
 GET {{url}}/api/category/categories/by-eatery?eateryId=22
 
 
 
 
 
-### ---------------------- ADD CATEGORY TO EATERY same content
+### ADD CATEGORY TO EATERY same content
+//_____________________________________________________________________
 < scripts/category/create.js
 POST {{url}}/api/category/create/eatery/22
 Content-Type: application/json
@@ -48,17 +52,20 @@ Content-Type: application/json
 
 
 
-### ---------------------- GET ALL CATEGORIES
+### GET ALL CATEGORIES
+//_____________________________________________________________________
 GET {{url}}/api/category/categories
 
 
 
-### ---------------------- GET CATEGORIES BY ID
-GET {{url}}/api/category?category-id=54
+### GET BY CATEGORY ID
+//_____________________________________________________________________
+GET {{url}}/api/category?category-id=1
 
 
 
-### ---------------------- DELETE CATEGORY
+### DELETE CATEGORY
+//_____________________________________________________________________
 DELETE {{url}}/api/category/34
 
 

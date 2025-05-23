@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @Builder
 public class MenuItemDto {
 
-    private Long menuId;
+    private Long dishId;
     private Long categoryId;
     private String nameAz;
     private String nameEn;
@@ -31,8 +31,8 @@ public class MenuItemDto {
     @Override
     public String toString() {
         return String.format("""
-        MenuItem {
-            menuCategoryId: %s
+        Dish {
+            categoryId: %s
             nameAz        : %s
             nameEn        : %s
             nameRu        : %s

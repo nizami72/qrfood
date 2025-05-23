@@ -1,4 +1,48 @@
-### ---------------------- CREATE MENU FOR CATEGORY(RANDOM)
+
+
+### CREATE NEW MENU FOR CATEGORY(DEFINED)
+//_____________________________________________________________________
+< scripts/api-menu-create.js
+POST {{url}}/api/menu/category-id/1
+Content-Type: application/json
+
+{
+  "nameAz": "{{nameAz}}",
+  "nameEn": "{{nameEn}}",
+  "nameRu": "{{nameRu}}",
+  "descriptionAz": "{{descriptionAz}}",
+  "descriptionEn": "{{descriptionEn}}",
+  "descriptionRu": "{{descriptionRu}}",
+  "price": {{price}},
+  "imageUrl": "https://example.com/images/lentil-soup.jpg",
+  "isAvailable": true
+}
+
+
+
+
+### GET MENU ITEM BY ID
+//_____________________________________________________________________
+GET {{url}}/api/menu/menu_id/16
+
+
+
+
+### GET ALL MENU ITEMS OF A CATEGORY(DEFINED)
+//_____________________________________________________________________
+GET {{url}}/api/menu/category_id/54
+
+
+
+
+//_____________________________________________________________________
+### DELETE MENU ITEM BY ID
+DELETE {{url}}/api/menu/menu_id/4
+
+
+
+### CREATE MENU FOR CATEGORY(RANDOM)
+//_____________________________________________________________________
 < scripts/api-menu-create.js
 
 POST {{url}}/api/menu/create/for_category/{{categoryId}}
@@ -15,34 +59,4 @@ Content-Type: application/json
   "imageUrl": "https://example.com/images/lentil-soup.jpg",
   "isAvailable": true
 }
-
-### ---------------------- ADD MENU TO CATEGORY(DEFINED)
-< scripts/api-menu-create.js
-POST {{url}}/api/menu/category-id/63
-Content-Type: application/json
-
-{
-  "nameAz": "{{nameAz}}",
-  "nameEn": "{{nameEn}}",
-  "nameRu": "{{nameRu}}",
-  "descriptionAz": "{{descriptionAz}}",
-  "descriptionEn": "{{descriptionEn}}",
-  "descriptionRu": "{{descriptionRu}}",
-  "price": {{price}},
-  "imageUrl": "https://example.com/images/lentil-soup.jpg",
-  "isAvailable": true
-}
-
-### ---------------------- GET MENU ITEM BY ID
-GET {{url}}/api/menu/menu_id/16
-
-
-### ---------------------- GET ALL MENU ITEMS OF A CATEGORY(DEFINED)
-GET {{url}}/api/menu/category_id/54
-
-
-
-
-### ---------------------- DELETE MENU ITEM BY ID
-DELETE {{url}}/api/menu/menu_id/4
 

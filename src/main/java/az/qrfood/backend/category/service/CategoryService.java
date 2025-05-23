@@ -7,7 +7,6 @@ import az.qrfood.backend.category.repo.CategoryRepository;
 import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.eatery.repository.EateryRepository;
 import az.qrfood.backend.lang.Language;
-import az.qrfood.backend.menu.dto.MenuItemDto;
 import az.qrfood.backend.menu.service.MenuService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
@@ -152,7 +151,7 @@ public class CategoryService {
 
             MenuCategoryDto dto = new MenuCategoryDto();
             dto.setEateryId(category.getEatery().getId());
-            dto.setItems(category.getItems().stream()
+            dto.setDishes(category.getItems().stream()
                     .map(MenuService::convertEntityToDto)
                     .collect(Collectors.toList())
             );

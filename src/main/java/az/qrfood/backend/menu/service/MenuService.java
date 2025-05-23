@@ -85,7 +85,7 @@ public class MenuService {
 
     public static MenuItemDto convertEntityToDto(MenuItem menuItem) {
         MenuItemDto dto = MenuItemDto.builder()
-                .menuId(menuItem.getId())
+                .dishId(menuItem.getId())
                 .categoryId(menuItem.getCategory().getId())
                 .price(menuItem.getPrice())
                 .imageUrl(menuItem.getImageUrl())

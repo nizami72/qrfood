@@ -15,7 +15,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "menu_category")
+@Table(name = "category")
 public class Category extends BaseEntity {
 
     @ManyToOne
