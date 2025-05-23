@@ -23,7 +23,7 @@ Content-Type: application/json
 
 ### GET MENU ITEM BY ID
 //_____________________________________________________________________
-GET {{url}}/api/menu/menu_id/16
+GET {{url}}/api/menu/1
 
 
 

@@ -1,7 +1,10 @@
 package az.qrfood.backend.table.service;
 
-import az.qrfood.backend.table.entity.QrCode;
-import az.qrfood.backend.table.repository.TableQRRepository;
+import az.qrfood.backend.eatery.entity.Eatery;
+import az.qrfood.backend.qr.entity.QrCode;
+import az.qrfood.backend.qr.service.QrService;
+import az.qrfood.backend.table.entity.TableInEatery;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -9,10 +12,12 @@ import java.util.Optional;
 @Service
 public class TableService {
 
-    private final TableQRRepository tableQRRepository;
+    @Value("${host.name}")
+    private String baseUrl;
+    private final QrService qrService;
 
-    public TableService(TableQRRepository tableQRRepository) {
-        this.tableQRRepository = tableQRRepository;
+    public TableService(QrService qrService) {
+        this.qrService = qrService;
     }
 
     /**
@@ -27,4 +32,18 @@ public class TableService {
         return null;
 //        return tableQRRepository.findByRestaurantId(restaurantId);
     }
+
+    public TableInEatery createTableInEatery(Eatery eatery, int tableNumber) {
+        return TableInEatery.builder()
+                .tableNumber(String.valueOf(tableNumber))
+                .restaurant(eatery)
+                .qrCode(qrService.createQrCodeEntity(eatery.getId(), tableNumber, baseUrl))
+                .build();
+    }
+
+
+
+
+
+
 }

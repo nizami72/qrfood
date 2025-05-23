@@ -134,7 +134,11 @@ public class CategoryService {
         if (eateryOp.isEmpty()) {throw new EntityNotFoundException("Eatery not found"); }
 
         List<Category> categories = eateryOp.get().getCategories();
-        if (categories.isEmpty()) { throw new EntityNotFoundException("Category not found"); }
+        if (categories.isEmpty()) {
+            String error = String.format("Eatery [%s] has no any category and menu", eateryId);
+            log.error(error);
+            throw new EntityNotFoundException(error);
+        }
 
         return convertMenuCategoryToDto(categories);
     }

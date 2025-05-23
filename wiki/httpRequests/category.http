@@ -1,24 +1,9 @@
 
-### ADD CATEGORY RANDOM
+
+### CREATE CATEGORY TO EATERY
 //_____________________________________________________________________
 < scripts/category/create.js
-POST {{url}}/api/category/create/eatery/{{eateryId}}
-Content-Type: application/json
-
-{
-  "nameAz": "{{nameAz}}",
-  "nameEn": "{{nameEn}}",
-  "nameRu": "{{nameRu}}"
-}
-
-
-
-
-
-### ADD CATEGORY TO EARERY
-//_____________________________________________________________________
-< scripts/category/create.js
-POST {{url}}/api/category/create/eatery/9
+POST {{url}}/api/category/create/eatery/1
 Content-Type: application/json
 
 {
@@ -32,7 +17,7 @@ Content-Type: application/json
 
 ### GET CATEGORIES FOR EATERY
 //_____________________________________________________________________
-GET {{url}}/api/category/categories/by-eatery?eateryId=22
+GET {{url}}/api/category/eatery/1
 
 
 
@@ -54,13 +39,13 @@ Content-Type: application/json
 
 ### GET ALL CATEGORIES
 //_____________________________________________________________________
-GET {{url}}/api/category/categories
+GET {{url}}/api/category
 
 
 
 ### GET BY CATEGORY ID
 //_____________________________________________________________________
-GET {{url}}/api/category?category-id=1
+GET {{url}}/api/category/1
 
 
 
@@ -71,3 +56,15 @@ DELETE {{url}}/api/category/34
 
 
 
+
+### ADD CATEGORY RANDOM
+//_____________________________________________________________________
+< scripts/category/create.js
+POST {{url}}/api/category/create/eatery/{{eateryId}}
+Content-Type: application/json
+
+{
+  "nameAz": "{{nameAz}}",
+  "nameEn": "{{nameEn}}",
+  "nameRu": "{{nameRu}}"
+}

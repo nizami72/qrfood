@@ -2,6 +2,7 @@ package az.qrfood.backend.table.entity;
 
 import az.qrfood.backend.order.entity.Order;
 import az.qrfood.backend.eatery.entity.Eatery;
+import az.qrfood.backend.qr.entity.QrCode;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,9 +10,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,9 +39,9 @@ public class TableInEatery {
     @Column(name = "table_number")
     private String tableNumber;
 
-    @Column(name = "qr_code", columnDefinition = "BLOB" , nullable = false)
-    @Lob
-    private byte[] qrCode;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "qr_code_id", referencedColumnName = "id")
+    private QrCode qrCode;
 
     @OneToMany(mappedBy = "table", cascade = CascadeType.ALL)
     private List<Order> orders;

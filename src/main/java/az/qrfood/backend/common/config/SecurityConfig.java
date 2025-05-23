@@ -36,6 +36,7 @@ public class SecurityConfig {
                                 "/api/eatery/**",
                                 "/api/category/**",
                                 "/api/orders/**",
+                                "/api/qr/**",
                                 "/api/tables/**"
                                 , "/manifest.json"
 
@@ -58,7 +59,7 @@ public class SecurityConfig {
     public UserDetailsService users() {
         UserDetails admin = User.builder()
                 .username("admin")
-                .password(passwordEncoder.encode("admin123"))
+                .password(passwordEncoder.encode("admin"))
                 .roles("ADMIN")
                 .build();
 

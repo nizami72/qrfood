@@ -1,5 +1,5 @@
 
-### CREATE EATERY
+### CREATE EATERY 1,2,3, ...
 //_____________________________________________________________________
 < scripts/eatery/create_eatery.js
 POST {{url}}/api/eatery
@@ -17,7 +17,7 @@ Content-Type: application/json
 
 
 
-### FIND ALL EATERY
+### GET ALL EATERY
 //_____________________________________________________________________
 GET {{url}}/api/eatery
 

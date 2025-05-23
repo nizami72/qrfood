@@ -1,6 +1,6 @@
 package az.qrfood.backend.table.controller;
 
-import az.qrfood.backend.table.entity.QrCode;
+import az.qrfood.backend.qr.entity.QrCode;
 import az.qrfood.backend.table.service.TableService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

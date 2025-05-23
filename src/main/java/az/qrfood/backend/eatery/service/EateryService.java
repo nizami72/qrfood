@@ -8,6 +8,7 @@ import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.eatery.entity.EateryPhone;
 import az.qrfood.backend.eatery.repository.EateryRepository;
 import az.qrfood.backend.table.entity.TableInEatery;
+import az.qrfood.backend.table.service.TableService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,13 +22,11 @@ import java.util.stream.IntStream;
 public class EateryService {
 
     private final EateryRepository eateryRepository;
+    private final TableService tableService;
 
-    @Value("${base.url}")
-    private String baseUrl;
-
-
-    public EateryService(EateryRepository eateryRepository) {
+    public EateryService(EateryRepository eateryRepository, TableService tableService) {
         this.eateryRepository = eateryRepository;
+        this.tableService = tableService;
     }
 
     public List<EateryDto> getAllRestaurants() {
@@ -93,25 +92,12 @@ public class EateryService {
 
     private void populateTables(Eatery eatery, int tables) {
         List<TableInEatery> tableList = eatery.getTables();
-        AtomicInteger idx = new AtomicInteger();
+        AtomicInteger idx = new AtomicInteger(1);
         IntStream.range(0, tables).forEach(table -> {
-            TableInEatery tableInEatery = TableInEatery.builder()
-                    .tableNumber(String.valueOf(idx.incrementAndGet()))
-                    .restaurant(eatery)
-                    .qrCode(populateQrCode(eatery.getId(), idx.get()))
-                    .build();
-            tableList.add(tableInEatery);
+            tableList.add(tableService.createTableInEatery(eatery, idx.getAndIncrement()));
         });
     }
 
-    private byte[] populateQrCode(long eateryId, int tableNumber) {
-        String qrContent = baseUrl + "/" + eateryId + "/" + tableNumber;
-        try {
-            return QrCodeGenerator.generateQRCode(qrContent, 250, 250);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to generate QR code", e);
-        }
-    }
 
     public Long deleteEatery(Long id) {
         Optional<Eatery> eateryOptional = eateryRepository.findById(id);

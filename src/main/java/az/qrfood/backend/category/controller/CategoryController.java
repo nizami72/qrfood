@@ -39,32 +39,50 @@ public class CategoryController {
 
      * @return list of MenuCategoryDto
      */
-    @GetMapping(value = "/categories")
-    public ResponseEntity<List<MenuCategoryDto>> findAllMenuCategory() {
+    @GetMapping()
+    public ResponseEntity<List<MenuCategoryDto>> eateryCategories() {
         log.debug("Find all categories");
         List<MenuCategoryDto> id = categoryService.findAllCategory();
         return ResponseEntity.ok(id);
     }
 
-    @GetMapping(value = "/categories/by-eatery")
-    public ResponseEntity<List<MenuCategoryDto>> findAllMenuCategory(@RequestParam(value = "eateryId") Long eateryId) {
-        log.debug("Find all categories fir eatery {}", eateryId);
+    /**
+     * Returns all categories for eatery.
+
+     * @param eateryId the eatery id
+     * @return Liast of Categories DTO
+     */
+    @GetMapping(value = "/eatery/{eatery}")
+    public ResponseEntity<List<MenuCategoryDto>> eateryCategories(@PathVariable(value = "eatery") Long eateryId) {
+        log.debug("Find all categories for eatery {}", eateryId);
         List<MenuCategoryDto> id = categoryService.findAllCategoryForEatery(eateryId);
         return ResponseEntity.ok(id);
     }
 
-    @GetMapping
-    public ResponseEntity<MenuCategoryDto> getCategoryById(@RequestParam(value = "category-id") Long categoryId) {
+    /**
+     * Returns the category by its id.
+
+     * @param categoryId the category id
+     * @return CategoryDto
+     */
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<MenuCategoryDto> categoryById(@PathVariable(value = "id") Long categoryId) {
         log.debug("Find the category by ID {}", categoryId);
         MenuCategoryDto category = categoryService.findCategoryById(categoryId);
         return ResponseEntity.ok(category);
     }
 
-    @DeleteMapping(value="/{categoryId}")
-    public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId) {
+
+    /**
+     * Deletes the category by its ID
+
+     * @param categoryId category ID
+     * @return deleted category ID
+     */
+    @DeleteMapping(value="/{id}")
+    public ResponseEntity<String> deleteCategory(@PathVariable(value = "id") Long categoryId) {
         log.debug("Delete category: {}", categoryId);
         return categoryService.deleteCategory(categoryId);
     }
-
 
 }

@@ -22,7 +22,7 @@ import java.util.Optional;
 
 @Log4j2
 @RestController
-@RequestMapping("/api/menu")
+@RequestMapping("${segment.api.menu}")
 public class MenuController {
 
     private final MenuService menuService;
@@ -69,7 +69,7 @@ public class MenuController {
      * @param menuId the menu item ID
      * @return menu item dto
      */
-    @GetMapping("/menu_id/{menuId}")
+    @GetMapping("/{menuId}")
     public MenuItemDto getMenuItemById(@PathVariable Long menuId) {
         Optional<MenuItem> menuItem = menuItemRepository.findById(menuId);
         if(menuItem.isEmpty()) {
@@ -79,7 +79,7 @@ public class MenuController {
     }
 
 
-    @DeleteMapping("/menu_id/{menuId}")
+    @DeleteMapping("/{menuId}")
     public ResponseEntity<String> deleteMenuItemById(@PathVariable Long menuId) {
         log.debug("Request to delete menu item with id {}", menuId);
         menuItemRepository.deleteById(menuId);

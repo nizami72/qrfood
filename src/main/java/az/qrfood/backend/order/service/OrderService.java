@@ -8,7 +8,7 @@ import az.qrfood.backend.order.OrderStatus;
 import az.qrfood.backend.order.repository.CustomerOrderRepository;
 import az.qrfood.backend.menu.repository.MenuItemRepository;
 import az.qrfood.backend.order.repository.OrderItemRepository;
-import az.qrfood.backend.table.repository.TableQRRepository;
+import az.qrfood.backend.qr.repository.QrRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
@@ -20,12 +20,12 @@ public class OrderService {
     private final CustomerOrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final MenuItemRepository menuItemRepository;
-    private final TableQRRepository tableQRRepository;
+    private final QrRepository tableQRRepository;
 
     public OrderService(CustomerOrderRepository orderRepository,
                         OrderItemRepository orderItemRepository,
                         MenuItemRepository menuItemRepository,
-                        TableQRRepository tableQRRepository) {
+                        QrRepository tableQRRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.menuItemRepository = menuItemRepository;
