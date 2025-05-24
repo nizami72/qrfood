@@ -4,6 +4,7 @@ import az.qrfood.backend.category.dto.MenuCategoryDto;
 import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.category.entity.CategoryTranslation;
 import az.qrfood.backend.category.repo.CategoryRepository;
+import az.qrfood.backend.common.service.StorageService;
 import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.eatery.repository.EateryRepository;
 import az.qrfood.backend.lang.Language;
@@ -23,10 +24,12 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final EateryRepository eateryRepository;
+    private final StorageService storageService;
 
-    public CategoryService(CategoryRepository categoryRepository, EateryRepository eateryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, EateryRepository eateryRepository, StorageService storageService) {
         this.categoryRepository = categoryRepository;
         this.eateryRepository = eateryRepository;
+        this.storageService = storageService;
     }
 
     /**
@@ -67,7 +70,9 @@ public class CategoryService {
         }
         categoryRepository.save(category);
         log.debug("Menu category created [{}]", category);
-        return category;
+
+        storageService.createCategoryFolder(category.getEatery().getId(), category.getId());
+        return category;// what to return id,id, dto or entity
     }
 
 

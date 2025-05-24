@@ -17,15 +17,18 @@ Content-Type: application/json
 
 
 
+
 ### GET ALL EATERY
 //_____________________________________________________________________
 GET {{url}}/api/eatery
 
 
 
+
 ### GET BY ID
 //_____________________________________________________________________
 GET {{url}}/api/eatery/1
+
 
 
 
@@ -36,10 +39,10 @@ DELETE {{url}}/api/eatery/5
 
 
 
-
-
 ### GET EATERY BY RANDOM ID
 //_____________________________________________________________________
 < scripts/eatery/findRandom.js
 GET {{url}}/api/eatery/{{eateryId}}
+
+
 

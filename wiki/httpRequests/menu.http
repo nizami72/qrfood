@@ -41,6 +41,7 @@ DELETE {{url}}/api/menu/menu_id/4
 
 
 
+
 ### CREATE MENU FOR CATEGORY(RANDOM)
 //_____________________________________________________________________
 < scripts/api-menu-create.js
@@ -59,4 +60,5 @@ Content-Type: application/json
   "imageUrl": "https://example.com/images/lentil-soup.jpg",
   "isAvailable": true
 }
+
 

@@ -22,7 +22,6 @@ GET {{url}}/api/category/eatery/1
 
 
 
-
 ### ADD CATEGORY TO EATERY same content
 //_____________________________________________________________________
 < scripts/category/create.js
@@ -37,9 +36,11 @@ Content-Type: application/json
 
 
 
+
 ### GET ALL CATEGORIES
 //_____________________________________________________________________
 GET {{url}}/api/category
+
 
 
 
@@ -49,10 +50,10 @@ GET {{url}}/api/category/2
 
 
 
+
 ### DELETE CATEGORY
 //_____________________________________________________________________
 DELETE {{url}}/api/category/34
-
 
 
 
@@ -68,3 +69,6 @@ Content-Type: application/json
   "nameEn": "{{nameEn}}",
   "nameRu": "{{nameRu}}"
 }
+
+
+

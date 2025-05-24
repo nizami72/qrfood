@@ -21,4 +21,8 @@ public class StorageService {
         Util.createFolderIfNotExists(folder);
     }
 
+    public void createCategoryFolder(Long eateryId, Long categoryId) {
+        String folder = APP_IMAGES_FOLDER + File.separator + eateryId + File.separator + categoryId;
+        Util.createFolderIfNotExists(folder);
+    }
 }
