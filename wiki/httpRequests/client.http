@@ -1,0 +1,7 @@
+
+
+### GET EATERY MENU
+//_____________________________________________________________________
+GET {{url}}/api/client/eatery/1
+Accept-Language: en
+
