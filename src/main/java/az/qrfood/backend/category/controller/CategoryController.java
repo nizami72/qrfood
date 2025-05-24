@@ -26,6 +26,13 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
+    /**
+     * Creates a new category for the eatery specified.
+
+     * @param eateryId eatery ID the category is created dfor
+     * @param menuCategoryDto category data
+     * @return id of created eatery
+     */
     @PostMapping(value = "/create/eatery/{eateryId}", consumes = "application/json")
     public ResponseEntity<Long> createMenuCategory(@PathVariable Long eateryId, @RequestBody MenuCategoryDto menuCategoryDto) {
         menuCategoryDto.setEateryId(eateryId);
