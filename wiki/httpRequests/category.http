@@ -45,7 +45,7 @@ GET {{url}}/api/category
 
 ### GET BY CATEGORY ID
 //_____________________________________________________________________
-GET {{url}}/api/category/1
+GET {{url}}/api/category/2
 
 
 

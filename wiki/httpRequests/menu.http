@@ -3,7 +3,7 @@
 ### CREATE NEW MENU FOR CATEGORY(DEFINED)
 //_____________________________________________________________________
 < scripts/api-menu-create.js
-POST {{url}}/api/menu/category-id/1
+POST {{url}}/api/menu/category-id/3
 Content-Type: application/json
 
 {
@@ -30,7 +30,7 @@ GET {{url}}/api/menu/1
 
 ### GET ALL MENU ITEMS OF A CATEGORY(DEFINED)
 //_____________________________________________________________________
-GET {{url}}/api/menu/category_id/54
+GET {{url}}/api/menu/category_id/1
 
 
 

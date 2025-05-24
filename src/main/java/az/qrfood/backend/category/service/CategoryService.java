@@ -52,9 +52,9 @@ public class CategoryService {
                 .build();
 
         List<CategoryTranslation> categoryTranslations = List.of(
-                new CategoryTranslation(category, Language.AZ.name(), menuCategoryDto.getNameAz()),
-                new CategoryTranslation(category, Language.EN.name(), menuCategoryDto.getNameEn()),
-                new CategoryTranslation(category, Language.RU.name(), menuCategoryDto.getNameRu())
+                new CategoryTranslation(category, Language.az.name(), menuCategoryDto.getNameAz()),
+                new CategoryTranslation(category, Language.en.name(), menuCategoryDto.getNameEn()),
+                new CategoryTranslation(category, Language.ru.name(), menuCategoryDto.getNameRu())
         );
 
         category.setTranslations(categoryTranslations);
@@ -162,11 +162,11 @@ public class CategoryService {
             dto.setCategoryId(category.getId());
 
             category.getTranslations().forEach(t -> {
-                if (t.getLang().equals(Language.AZ.name())) {
+                if (t.getLang().equals(Language.az.name())) {
                     dto.setNameAz(t.getName());
-                } else if (t.getLang().equals(Language.EN.name())) {
+                } else if (t.getLang().equals(Language.en.name())) {
                     dto.setNameEn(t.getName());
-                } else if (t.getLang().equals(Language.RU.name())) {
+                } else if (t.getLang().equals(Language.ru.name())) {
                     dto.setNameRu(t.getName());
                 }
             });

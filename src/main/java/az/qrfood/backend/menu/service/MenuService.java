@@ -64,9 +64,9 @@ public class MenuService {
         menuItem = menuItemRepository.save(menuItem);
 
         List<MenuItemTranslation> translations = List.of(
-                new MenuItemTranslation(menuItem, Language.AZ.name(), dto.getNameAz(), dto.getDescriptionAz()),
-                new MenuItemTranslation(menuItem, Language.EN.name(), dto.getNameEn(), dto.getDescriptionEn()),
-                new MenuItemTranslation(menuItem, Language.RU.name(), dto.getNameRu(), dto.getDescriptionRu())
+                new MenuItemTranslation(menuItem, Language.az.name(), dto.getNameAz(), dto.getDescriptionAz()),
+                new MenuItemTranslation(menuItem, Language.en.name(), dto.getNameEn(), dto.getDescriptionEn()),
+                new MenuItemTranslation(menuItem, Language.ru.name(), dto.getNameRu(), dto.getDescriptionRu())
         );
         log.debug("Menu Item created [{}]", menuItem);
         menuItem.getTranslations().addAll(translations);
@@ -93,13 +93,13 @@ public class MenuService {
                 .build();
 
         menuItem.getTranslations().forEach(t -> {
-            if (t.getLang().equals(Language.AZ.name())) {
+            if (t.getLang().equals(Language.az.name())) {
                 dto.setNameAz(t.getName());
                 dto.setDescriptionAz(t.getDescription());
-            } else if (t.getLang().equals(Language.EN.name())) {
+            } else if (t.getLang().equals(Language.en.name())) {
                 dto.setNameEn(t.getName());
                 dto.setDescriptionEn(t.getDescription());
-            } else if (t.getLang().equals(Language.RU.name())) {
+            } else if (t.getLang().equals(Language.ru.name())) {
                 dto.setNameRu(t.getName());
                 dto.setDescriptionRu(t.getDescription());
             }

@@ -1,5 +1,6 @@
 package az.qrfood.backend.common.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -19,6 +20,10 @@ public class SecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${segment.api.client.all}")
+    String segmentApiClientAll;
+
+
     public SecurityConfig(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
@@ -37,8 +42,9 @@ public class SecurityConfig {
                                 "/api/category/**",
                                 "/api/orders/**",
                                 "/api/qr/**",
-                                "/api/tables/**"
-                                , "/manifest.json"
+                                "/api/tables/**",
+                                segmentApiClientAll,
+                                "/manifest.json"
 
 
 

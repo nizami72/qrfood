@@ -2,7 +2,9 @@ package az.qrfood.backend.common;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.lang.reflect.InvocationTargetException;
 import javax.imageio.ImageIO;
@@ -17,6 +19,9 @@ import java.time.format.DateTimeFormatter;
 
 @Log4j2
 public class Util {
+
+    private static final String LINKS_FILE_PATH = "/home/nizami/txt/tmp/links.txt";
+
 
     public static <SR, DS> DS copyProperties(SR source, Class<DS> destinationClass) {
         DS target = null;
@@ -37,7 +42,6 @@ public class Util {
         }
     }
 
-    private static final String LINKS_FILE_PATH = "/home/nizami/txt/tmp/links.txt";
 
     public static void saveLinkToFile(String url) {
         try {
@@ -64,4 +68,19 @@ public class Util {
             System.err.println("Error writing link: " + e.getMessage());
         }
     }
+
+    public static void createFolderIfNotExists(String folderName) {
+        File folder = new File(folderName);
+        if (!folder.exists()) {
+            boolean created = folder.mkdirs();
+            if (created) {
+                log.info("Folder created [{}]", folderName);
+            } else {
+                log.info("Failed to create folder at [{}] ", folderName);
+            }
+        } else {
+            log.info("Folder already exists at [{}]", folderName);
+        }
+    }
+
 }

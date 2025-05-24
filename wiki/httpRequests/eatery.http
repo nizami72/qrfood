@@ -25,7 +25,7 @@ GET {{url}}/api/eatery
 
 ### GET BY ID
 //_____________________________________________________________________
-GET {{url}}/api/eatery/9
+GET {{url}}/api/eatery/1
 
 
 

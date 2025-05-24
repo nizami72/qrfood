@@ -3,6 +3,7 @@ package az.qrfood.backend.eatery.service;
 import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.common.QrCodeGenerator;
 import az.qrfood.backend.common.Util;
+import az.qrfood.backend.common.service.StorageService;
 import az.qrfood.backend.eatery.dto.EateryDto;
 import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.eatery.entity.EateryPhone;
@@ -23,10 +24,12 @@ public class EateryService {
 
     private final EateryRepository eateryRepository;
     private final TableService tableService;
+    private final StorageService storageService;
 
-    public EateryService(EateryRepository eateryRepository, TableService tableService) {
+    public EateryService(EateryRepository eateryRepository, TableService tableService, StorageService storageService) {
         this.eateryRepository = eateryRepository;
         this.tableService = tableService;
+        this.storageService = storageService;
     }
 
     public List<EateryDto> getAllRestaurants() {
@@ -50,7 +53,10 @@ public class EateryService {
         populatePhoneEntities(r, restaurantDTO.getPhones());
         populateTables(r, restaurantDTO.getTablesAmount());
         r = eateryRepository.save(r);
-        return convertToDTO(r);
+        EateryDto dto = convertToDTO(r);
+        storageService.createEateryFolder(dto.getEateryId());
+        return dto;
+
     }
 
     private EateryDto convertToDTO(Eatery eatery) {
@@ -60,13 +66,9 @@ public class EateryService {
             dto.getPhones().add(phone.getPhoneNumber());
         });
 
-//        List<TableInEatery> tables = eatery.getTables();
-//        if(!tables.isEmpty()) {
         eatery.getTables().forEach(table -> {
             dto.getTableIds().add(table.getId());
         });
-//        }
-
 
         dto.setEateryId(eatery.getId());
         dto.setTablesAmount(eatery.getTables().size());
