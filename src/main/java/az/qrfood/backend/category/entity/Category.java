@@ -1,5 +1,6 @@
 package az.qrfood.backend.category.entity;
 
+import az.qrfood.backend.common.Util;
 import az.qrfood.backend.common.entity.BaseEntity;
 import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.menu.entity.MenuItem;
@@ -12,7 +13,6 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Table(name = "category")
@@ -22,7 +22,7 @@ public class Category extends BaseEntity {
     @JoinColumn(name = "eatery_id", nullable = false)
     private Eatery eatery;
 
-    private String iconUrl;
+    private String categoryImageFileName;
 
     @Column(name = "hash")
     private int hash;
@@ -33,12 +33,17 @@ public class Category extends BaseEntity {
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CategoryTranslation> translations;
 
+    public Category() {
+        categoryImageFileName = Util.generateFileName() + "webp";
+    }
+
+
     @Override
     public String toString() {
         return "Category {\n" +
                 "  id=" + getId() + ",\n" +
                 "  eateryId=" + (eatery != null ? eatery.getId() : "null") + ",\n" +
-                "  iconUrl='" + iconUrl + "',\n" +
+                "  iconUrl='" + categoryImageFileName + "',\n" +
                 "  translationsCount=" + (translations != null ? translations.size() : 0) + ",\n" +
                 "  itemsCount=" + (items != null ? items.size() : 0) + "\n" +
                 '}';

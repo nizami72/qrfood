@@ -3,6 +3,7 @@ package az.qrfood.backend.common;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -16,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 @Log4j2
 public class Util {
@@ -81,6 +83,29 @@ public class Util {
         } else {
             log.info("Folder already exists at [{}]", folderName);
         }
+    }
+
+    public static String saveFile(String path, MultipartFile imageFile) {
+        try {
+            Path directory = Paths.get(path).toAbsolutePath().normalize();
+            Files.createDirectories(directory);
+
+            String originalFilename = imageFile.getOriginalFilename();
+            if (originalFilename == null || originalFilename.isEmpty()) {
+                throw new IOException("Invalid file name");
+            }
+
+            Path filePath = directory.resolve(originalFilename);
+            imageFile.transferTo(filePath.toFile());
+            return filePath.toString();
+
+        } catch (IOException e) {
+            throw new RuntimeException("Could not store the file. Error: " + e.getMessage(), e);
+        }
+    }
+
+    public static String generateFileName() {
+        return UUID.randomUUID().toString();
     }
 
 }

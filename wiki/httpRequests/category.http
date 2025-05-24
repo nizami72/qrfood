@@ -4,13 +4,25 @@
 //_____________________________________________________________________
 < scripts/category/create.js
 POST {{url}}/api/category/create/eatery/1
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="data"
 Content-Type: application/json
+
 
 {
   "nameAz": "{{nameAz}}",
   "nameEn": "{{nameEn}}",
   "nameRu": "{{nameRu}}"
 }
+
+--boundary123
+Content-Disposition: form-data; name="image"; filename="soup.webp"
+Content-Type: image/webp
+
+< ./image/soup.webp
+--boundary123--
 
 
 

@@ -13,6 +13,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +39,7 @@ public class CategoryService {
      * @param menuCategoryDto category data
      * @return Category
      */
-    public Category createCategory(MenuCategoryDto menuCategoryDto) {
+    public Category createCategory(MenuCategoryDto menuCategoryDto, MultipartFile multipartFile) {
 
         Long eateryId = menuCategoryDto.getEateryId();
 
@@ -51,7 +52,6 @@ public class CategoryService {
 
         Category category = Category.builder()
                 .eatery(eateryOp.get())
-                .iconUrl(null)
                 .build();
 
         List<CategoryTranslation> categoryTranslations = List.of(
@@ -72,6 +72,8 @@ public class CategoryService {
         log.debug("Menu category created [{}]", category);
 
         storageService.createCategoryFolder(category.getEatery().getId(), category.getId());
+        storageService.saveCategoryFile(category.getEatery().getId(), category.getId(), multipartFile);
+
         return category;// what to return id,id, dto or entity
     }
 
@@ -110,7 +112,6 @@ public class CategoryService {
 
         Category menuCategory = Category.builder()
                 .eatery(eateryOp.get())
-                .iconUrl(null)
                 .build();
 
         Category category = categoryRepository.save(menuCategory);

@@ -4,6 +4,7 @@ import az.qrfood.backend.category.dto.MenuCategoryDto;
 import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.category.service.CategoryService;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @Log4j2
@@ -33,11 +36,13 @@ public class CategoryController {
      * @param menuCategoryDto category data
      * @return id of created eatery
      */
-    @PostMapping(value = "/create/eatery/{eateryId}", consumes = "application/json")
-    public ResponseEntity<Long> createMenuCategory(@PathVariable Long eateryId, @RequestBody MenuCategoryDto menuCategoryDto) {
+    @PostMapping(value = "/create/eatery/{eateryId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Long> createMenuCategory(@PathVariable Long eateryId,
+                                                   @RequestPart("data") MenuCategoryDto menuCategoryDto,
+                                                   @RequestPart("image") MultipartFile file) {
         menuCategoryDto.setEateryId(eateryId);
         log.debug("Create category item: {}", menuCategoryDto);
-        Category id = categoryService.createCategory(menuCategoryDto);
+        Category id = categoryService.createCategory(menuCategoryDto,file);
         return ResponseEntity.ok(id.getId());
     }
 
