@@ -40,3 +40,7 @@ build/
 /package-lock.json
 /wiki/db_dumps/
 /logs/
+/LOG_FILE_PATH_IS_UNDEFINED/debug.log
+/eatery.log
+/LOG_FILE_PATH_IS_UNDEFINED/info.log
+/rest.log

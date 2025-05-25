@@ -1,0 +1,51 @@
+[
+  {
+    "name": "Sunrise Cafe",
+    "address": "123 Main Street, Baku",
+    "geoLat": 40.2315,
+    "geoLng": 49.8671,
+    "phones": [
+      "+994501112233"
+    ]
+  },
+  {
+    "name": "Moonlight Restaurant",
+    "address": "45 Nizami Street, Baku",
+    "geoLat": 40.4565321,
+    "geoLng": 49.1245,
+    "phones": [
+      "+994552223344",
+      "+994502223344"
+    ]
+  },
+  {
+    "name": "Green Garden",
+    "address": "87 Azadliq Avenue, Baku",
+    "geoLat": 40.7965,
+    "geoLng": 49.3652,
+    "phones": [
+      "+994505556677",
+      "+994554445566",
+      "+994704445566"
+    ]
+  },
+  {
+    "name": "Urban Eatery",
+    "address": "11 Jafar Jabbarli, Baku",
+    "geoLat": 40.5421,
+    "geoLng": 49.7319,
+    "phones": [
+      "+994507771122"
+    ]
+  },
+  {
+    "name": "Lakeside Bistro",
+    "address": "6 Lake View Road, Baku",
+    "geoLat": 40.4567,
+    "geoLng": 49.1973,
+    "phones": [
+      "+994551234000",
+      "+994701234001"
+    ]
+  }
+]
