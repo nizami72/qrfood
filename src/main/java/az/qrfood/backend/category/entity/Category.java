@@ -13,6 +13,7 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Table(name = "category")
@@ -32,10 +33,6 @@ public class Category extends BaseEntity {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CategoryTranslation> translations;
-
-    public Category() {
-        categoryImageFileName = Util.generateFileName() + "webp";
-    }
 
 
     @Override

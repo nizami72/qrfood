@@ -10,7 +10,6 @@ Content-Type: multipart/form-data; boundary=boundary123
 Content-Disposition: form-data; name="data"
 Content-Type: application/json
 
-
 {
   "nameAz": "{{nameAz}}",
   "nameEn": "{{nameEn}}",

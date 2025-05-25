@@ -4,6 +4,11 @@
 //_____________________________________________________________________
 < scripts/api-menu-create.js
 POST {{url}}/api/menu/category-id/1
+Content-Type: multipart/form-data; boundary=boundary123
+
+
+--boundary123
+Content-Disposition: form-data; name="data"
 Content-Type: application/json
 
 {
@@ -14,10 +19,15 @@ Content-Type: application/json
   "descriptionEn": "{{descriptionEn}}",
   "descriptionRu": "{{descriptionRu}}",
   "price": {{price}},
-  "imageUrl": "https://example.com/images/lentil-soup.jpg",
   "isAvailable": true
 }
 
+--boundary123
+Content-Disposition: form-data; name="image"; filename="menu.webp"
+Content-Type: image/webp
+
+< ./image/menu.webp
+--boundary123--
 
 
 

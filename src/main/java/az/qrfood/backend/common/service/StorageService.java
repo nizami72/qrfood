@@ -27,8 +27,8 @@ public class StorageService {
         Util.createFolderIfNotExists(folder);
     }
 
-    public void saveCategoryFile(Long eateryId, Long categoryId, MultipartFile fileName) {
+    public void saveCategoryFile(Long eateryId, Long categoryId, MultipartFile fileName, String rename) {
         String folder = APP_IMAGES_FOLDER + File.separator + eateryId + File.separator + categoryId;
-        Util.saveFile(folder, fileName);
+        Util.saveFile(folder, fileName, rename);
     }
 }

@@ -4,6 +4,7 @@ import az.qrfood.backend.category.dto.MenuCategoryDto;
 import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.category.entity.CategoryTranslation;
 import az.qrfood.backend.category.repo.CategoryRepository;
+import az.qrfood.backend.common.Util;
 import az.qrfood.backend.common.service.StorageService;
 import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.eatery.repository.EateryRepository;
@@ -54,6 +55,8 @@ public class CategoryService {
                 .eatery(eateryOp.get())
                 .build();
 
+        category.setCategoryImageFileName(Util.generateFileName() + ".webp");
+
         List<CategoryTranslation> categoryTranslations = List.of(
                 new CategoryTranslation(category, Language.az.name(), menuCategoryDto.getNameAz()),
                 new CategoryTranslation(category, Language.en.name(), menuCategoryDto.getNameEn()),
@@ -72,7 +75,8 @@ public class CategoryService {
         log.debug("Menu category created [{}]", category);
 
         storageService.createCategoryFolder(category.getEatery().getId(), category.getId());
-        storageService.saveCategoryFile(category.getEatery().getId(), category.getId(), multipartFile);
+        storageService.saveCategoryFile(category.getEatery().getId(), category.getId(), multipartFile,
+                category.getCategoryImageFileName());
 
         return category;// what to return id,id, dto or entity
     }

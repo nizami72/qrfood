@@ -30,7 +30,8 @@ public class Util {
         try {
             target = destinationClass.getDeclaredConstructor().newInstance();
             // use instance
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
             log.error("Error instantiating " + destinationClass, e);
         }
         assert target != null;
@@ -85,17 +86,24 @@ public class Util {
         }
     }
 
-    public static String saveFile(String path, MultipartFile imageFile) {
-        try {
-            Path directory = Paths.get(path).toAbsolutePath().normalize();
-            Files.createDirectories(directory);
+    public static String saveFile(String path, MultipartFile imageFile, String rename) {
 
-            String originalFilename = imageFile.getOriginalFilename();
-            if (originalFilename == null || originalFilename.isEmpty()) {
+        String fileName;
+        if (rename != null) {
+            fileName = rename;
+        } else {
+            fileName = imageFile.getOriginalFilename();
+        }
+
+        try {
+            if (fileName == null || fileName.isEmpty()) {
                 throw new IOException("Invalid file name");
             }
 
-            Path filePath = directory.resolve(originalFilename);
+            Path directory = Paths.get(path).toAbsolutePath().normalize();
+            Files.createDirectories(directory);
+
+            Path filePath = directory.resolve(fileName);
             imageFile.transferTo(filePath.toFile());
             return filePath.toString();
 
