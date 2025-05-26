@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class OrderItemDTO {
 
-    private Long menuItemId;
+    private Long dishItemId;
     private Integer quantity;
     private String note;
 }

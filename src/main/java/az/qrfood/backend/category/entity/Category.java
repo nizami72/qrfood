@@ -1,9 +1,8 @@
 package az.qrfood.backend.category.entity;
 
-import az.qrfood.backend.common.Util;
 import az.qrfood.backend.common.entity.BaseEntity;
 import az.qrfood.backend.eatery.entity.Eatery;
-import az.qrfood.backend.menu.entity.MenuItem;
+import az.qrfood.backend.dish.entity.DishEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,7 +28,7 @@ public class Category extends BaseEntity {
     private int hash;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    private List<MenuItem> items;
+    private List<DishEntity> items;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CategoryTranslation> translations;

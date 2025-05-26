@@ -72,7 +72,7 @@ public class Util {
         }
     }
 
-    public static void createFolderIfNotExists(String folderName) {
+    public static boolean createFolderIfNotExists(String folderName) {
         File folder = new File(folderName);
         if (!folder.exists()) {
             boolean created = folder.mkdirs();
@@ -84,6 +84,7 @@ public class Util {
         } else {
             log.info("Folder already exists at [{}]", folderName);
         }
+        return folder.exists();
     }
 
     public static String saveFile(String path, MultipartFile imageFile, String rename) {

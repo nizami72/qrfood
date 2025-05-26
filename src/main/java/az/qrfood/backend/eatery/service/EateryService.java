@@ -46,7 +46,7 @@ public class EateryService {
     }
 
 
-    public EateryDto createEatery(EateryDto restaurantDTO) {
+    public Long createEatery(EateryDto restaurantDTO) {
 
         Eatery r = Util.copyProperties(restaurantDTO, Eatery.class);
         r = eateryRepository.save(r);
@@ -55,7 +55,8 @@ public class EateryService {
         r = eateryRepository.save(r);
         EateryDto dto = convertToDTO(r);
         storageService.createEateryFolder(dto.getEateryId());
-        return dto;
+        return r.getId();
+
 
     }
 
@@ -74,7 +75,7 @@ public class EateryService {
         dto.setTablesAmount(eatery.getTables().size());
 
         List<Category> categories = eatery.getCategories();
-        if (!categories.isEmpty()) {
+        if (categories != null && !categories.isEmpty()) {
             eatery.getCategories().forEach(category -> {
                 dto.getCategoryIds().add(category.getId());
             });

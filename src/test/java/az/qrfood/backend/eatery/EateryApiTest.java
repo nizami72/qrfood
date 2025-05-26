@@ -1,5 +1,6 @@
 package az.qrfood.backend.eatery;
 
+import az.qrfood.backend.dto.Eatery;
 import az.qrfood.backend.util.TestDataLoader;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -35,13 +36,17 @@ public class EateryApiTest {
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)
         );
-        eateryList = TestDataLoader.getTestEateriesFromFile();
+//        eateryList = TestDataLoader.getTestEateriesFromFile();
+
     }
 
+    /**
+     * =============================== CREATE EATERY REQUEST =============================
+     */
     @Test
     void createEatery() {
 
-        fileLog.println("\n==================== 📥 CREATE EATERY REQUEST =====================");
+        fileLog.println("\n==================== 📥 CREATE EATERIES =====================");
 
         eateryList.forEach(eatery -> {
 
@@ -110,7 +115,6 @@ public class EateryApiTest {
                 .log().all() // лог всего ответа
                 .statusCode(200); // Или 204, если возвращается No Content
     }
-
 
     @Test
     void deleteEateryByIdError404() {

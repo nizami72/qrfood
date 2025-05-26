@@ -47,5 +47,25 @@
       "+994551234000",
       "+994701234001"
     ]
+  },
+  {
+    "name": "Supper Dishes",
+    "address": "Pre Avenue Ali Baba, 123",
+    "geoLat": 40.5124,
+    "geoLng": 49.9825,
+    "phones": [
+      "+994501265457",
+      "+994551654238"
+    ]
+  },
+  {
+    "name": "Medina Courses",
+    "address": "Answer Street, dalan 34, floor 2",
+    "geoLat": 40.7864,
+    "geoLng": 49.1254,
+    "phones": [
+      "+994124587495",
+      "+994704236215"
+    ]
   }
 ]

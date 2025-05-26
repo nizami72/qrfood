@@ -1,6 +1,6 @@
 package az.qrfood.backend.category.service;
 
-import az.qrfood.backend.category.dto.MenuCategoryDto;
+import az.qrfood.backend.category.dto.DishCategoryDto;
 import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.category.entity.CategoryTranslation;
 import az.qrfood.backend.category.repo.CategoryRepository;
@@ -9,7 +9,7 @@ import az.qrfood.backend.common.service.StorageService;
 import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.eatery.repository.EateryRepository;
 import az.qrfood.backend.lang.Language;
-import az.qrfood.backend.menu.service.MenuService;
+import az.qrfood.backend.dish.service.DishService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -37,12 +37,12 @@ public class CategoryService {
     /**
      * Create new Category for particular eatery.
 
-     * @param menuCategoryDto category data
+     * @param dishCategoryDto category data
      * @return Category
      */
-    public Category createCategory(MenuCategoryDto menuCategoryDto, MultipartFile multipartFile) {
+    public Category createCategory(DishCategoryDto dishCategoryDto, MultipartFile multipartFile) {
 
-        Long eateryId = menuCategoryDto.getEateryId();
+        Long eateryId = dishCategoryDto.getEateryId();
 
         // check if eatery exists
         Optional<Eatery> eateryOp = eateryRepository.findById(eateryId);
@@ -58,9 +58,9 @@ public class CategoryService {
         category.setCategoryImageFileName(Util.generateFileName() + ".webp");
 
         List<CategoryTranslation> categoryTranslations = List.of(
-                new CategoryTranslation(category, Language.az.name(), menuCategoryDto.getNameAz()),
-                new CategoryTranslation(category, Language.en.name(), menuCategoryDto.getNameEn()),
-                new CategoryTranslation(category, Language.ru.name(), menuCategoryDto.getNameRu())
+                new CategoryTranslation(category, Language.az.name(), dishCategoryDto.getNameAz()),
+                new CategoryTranslation(category, Language.en.name(), dishCategoryDto.getNameEn()),
+                new CategoryTranslation(category, Language.ru.name(), dishCategoryDto.getNameRu())
         );
 
         category.setTranslations(categoryTranslations);
@@ -72,11 +72,16 @@ public class CategoryService {
             return c;
         }
         categoryRepository.save(category);
-        log.debug("Menu category created [{}]", category);
+        log.debug("Dish category created [{}]", category);
 
-        storageService.createCategoryFolder(category.getEatery().getId(), category.getId());
-        storageService.saveCategoryFile(category.getEatery().getId(), category.getId(), multipartFile,
-                category.getCategoryImageFileName());
+        String folderPath = storageService.createCategoryFolder(category.getId());
+        String fileName = category.getCategoryImageFileName();
+        if(folderPath != null) {
+            storageService.saveFile(folderPath, multipartFile, fileName);
+            log.info("Dish file [{}] created at dir [{}]", fileName, folderPath);
+        } else {
+            log.error("Dish file [{}] was not created", fileName);
+        }
 
         return category;// what to return id,id, dto or entity
     }
@@ -85,22 +90,22 @@ public class CategoryService {
 
     /**
      * Todo implement all features
-     * Returns the menu category ID from menuCategoryDto or finds the entity by values or creates new entity and
+     * Returns the dish category ID from dishCategoryDto or finds the entity by values or creates new entity and
      * returns its ID.
 
-     * @param menuCategoryDto menu category DTO
+     * @param dishCategoryDto dish category DTO
      * @return the id of Category entity
      */
-    public Category createOrFindCategory(MenuCategoryDto menuCategoryDto) {
-        Long menuCategoryId = menuCategoryDto.getCategoryId();
-        if (menuCategoryId != null) {
-            Optional<Category> categoryOptional = categoryRepository.findById(menuCategoryDto.getCategoryId());
+    public Category createOrFindCategory(DishCategoryDto dishCategoryDto) {
+        Long dishCategoryId = dishCategoryDto.getCategoryId();
+        if (dishCategoryId != null) {
+            Optional<Category> categoryOptional = categoryRepository.findById(dishCategoryDto.getCategoryId());
             if(categoryOptional.isPresent()) {
                 return categoryOptional.get();
             }
         }
 
-        Long eateryId = menuCategoryDto.getEateryId();
+        Long eateryId = dishCategoryDto.getEateryId();
         // todo try to find first then create if not found
 
         Optional<Eatery> eateryOp = eateryRepository.findById(eateryId);
@@ -109,64 +114,64 @@ public class CategoryService {
                     "Cant create category for eatery %s, eatery not found", eateryId));
         }
 
-        List<Category> menuCategories = eateryOp.get().getCategories();
-        if(menuCategories.isEmpty()){
-            log.warn("Eatery [{}] menu category is empty", eateryId);
+        List<Category> categories = eateryOp.get().getCategories();
+        if(categories.isEmpty()){
+            log.warn("Eatery [{}] dish category is empty", eateryId);
         }
 
-        Category menuCategory = Category.builder()
+        Category category1 = Category.builder()
                 .eatery(eateryOp.get())
                 .build();
 
-        Category category = categoryRepository.save(menuCategory);
+        Category category = categoryRepository.save(category1);
         long id = category.getId();
 
 
-        log.debug("Menu category created [{}]", menuCategory);
-        return menuCategory;
+        log.debug("Dish category created [{}]", category1);
+        return category1;
     }
 
-    public List<MenuCategoryDto> findAllCategory() {
+    public List<DishCategoryDto> findAllCategory() {
         List<Category> categories = categoryRepository.findAll();
-        return convertMenuCategoryToDto(categories);
+        return convertDishCategoryToDto(categories);
     }
 
-    public MenuCategoryDto findCategoryById(Long id) {
+    public DishCategoryDto findCategoryById(Long id) {
         Optional<Category> category = categoryRepository.findById(id);
         if(category.isEmpty()) {throw new EntityNotFoundException(
                 String.format("The category with id [%s] not fount", id));}
-        return convertMenuCategoryToDto(category.get());
+        return convertDishCategoryToDto(category.get());
     }
 
-    public List<MenuCategoryDto> findAllCategoryForEatery(long eateryId) {
+    public List<DishCategoryDto> findAllCategoryForEatery(long eateryId) {
 
         Optional<Eatery> eateryOp = eateryRepository.findById(eateryId);
         if (eateryOp.isEmpty()) {throw new EntityNotFoundException("Eatery not found"); }
 
         List<Category> categories = eateryOp.get().getCategories();
         if (categories.isEmpty()) {
-            String error = String.format("Eatery [%s] has no any category and menu", eateryId);
+            String error = String.format("Eatery [%s] has no any category and dish", eateryId);
             log.error(error);
             throw new EntityNotFoundException(error);
         }
 
-        return convertMenuCategoryToDto(categories);
+        return convertDishCategoryToDto(categories);
     }
 
-    private List<MenuCategoryDto> convertMenuCategoryToDto(List<Category> categories) {
-        List<MenuCategoryDto> categoryDtoList = new ArrayList<>();
+    private List<DishCategoryDto> convertDishCategoryToDto(List<Category> categories) {
+        List<DishCategoryDto> categoryDtoList = new ArrayList<>();
         for (Category category : categories) {
-            categoryDtoList.add(convertMenuCategoryToDto(category));
+            categoryDtoList.add(convertDishCategoryToDto(category));
         }
         return categoryDtoList;
     }
 
-    private MenuCategoryDto convertMenuCategoryToDto(Category category) {
+    private DishCategoryDto convertDishCategoryToDto(Category category) {
 
-            MenuCategoryDto dto = new MenuCategoryDto();
+            DishCategoryDto dto = new DishCategoryDto();
             dto.setEateryId(category.getEatery().getId());
             dto.setDishes(category.getItems().stream()
-                    .map(MenuService::convertEntityToDto)
+                    .map(DishService::convertEntityToDto)
                     .collect(Collectors.toList())
             );
             dto.setCategoryId(category.getId());

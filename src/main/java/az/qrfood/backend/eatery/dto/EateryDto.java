@@ -1,5 +1,7 @@
 package az.qrfood.backend.eatery.dto;
 
+import az.qrfood.backend.category.dto.DishCategoryDto;
+import az.qrfood.backend.category.entity.Category;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +24,7 @@ public class EateryDto {
     private List<String> phones;
     private List<Long> tableIds;
     private List<Long> categoryIds;
+    private List<DishCategoryDto> categories;
     private int tablesAmount;
     private Double geoLat;
     private Double geoLng;

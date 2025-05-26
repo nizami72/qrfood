@@ -1,0 +1,294 @@
+[
+  {
+    "eateryId": 1,
+    "nameAz": "Şorbalar",
+    "nameEn": "Soups",
+    "nameRu": "Супы",
+    "image" : "soup.webp",
+    "dishes": [
+      {
+        "nameAz": "Mercimek şorbası",
+        "descriptionAz": "Qırmızı mərciməkdən hazırlanmış dadlı və qidalı şorba",
+        "nameEn": "Lentil soup",
+        "descriptionEn": "Delicious and nutritious soup made from red lentils",
+        "nameRu": "Чечевичный суп",
+        "descriptionRu": "Вкусный и питательный суп из красной чечевицы",
+        "image": "soup.webp",
+        "price": 4.50,
+        "isAvailable": true
+      },
+      {
+        "nameAz": "Toyuq şorbası",
+        "descriptionAz": "Toyuq əti ilə qaynadılmış yüngül və dadlı şorba",
+        "nameEn": "Chicken soup",
+        "descriptionEn": "Light and tasty soup boiled with chicken meat",
+        "nameRu": "Куриный суп",
+        "descriptionRu": "Лёгкий и вкусный суп, сваренный с курицей",
+        "image": "soup.webp",
+        "price": 5.20,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "eateryId": 1,
+    "nameAz": "Əsas yeməklər",
+    "nameEn": "Main Courses",
+    "nameRu": "Основные блюда",
+    "image" : "main_courses.webp",
+    "dishes": [
+      {
+        "nameAz": "Plov",
+        "descriptionAz": "Ət və ədviyyatlarla zəngin ənənəvi düyü yeməyi",
+        "nameEn": "Pilaf",
+        "descriptionEn": "Traditional rice dish rich in meat and spices",
+        "nameRu": "Плов",
+        "descriptionRu": "Традиционное блюдо из риса с мясом и специями",
+        "image": "plov.webp",
+        "price": 9.99,
+        "isAvailable": true
+      },
+      {
+        "nameAz": "Qovurma",
+        "descriptionAz": "Soğan və ədviyyatlarla qızardılmış mal əti",
+        "nameEn": "Fried meat",
+        "descriptionEn": "Beef fried with onions and spices",
+        "nameRu": "Жаркое",
+        "descriptionRu": "Говядина, обжаренная с луком и специями",
+        "image": "govurma.webp",
+        "price": 11.75,
+        "isAvailable": true
+      },
+      {
+        "nameAz": "Tərəvəzli toyuq",
+        "descriptionAz": "Qızardılmış tərəvəzlər və toyuq qarışığı",
+        "nameEn": "Chicken with vegetables",
+        "descriptionEn": "Mix of fried vegetables and chicken",
+        "nameRu": "Курица с овощами",
+        "descriptionRu": "Смесь жареных овощей и курицы",
+        "image": "chicken_veggie.webp",
+        "price": 13.00,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "eateryId": 2,
+    "nameAz": "Əsas yeməklər",
+    "nameEn": "Main Courses",
+    "nameRu": "Основные блюда",
+    "image" : "main_courses.webp",
+    "dishes": [
+      {
+        "nameAz": "Plov",
+        "descriptionAz": "Ət və ədviyyatlarla zəngin ənənəvi düyü yeməyi",
+        "nameEn": "Pilaf",
+        "descriptionEn": "Traditional rice dish rich in meat and spices",
+        "nameRu": "Плов",
+        "descriptionRu": "Традиционное блюдо из риса с мясом и специями",
+        "image": "plov.webp",
+        "price": 9.99,
+        "isAvailable": true
+      },
+      {
+        "nameAz": "Qovurma",
+        "descriptionAz": "Soğan və ədviyyatlarla qızardılmış mal əti",
+        "nameEn": "Fried meat",
+        "descriptionEn": "Beef fried with onions and spices",
+        "nameRu": "Жаркое",
+        "descriptionRu": "Говядина, обжаренная с луком и специями",
+        "image": "govurma.webp",
+        "price": 11.75,
+        "isAvailable": true
+      },
+      {
+        "nameAz": "Tərəvəzli toyuq",
+        "descriptionAz": "Qızardılmış tərəvəzlər və toyuq qarışığı",
+        "nameEn": "Chicken with vegetables",
+        "descriptionEn": "Mix of fried vegetables and chicken",
+        "nameRu": "Курица с овощами",
+        "descriptionRu": "Смесь жареных овощей и курицы",
+        "image": "chicken_veggie.webp",
+        "price": 13.00,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "eateryId": 3,
+    "nameAz": "Salatlar",
+    "nameEn": "Salads",
+    "nameRu": "Салаты",
+    "image" : "salad.webp",
+    "dishes": [
+      {
+        "nameAz": "Çoban salatı",
+        "descriptionAz": "Pomidor, xiyar və göyərti ilə sadə salat",
+        "nameEn": "Shepherd's salad",
+        "descriptionEn": "Simple salad with tomatoes, cucumbers and greens",
+        "nameRu": "Чобан-салат",
+        "descriptionRu": "Простой салат с помидорами, огурцами и зеленью",
+        "image": "coban.webp",
+        "price": 3.40,
+        "isAvailable": true
+      },
+      {
+        "nameAz": "Paytaxt salatı",
+        "descriptionAz": "Ət, kartof və tərəvəzlərlə klassik salat",
+        "nameEn": "Olivier salad",
+        "descriptionEn": "Classic salad with meat, potatoes and vegetables",
+        "nameRu": "Салат Оливье",
+        "descriptionRu": "Классический салат с мясом, картофелем и овощами",
+        "image": "olivier.webp",
+        "price": 4.80,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "eateryId": 4,
+    "nameAz": "Qəlyanaltılar",
+    "nameEn": "Appetizers",
+    "nameRu": "Закуски",
+    "image" : "appetizer.webp",
+    "dishes": [
+      {
+        "nameAz": "Pendirlə lavaş",
+        "descriptionAz": "İçində pendir olan nazik lavaş rulonu",
+        "nameEn": "Cheese lavash roll",
+        "descriptionEn": "Thin lavash roll with cheese inside",
+        "nameRu": "Лаваш с сыром",
+        "descriptionRu": "Тонкий рулет из лаваша с сыром внутри",
+        "image": "cheese_roll.webp",
+        "price": 2.90,
+        "isAvailable": true
+      },
+      {
+        "nameAz": "Zeytun assortisi",
+        "descriptionAz": "Yaşıl və qara zeytunlardan ibarət qarışıq",
+        "nameEn": "Olive mix",
+        "descriptionEn": "Mix of green and black olives",
+        "nameRu": "Ассорти из оливок",
+        "descriptionRu": "Смесь зелёных и чёрных оливок",
+        "image": "olives.webp",
+        "price": 3.10,
+        "isAvailable": true
+      },
+      {
+        "nameAz": "Xırtıldayan qızartmalar",
+        "descriptionAz": "Kərə yağı ilə qızardılmış kartof dilimləri",
+        "nameEn": "Crispy fries",
+        "descriptionEn": "Potato slices fried with butter",
+        "nameRu": "Хрустящий картофель",
+        "descriptionRu": "Картофельные дольки, жареные на масле",
+        "image": "fries.webp",
+        "price": 4.50,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "eateryId": 5,
+    "nameAz": "İçkilər",
+    "nameEn": "Drinks",
+    "nameRu": "Напитки",
+    "image" : "drinks.webp",
+    "dishes": [
+      {
+        "nameAz": "Ayran",
+        "descriptionAz": "Soyuq və sərinləşdirici qatıq içkisi",
+        "nameEn": "Ayran",
+        "descriptionEn": "Cold and refreshing yogurt drink",
+        "nameRu": "Айран",
+        "descriptionRu": "Прохладный йогуртовый напиток",
+        "image": "ayran.webp",
+        "price": 1.20,
+        "isAvailable": true
+      },
+      {
+        "nameAz": "Nar şirəsi",
+        "descriptionAz": "Təbii nar meyvəsindən sıxılmış şirə",
+        "nameEn": "Pomegranate juice",
+        "descriptionEn": "Juice freshly squeezed from pomegranate",
+        "nameRu": "Гранатовый сок",
+        "descriptionRu": "Свежевыжатый сок из граната",
+        "image": "pomegranate.webp",
+        "price": 3.90,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "eateryId": 6,
+    "nameAz": "Şirniyyatlar",
+    "nameEn": "Desserts",
+    "nameRu": "Десерты",
+    "image": "dessert.webp",
+    "dishes": [
+      {
+        "nameAz": "Şəkərbura",
+        "descriptionAz": "Şirin içliklə doldurulmuş ənənəvi milli şirniyyat",
+        "nameEn": "Shekerbura",
+        "descriptionEn": "Traditional sweet pastry filled with nuts",
+        "nameRu": "Шекербура",
+        "descriptionRu": "Традиционная сладость с ореховой начинкой",
+        "image": "shekerbura.webp",
+        "price": 2.70,
+        "isAvailable": true
+      },
+      {
+        "nameAz": "Paxlava",
+        "descriptionAz": "Qoz və şərbətlə qat-qat şirin xəmirdən hazırlanır",
+        "nameEn": "Baklava",
+        "descriptionEn": "Layered sweet pastry with nuts and syrup",
+        "nameRu": "Пахлава",
+        "descriptionRu": "Слоёная сладость с орехами и сиропом",
+        "image": "baklava.webp",
+        "price": 3.60,
+        "isAvailable": true
+      }
+    ]
+  },
+  {
+    "eateryId": 7,
+    "nameAz": "Fast food",
+    "nameEn": "Fast Food",
+    "nameRu": "Фастфуд",
+    "image" : "fast_food.webp",
+    "dishes": [
+      {
+        "nameAz": "Burger",
+        "descriptionAz": "Ət kotleti və tərəvəzlərlə dadlı sendviç",
+        "nameEn": "Burger",
+        "descriptionEn": "Delicious sandwich with meat patty and vegetables",
+        "nameRu": "Бургер",
+        "descriptionRu": "Вкусный бутерброд с мясной котлетой и овощами",
+        "image": "burger.webp",
+        "price": 7.50,
+        "isAvailable": true
+      },
+      {
+        "nameAz": "Pizza",
+        "descriptionAz": "Pendir, sous və müxtəlif əlavələrlə un məmulatı",
+        "nameEn": "Pizza",
+        "descriptionEn": "Dough product with cheese, sauce and toppings",
+        "nameRu": "Пицца",
+        "descriptionRu": "Мучное изделие с сыром, соусом и начинками",
+        "image": "pizza.webp",
+        "price": 8.80,
+        "isAvailable": true
+      },
+      {
+        "nameAz": "Hot-doq",
+        "descriptionAz": "Kolbasa və sousla uzunçulu çörək arasında",
+        "nameEn": "Hot dog",
+        "descriptionEn": "Sausage in long bun with sauces",
+        "nameRu": "Хот-дог",
+        "descriptionRu": "Сосиска в длинной булке с соусами",
+        "image": "hotdog.webp",
+        "price": 4.20,
+        "isAvailable": true
+      }
+    ]
+  }
+]

@@ -10,25 +10,53 @@ import java.io.File;
 public class StorageService {
 
     @Value("${folder.root.images.eatery}")
-    private String APP_IMAGES_FOLDER;
+    private String APP_IMAGES_FOLDER_EATERY;
+    @Value("${folder.root.images.categories}")
+    private String APP_IMAGES_FOLDER_CATEGORIES;
+    @Value("${folder.root.images.dishes}")
+    private String APP_IMAGES_FOLDER_DISHES;
 
     /**
      * Creates folder to hold the images related to eatery with particular id.
 
-     * @param eateryId eatery ID
+     * @param eateryId eatery ID as folder name
      */
     public void createEateryFolder(Long eateryId) {
-        String folder = APP_IMAGES_FOLDER + File.separator + eateryId;
+        String folder = APP_IMAGES_FOLDER_EATERY + File.separator + eateryId;
         Util.createFolderIfNotExists(folder);
     }
 
-    public void createCategoryFolder(Long eateryId, Long categoryId) {
-        String folder = APP_IMAGES_FOLDER + File.separator + eateryId + File.separator + categoryId;
-        Util.createFolderIfNotExists(folder);
+
+    /**
+     * Saves category image.
+     *
+     * @param folderName category id as folder name
+     */
+    public String createCategoryFolder(Long folderName) {
+        String folder = APP_IMAGES_FOLDER_CATEGORIES + File.separator + folderName;
+        if(Util.createFolderIfNotExists(folder)) {
+            return folder;
+        } else {
+            return null;
+        }
     }
 
-    public void saveCategoryFile(Long eateryId, Long categoryId, MultipartFile fileName, String rename) {
-        String folder = APP_IMAGES_FOLDER + File.separator + eateryId + File.separator + categoryId;
-        Util.saveFile(folder, fileName, rename);
+    /**
+     * Saves category image.
+     *
+     * @param folderName dish id as folder name
+     */
+    public String createDishesFolder(Long folderName) {
+        String folder = APP_IMAGES_FOLDER_DISHES + File.separator + folderName;
+        if(Util.createFolderIfNotExists(folder)) {
+            return folder;
+        } else {
+            return null;
+        }
     }
+
+    public void saveFile(String folder, MultipartFile file, String rename) {
+        Util.saveFile(folder, file, rename);
+    }
+
 }

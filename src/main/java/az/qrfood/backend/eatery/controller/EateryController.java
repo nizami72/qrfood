@@ -51,7 +51,7 @@ public class EateryController {
      * @return
      */
     @PostMapping(consumes="application/json")
-    public ResponseEntity<EateryDto> createRestaurant(@RequestBody EateryDto restaurantDTO) {
+    public ResponseEntity<Long> createRestaurant(@RequestBody EateryDto restaurantDTO) {
         log.debug("Request to create eatery [{}]", restaurantDTO);
         return ResponseEntity.ok(restaurantService.createEatery(restaurantDTO));
     }

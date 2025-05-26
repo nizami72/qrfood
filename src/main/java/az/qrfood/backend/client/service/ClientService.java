@@ -5,7 +5,7 @@ import az.qrfood.backend.client.dto.ClientCategoryItem;
 import az.qrfood.backend.client.dto.ClientMenu;
 import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.eatery.repository.EateryRepository;
-import az.qrfood.backend.menu.entity.MenuItemTranslation;
+import az.qrfood.backend.dish.entity.DishEntityTranslation;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,12 +51,12 @@ public class ClientService {
                 }
 
                 // Find menu item translation for current locale
-                Optional<MenuItemTranslation> itemTranslation = item.getTranslations().stream()
+                Optional<DishEntityTranslation> itemTranslation = item.getTranslations().stream()
                         .filter(tr -> tr.getLang().equals(current.getLanguage()))
                         .findFirst();
 
                 // If no translation found for current locale, use the first available
-                MenuItemTranslation translation = itemTranslation.orElseGet(() -> 
+                DishEntityTranslation translation = itemTranslation.orElseGet(() ->
                     item.getTranslations().isEmpty() ? null : item.getTranslations().getFirst());
 
                 if (translation != null) {
@@ -64,7 +64,7 @@ public class ClientService {
                             translation.getName(),
                             translation.getDescription(),
                             item.getPrice(),
-                            item.getImageUrl()
+                            item.getImage()
                     );
                     clientCategoryItems.add(clientCategoryItem);
                 }

@@ -1,0 +1,74 @@
+
+
+### CREATE NEW MENU FOR CATEGORY(DEFINED)
+//_____________________________________________________________________
+< scripts/api-menu-create.js
+POST {{url}}/api/dish/category-id/1
+Content-Type: multipart/form-data; boundary=boundary123
+
+
+--boundary123
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{
+  "nameAz": "{{nameAz}}",
+  "nameEn": "{{nameEn}}",
+  "nameRu": "{{nameRu}}",
+  "descriptionAz": "{{descriptionAz}}",
+  "descriptionEn": "{{descriptionEn}}",
+  "descriptionRu": "{{descriptionRu}}",
+  "price": {{price}},
+  "isAvailable": true
+}
+
+--boundary123
+Content-Disposition: form-data; name="image"; filename="bakery.webp"
+Content-Type: image/webp
+
+< ./image/bakery.webp
+--boundary123--
+
+
+
+### GET DISH BY ID
+//_____________________________________________________________________
+GET {{url}}/api/dish/1
+
+
+
+
+### GET ALL DISHES IN A CATEGORY
+//_____________________________________________________________________
+GET {{url}}/api/dish/category_id/1
+
+
+
+
+//_____________________________________________________________________
+### DELETE MENU ITEM BY ID
+DELETE {{url}}/api/menu/menu_id/4
+
+
+
+
+### CREATE MENU FOR CATEGORY(RANDOM)
+//_____________________________________________________________________
+< scripts/api-menu-create.js
+
+POST {{url}}/api/menu/create/for_category/{{categoryId}}
+Content-Type: application/json
+
+{
+  "nameAz": "{{nameAz}}",
+  "nameEn": "{{nameEn}}",
+  "nameRu": "{{nameRu}}",
+  "descriptionAz": "{{descriptionAz}}",
+  "descriptionEn": "{{descriptionEn}}",
+  "descriptionRu": "{{descriptionRu}}",
+  "price": "{{price}}",
+  "imageUrl": "https://example.com/images/lentil-soup.jpg",
+  "isAvailable": true
+}
+
+
