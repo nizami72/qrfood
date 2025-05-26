@@ -110,4 +110,54 @@ public class EateryService {
         eateryRepository.deleteById(id);
         return id;
     }
+
+    public Long updateEatery(Long id, EateryDto eateryDTO) {
+        Eatery existingEatery = eateryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Eatery with id %s not found", id)));
+
+        // Update basic fields
+        existingEatery.setName(eateryDTO.getName());
+        existingEatery.setAddress(eateryDTO.getAddress());
+        existingEatery.setGeoLat(eateryDTO.getGeoLat());
+        existingEatery.setGeoLng(eateryDTO.getGeoLng());
+
+        // Update phone numbers
+        updatePhoneNumbers(existingEatery, eateryDTO.getPhones());
+
+        // Update tables if the amount has changed
+        if (existingEatery.getTables().size() != eateryDTO.getTablesAmount()) {
+            updateTables(existingEatery, eateryDTO.getTablesAmount());
+        }
+
+        // Save the updated eatery
+        existingEatery = eateryRepository.save(existingEatery);
+
+        return existingEatery.getId();
+    }
+
+    private void updatePhoneNumbers(Eatery eatery, List<String> newPhoneNumbers) {
+        // Clear existing phone numbers
+        eatery.getPhones().clear();
+
+        // Add new phone numbers
+        populatePhoneEntities(eatery, newPhoneNumbers);
+    }
+
+    private void updateTables(Eatery eatery, int newTableCount) {
+        int currentTableCount = eatery.getTables().size();
+
+        if (newTableCount > currentTableCount) {
+            // Add more tables
+            AtomicInteger idx = new AtomicInteger(currentTableCount + 1);
+            IntStream.range(0, newTableCount - currentTableCount).forEach(i -> {
+                eatery.getTables().add(tableService.createTableInEatery(eatery, idx.getAndIncrement()));
+            });
+        } else if (newTableCount < currentTableCount) {
+            // Remove excess tables
+            List<TableInEatery> tablesToKeep = eatery.getTables().subList(0, newTableCount);
+            eatery.getTables().clear();
+            eatery.getTables().addAll(tablesToKeep);
+        }
+    }
 }

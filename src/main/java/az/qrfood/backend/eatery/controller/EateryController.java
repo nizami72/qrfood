@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -65,6 +66,18 @@ public class EateryController {
     @DeleteMapping("/{eatery-id}")
     public ResponseEntity<Long> deleteEatery(@PathVariable("eatery-id") Long id) {
         return ResponseEntity.ok(restaurantService.deleteEatery(id));
+    }
 
+    /**
+     * Update an existing eatery.
+     *
+     * @param id The ID of the eatery to update
+     * @param eateryDTO The updated eatery data
+     * @return The ID of the updated eatery
+     */
+    @PutMapping(value = "/{eatery-id}", consumes = "application/json")
+    public ResponseEntity<Long> updateEatery(@PathVariable("eatery-id") Long id, @RequestBody EateryDto eateryDTO) {
+        log.debug("Request to update eatery with ID [{}]: {}", id, eateryDTO);
+        return ResponseEntity.ok(restaurantService.updateEatery(id, eateryDTO));
     }
 }

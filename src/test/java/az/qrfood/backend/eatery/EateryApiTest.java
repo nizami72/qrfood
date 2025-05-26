@@ -1,7 +1,6 @@
 package az.qrfood.backend.eatery;
 
 import az.qrfood.backend.dto.Eatery;
-import az.qrfood.backend.util.TestDataLoader;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
@@ -36,7 +35,6 @@ public class EateryApiTest {
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)
         );
-//        eateryList = TestDataLoader.getTestEateriesFromFile();
 
     }
 
@@ -129,6 +127,54 @@ public class EateryApiTest {
 //                .body("success", "false")
                 .log().all() // лог всего ответа
                 .statusCode(404); // Или 204, если возвращается No Content
+    }
+
+    @Test
+    void updateEatery() {
+        long eateryId = 1; // Use an existing eatery ID
+        fileLog.println("\n===== 🔄 UPDATE EATERY ID: " + eateryId + " =====");
+
+        // First, get the current eatery data
+        var currentEatery = given()
+                .baseUri(baseUrl)
+                .when()
+                .get(segmentApiEatery + "/{id}", eateryId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(Map.class);
+
+        // Create updated data with modified fields
+        Map<String, Object> requestBody = Map.of(
+                "name", "Updated " + currentEatery.get("name"),
+                "address", "Updated " + currentEatery.get("address"),
+                "phones", currentEatery.get("phones"),
+                "tablesAmount", currentEatery.get("tablesAmount"),
+                "geoLat", currentEatery.get("geoLat"),
+                "geoLng", currentEatery.get("geoLng")
+        );
+
+        // Send update request
+        given()
+                .baseUri(baseUrl)
+                .contentType("application/json")
+                .body(requestBody)
+                .when()
+                .put(segmentApiEatery + "/{id}", eateryId)
+                .then()
+                .log().all() // Log the entire response
+                .statusCode(200); // Expect 200 OK status
+
+        // Verify the update was successful by getting the eatery again
+        given()
+                .baseUri(baseUrl)
+                .when()
+                .get(segmentApiEatery + "/{id}", eateryId)
+                .then()
+                .log().all() // Log the entire response
+                .statusCode(200)
+                .extract()
+                .as(Map.class);
     }
 
 }
