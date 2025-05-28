@@ -31,15 +31,15 @@ import java.util.Map;
 @Log4j2
 public class AuthController {
 
+    //<editor-fold desc="Fields">
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    //</editor-fold>
 
-    /**
-     * Конструктор для внедрения зависимостей.
-     */
+    //<editor-fold desc="Constructor">
     public AuthController(AuthenticationManager authenticationManager,
                           CustomUserDetailsService userDetailsService,
                           JwtUtil jwtUtil,
@@ -51,6 +51,7 @@ public class AuthController {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
+    //</editor-fold>
 
     /**
      * Endpoint for user login.

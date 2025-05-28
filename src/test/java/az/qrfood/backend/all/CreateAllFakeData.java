@@ -1,7 +1,6 @@
 package az.qrfood.backend.all;
 
 import static io.restassured.RestAssured.given;
-
 import az.qrfood.backend.dto.Category;
 import az.qrfood.backend.dto.CategoryDto;
 import az.qrfood.backend.dto.Dish;
@@ -26,19 +25,19 @@ import java.util.Map;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AllApiTest {
+public class CreateAllFakeData {
 
     private static PrintStream fileLog;
-
     @Value("${base.url}")
     String baseUrl;
-    @Value("${segment.api.eatery}")
-    String segmentApiEatery;
-    @Value("${segment.api.category}")
-    String segmentApiCategory;
-
-    @Value("${segment.api.dish}")
-    String segmentApiDish;
+    @Value("${segment.eateries}")
+    String segmentEateries;
+    @Value("${segment.categories}")
+    String segmentCategories;
+    @Value("${segment.dishes}")
+    String segmentDishes;
+    @Value("${component.categories}")
+    String componentCategories;
     List<Eatery> eateries;
 
     @BeforeAll
@@ -54,10 +53,32 @@ public class AllApiTest {
                 });
     }
 
-
     @Test
     void shouldCreateCategoryWithImageAndDishWithImage() {
         fileLog.println("\n========== 📤 Запрос: загрузка блюда с изображением ==========");
+
+
+        // 1. Получение токена
+        String authPayload = """
+                {
+                  "username": "admin",
+                  "password": "admin"
+                }
+                """;
+
+        Response authResponse = given()
+                .baseUri(baseUrl)
+                .contentType("application/json")
+                .body(authPayload)
+                .when()
+                .post("/api/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+
+        String jwtToken = authResponse.jsonPath().getString("jwt");
 
         eateries.forEach(eatery -> {
 
@@ -73,10 +94,11 @@ public class AllApiTest {
             Response response1 = given()
 //                .log().all() // лог всего ответа
                     .baseUri(baseUrl)
+                    .header("Authorization", "Bearer " + jwtToken) // ✅ Токен
                     .contentType("application/json")
                     .body(requestBody)
                     .when()
-                    .post(segmentApiEatery)
+                    .post(segmentEateries)
                     .then()
                     .log().all() // лог всего ответа
                     .statusCode(200)
@@ -94,10 +116,11 @@ public class AllApiTest {
 
                 Response response = given()
                         .baseUri(baseUrl)
+                        .header("Authorization", "Bearer " + jwtToken) // ✅ Токен
                         .multiPart("data", "data.json", json1.getBytes(StandardCharsets.UTF_8), "application/json")
                         .multiPart("image", new File("src/test/resources/image/" + category.image()))
                         .when()
-                        .post(segmentApiCategory + "/create/eatery/" + createdEateryId)
+                        .post(segmentEateries + "/" + createdEateryId + componentCategories)
                         .then()
                         .statusCode(200)
                         .extract()
@@ -110,10 +133,12 @@ public class AllApiTest {
 
                     given()
                             .baseUri(baseUrl)
+                            .header("Authorization", "Bearer " + jwtToken) // ✅ Токен
                             .multiPart("data", "data.json", json2.getBytes(StandardCharsets.UTF_8), "application/json")
                             .multiPart("image", new File("src/test/resources/image/" + dish.image()))
                             .when()
-                            .post(segmentApiDish + "/category-id/" + createdCategoryId)
+//                            .post(segmentDishes + createdCategoryId)
+                            .post("/api/categories" + "/" +createdCategoryId + "/dishes")
                             .then()
                             .statusCode(200);
                 });

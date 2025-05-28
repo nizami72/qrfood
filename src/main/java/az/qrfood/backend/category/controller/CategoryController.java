@@ -28,7 +28,7 @@ public class CategoryController {
     }
 
     /**
-     * Returns all categories for eatery.
+     * GET all categories for eatery.
 
      * @param eateryId the eatery id
      * @return Liast of Categories DTO
@@ -41,7 +41,7 @@ public class CategoryController {
     }
 
     /**
-     * Returns the category by its id.
+     * GET the category by id.
 
      * @param categoryId the category id
      * @return CategoryDto
@@ -54,7 +54,7 @@ public class CategoryController {
     }
 
     /**
-     * Creates a new category for the eatery specified.
+     * POST a new category for the eatery specified.
 
      * @param eateryId eatery ID the category is created dfor
      * @param dishCategoryDto category data
@@ -71,7 +71,7 @@ public class CategoryController {
     }
 
     /**
-     * Deletes the category by its ID
+     * DELETE the category by its ID
 
      * @param categoryId category ID
      * @return deleted category ID

@@ -26,7 +26,7 @@ public class EateryController {
     }
 
     /**
-     * Get all eatery.
+     * GET all eatery.
 
      * @return list of eatery
      */
@@ -36,7 +36,7 @@ public class EateryController {
     }
 
     /**
-     * Get eatery by id.
+     * GET eatery by id.
 
      * @param id eatery ID
      */
@@ -46,7 +46,7 @@ public class EateryController {
     }
 
     /**
-     * Create a new eatery.
+     * POST a new eatery.
 
      * @param restaurantDTO cretaed eatery data
      * @return
@@ -58,7 +58,7 @@ public class EateryController {
     }
 
     /**
-     * Delete the eatery by ID.
+     * DELETE the eatery by ID.
 
      * @param id deleted eatery ID
      * @return todo
@@ -69,7 +69,7 @@ public class EateryController {
     }
 
     /**
-     * Update an existing eatery.
+     * UPDATE an existing eatery.
      *
      * @param id The ID of the eatery to update
      * @param eateryDTO The updated eatery data
