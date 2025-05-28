@@ -1,6 +1,6 @@
 package az.qrfood.backend.dish.service;
 
-import az.qrfood.backend.category.dto.DishCategoryDto;
+import az.qrfood.backend.category.dto.CategoryDto;
 import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.category.repo.CategoryRepository;
 import az.qrfood.backend.common.Util;
@@ -12,7 +12,9 @@ import az.qrfood.backend.dish.entity.DishEntityTranslation;
 import az.qrfood.backend.dish.repository.DishRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,16 +24,20 @@ import java.util.Optional;
 @Log4j2
 public class DishService {
 
+    //<editor-fold desc="Fields">
     private final DishRepository dishRepository;
     private final CategoryRepository categoryRepository;
     private final StorageService storageService;
+    //</editor-fold>
 
+    //<editor-fold desc="Constructor">
     public DishService(DishRepository dishRepository,
                        CategoryRepository categoryRepository, StorageService storageService) {
         this.dishRepository = dishRepository;
         this.categoryRepository = categoryRepository;
         this.storageService = storageService;
     }
+    //</editor-fold>
 
     /**
      * Returns all DishItems for particular category.
@@ -88,8 +94,8 @@ public class DishService {
         return dishEntity;
     }
 
-    private DishCategoryDto convertDtoToEntity(DishDto dish) {
-        return DishCategoryDto.builder()
+    private CategoryDto convertDtoToEntity(DishDto dish) {
+        return CategoryDto.builder()
                 .eateryId(dish.getCategoryId())
                 .nameEn(dish.getNameEn())
                 .nameRu(dish.getNameRu())
@@ -121,4 +127,28 @@ public class DishService {
         return dto;
 
     }
+
+
+    @Transactional
+    public ResponseEntity<String> deleteDishItemById(Long categoryId, Long dishId) {
+        log.debug("Requested to delete dish [{}] from category [{}]", dishId, categoryId);
+
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found " + categoryId));
+
+        DishEntity dish = category.getItems().stream()
+                .filter(item -> item.getId().equals(dishId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Category [%s] does not contain dish [%s]", categoryId, dishId)));
+
+        // 🟢 Remove from list — this triggers orphanRemoval
+        category.getItems().remove(dish);
+
+        // No need to call dishRepository.deleteById()
+        // Since orphanRemoval = true, it will be deleted automatically when the transaction commits.
+
+        return ResponseEntity.ok(String.format("Dish [%s] deleted successfully", dishId));
+    }
+
 }

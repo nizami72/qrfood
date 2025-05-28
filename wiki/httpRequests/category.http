@@ -1,10 +1,32 @@
 
 
-### CREATE CATEGORY TO EATERY
+### LOGIN REQUEST
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+
+> {%
+    client.test("Request successful", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.jwt, "JWT token is missing in the response");
+        client.global.set("accessToken", response.body.jwt);
+        client.log("JWT Token saved: " + response.body.jwt);
+    });
+%}
+
+
+
+### CREATE CATEGORY FOR  SPECIFIED EATERY
 //_____________________________________________________________________
+@eateryId=/6
 < scripts/category/create.js
-POST {{url}}/api/category/create/eatery/1
+POST {{url}}{{apiEateries}}{{eateryId}}{{categories1}}
 Content-Type: multipart/form-data; boundary=boundary123
+Authorization: Bearer {{accessToken}}
 
 --boundary123
 Content-Disposition: form-data; name="data"
@@ -25,61 +47,28 @@ Content-Type: image/webp
 
 
 
-
-### GET CATEGORIES FOR EATERY
+### GET ALL CATEGORIES FOR EATERY
 //_____________________________________________________________________
-GET {{url}}/api/category/eatery/1
+@eateryId1 = /6
+GET {{url}}{{apiEateries}}{{eateryId1}}{{categories1}}
+Authorization: Bearer {{accessToken}}
 
 
 
-
-### ADD CATEGORY TO EATERY same content
+### GET SPECIFIED BY ID CATEGORY FOR EATERY
 //_____________________________________________________________________
-< scripts/category/create.js
-POST {{url}}/api/category/create/eatery/22
-Content-Type: application/json
-
-{
-  "nameAz": "a",
-  "nameEn": "b",
-  "nameRu": "c"
-}
-
-
-
-
-### GET ALL CATEGORIES
-//_____________________________________________________________________
-GET {{url}}/api/category
-
-
-
-
-### GET BY CATEGORY ID
-//_____________________________________________________________________
-GET {{url}}/api/category/2
-
+@eateryId2 = /6
+@categoryId1 = /12
+GET {{url}}{{apiEateries}}{{eateryId1}}{{categories1}}{{categoryId1}}
+Authorization: Bearer {{accessToken}}
 
 
 
 ### DELETE CATEGORY
 //_____________________________________________________________________
-DELETE {{url}}/api/category/34
-
-
-
-
-### ADD CATEGORY RANDOM
-//_____________________________________________________________________
-< scripts/category/create.js
-POST {{url}}/api/category/create/eatery/{{eateryId}}
-Content-Type: application/json
-
-{
-  "nameAz": "{{nameAz}}",
-  "nameEn": "{{nameEn}}",
-  "nameRu": "{{nameRu}}"
-}
-
+@eateryId3 = /6
+@categoryId3 = /12
+DELETE {{url}}{{apiEateries}}{{eateryId1}}{{categories1}}{{categoryId1}}
+Authorization: Bearer {{accessToken}}
 
 

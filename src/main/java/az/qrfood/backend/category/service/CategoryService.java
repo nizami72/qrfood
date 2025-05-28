@@ -1,6 +1,6 @@
 package az.qrfood.backend.category.service;
 
-import az.qrfood.backend.category.dto.DishCategoryDto;
+import az.qrfood.backend.category.dto.CategoryDto;
 import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.category.entity.CategoryTranslation;
 import az.qrfood.backend.category.repo.CategoryRepository;
@@ -40,7 +40,7 @@ public class CategoryService {
      * @param dishCategoryDto category data
      * @return Category
      */
-    public Category createCategory(DishCategoryDto dishCategoryDto, MultipartFile multipartFile) {
+    public Category createCategory(CategoryDto dishCategoryDto, MultipartFile multipartFile) {
 
         Long eateryId = dishCategoryDto.getEateryId();
 
@@ -96,7 +96,7 @@ public class CategoryService {
      * @param dishCategoryDto dish category DTO
      * @return the id of Category entity
      */
-    public Category createOrFindCategory(DishCategoryDto dishCategoryDto) {
+    public Category createOrFindCategory(CategoryDto dishCategoryDto) {
         Long dishCategoryId = dishCategoryDto.getCategoryId();
         if (dishCategoryId != null) {
             Optional<Category> categoryOptional = categoryRepository.findById(dishCategoryDto.getCategoryId());
@@ -131,19 +131,19 @@ public class CategoryService {
         return category1;
     }
 
-    public List<DishCategoryDto> findAllCategory() {
+    public List<CategoryDto> findAllCategory() {
         List<Category> categories = categoryRepository.findAll();
         return convertDishCategoryToDto(categories);
     }
 
-    public DishCategoryDto findCategoryById(Long id) {
+    public CategoryDto findCategoryById(Long id) {
         Optional<Category> category = categoryRepository.findById(id);
         if(category.isEmpty()) {throw new EntityNotFoundException(
                 String.format("The category with id [%s] not fount", id));}
         return convertDishCategoryToDto(category.get());
     }
 
-    public List<DishCategoryDto> findAllCategoryForEatery(long eateryId) {
+    public List<CategoryDto> findAllCategoryForEatery(long eateryId) {
 
         Optional<Eatery> eateryOp = eateryRepository.findById(eateryId);
         if (eateryOp.isEmpty()) {throw new EntityNotFoundException("Eatery not found"); }
@@ -158,17 +158,17 @@ public class CategoryService {
         return convertDishCategoryToDto(categories);
     }
 
-    private List<DishCategoryDto> convertDishCategoryToDto(List<Category> categories) {
-        List<DishCategoryDto> categoryDtoList = new ArrayList<>();
+    private List<CategoryDto> convertDishCategoryToDto(List<Category> categories) {
+        List<CategoryDto> categoryDtoList = new ArrayList<>();
         for (Category category : categories) {
             categoryDtoList.add(convertDishCategoryToDto(category));
         }
         return categoryDtoList;
     }
 
-    private DishCategoryDto convertDishCategoryToDto(Category category) {
+    private CategoryDto convertDishCategoryToDto(Category category) {
 
-            DishCategoryDto dto = new DishCategoryDto();
+            CategoryDto dto = new CategoryDto();
             dto.setEateryId(category.getEatery().getId());
             dto.setDishes(category.getItems().stream()
                     .map(DishService::convertEntityToDto)

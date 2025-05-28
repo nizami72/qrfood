@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DishCategoryDto {
+public class CategoryDto {
 
     private Long categoryId;
     private Long eateryId;
