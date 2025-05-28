@@ -1,18 +1,27 @@
 package az.qrfood.backend.common.config;
 
+import az.qrfood.backend.common.CustomAuthenticationEntryPoint;
+import az.qrfood.backend.user.filter.JwtRequestFilter;
+import az.qrfood.backend.user.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -20,55 +29,109 @@ public class SecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final CustomAuthenticationEntryPoint customEntryPoint;
+
+    private final CustomUserDetailsService userDetailsService;
+    private final JwtRequestFilter jwtRequestFilter;
+
     @Value("${segment.api.client.all}")
     String segmentApiClientAll;
 
-
-    public SecurityConfig(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
+    /**
+     * Определяет менеджер аутентификации.
+     * Этот бин необходим для ручной аутентификации пользователя, например, в AuthController.
+     * @param config Конфигурация аутентификации, предоставляемая Spring Security.
+     * @return Экземпляр AuthenticationManager.
+     * @throws Exception при ошибке получения менеджера аутентификации.
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
+    public SecurityConfig(
+            PasswordEncoder passwordEncoder,
+            CustomAuthenticationEntryPoint customEntryPoint,
+            CustomUserDetailsService userDetailsService,
+            JwtRequestFilter jwtRequestFilter) {
+        this.passwordEncoder = passwordEncoder;
+        this.customEntryPoint = customEntryPoint;
+        this.userDetailsService = userDetailsService;
+        this.jwtRequestFilter = jwtRequestFilter;
+    }
+
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http
+//                .authorizeHttpRequests(authorize -> authorize
+//                        .requestMatchers(
+//                                "/swagger-ui.html",
+//                                "/swagger-ui/**",
+//                                "/v3/api-docs/**",
+//                                "/api-docs/**",
+//                                "/api/dish/**",
+////                                "/api/eatery/**",
+//                                "/api/category/**",
+//                                "/api/orders/**",
+//                                "/api/qr/**",
+//                                "/api/tables/**",
+//                                segmentApiClientAll,
+//                                "favicon.ico",
+//                                "/manifest.json"
+//
+//                        ).permitAll()
+//                        .anyRequest().authenticated()
+//                )
+//                .csrf(AbstractHttpConfigurer::disable) // отключаем CSRF
+//                .httpBasic(Customizer.withDefaults()); // <-- правильно для httpBasic без депрекейта
+//
+//        return http.build();
+//    }
+
+    /**
+     * Определяет цепочку фильтров безопасности для HTTP-запросов.
+     * Здесь настраиваются правила авторизации для различных URL-путей.
+     * @param http Объект HttpSecurity для настройки безопасности.
+     * @return Цепочка фильтров безопасности.
+     * @throws Exception при ошибке конфигурации.
+     */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(
-                                "/swagger-ui.html",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/api-docs/**",
-                                "/api/dish/**",
-                                "/api/eatery/**",
-                                "/api/category/**",
-                                "/api/orders/**",
-                                "/api/qr/**",
-                                "/api/tables/**",
-                                segmentApiClientAll,
-                                "/manifest.json"
+            .csrf(csrf -> csrf.disable()) // Отключаем CSRF для REST API, так как используем JWT
+            .authorizeHttpRequests(authorize -> authorize
+                // Разрешаем доступ без аутентификации к эндпоинтам аутентификации и регистрации
+                .requestMatchers("/api/auth/**").permitAll()
+                // Требуем роль "ADMIN" для доступа к /api/admin/**
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                // Требуем роль "USER" или "ADMIN" для доступа к /api/user/**
+                .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+                // Все остальные запросы требуют аутентификации (наличия валидного JWT)
+                .anyRequest().authenticated()
+            )
+            .sessionManagement(session -> session
+                // Устанавливаем политику создания сессий как STATELESS (без сохранения состояния)
+                // Это критично для JWT, так как токен содержит всю необходимую информацию.
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            );
 
-
-
-
-
-
-
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
-                .csrf(AbstractHttpConfigurer::disable) // отключаем CSRF
-                .httpBasic(Customizer.withDefaults()); // <-- правильно для httpBasic без депрекейта
+        // Добавляем наш JWT-фильтр перед стандартным фильтром аутентификации по имени пользователя/паролю
+        // Это гарантирует, что JWT будет проверен перед тем, как Spring Security будет принимать решения об авторизации.
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
+    /**
+     * Определяет провайдер аутентификации.
+     * @return Экземпляр AuthenticationProvider.
+     */
     @Bean
-    public UserDetailsService users() {
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password(passwordEncoder.encode("admin"))
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(admin);
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
+        return authProvider;
     }
+
 }

@@ -1,15 +1,37 @@
 
+
+
+
+### LOGIN REQUEST
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+
+> {%
+    client.test("Request successful", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.jwt, "JWT token is missing in the response");
+        client.global.set("accessToken", response.body.jwt);
+        client.log("JWT Token saved: " + response.body.jwt);
+    });
+%}
+
+
 ### CREATE EATERY 1,2,3, ...
 //_____________________________________________________________________
 < scripts/eatery/create_eatery.js
-POST {{url}}/api/eatery
+POST {{url}}{{apiEateries}}
 Content-Type: application/json
+Authorization: Bearer {{accessToken}}
 
 {
   "name": "{{name}}",
   "address": "{{address}}",
   "phones": {{phones}},
-  "categories": {{categories}},
   "tablesAmount": {{tablesAmount}},
   "geoLat": {{geoLat}},
   "geoLng": {{geoLng}}
@@ -20,21 +42,24 @@ Content-Type: application/json
 
 ### GET ALL EATERY
 //_____________________________________________________________________
-GET {{url}}/api/eatery
+GET {{url}}{{apiEateries}}
+Authorization: Bearer {{accessToken}}
 
 
 
 
 ### GET BY ID
 //_____________________________________________________________________
-GET {{url}}/api/eatery/1
+GET {{url}}{{apiEateries}}/5
+Authorization: Bearer {{accessToken}}
 
 
 
 
 ### DELETE EATERY
 //_____________________________________________________________________
-DELETE {{url}}/api/eatery/5
+DELETE {{url}}{{apiEateries}}/5
+Authorization: Bearer {{accessToken}}
 
 
 
@@ -42,7 +67,8 @@ DELETE {{url}}/api/eatery/5
 ### GET EATERY BY RANDOM ID
 //_____________________________________________________________________
 < scripts/eatery/findRandom.js
-GET {{url}}/api/eatery/{{eateryId}}
+GET {{url}}{{apiEateries}}/{{eateryId}}
+Authorization: Bearer {{accessToken}}
 
 
 

@@ -10,12 +10,6 @@
             </Pattern>
         </layout>
     </appender>
-
-
-    <!--    <logger name="mypackagename.myappname" level="TRACE"/>-->
-    <!--    <logger name="org.hibernate.SQL" level="DEBUG" />-->
-    <!--    <logger name="org.hibernate.type" level="TRACE" />-->
-
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logPath}info.log</file>
         <append>true</append>
@@ -32,7 +26,6 @@
             </pattern>
         </encoder>
     </appender>
-
     <appender name="FILE_DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logPath}debug.log</file>
         <append>true</append>
@@ -56,14 +49,19 @@
     </appender>
 
     <!-- Define a logger for your packages -->
-    <logger name="az.qrfood.backend" level="DEBUG">
+    <logger name="az.qrfood.backend" level="DEBUG" additivity="false">
         <appender-ref ref="FILE_DEBUG" />
         <appender-ref ref="CONSOLE" />
     </logger>
 
-    <root level="info">
-<!--            <root level="debug">-->
+    <root level="INFO">
+<!--        <appender-ref ref="CONSOLE" />-->
         <appender-ref ref="FILE" />
     </root>
 
 </configuration>
+
+
+        <!--    <logger name="mypackagename.myappname" level="TRACE"/>-->
+        <!--    <logger name="org.hibernate.SQL" level="DEBUG" />-->
+        <!--    <logger name="org.hibernate.type" level="TRACE" />-->

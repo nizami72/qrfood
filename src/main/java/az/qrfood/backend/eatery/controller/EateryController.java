@@ -16,7 +16,7 @@ import java.util.List;
 
 @Log4j2
 @RestController
-@RequestMapping("/api/eatery")
+@RequestMapping("${segment.eateries}")
 public class EateryController {
 
     private final EateryService restaurantService;
@@ -40,8 +40,8 @@ public class EateryController {
 
      * @param id eatery ID
      */
-    @GetMapping("/{eatery-id}")
-    public ResponseEntity<EateryDto> getEateryById(@PathVariable("eatery-id") Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<EateryDto> getEateryById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(restaurantService.getEateryById(id));
     }
 
@@ -63,8 +63,8 @@ public class EateryController {
      * @param id deleted eatery ID
      * @return todo
      */
-    @DeleteMapping("/{eatery-id}")
-    public ResponseEntity<Long> deleteEatery(@PathVariable("eatery-id") Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Long> deleteEatery(@PathVariable("id") Long id) {
         return ResponseEntity.ok(restaurantService.deleteEatery(id));
     }
 
@@ -75,8 +75,8 @@ public class EateryController {
      * @param eateryDTO The updated eatery data
      * @return The ID of the updated eatery
      */
-    @PutMapping(value = "/{eatery-id}", consumes = "application/json")
-    public ResponseEntity<Long> updateEatery(@PathVariable("eatery-id") Long id, @RequestBody EateryDto eateryDTO) {
+    @PutMapping(value = "/{id}", consumes = "application/json")
+    public ResponseEntity<Long> updateEatery(@PathVariable("id") Long id, @RequestBody EateryDto eateryDTO) {
         log.debug("Request to update eatery with ID [{}]: {}", id, eateryDTO);
         return ResponseEntity.ok(restaurantService.updateEatery(id, eateryDTO));
     }
