@@ -36,12 +36,25 @@ public class EateryController {
     }
 
     /**
+     * GET all eateries owned by a specific user.
+     *
+     * @param ownerId the ID of the owner
+     * @return list of eateries owned by the specified user
+     */
+    @GetMapping("/owner/{ownerId}")
+    public ResponseEntity<List<EateryDto>> getEateriesByOwnerId(@PathVariable("ownerId") Long ownerId) {
+        return ResponseEntity.ok(restaurantService.getAllEateriesByOwnerId(ownerId));
+    }
+
+
+    /**
      * GET eatery by id.
 
      * @param id eatery ID
      */
     @GetMapping("/{id}")
     public ResponseEntity<EateryDto> getEateryById(@PathVariable("id") Long id) {
+        log.debug("Request to get Eatery : {}", id);
         return ResponseEntity.ok(restaurantService.getEateryById(id));
     }
 

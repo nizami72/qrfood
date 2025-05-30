@@ -1,7 +1,6 @@
 package az.qrfood.backend.eatery.service;
 
 import az.qrfood.backend.category.entity.Category;
-import az.qrfood.backend.common.QrCodeGenerator;
 import az.qrfood.backend.common.Util;
 import az.qrfood.backend.common.service.StorageService;
 import az.qrfood.backend.eatery.dto.EateryDto;
@@ -10,10 +9,8 @@ import az.qrfood.backend.eatery.entity.EateryPhone;
 import az.qrfood.backend.eatery.repository.EateryRepository;
 import az.qrfood.backend.table.entity.TableInEatery;
 import az.qrfood.backend.table.service.TableService;
-import az.qrfood.backend.user.profile.UserProfile;
 import az.qrfood.backend.user.profile.UserProfileRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -52,6 +49,25 @@ public class EateryService {
         return convertToDTO(restaurant);
     }
 
+    public EateryDto getEateryByOwnerId(Long id) {
+        Eatery restaurant = eateryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Eatery with id %s not found", id)));
+        return convertToDTO(restaurant);
+    }
+
+    /**
+     * Get all eateries owned by a specific user.
+     *
+     * @param ownerId the ID of the owner
+     * @return list of eateries owned by the specified user
+     */
+    public List<EateryDto> getAllEateriesByOwnerId(Long ownerId) {
+        return eateryRepository.findAllByOwnerId(ownerId).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
 
     public Long createEatery(EateryDto restaurantDTO) {
         Eatery r = Util.copyProperties(restaurantDTO, Eatery.class);
@@ -67,7 +83,7 @@ public class EateryService {
         populateTables(r, restaurantDTO.getTablesAmount());
         r = eateryRepository.save(r);
         EateryDto dto = convertToDTO(r);
-        storageService.createEateryFolder(dto.getEateryId());
+        storageService.createEateryFolder(dto.getId());
         return r.getId();
     }
 
@@ -81,7 +97,7 @@ public class EateryService {
             dto.getTableIds().add(table.getId());
         });
 
-        dto.setEateryId(eatery.getId());
+        dto.setId(eatery.getId());
         dto.setTablesAmount(eatery.getTables().size());
 
         // Set owner profile ID if available
@@ -146,9 +162,9 @@ public class EateryService {
         // Update phone numbers
         updatePhoneNumbers(existingEatery, eateryDTO.getPhones());
 
-        // Update tables if the amount has changed
+        // todo is it neededUpdate tables if the amount has changed
         if (existingEatery.getTables().size() != eateryDTO.getTablesAmount()) {
-            updateTables(existingEatery, eateryDTO.getTablesAmount());
+//            updateTables(existingEatery, eateryDTO.getTablesAmount());
         }
 
         // Save the updated eatery

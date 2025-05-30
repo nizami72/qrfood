@@ -7,8 +7,8 @@ POST http://localhost:8080/api/auth/login
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "password": "admin"
+  "email": "nizami.budagov@gmail.com",
+  "password": "qqqq1111"
 }
 
 > {%
@@ -50,7 +50,7 @@ Authorization: Bearer {{accessToken}}
 
 ### GET BY ID
 //_____________________________________________________________________
-GET {{url}}{{apiEateries}}/5
+GET {{url}}{{apiEateries}}/7
 Authorization: Bearer {{accessToken}}
 
 

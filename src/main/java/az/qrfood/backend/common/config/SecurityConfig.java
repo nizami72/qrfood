@@ -3,6 +3,7 @@ package az.qrfood.backend.common.config;
 import az.qrfood.backend.common.CustomAuthenticationEntryPoint;
 import az.qrfood.backend.user.filter.JwtRequestFilter;
 import az.qrfood.backend.user.service.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -33,6 +35,7 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     private final JwtRequestFilter jwtRequestFilter;
+    private final CorsConfigurationSource corsConfig;
 
     @Value("${segment.api.client.all}")
     String segmentApiClientAll;
@@ -53,40 +56,14 @@ public class SecurityConfig {
             PasswordEncoder passwordEncoder,
             CustomAuthenticationEntryPoint customEntryPoint,
             CustomUserDetailsService userDetailsService,
-            JwtRequestFilter jwtRequestFilter) {
+            JwtRequestFilter jwtRequestFilter,
+            @Qualifier("cors") CorsConfigurationSource corsConfig) {
         this.passwordEncoder = passwordEncoder;
         this.customEntryPoint = customEntryPoint;
         this.userDetailsService = userDetailsService;
         this.jwtRequestFilter = jwtRequestFilter;
+        this.corsConfig = corsConfig;
     }
-
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http
-//                .authorizeHttpRequests(authorize -> authorize
-//                        .requestMatchers(
-//                                "/swagger-ui.html",
-//                                "/swagger-ui/**",
-//                                "/v3/api-docs/**",
-//                                "/api-docs/**",
-//                                "/api/dish/**",
-////                                "/api/eatery/**",
-//                                "/api/category/**",
-//                                "/api/orders/**",
-//                                "/api/qr/**",
-//                                "/api/tables/**",
-//                                segmentApiClientAll,
-//                                "favicon.ico",
-//                                "/manifest.json"
-//
-//                        ).permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//                .csrf(AbstractHttpConfigurer::disable) // отключаем CSRF
-//                .httpBasic(Customizer.withDefaults()); // <-- правильно для httpBasic без депрекейта
-//
-//        return http.build();
-//    }
 
     /**
      * Определяет цепочку фильтров безопасности для HTTP-запросов.
@@ -98,7 +75,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Отключаем CSRF для REST API, так как используем JWT
+            .csrf(AbstractHttpConfigurer::disable) // Отключаем CSRF для REST API, так как используем JWT
             .authorizeHttpRequests(authorize -> authorize
                 // Разрешаем доступ без аутентификации к эндпоинтам аутентификации и регистрации
                 .requestMatchers("/api/auth/**").permitAll()
@@ -106,9 +83,11 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // Требуем роль "USER" или "ADMIN" для доступа к /api/user/**
                 .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/eatery/**").hasAnyRole("USER", "ADMIN")
                 // Все остальные запросы требуют аутентификации (наличия валидного JWT)
                 .anyRequest().authenticated()
             )
+                .cors(cors -> cors.configurationSource(corsConfig))
             .sessionManagement(session -> session
                 // Устанавливаем политику создания сессий как STATELESS (без сохранения состояния)
                 // Это критично для JWT, так как токен содержит всю необходимую информацию.

@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * REST controller for handling requests related to authentication and registration.
@@ -76,10 +77,11 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest) {
+        log.debug("Login request: {}", loginRequest);
         try {
             log.debug("Attempting to authenticate user using AuthenticationManager");
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
             );
         } catch (BadCredentialsException e) {
             log.debug("If the credentials are incorrect, return a 401 Unauthorized error.");
@@ -87,18 +89,28 @@ public class AuthController {
         }
 
         log.debug("Attempting to authenticate user using CustomUserDetailsService");
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
 
-        // Record login in user profile
-        userRepository.findByUsername(loginRequest.getUsername()).ifPresent(user -> {
+        // Get user ID and record login in user profile
+        Long userId = null;
+        Optional<User> userOptional = userRepository.findByUsername(loginRequest.getEmail());
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
             userProfileService.recordLogin(user);
-        });
+
+            // Get the user profile to get the ID
+            Optional<UserProfile> userProfileOptional = userProfileService.findProfileByUser(user);
+            if (userProfileOptional.isPresent()) {
+                userId = userProfileOptional.get().getId();
+            }
+        }
 
         log.debug("Generating JWT Token");
         final String jwt = jwtUtil.generateToken(userDetails);
 
-        log.debug("Return token");
-        return ResponseEntity.ok(new LoginResponse(jwt));
+        log.debug("Return token and user ID");
+        LoginResponse response = new LoginResponse(jwt, userId);
+        return ResponseEntity.ok(response);
     }
 
     /**

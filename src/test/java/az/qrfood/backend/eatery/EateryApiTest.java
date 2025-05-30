@@ -4,6 +4,7 @@ import az.qrfood.backend.dto.Eatery;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -27,6 +28,8 @@ public class EateryApiTest {
     @Value("${segment.api.eatery}")
     String segmentApiEatery;
     List<Eatery> eateryList;
+    String jwtToken;
+    Long userId;
 
     @BeforeAll
     void setupLogging() throws Exception {
@@ -35,6 +38,28 @@ public class EateryApiTest {
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)
         );
+
+        // Fetch token
+        String authPayload = """
+                {
+                  "email": "nizami.budagov@gmail.com",
+                  "password": "qqqq1111"
+                }
+                """;
+
+        Response authResponse = given()
+                .baseUri(baseUrl)
+                .contentType("application/json")
+                .body(authPayload)
+                .when()
+                .post("/api/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        jwtToken = authResponse.jsonPath().getString("jwt");
+        userId = authResponse.jsonPath().getLong("userId");
 
     }
 
@@ -175,6 +200,22 @@ public class EateryApiTest {
                 .statusCode(200)
                 .extract()
                 .as(Map.class);
+    }
+
+    @Test
+    void getEateriesByOwnerId() {
+        // Use the userId extracted from the login response
+        fileLog.println("\n===== 🟢 GET EATERIES BY OWNER ID: " + userId + " =====");
+
+        given()
+                .log().all() // лог всего ответа
+                .baseUri(baseUrl)
+                .header("Authorization", "Bearer " + jwtToken) // ✅ Токен
+                .when()
+                .get(segmentApiEatery + "/owner/{ownerId}", userId)
+                .then()
+                .log().all() // Log the entire response
+                .statusCode(200); // Expect 200 OK status
     }
 
 }

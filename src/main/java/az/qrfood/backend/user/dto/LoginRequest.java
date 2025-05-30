@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor // Lombok аннотация для конструктора без аргументов
 @AllArgsConstructor // Lombok аннотация для конструктора со всеми аргументами
 public class LoginRequest {
-    private String username;
+    private String email;
     private String password;
 }

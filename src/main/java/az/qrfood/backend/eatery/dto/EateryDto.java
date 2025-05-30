@@ -16,7 +16,7 @@ public class EateryDto {
         categoryIds = new ArrayList<>();
     }
 
-    private Long eateryId;
+    private Long id;
     private String name;
     private String address;
     private List<String> phones;

@@ -61,8 +61,8 @@ public class CreateAllFakeData {
         // 1. Получение токена
         String authPayload = """
                 {
-                  "username": "admin",
-                  "password": "admin"
+                  "username": "nizami.budagov@gmail.com",
+                  "password": "qqqq1111"
                 }
                 """;
 
