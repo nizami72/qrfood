@@ -10,6 +10,8 @@ import az.qrfood.backend.eatery.entity.EateryPhone;
 import az.qrfood.backend.eatery.repository.EateryRepository;
 import az.qrfood.backend.table.entity.TableInEatery;
 import az.qrfood.backend.table.service.TableService;
+import az.qrfood.backend.user.profile.UserProfile;
+import az.qrfood.backend.user.profile.UserProfileRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,11 +27,16 @@ public class EateryService {
     private final EateryRepository eateryRepository;
     private final TableService tableService;
     private final StorageService storageService;
+    private final UserProfileRepository userProfileRepository;
 
-    public EateryService(EateryRepository eateryRepository, TableService tableService, StorageService storageService) {
+    public EateryService(EateryRepository eateryRepository, 
+                         TableService tableService, 
+                         StorageService storageService,
+                         UserProfileRepository userProfileRepository) {
         this.eateryRepository = eateryRepository;
         this.tableService = tableService;
         this.storageService = storageService;
+        this.userProfileRepository = userProfileRepository;
     }
 
     public List<EateryDto> getAllRestaurants() {
@@ -47,8 +54,14 @@ public class EateryService {
 
 
     public Long createEatery(EateryDto restaurantDTO) {
-
         Eatery r = Util.copyProperties(restaurantDTO, Eatery.class);
+
+        // Set owner profile if provided
+        if (restaurantDTO.getOwnerProfileId() != null) {
+            userProfileRepository.findById(restaurantDTO.getOwnerProfileId())
+                .ifPresent(r::setOwner);
+        }
+
         r = eateryRepository.save(r);
         populatePhoneEntities(r, restaurantDTO.getPhones());
         populateTables(r, restaurantDTO.getTablesAmount());
@@ -56,12 +69,9 @@ public class EateryService {
         EateryDto dto = convertToDTO(r);
         storageService.createEateryFolder(dto.getEateryId());
         return r.getId();
-
-
     }
 
     private EateryDto convertToDTO(Eatery eatery) {
-
         EateryDto dto = Util.copyProperties(eatery, EateryDto.class);
         eatery.getPhones().forEach(phone -> {
             dto.getPhones().add(phone.getPhoneNumber());
@@ -73,6 +83,11 @@ public class EateryService {
 
         dto.setEateryId(eatery.getId());
         dto.setTablesAmount(eatery.getTables().size());
+
+        // Set owner profile ID if available
+        if (eatery.getOwner() != null) {
+            dto.setOwnerProfileId(eatery.getOwner().getId());
+        }
 
         List<Category> categories = eatery.getCategories();
         if (categories != null && !categories.isEmpty()) {
@@ -121,6 +136,12 @@ public class EateryService {
         existingEatery.setAddress(eateryDTO.getAddress());
         existingEatery.setGeoLat(eateryDTO.getGeoLat());
         existingEatery.setGeoLng(eateryDTO.getGeoLng());
+
+        // Update owner profile if provided
+        if (eateryDTO.getOwnerProfileId() != null) {
+            userProfileRepository.findById(eateryDTO.getOwnerProfileId())
+                .ifPresent(existingEatery::setOwner);
+        }
 
         // Update phone numbers
         updatePhoneNumbers(existingEatery, eateryDTO.getPhones());

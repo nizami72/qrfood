@@ -26,4 +26,5 @@ public class EateryDto {
     private int tablesAmount;
     private Double geoLat;
     private Double geoLng;
+    private Long ownerProfileId;
 }

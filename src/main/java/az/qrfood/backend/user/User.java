@@ -1,5 +1,6 @@
 package az.qrfood.backend.user;
 
+import az.qrfood.backend.user.profile.UserProfile;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -40,6 +41,12 @@ public class User implements UserDetails {
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
     private Set<String> roles;
+
+    /**
+     * The user profile associated with this user.
+     */
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private UserProfile profile;
 
     /**
      * Возвращает коллекции прав доступа (ролей), предоставленных пользователю.
