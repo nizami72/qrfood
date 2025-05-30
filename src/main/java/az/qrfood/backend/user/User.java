@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
  * Реализует UserDetails для интеграции со Spring Security.
  */
 @Entity
-@Table(name = "users") // Рекомендуется использовать "users", чтобы избежать конфликтов с зарезервированным словом "user" в некоторых БД
-@Data // Lombok аннотация для геттеров, сеттеров, toString, equals, hashCode
-@NoArgsConstructor // Lombok аннотация для конструктора без аргументов
-@AllArgsConstructor // Lombok аннотация для конструктора со всеми аргументами
+@Table(name = "users")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
 
     @Id
