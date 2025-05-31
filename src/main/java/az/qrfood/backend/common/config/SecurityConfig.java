@@ -43,6 +43,7 @@ public class SecurityConfig {
     /**
      * Определяет менеджер аутентификации.
      * Этот бин необходим для ручной аутентификации пользователя, например, в AuthController.
+     *
      * @param config Конфигурация аутентификации, предоставляемая Spring Security.
      * @return Экземпляр AuthenticationManager.
      * @throws Exception при ошибке получения менеджера аутентификации.
@@ -68,6 +69,7 @@ public class SecurityConfig {
     /**
      * Определяет цепочку фильтров безопасности для HTTP-запросов.
      * Здесь настраиваются правила авторизации для различных URL-путей.
+     *
      * @param http Объект HttpSecurity для настройки безопасности.
      * @return Цепочка фильтров безопасности.
      * @throws Exception при ошибке конфигурации.
@@ -75,24 +77,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable) // Отключаем CSRF для REST API, так как используем JWT
-            .authorizeHttpRequests(authorize -> authorize
-                // Разрешаем доступ без аутентификации к эндпоинтам аутентификации и регистрации
-                .requestMatchers("/api/auth/**").permitAll()
-                // Требуем роль "ADMIN" для доступа к /api/admin/**
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                // Требуем роль "USER" или "ADMIN" для доступа к /api/user/**
-                .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/api/eatery/**").hasAnyRole("USER", "ADMIN")
-                // Все остальные запросы требуют аутентификации (наличия валидного JWT)
-                .anyRequest().authenticated()
-            )
+                .csrf(AbstractHttpConfigurer::disable) // Отключаем CSRF для REST API, так как используем JWT
+                .authorizeHttpRequests(authorize -> authorize
+                        // Разрешаем доступ без аутентификации к эндпоинтам аутентификации и регистрации
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/image/**").permitAll()
+                        // Требуем роль "ADMIN" для доступа к /api/admin/**
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // Требуем роль "USER" или "ADMIN" для доступа к /api/user/**
+                        .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/eatery/**").hasAnyRole("USER", "ADMIN")
+                        // Все остальные запросы требуют аутентификации (наличия валидного JWT)
+                        .anyRequest().authenticated()
+                )
                 .cors(cors -> cors.configurationSource(corsConfig))
-            .sessionManagement(session -> session
-                // Устанавливаем политику создания сессий как STATELESS (без сохранения состояния)
-                // Это критично для JWT, так как токен содержит всю необходимую информацию.
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            );
+                .sessionManagement(session -> session
+                        // Устанавливаем политику создания сессий как STATELESS (без сохранения состояния)
+                        // Это критично для JWT, так как токен содержит всю необходимую информацию.
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                );
 
         // Добавляем наш JWT-фильтр перед стандартным фильтром аутентификации по имени пользователя/паролю
         // Это гарантирует, что JWT будет проверен перед тем, как Spring Security будет принимать решения об авторизации.
@@ -103,6 +106,7 @@ public class SecurityConfig {
 
     /**
      * Определяет провайдер аутентификации.
+     *
      * @return Экземпляр AuthenticationProvider.
      */
     @Bean
