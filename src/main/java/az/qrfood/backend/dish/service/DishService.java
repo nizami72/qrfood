@@ -151,4 +151,47 @@ public class DishService {
         return ResponseEntity.ok(String.format("Dish [%s] deleted successfully", dishId));
     }
 
+    @Transactional
+    public DishEntity updateDish(Long categoryId, Long dishId, DishDto dto, MultipartFile multipartFile) {
+        log.debug("Updating dish [{}] in category [{}]", dishId, categoryId);
+
+        // Verify the category exists
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found " + categoryId));
+
+        // Find the dish to update
+        DishEntity dishEntity = category.getItems().stream()
+                .filter(item -> item.getId().equals(dishId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Category [%s] does not contain dish [%s]", categoryId, dishId)));
+
+        // Update the dish properties
+        dishEntity.setPrice(dto.getPrice());
+        dishEntity.setAvailable(dto.isAvailable());
+
+        // Update translations
+        dishEntity.getTranslations().forEach(translation -> {
+            if (translation.getLang().equals(Language.az.name())) {
+                translation.setName(dto.getNameAz());
+                translation.setDescription(dto.getDescriptionAz());
+            } else if (translation.getLang().equals(Language.en.name())) {
+                translation.setName(dto.getNameEn());
+                translation.setDescription(dto.getDescriptionEn());
+            } else if (translation.getLang().equals(Language.ru.name())) {
+                translation.setName(dto.getNameRu());
+                translation.setDescription(dto.getDescriptionRu());
+            }
+        });
+
+        // Update image if provided
+        if (multipartFile != null && !multipartFile.isEmpty()) {
+            String folder = storageService.createDishesFolder(dishEntity.getId());
+            storageService.saveFile(folder, multipartFile, dishEntity.getImage());
+        }
+
+        // Save the updated dish
+        return dishRepository.save(dishEntity);
+    }
+
 }

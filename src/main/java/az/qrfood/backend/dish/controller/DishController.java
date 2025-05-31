@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -104,6 +105,27 @@ public class DishController {
     public ResponseEntity<String> deleteDishItemById(@PathVariable Long categoryId, @PathVariable Long dishId) {
         log.debug("Requested to delete dish [{}] from category [{}]", dishId, categoryId);
         return dishService.deleteDishItemById(categoryId,dishId);
+    }
+
+    /**
+     * Update dish item for category.
+     *
+     * @param categoryId - category ID
+     * @param dishId - dish ID to update
+     * @param dishDto - updated dish item DTO
+     * @param file - updated image file (optional)
+     * @return Response entity with updated dish ID
+     */
+    @PutMapping(value = "/{dishId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Long> updateDish(@PathVariable("categoryId") Long categoryId,
+                                           @PathVariable("dishId") Long dishId,
+                                           @RequestPart("data") DishDto dishDto,
+                                           @RequestPart(value = "image", required = false) MultipartFile file) {
+        dishDto.setCategoryId(categoryId);
+        dishDto.setDishId(dishId);
+        log.debug("Request to update dish item: {}", dishDto);
+        DishEntity dishEntity = dishService.updateDish(categoryId, dishId, dishDto, file);
+        return ResponseEntity.ok(dishEntity.getId());
     }
 
 

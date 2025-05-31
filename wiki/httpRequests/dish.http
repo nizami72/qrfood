@@ -81,4 +81,32 @@ Authorization: Bearer {{accessToken}}
 DELETE  {{url}}{{apiCategories}}{{categoryId3}}{{dishes}}{{dishId3}}
 Authorization: Bearer {{accessToken}}
 
+//_____________________________________________________________________
+### PUT MENU ITEM BY ID
+@categoryId5=/19
+@dishId5=/68
+PUT {{url}}{{apiCategories}}{{categoryId5}}{{dishes}}{{dishId5}}
+Content-Type: multipart/form-data; boundary=boundary123
+Authorization: Bearer {{accessToken}}
 
+--boundary123
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{
+  "nameAz": "Restored Dish Az",
+  "nameEn": "Restored Dish En",
+  "nameRu": "Restored Dish Ru",
+  "descriptionAz": "Restored Description Az",
+  "descriptionEn": "Restored Description En",
+  "descriptionRu": "Restored Description Ru",
+  "price": 15.99,
+  "isAvailable": true
+}
+
+--boundary123
+Content-Disposition: form-data; name="image"; filename="bakery.webp"
+Content-Type: image/webp
+
+< ./image/bakery.webp
+--boundary123--
