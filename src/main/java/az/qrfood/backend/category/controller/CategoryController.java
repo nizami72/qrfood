@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -67,6 +68,7 @@ public class CategoryController {
         dishCategoryDto.setEateryId(eateryId);
         log.debug("Create category item: {}", dishCategoryDto);
         Category cid = categoryService.createCategory(dishCategoryDto,file);
+
         return ResponseEntity.ok(cid.getId());
     }
 
@@ -82,4 +84,22 @@ public class CategoryController {
         return categoryService.deleteCategory(categoryId);
     }
 
+    /**
+     * PUT (update) an existing category.
+     *
+     * @param categoryId the category ID to update
+     * @param dishCategoryDto updated category data
+     * @param file optional new image file
+     * @return updated category ID
+     */
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Long> updateCategory(@PathVariable(value = "id") Long categoryId,
+                                              @RequestPart("data") CategoryDto dishCategoryDto,
+                                              @RequestPart(value = "image", required = false) MultipartFile file) {
+        log.debug("Update category: {}", categoryId);
+        dishCategoryDto.setCategoryId(categoryId);
+        Category updatedCategory = categoryService.updateCategory(dishCategoryDto, file);
+
+        return ResponseEntity.ok(updatedCategory.getId());
+    }
 }

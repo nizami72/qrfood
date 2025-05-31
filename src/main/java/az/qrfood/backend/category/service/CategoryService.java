@@ -193,4 +193,60 @@ public class CategoryService {
         categoryRepository.deleteById(categoryId);
         return ResponseEntity.ok(String.format("Category [%s] deleted successfully", categoryId));
     }
+
+    /**
+     * Update existing Category.
+     *
+     * @param categoryDto category data with updated values
+     * @param multipartFile optional new image file
+     * @return updated Category
+     */
+    public Category updateCategory(CategoryDto categoryDto, MultipartFile multipartFile) {
+        Long categoryId = categoryDto.getCategoryId();
+
+        // Check if category exists
+        Optional<Category> categoryOp = categoryRepository.findById(categoryId);
+        if (categoryOp.isEmpty()) {
+            throw new EntityNotFoundException(String.format(
+                    "Cannot update category %s, category not found", categoryId));
+        }
+
+        Category category = categoryOp.get();
+
+        // Update translations
+        for (CategoryTranslation translation : category.getTranslations()) {
+            if (translation.getLang().equals(Language.az.name())) {
+                translation.setName(categoryDto.getNameAz());
+            } else if (translation.getLang().equals(Language.en.name())) {
+                translation.setName(categoryDto.getNameEn());
+            } else if (translation.getLang().equals(Language.ru.name())) {
+                translation.setName(categoryDto.getNameRu());
+            }
+        }
+
+        // Update image if provided
+        if (multipartFile != null && !multipartFile.isEmpty()) {
+            // Generate new filename for the image
+            String newFileName = Util.generateFileName() + ".webp";
+            category.setCategoryImageFileName(newFileName);
+
+            // Save the new image
+            String folderPath = storageService.createCategoryFolder(category.getId());
+            if (folderPath != null) {
+                storageService.saveFile(folderPath, multipartFile, newFileName);
+                log.info("Updated category image [{}] saved at dir [{}]", newFileName, folderPath);
+            } else {
+                log.error("Category image [{}] was not updated", newFileName);
+            }
+        }
+
+        // Update hash
+        category.setHash(category.hashCode());
+
+        // Save updated category
+        categoryRepository.save(category);
+        log.debug("Category updated [{}]", category);
+
+        return category;
+    }
 }

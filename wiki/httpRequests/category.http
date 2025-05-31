@@ -5,8 +5,8 @@ POST http://localhost:8080/api/auth/login
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "password": "admin"
+  "email": "nizami.budagov@gmail.com",
+  "password": "qqqq1111"
 }
 
 > {%
@@ -22,7 +22,7 @@ Content-Type: application/json
 
 ### CREATE CATEGORY FOR  SPECIFIED EATERY
 //_____________________________________________________________________
-@eateryId=/6
+@eateryId=/7
 < scripts/category/create.js
 POST {{url}}{{apiEateries}}{{eateryId}}{{categories1}}
 Content-Type: multipart/form-data; boundary=boundary123
@@ -49,7 +49,7 @@ Content-Type: image/webp
 
 ### GET ALL CATEGORIES FOR EATERY
 //_____________________________________________________________________
-@eateryId1 = /6
+@eateryId1 = /7
 GET {{url}}{{apiEateries}}{{eateryId1}}{{categories1}}
 Authorization: Bearer {{accessToken}}
 
@@ -72,3 +72,27 @@ DELETE {{url}}{{apiEateries}}{{eateryId1}}{{categories1}}{{categoryId1}}
 Authorization: Bearer {{accessToken}}
 
 
+### UPDATE CATEGORY
+//_____________________________________________________________________
+@eateryId4 = /7
+@categoryId4 = /13
+PUT {{url}}{{apiEateries}}{{eateryId4}}{{categories1}}{{categoryId4}}
+Content-Type: multipart/form-data; boundary=boundary456
+Authorization: Bearer {{accessToken}}
+
+--boundary456
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{
+  "nameAz": "Updated Category Az",
+  "nameEn": "Updated Category En",
+  "nameRu": "Updated Category Ru"
+}
+
+--boundary456
+Content-Disposition: form-data; name="image"; filename="updated_soup.webp"
+Content-Type: image/webp
+
+< ./image/soup.webp
+--boundary456--
