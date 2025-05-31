@@ -55,9 +55,9 @@ Content-Type: image/webp
 
 
 
-### Get dish Item by ID in the specified category
+### GET dish Item by ID in the specified category
 //_____________________________________________________________________
-@categoryId=/1
+@categoryId=/7
 @dishId=/36
 GET {{url}}{{apiCategories}}{{categoryId}}{{dishes}}{{dishId}}
 Authorization: Bearer {{accessToken}}
@@ -67,7 +67,7 @@ Authorization: Bearer {{accessToken}}
 
 ### GET ALL DISHES IN A CATEGORY
 //_____________________________________________________________________
-@categoryId2=/1
+@categoryId2=/19
 GET {{url}}{{apiCategories}}{{categoryId2}}{{dishes}}
 Authorization: Bearer {{accessToken}}
 
