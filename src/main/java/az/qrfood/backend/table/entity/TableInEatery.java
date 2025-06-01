@@ -24,7 +24,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "table_in_eaery")
+@Table(name = "table_in_eatery")
 @Builder
 public class TableInEatery {
 
@@ -34,10 +34,19 @@ public class TableInEatery {
 
     @ManyToOne
     @JoinColumn(name = "eatery_id", nullable = false)
-    private Eatery restaurant;
+    private Eatery eatery;
 
     @Column(name = "table_number")
     private String tableNumber;
+
+    @Column(name = "seats")
+    private int seats;
+
+    @Column(name = "note")
+    private String note;
+
+    @Column(name = "status")
+    private TableStatus status;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "qr_code_id", referencedColumnName = "id")

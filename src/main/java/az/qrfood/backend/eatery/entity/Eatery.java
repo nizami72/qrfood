@@ -15,7 +15,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +55,7 @@ public class Eatery {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EateryPhone> phones;
 
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "eatery", cascade = CascadeType.ALL)
     private List<TableInEatery> tables;
 
     @OneToMany(mappedBy = "eatery", cascade = CascadeType.ALL)

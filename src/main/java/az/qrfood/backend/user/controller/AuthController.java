@@ -114,7 +114,7 @@ public class AuthController {
     }
 
     /**
-     * Endpoint for registering a new user with a restaurant.
+     * POST for registering a new user with a restaurant.
      *
      * @param registerRequest RegisterRequest object containing user and restaurant data.
      * @return ResponseEntity with success or error message.

@@ -79,14 +79,18 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable) // Отключаем CSRF для REST API, так как используем JWT
                 .authorizeHttpRequests(authorize -> authorize
-                        // Разрешаем доступ без аутентификации к эндпоинтам аутентификации и регистрации
+                        // =======================================================================    PERMIT ALL SECTION
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/qrcode/**").permitAll()
                         .requestMatchers("/image/**").permitAll()
-                        // Требуем роль "ADMIN" для доступа к /api/admin/**
+                        // ============================================================================    ADMIN SECTION
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // ===================================================================    USER AND ADMIN SECTION
                         // Требуем роль "USER" или "ADMIN" для доступа к /api/user/**
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/tables/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/eatery/**").hasAnyRole("USER", "ADMIN")
+                        // ==============================================================    ALL OTHERS NEED TO HAVE JWT
                         // Все остальные запросы требуют аутентификации (наличия валидного JWT)
                         .anyRequest().authenticated()
                 )

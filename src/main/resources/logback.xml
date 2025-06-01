@@ -3,13 +3,29 @@
     <variable name="logPath" value="${LOG_FILE_PATH}/" />
     <property name="prefix" value="-->" />
 
+    <!-- 🔹 Консоль: только INFO и выше -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>
-                %d{HH:mm:ss:SSS} %highlight(%-5level) [%.20t] %logger{24}.%M ${prefix} %msg%n
-            </Pattern>
+            <Pattern>%d{HH:mm:ss:SSS} %highlight(%-5level) [%.20t] %logger{24}.%M ${prefix} %msg%n</Pattern>
         </layout>
     </appender>
+
+    <!-- 🔹 Консоль: только DEBUG для своего пакета -->
+    <appender name="CONSOLE_DEBUG" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%d{HH:mm:ss:SSS} %highlight(%-5level) [%.20t] %logger{24}.%M ${prefix} %msg%n</Pattern>
+        </layout>
+    </appender>
+
+    <!-- 🔹 Файл: info.log (INFO и выше) -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logPath}info.log</file>
         <append>true</append>
@@ -21,11 +37,11 @@
             <totalSizeCap>20GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>
-                %d{dd/MM HH:mm:ss} [%-5level] %logger{24}.%M ${prefix} %msg%n
-            </pattern>
+            <pattern>%d{dd/MM HH:mm:ss} [%-5level] %logger{24}.%M ${prefix} %msg%n</pattern>
         </encoder>
     </appender>
+
+    <!-- 🔹 Файл: debug.log (только DEBUG) -->
     <appender name="FILE_DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logPath}debug.log</file>
         <append>true</append>
@@ -42,26 +58,21 @@
             <totalSizeCap>20GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>
-                %d{dd/MM HH:mm:ss} [%-5level] %logger{24}.%M ${prefix} %msg%n
-            </pattern>
+            <pattern>%d{dd/MM HH:mm:ss} [%-5level] %logger{24}.%M ${prefix} %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- Define a logger for your packages -->
+    <!-- 🔹 Твой пакет — DEBUG в файл и консоль -->
     <logger name="az.qrfood.backend" level="DEBUG" additivity="false">
         <appender-ref ref="FILE_DEBUG" />
+        <appender-ref ref="CONSOLE_DEBUG" />
         <appender-ref ref="CONSOLE" />
     </logger>
 
+    <!-- 🔹 Корневой логгер — INFO+ -->
     <root level="INFO">
-<!--        <appender-ref ref="CONSOLE" />-->
+        <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </root>
 
 </configuration>
-
-
-        <!--    <logger name="mypackagename.myappname" level="TRACE"/>-->
-        <!--    <logger name="org.hibernate.SQL" level="DEBUG" />-->
-        <!--    <logger name="org.hibernate.type" level="TRACE" />-->

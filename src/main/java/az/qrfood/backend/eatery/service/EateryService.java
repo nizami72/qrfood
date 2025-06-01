@@ -128,7 +128,7 @@ public class EateryService {
         List<TableInEatery> tableList = eatery.getTables();
         AtomicInteger idx = new AtomicInteger(1);
         IntStream.range(0, tables).forEach(table -> {
-            tableList.add(tableService.createTableInEatery(eatery, idx.getAndIncrement()));
+            tableList.add(tableService.createTableInEatery(eatery, String.valueOf(idx.getAndIncrement())));
         });
     }
 
@@ -181,20 +181,4 @@ public class EateryService {
         populatePhoneEntities(eatery, newPhoneNumbers);
     }
 
-    private void updateTables(Eatery eatery, int newTableCount) {
-        int currentTableCount = eatery.getTables().size();
-
-        if (newTableCount > currentTableCount) {
-            // Add more tables
-            AtomicInteger idx = new AtomicInteger(currentTableCount + 1);
-            IntStream.range(0, newTableCount - currentTableCount).forEach(i -> {
-                eatery.getTables().add(tableService.createTableInEatery(eatery, idx.getAndIncrement()));
-            });
-        } else if (newTableCount < currentTableCount) {
-            // Remove excess tables
-            List<TableInEatery> tablesToKeep = eatery.getTables().subList(0, newTableCount);
-            eatery.getTables().clear();
-            eatery.getTables().addAll(tablesToKeep);
-        }
-    }
 }

@@ -30,10 +30,10 @@ public class QrService {
         this.eateryRepository = eateryRepository;
     }
 
-    public QrCode createQrCodeEntity(long eateryId, int tableNumber, String url) {
+    public QrCode createQrCodeEntity(long eateryId, String tableLabel, String url) {
         QrCode code = new QrCode();
 
-        String qrContent = String.format(segmentQrRedirect, eateryId, tableNumber);
+        String qrContent = String.format(segmentQrRedirect, eateryId, tableLabel);
 
 
         try {
