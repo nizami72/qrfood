@@ -40,6 +40,10 @@ public class CreateAllFakeData {
     String componentCategories;
     List<Eatery> eateries;
 
+
+    String jwtToken;
+    Long userId;
+
     @BeforeAll
     void setupLogging() throws Exception {
         fileLog = new PrintStream(new FileOutputStream("logs/all.log", false));
@@ -53,15 +57,13 @@ public class CreateAllFakeData {
                 });
     }
 
-    @Test
-    void shouldCreateCategoryWithImageAndDishWithImage() {
-        fileLog.println("\n========== 📤 Запрос: загрузка блюда с изображением ==========");
 
-
-        // 1. Получение токена
+    @BeforeAll
+    void login() {
+        // Fetch token
         String authPayload = """
                 {
-                  "username": "nizami.budagov@gmail.com",
+                  "email": "nizami.budagov@gmail.com",
                   "password": "qqqq1111"
                 }
                 """;
@@ -77,8 +79,14 @@ public class CreateAllFakeData {
                 .extract()
                 .response();
 
+        jwtToken = authResponse.jsonPath().getString("jwt");
+        userId = authResponse.jsonPath().getLong("userId");
 
-        String jwtToken = authResponse.jsonPath().getString("jwt");
+    }
+
+    @Test
+    void shouldCreateCategoryWithImageAndDishWithImage() {
+        fileLog.println("\n========== 📤 Запрос: загрузка блюда с изображением ==========");
 
         eateries.forEach(eatery -> {
 
