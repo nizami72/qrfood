@@ -5,12 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO (Data Transfer Object) для ответа на успешную аутентификацию.
- * Содержит JWT токен и ID пользователя, которые клиент будет использовать для дальнейших запросов.
+ * DTO for successful authentication response.
+ * Contains JWT token and user userId which the client will use for further requests.
  */
-@Data // Lombok аннотация для геттеров, сеттеров, toString, equals, hashCode
-@NoArgsConstructor // Lombok аннотация для конструктора без аргументов
-@AllArgsConstructor // Lombok аннотация для конструктора со всеми аргументами
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginResponse {
     private String jwt;
     private Long userId;

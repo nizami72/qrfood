@@ -1,6 +1,6 @@
 package az.qrfood.backend.order.controller;
 
-import az.qrfood.backend.order.entity.Order;
+import az.qrfood.backend.order.dto.OrderDto;
 import az.qrfood.backend.order.OrderStatus;
 import az.qrfood.backend.order.service.OrderService;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,7 @@ public class AdminOrderController {
      * Получить все заказы по статусу.
      */
     @GetMapping("/status/{status}")
-    public List<Order> getOrdersByStatus(@PathVariable OrderStatus status) {
+    public List<OrderDto> getOrdersByStatus(@PathVariable OrderStatus status) {
         return orderService.getOrdersByStatus(status);
     }
 
@@ -34,11 +34,11 @@ public class AdminOrderController {
      * Изменить статус заказа (например: NEW → IN_PROGRESS).
      */
     @PutMapping("/{orderId}/status")
-    public ResponseEntity<Order> updateStatus(
+    public ResponseEntity<OrderDto> updateStatus(
             @PathVariable Long orderId,
             @RequestParam String status
     ) {
-        Order updated = orderService.updateOrderStatus(orderId, status.toUpperCase());
+        OrderDto updated = orderService.updateOrderStatus(orderId, status.toUpperCase());
         return ResponseEntity.ok(updated);
     }
 }

@@ -1,0 +1,131 @@
+### LOGIN REQUEST
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "nizami.budagov@gmail.com",
+  "password": "qqqq1111"
+}
+
+> {%
+    client.test("Request successful", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.jwt, "JWT token is missing in the response");
+        client.global.set("accessToken", response.body.jwt);
+        client.log("JWT Token saved: " + response.body.jwt);
+    });
+%}
+
+
+
+### GET ALL ORDERS
+//_____________________________________________________________________
+GET {{url}}{{apiOrders}}
+Authorization: Bearer {{accessToken}}
+
+
+
+### GET ORDERS BY EATERY ID
+//_____________________________________________________________________
+@eateryId = /1
+GET {{url}}{{apiOrders}}/eatery{{eateryId}}
+Authorization: Bearer {{accessToken}}
+
+
+
+### GET ORDER BY ID
+//_____________________________________________________________________
+@orderId = /5
+GET {{url}}{{apiOrders}}{{orderId}}
+Authorization: Bearer {{accessToken}}
+
+
+
+### POST ORDER
+//_____________________________________________________________________
+@tableId = /2
+POST {{url}}{{apiOrders}}{{tableId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "tableNumber": 1,
+  "note": "Please, start in 10 minute",
+  "items":
+  [
+    {
+      "dishItemId": 1,
+      "quantity": 2,
+      "note": "No onions please"
+    },
+    {
+      "dishItemId": 3,
+      "quantity": 1,
+      "note": "Extra spicy"
+    }
+  ]
+}
+
+
+
+### UPDATE ORDER
+//_____________________________________________________________________
+@orderIdToUpdate = /6
+PUT {{url}}{{apiOrders}}{{orderIdToUpdate}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "id": 6,
+  "status": "IN_PROGRESS",
+  "note": "Start now please",
+  "items": [
+    {
+      "dishId": 1,
+      "quantity": 3,
+      "notes": "No onions please"
+    },
+    {
+      "dishId": 3,
+      "quantity": 2,
+      "notes": "Extra spicy"
+    }
+  ]
+}
+
+
+
+### UPDATE ORDER STATUS
+//_____________________________________________________________________
+@orderIdForStatus = /1
+PUT {{url}}{{apiOrders}}{{orderIdForStatus}}/status
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "status": "COMPLETED"
+}
+
+
+
+### DELETE ORDER
+//_____________________________________________________________________
+@orderIdToDelete = /1
+DELETE {{url}}{{apiOrders}}{{orderIdToDelete}}
+Authorization: Bearer {{accessToken}}
+
+
+
+### ADMIN: GET ORDERS BY STATUS
+//_____________________________________________________________________
+@orderStatus = /NEW
+GET {{url}}{{apiAdminOrders}}/status{{orderStatus}}
+Authorization: Bearer {{accessToken}}
+
+
+
+### ADMIN: UPDATE ORDER STATUS
+//_____________________________________________________________________
+@adminOrderId = /1
+PUT {{url}}{{apiAdminOrders}}{{adminOrderId}}/status?status=IN_PROGRESS
+Authorization: Bearer {{accessToken}}
