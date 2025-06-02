@@ -43,6 +43,7 @@ public class EateryController {
      */
     @GetMapping("/owner/{ownerId}")
     public ResponseEntity<List<EateryDto>> getEateriesByOwnerId(@PathVariable("ownerId") Long ownerId) {
+        log.debug("Request to get all eateries of owner [{}]", ownerId);
         return ResponseEntity.ok(restaurantService.getAllEateriesByOwnerId(ownerId));
     }
 
