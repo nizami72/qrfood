@@ -1,5 +1,7 @@
 package az.qrfood.backend.user.controller;
 
+import az.qrfood.backend.eatery.dto.EateryDto;
+import az.qrfood.backend.eatery.service.EateryService;
 import az.qrfood.backend.user.User;
 import az.qrfood.backend.user.dto.LoginRequest;
 import az.qrfood.backend.user.dto.LoginResponse;
@@ -9,8 +11,6 @@ import az.qrfood.backend.user.profile.UserProfileService;
 import az.qrfood.backend.user.repository.UserRepository;
 import az.qrfood.backend.user.service.CustomUserDetailsService;
 import az.qrfood.backend.user.util.JwtUtil;
-import az.qrfood.backend.eatery.service.EateryService;
-import az.qrfood.backend.eatery.dto.EateryDto;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -165,6 +164,10 @@ public class AuthController {
 
         // Add the restaurant ID to the user profile
         userProfileService.addRestaurantToProfile(userProfile, eateryId);
+
+        log.debug("User [{}] and eatery [{}] successfully created.",
+                userProfile.getUser(),
+                eateryId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Пользователь и ресторан успешно зарегистрированы!"));
     }

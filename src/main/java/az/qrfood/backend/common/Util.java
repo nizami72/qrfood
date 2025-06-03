@@ -1,24 +1,22 @@
 package az.qrfood.backend.common;
 
-import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.multipart.MultipartFile;
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
-import java.lang.reflect.InvocationTargetException;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
-
+import javax.imageio.ImageIO;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.BeanUtils;
+import org.springframework.web.multipart.MultipartFile;
 @Log4j2
 public class Util {
 

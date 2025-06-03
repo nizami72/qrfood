@@ -1,6 +1,7 @@
 package az.qrfood.backend.all;
 
 import static io.restassured.RestAssured.given;
+
 import az.qrfood.backend.dto.Category;
 import az.qrfood.backend.dto.CategoryDto;
 import az.qrfood.backend.dto.Dish;
@@ -11,6 +12,7 @@ import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
+import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -23,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
+@Log4j2
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CreateAllFakeData {
@@ -40,7 +43,6 @@ public class CreateAllFakeData {
     String componentCategories;
     List<Eatery> eateries;
 
-
     String jwtToken;
     Long userId;
 
@@ -57,8 +59,37 @@ public class CreateAllFakeData {
                 });
     }
 
-
     @BeforeAll
+    void registerUserAndEatery() {
+        // Fetch token
+        String authPayload = """
+                            {
+                    "user": {
+                    "name": "Nizami Budagov",
+                            "email": "nizami.budagov@gmail.com",
+                            "password": "qqqq1111"
+                },
+                    "restaurant": {
+                    "name": "My First Restaurant"
+                }
+                }
+                """;
+
+        Response authResponse = given()
+                .baseUri(baseUrl)
+                .contentType("application/json")
+                .body(authPayload)
+                .when()
+                .post("/api/auth/register")
+                .then()
+                .statusCode(201)
+                .extract()
+                .response();
+        log.debug("Registered user");
+        login();
+    }
+
+//    @BeforeAll
     void login() {
         // Fetch token
         String authPayload = """
@@ -84,6 +115,9 @@ public class CreateAllFakeData {
 
     }
 
+
+
+
     @Test
     void shouldCreateCategoryWithImageAndDishWithImage() {
         fileLog.println("\n========== 📤 Запрос: загрузка блюда с изображением ==========");
@@ -102,7 +136,7 @@ public class CreateAllFakeData {
             Response response1 = given()
 //                .log().all() // лог всего ответа
                     .baseUri(baseUrl)
-                    .header("Authorization", "Bearer " + jwtToken) // ✅ Токен
+                    .header("Authorization", "Bearer " + jwtToken)
                     .contentType("application/json")
                     .body(requestBody)
                     .when()
@@ -112,6 +146,7 @@ public class CreateAllFakeData {
                     .statusCode(200)
                     .extract()
                     .response();
+            log.debug("Registered eatery");
 
             String createdEateryId = response1.getBody().asString();
 
@@ -124,7 +159,7 @@ public class CreateAllFakeData {
 
                 Response response = given()
                         .baseUri(baseUrl)
-                        .header("Authorization", "Bearer " + jwtToken) // ✅ Токен
+                        .header("Authorization", "Bearer " + jwtToken)
                         .multiPart("data", "data.json", json1.getBytes(StandardCharsets.UTF_8), "application/json")
                         .multiPart("image", new File("src/test/resources/image/" + category.image()))
                         .when()
@@ -134,6 +169,7 @@ public class CreateAllFakeData {
                         .extract()
                         .response();
                 String createdCategoryId = response.getBody().asString();
+                log.debug("Created category [{}]", createdCategoryId);
 
                 List<Dish> d = category.dishes();
                 d.forEach(dish -> {
@@ -146,9 +182,10 @@ public class CreateAllFakeData {
                             .multiPart("image", new File("src/test/resources/image/" + dish.image()))
                             .when()
 //                            .post(segmentDishes + createdCategoryId)
-                            .post("/api/categories" + "/" +createdCategoryId + "/dishes")
+                            .post("/api/categories" + "/" + createdCategoryId + "/dishes")
                             .then()
                             .statusCode(200);
+                    log.debug("Created dish");
                 });
             });
         });
