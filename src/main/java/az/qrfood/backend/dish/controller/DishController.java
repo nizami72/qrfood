@@ -61,9 +61,9 @@ public class DishController {
 
 
     /**
-     * Retrieve dishes in the category.
+     * GET all dishes in the category.
      */
-    @Operation(summary = "Retrieve the restourant dish by ID")
+    @Operation(summary = "Retrieve the eatery dishes included into specific category.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Restaurant was not found")

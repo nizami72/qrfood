@@ -17,11 +17,11 @@ import java.util.Map;
 @RequestMapping("/api/config")
 public class FrontendPathConfig {
 
-    @Value("${full.path.fe.eatery}")
+    @Value("${full.path.fe.eatery.image}")
     private String imagesEateryUri;
-    @Value("${full.path.fe.category}")
+    @Value("${full.path.fe.category.image}")
     private String imagesCategoriesUri;
-    @Value("${full.path.fe.dish}")
+    @Value("${full.path.fe.dish.image}")
     private String imagesDishesUri;
     @Value("${full.path.fe.api.tables}")
     private String urlApiTables;
