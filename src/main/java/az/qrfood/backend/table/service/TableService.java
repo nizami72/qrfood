@@ -67,8 +67,11 @@ public class TableService {
                 .orElseThrow(() -> new EntityNotFoundException("Eatery not found with id: " + tableDto.eateryId()));
 
         TableInEatery table = TableInEatery.builder()
-                .tableNumber(tableDto.number())
                 .eatery(eatery)
+                .tableNumber(tableDto.number())
+                .seats(tableDto.seats())
+                .note(tableDto.note())
+                .status(tableDto.status())
                 .qrCode(qrService.createQrCodeEntity(eatery.getId(), tableDto.number(), baseUrl))
                 .build();
 
