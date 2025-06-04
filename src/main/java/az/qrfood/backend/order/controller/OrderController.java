@@ -122,7 +122,6 @@ public class OrderController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
-        log.debug("REST request to delete Order : {}", id);
         orderService.deleteOrder(id);
         return ResponseEntity.ok().build();
     }
