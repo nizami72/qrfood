@@ -89,6 +89,9 @@ public class TableService {
 
         table.setTableNumber(tableDto.number());
         table.setEatery(eatery);
+        table.setSeats(tableDto.seats());
+        table.setNote(tableDto.note());
+        table.setStatus(tableDto.status());
 
         TableInEatery updatedTable = tableRepository.save(table);
         return convertToDto(updatedTable);
