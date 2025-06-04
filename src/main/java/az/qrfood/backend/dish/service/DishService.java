@@ -89,7 +89,9 @@ public class DishService {
 
         String folder = storageService.createDishesFolder(dishEntity.getId());
 
-        storageService.saveFile(folder, multipartFile, dishEntity.getImage());
+        if(multipartFile != null) {
+            storageService.saveFile(folder, multipartFile, dishEntity.getImage());
+        }
 
         return dishEntity;
     }

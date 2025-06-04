@@ -1,5 +1,6 @@
 package az.qrfood.backend.user.controller;
 
+import az.qrfood.backend.common.response.ApiResponse;
 import az.qrfood.backend.eatery.dto.EateryDto;
 import az.qrfood.backend.eatery.service.EateryService;
 import az.qrfood.backend.user.User;
@@ -35,7 +36,7 @@ import java.util.Optional;
  * REST controller for handling requests related to authentication and registration.
  */
 @RestController
-@RequestMapping("/api/auth") // Базовый путь для всех эндпоинтов в этом контроллере
+@RequestMapping("/api/auth")
 @Log4j2
 public class AuthController {
 
@@ -84,7 +85,8 @@ public class AuthController {
             );
         } catch (BadCredentialsException e) {
             log.debug("If the credentials are incorrect, return a 401 Unauthorized error.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Неверное имя пользователя или пароль"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Password or user name invalid"));
         }
 
         log.debug("Attempting to authenticate user using CustomUserDetailsService");
@@ -125,7 +127,7 @@ public class AuthController {
 
         // Create a new User entity
         User user = new User();
-        user.setUsername(userDto.getEmail()); // Using email as username
+        user.setUsername(userDto.getEmail());
 
         // Check if a user with the same username already exists
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
@@ -169,7 +171,8 @@ public class AuthController {
                 userProfile.getUser(),
                 eateryId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Пользователь и ресторан успешно зарегистрированы!"));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.ok( "User and a eatery successfully created!", null));
     }
 
 

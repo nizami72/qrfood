@@ -86,7 +86,7 @@ public class DishController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> createDish(@PathVariable("categoryId") Long categoryId,
                                            @RequestPart("data") DishDto dishDto,
-                                           @RequestPart("image") MultipartFile file) {
+                                           @RequestPart(value = "image", required = false) MultipartFile file) {
         dishDto.setCategoryId(categoryId);
         log.debug("Request to create dish item: {}", dishDto);
         DishEntity dishEntity = dishService.addDish(dishDto, file);

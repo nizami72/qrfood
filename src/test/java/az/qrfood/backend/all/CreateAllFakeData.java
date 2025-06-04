@@ -89,7 +89,7 @@ public class CreateAllFakeData {
         login();
     }
 
-//    @BeforeAll
+    //    @BeforeAll
     void login() {
         // Fetch token
         String authPayload = """
@@ -116,11 +116,9 @@ public class CreateAllFakeData {
     }
 
 
-
-
     @Test
     void shouldCreateCategoryWithImageAndDishWithImage() {
-        fileLog.println("\n========== 📤 Запрос: загрузка блюда с изображением ==========");
+        fileLog.println("\n========== 📤 All data going to be loaded ==========");
 
         eateries.forEach(eatery -> {
 
@@ -130,11 +128,11 @@ public class CreateAllFakeData {
                     "phones", eatery.phones(),
                     "geoLat", eatery.geoLat(),
                     "geoLng", eatery.geoLng(),
-                    "categories", eatery.categories()
+                    "categories", eatery.categories(),
+                    "ownerProfileId", 1
             );
-
             Response response1 = given()
-//                .log().all() // лог всего ответа
+//                .log().all()
                     .baseUri(baseUrl)
                     .header("Authorization", "Bearer " + jwtToken)
                     .contentType("application/json")
@@ -142,13 +140,14 @@ public class CreateAllFakeData {
                     .when()
                     .post(segmentEateries)
                     .then()
-                    .log().all() // лог всего ответа
+                    .log().all()
                     .statusCode(200)
                     .extract()
                     .response();
-            log.debug("Registered eatery");
+
 
             String createdEateryId = response1.getBody().asString();
+            log.debug("Eatery created [{}]", createdEateryId);
 
             List<Category> categoryList = eatery.categories();
 
@@ -175,23 +174,25 @@ public class CreateAllFakeData {
                 d.forEach(dish -> {
                     String json2 = TestDataLoader.serializeToJsonString(dish);
 
-                    given()
+                    Response r = given()
                             .baseUri(baseUrl)
-                            .header("Authorization", "Bearer " + jwtToken) // ✅ Токен
+                            .header("Authorization", "Bearer " + jwtToken)
                             .multiPart("data", "data.json", json2.getBytes(StandardCharsets.UTF_8), "application/json")
                             .multiPart("image", new File("src/test/resources/image/" + dish.image()))
                             .when()
-//                            .post(segmentDishes + createdCategoryId)
                             .post("/api/categories" + "/" + createdCategoryId + "/dishes")
                             .then()
-                            .statusCode(200);
-                    log.debug("Created dish");
+                            .statusCode(200)
+                            .extract()
+                            .response();
+                    String createdDishId = r.getBody().asString();
+                    log.debug("Created dish [{}]", createdDishId);
                 });
             });
         });
 
 
-        fileLog.println("========== 📥 Ответ: блюдо успешно загружено ==========\n");
+        fileLog.println("========== 📥 The dish has been successfully loaded.==========\n");
     }
 
 

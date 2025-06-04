@@ -25,6 +25,8 @@ public class FrontendPathConfig {
     private String imagesDishesUri;
     @Value("${full.path.fe.api.tables}")
     private String urlApiTables;
+    @Value("${full.path.fe.add.dishes}")
+    private String urlAddDish;
 
 
     @GetMapping("/image-paths")
@@ -34,6 +36,7 @@ public class FrontendPathConfig {
         paths.put("categories", imagesCategoriesUri);
         paths.put("dishes", imagesDishesUri);
         paths.put("tables", urlApiTables);
+        paths.put("urlAddDish", urlAddDish);
         log.debug("FE requested path config [{}]", paths);
         return paths;
     }

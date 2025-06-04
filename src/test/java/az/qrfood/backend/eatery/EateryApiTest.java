@@ -33,7 +33,7 @@ public class EateryApiTest {
 
     @BeforeAll
     void setupLogging() throws Exception {
-        fileLog = new PrintStream(new FileOutputStream("eatery.log", false));
+        fileLog = new PrintStream(new FileOutputStream("logs/eatery.log", false));
         RestAssured.filters(
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)
