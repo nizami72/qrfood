@@ -47,10 +47,15 @@ public class DishController {
 
     /**
      * Get dish Item by ID in the specified category.
-
+     *
      * @param dishId the dish item ID
      * @return dish item dto
      */
+    @Operation(summary = "Get a specific dish by ID within a category")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dish found and returned successfully"),
+            @ApiResponse(responseCode = "404", description = "Dish or category not found")
+    })
     @GetMapping("/{dishId}")
     public DishDto getDish(@PathVariable Long categoryId, @PathVariable Long dishId) {
         log.debug("Requested dish [{}] form category [{}]", dishId, categoryId);
@@ -79,10 +84,16 @@ public class DishController {
 
     /**
      * Post dish item for category.
-
+     *
      * @param dishDto - dish item DTO
      * @return Response entity
      */
+    @Operation(summary = "Create a new dish in a category")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dish created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "Category not found")
+    })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> createDish(@PathVariable("categoryId") Long categoryId,
                                            @RequestPart("data") DishDto dishDto,
@@ -95,11 +106,16 @@ public class DishController {
 
     /**
      * Delete the dish from the category.
-
+     *
      * @param categoryId categoryId wher from the dish is deleted
      * @param dishId dish to be deleted
      * @return response entity
      */
+    @Operation(summary = "Delete a dish from a category")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dish deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Dish or category not found")
+    })
     @Transactional
     @DeleteMapping("/{dishId}")
     public ResponseEntity<String> deleteDishItemById(@PathVariable Long categoryId, @PathVariable Long dishId) {
@@ -116,6 +132,12 @@ public class DishController {
      * @param file - updated image file (optional)
      * @return Response entity with updated dish ID
      */
+    @Operation(summary = "Update an existing dish in a category")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dish updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "Dish or category not found")
+    })
     @PutMapping(value = "/{dishId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> updateDish(@PathVariable("categoryId") Long categoryId,
                                            @PathVariable("dishId") Long dishId,

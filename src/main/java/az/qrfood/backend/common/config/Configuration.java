@@ -2,7 +2,13 @@ package az.qrfood.backend.common.config;
 
 import az.qrfood.backend.common.Util;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -21,8 +27,27 @@ import java.util.Locale;
         info = @Info(
                 title = "QR Order API",
                 version = "1.0",
-                description = "Система бесконтактного заказа в ресторане через QR-код"
-        )
+                description = "Система бесконтактного заказа в ресторане через QR-код",
+                contact = @Contact(
+                        name = "QR Food Support",
+                        email = "support@qrfood.az",
+                        url = "https://qrfood.az/support"
+                ),
+                license = @License(
+                        name = "Apache 2.0",
+                        url = "https://www.apache.org/licenses/LICENSE-2.0.html"
+                )
+        ),
+        security = @SecurityRequirement(name = "bearerAuth")
+)
+
+@SecurityScheme(
+        name = "bearerAuth",
+        description = "JWT auth description",
+        scheme = "bearer",
+        type = SecuritySchemeType.HTTP,
+        bearerFormat = "JWT",
+        in = SecuritySchemeIn.HEADER
 )
 
 @org.springframework.context.annotation.Configuration
