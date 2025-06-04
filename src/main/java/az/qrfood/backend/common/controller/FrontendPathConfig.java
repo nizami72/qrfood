@@ -23,10 +23,12 @@ public class FrontendPathConfig {
     private String imagesCategoriesUri;
     @Value("${full.path.fe.dish.image}")
     private String imagesDishesUri;
-    @Value("${full.path.fe.api.tables}")
+    @Value("${full.path.fe.api.tables.image}")
     private String urlApiTables;
-    @Value("${full.path.fe.add.dishes}")
+    @Value("${full.path.fe.add.dishes.2.category}")
     private String urlAddDish;
+    @Value("${full.path.fe.add.dish.2.order}")
+    private String urlAddDish2Order;
 
 
     @GetMapping("/image-paths")
@@ -37,6 +39,7 @@ public class FrontendPathConfig {
         paths.put("dishes", imagesDishesUri);
         paths.put("tables", urlApiTables);
         paths.put("urlAddDish", urlAddDish);
+        paths.put("urlAddDish2Order", urlAddDish2Order);
         log.debug("FE requested path config [{}]", paths);
         return paths;
     }
