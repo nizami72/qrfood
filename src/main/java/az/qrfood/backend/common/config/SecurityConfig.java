@@ -80,6 +80,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // Отключаем CSRF для REST API, так как используем JWT
                 .authorizeHttpRequests(authorize -> authorize
                         // =======================================================================    PERMIT ALL SECTION
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/v3/api-docs").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/qrcode/**").permitAll()
                         .requestMatchers("/image/**").permitAll()

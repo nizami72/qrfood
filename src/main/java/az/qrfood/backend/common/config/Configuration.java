@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.info.License;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -56,6 +58,19 @@ public class Configuration {
     @Value("${folder.root.images.eatery}")
     private String imagesFolder;
 
+    @Value("${base.url}")
+    private String baseUrl;
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        Server server = new Server();
+        server.setUrl(baseUrl);
+        server.setDescription("Server URL");
+
+        return new OpenAPI()
+                .addServersItem(server);
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -79,10 +94,10 @@ public class Configuration {
     @Qualifier("cors")
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173")); // или List.of("*")
+        config.setAllowedOrigins(List.of("*")); // Allow all origins
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        config.setAllowCredentials(true); // нужно, если используешь куки/токен в header
+        config.setAllowCredentials(false); // Must be false when using "*" for allowed origins
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
