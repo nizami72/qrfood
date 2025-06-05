@@ -29,6 +29,8 @@ public class FrontendPathConfig {
     private String urlAddDish;
     @Value("${full.path.fe.add.dish.2.order}")
     private String urlAddDish2Order;
+    @Value("${full.path.fe.delete.menu-item}")
+    private String urlDeleteMenuItem;
 
 
     @GetMapping("/image-paths")
@@ -40,6 +42,7 @@ public class FrontendPathConfig {
         paths.put("tables", urlApiTables);
         paths.put("urlAddDish", urlAddDish);
         paths.put("urlAddDish2Order", urlAddDish2Order);
+        paths.put("urlDeleteMenuItemFromOrder", urlDeleteMenuItem);
         log.debug("FE requested path config [{}]", paths);
         return paths;
     }

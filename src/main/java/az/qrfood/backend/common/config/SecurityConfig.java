@@ -94,6 +94,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/tables/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/eatery/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/order-items/**").hasAnyRole("USER", "ADMIN")
                         // ==============================================================    ALL OTHERS NEED TO HAVE JWT
                         // Все остальные запросы требуют аутентификации (наличия валидного JWT)
                         .anyRequest().authenticated()

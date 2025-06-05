@@ -136,7 +136,7 @@ public class OrderItemApiTest {
                 .dishItemId(1L)
                 .quantity(2)
                 .note("Test note")
-                .orderItemId(7l)
+                .orderItemId(1l)
                 .build();
 
         given()
@@ -208,7 +208,8 @@ public class OrderItemApiTest {
 
         // First create an order item to delete
         OrderItemDTO orderItemDTO = OrderItemDTO.builder()
-                .dishItemId(1L)
+                .dishItemId(5L)
+                .orderItemId(1L) // Assuming order with ID 1 exists
                 .quantity(2)
                 .note("Test note")
                 .build();
