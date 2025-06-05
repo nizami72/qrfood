@@ -163,6 +163,7 @@ public class OrderItemApiTest {
                 .dishItemId(1L)
                 .quantity(2)
                 .note("Test note")
+                .orderItemId(1l)
                 .build();
 
         // Create the order item
