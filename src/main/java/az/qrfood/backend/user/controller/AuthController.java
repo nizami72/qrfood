@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -176,8 +179,52 @@ public class AuthController {
     }
 
 
+    /**
+     * Endpoint to check if a user is logged in and return user information.
+     * 
+     * @return ResponseEntity with user information if authenticated, or a message if not.
+     */
     @GetMapping("/status")
-    public ResponseEntity<Map<String, String>> status() {
-        return ResponseEntity.status(200).body(Map.of("message", "ok"));
+    public ResponseEntity<?> status() {
+        // Get the current authentication from the security context
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Check if the user is authenticated
+        if (authentication != null && authentication.isAuthenticated() && 
+            !authentication.getPrincipal().equals("anonymousUser")) {
+
+            // Get the username from the authenticated user
+            String username = authentication.getName();
+            log.debug("User is authenticated: {}", username);
+
+            // Get the user entity from the repository
+            Optional<User> userOptional = userRepository.findByUsername(username);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+
+                // Get the user profile
+                Optional<UserProfile> userProfileOptional = userProfileService.findProfileByUser(user);
+                if (userProfileOptional.isPresent()) {
+                    UserProfile userProfile = userProfileOptional.get();
+
+                    // Create a response with user information
+                    Map<String, Object> userInfo = new HashMap<>();
+                    userInfo.put("authenticated", true);
+                    userInfo.put("username", user.getUsername());
+                    userInfo.put("userId", user.getId());
+                    userInfo.put("profileId", userProfile.getId());
+                    userInfo.put("roles", user.getRoles());
+                    userInfo.put("phones", userProfile.getPhones());
+                    userInfo.put("isActive", userProfile.getIsActive());
+                    userInfo.put("lastLogin", userProfile.getLastLogin());
+                    userInfo.put("restaurantIds", userProfile.getRestaurantIds());
+
+                    return ResponseEntity.ok(userInfo);
+                }
+            }
+        }
+
+        // If not authenticated or user not found, return a message
+        return ResponseEntity.ok(Map.of("authenticated", false, "message", "User not authenticated"));
     }
 }
