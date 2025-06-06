@@ -35,7 +35,7 @@ public class QrService {
 
         String qrContent = String.format(segmentQrRedirect, eateryId, tableLabel);
 
-
+        // generating QR code
         try {
             code.setQrCodeAsBytes(QrCodeGenerator.generateQRCode(qrContent, 250, 250));
         } catch (Exception e) {

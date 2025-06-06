@@ -9,7 +9,9 @@ import az.qrfood.backend.eatery.entity.EateryPhone;
 import az.qrfood.backend.eatery.repository.EateryRepository;
 import az.qrfood.backend.table.entity.TableInEatery;
 import az.qrfood.backend.table.service.TableService;
+import az.qrfood.backend.user.User;
 import az.qrfood.backend.user.profile.UserProfileRepository;
+import az.qrfood.backend.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -25,15 +27,17 @@ public class EateryService {
     private final TableService tableService;
     private final StorageService storageService;
     private final UserProfileRepository userProfileRepository;
+    private final UserRepository userRepository;
 
-    public EateryService(EateryRepository eateryRepository, 
-                         TableService tableService, 
+    public EateryService(EateryRepository eateryRepository,
+                         TableService tableService,
                          StorageService storageService,
-                         UserProfileRepository userProfileRepository) {
+                         UserProfileRepository userProfileRepository, UserRepository userRepository) {
         this.eateryRepository = eateryRepository;
         this.tableService = tableService;
         this.storageService = storageService;
         this.userProfileRepository = userProfileRepository;
+        this.userRepository = userRepository;
     }
 
     public List<EateryDto> getAllRestaurants() {
@@ -70,21 +74,26 @@ public class EateryService {
 
 
     public Long createEatery(EateryDto restaurantDTO) {
-        Eatery r = Util.copyProperties(restaurantDTO, Eatery.class);
+        Eatery eatery = Util.copyProperties(restaurantDTO, Eatery.class);
 
         // Set owner profile if provided
         if (restaurantDTO.getOwnerProfileId() != null) {
-            userProfileRepository.findById(restaurantDTO.getOwnerProfileId())
-                .ifPresent(r::setOwner);
+            Long userId = restaurantDTO.getOwnerProfileId();
+            Optional<User> userOp = userRepository.findById(userId);
+            if (userOp.isEmpty()) {
+                throw new EntityNotFoundException("User with is not foud " + userId);
+            }
+            userProfileRepository.findByUser(userOp.get())
+                .ifPresent(eatery::setOwner);
         }
 
-        r = eateryRepository.save(r);
-        populatePhoneEntities(r, restaurantDTO.getPhones());
-        populateTables(r, restaurantDTO.getTablesAmount());
-        r = eateryRepository.save(r);
-        EateryDto dto = convertToDTO(r);
+        eatery = eateryRepository.save(eatery);
+        populatePhoneEntities(eatery, restaurantDTO.getPhones());
+        populateTables(eatery, restaurantDTO.getNumberOfTables());
+        eatery = eateryRepository.save(eatery);
+        EateryDto dto = convertToDTO(eatery);
         storageService.createEateryFolder(dto.getId());
-        return r.getId();
+        return eatery.getId();
     }
 
     private EateryDto convertToDTO(Eatery eatery) {
@@ -98,7 +107,7 @@ public class EateryService {
         });
 
         dto.setId(eatery.getId());
-        dto.setTablesAmount(eatery.getTables().size());
+        dto.setNumberOfTables(eatery.getTables().size());
 
         // Set owner profile ID if available
         if (eatery.getOwner() != null) {
@@ -163,7 +172,7 @@ public class EateryService {
         updatePhoneNumbers(existingEatery, eateryDTO.getPhones());
 
         // todo is it neededUpdate tables if the amount has changed
-        if (existingEatery.getTables().size() != eateryDTO.getTablesAmount()) {
+        if (existingEatery.getTables().size() != eateryDTO.getNumberOfTables()) {
 //            updateTables(existingEatery, eateryDTO.getTablesAmount());
         }
 

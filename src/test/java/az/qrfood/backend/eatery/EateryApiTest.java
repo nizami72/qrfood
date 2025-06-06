@@ -1,11 +1,11 @@
 package az.qrfood.backend.eatery;
 
 import az.qrfood.backend.dto.Eatery;
+import az.qrfood.backend.util.FakeDataGenerator;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +34,7 @@ public class EateryApiTest {
 
     @BeforeEach
     void setupLogging() throws Exception {
-        fileLog = new PrintStream(new FileOutputStream("testLogs/eatery.log", false));
+        fileLog = new PrintStream(new FileOutputStream("logsTest/eatery.log", false));
         RestAssured.filters(
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)
@@ -75,12 +74,13 @@ public class EateryApiTest {
 
 
             Map<String, Object> requestBody = Map.of(
-                    "name", "New Caffe",
-                    "address", "address",
-                    "phones", List.of("+9941234578", "+9944567812"),
-                    "geoLat", 40.1234,
-                    "geoLng", 49.4321,
-                    "tableAmount", 5,
+                    "name", FakeDataGenerator.eateryName(),
+                    "address", FakeDataGenerator.generateFakeAddress(),
+                    "phones", FakeDataGenerator.phones(),
+                    "geoLat", FakeDataGenerator.geo1(),
+                    "geoLng", FakeDataGenerator.geo2(),
+                    "numberOfTables", FakeDataGenerator.numberOfTables(),
+
                     "ownerProfileId", 2
             );
 
@@ -182,7 +182,7 @@ public class EateryApiTest {
                 "name", "Updated " + currentEatery.get("name"),
                 "address", "Updated " + currentEatery.get("address"),
                 "phones", currentEatery.get("phones"),
-                "tablesAmount", currentEatery.get("tablesAmount"),
+                "numberOfTables", currentEatery.get("numberOfTables"),
                 "geoLat", currentEatery.get("geoLat"),
                 "geoLng", currentEatery.get("geoLng")
         );

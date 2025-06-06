@@ -41,7 +41,7 @@ public class CategoryApiTest {
 
     @BeforeAll
     void setupLogging() throws Exception {
-        fileLog = new PrintStream(new FileOutputStream("testLogs/categories.log", false));
+        fileLog = new PrintStream(new FileOutputStream("logsTest/categories.log", false));
         RestAssured.filters(
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)
@@ -73,10 +73,55 @@ public class CategoryApiTest {
 
     }
 
-    /**
-     * POST category.
-     */
+    // ==================== GET Methods ====================
 
+    /**
+     * GET test for retrieving all categories.
+     */
+    @Test
+    void getAllCategories() {
+        given()
+                .when()
+                .get("/api/category")
+                .then()
+                .statusCode(200)
+                .log().body();
+    }
+
+    /**
+     * GET test for retrieving a category by its ID.
+     */
+    @Test
+    void getCategoryById() {
+        given()
+                .when()
+                .get("/api/category/2")
+                .then()
+                .statusCode(200)
+                .log().body();
+    }
+
+    /**
+     * GET test for retrieving categories for a specific eatery.
+     */
+    @Test
+    void getCategoriesForEatery() {
+        given()
+                .baseUri(baseUrl)
+                .header("Authorization", "Bearer " + jwtToken)
+                .when()
+                .get("/api/eateries/2/categories")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .log().body();
+    }
+
+    // ==================== POST Methods ====================
+
+    /**
+     * POST test for creating a category with image.
+     */
     @Test
     void createCategoryWithImage() {
         File image = new File("src/test/resources/image/soup.webp");
@@ -99,19 +144,9 @@ public class CategoryApiTest {
                 .log().body();
     }
 
-    @Test
-    void getCategoriesForEatery() {
-        given()
-                .baseUri(baseUrl)
-                .header("Authorization", "Bearer " + jwtToken)
-                .when()
-                .get("/api/eateries/2/categories")
-                .then()
-                .log().all()
-                .statusCode(200)
-                .log().body();
-    }
-
+    /**
+     * POST test for adding a category to an eatery without an image.
+     */
     @Test
     void addCategoryToEateryWithoutImage() {
         given()
@@ -128,36 +163,9 @@ public class CategoryApiTest {
                 .log().body();
     }
 
-    @Test
-    void getAllCategories() {
-        given()
-                .when()
-                .get("/api/category")
-                .then()
-                .statusCode(200)
-                .log().body();
-    }
-
-    @Test
-    void getCategoryById() {
-        given()
-                .when()
-                .get("/api/category/2")
-                .then()
-                .statusCode(200)
-                .log().body();
-    }
-
-    @Test
-    void deleteCategory() {
-        given()
-                .when()
-                .delete("/api/category/34")
-                .then()
-                .statusCode(anyOf(is(200), is(204)))
-                .log().body();
-    }
-
+    /**
+     * POST test for adding a category with random data.
+     */
     @Test
     void addCategoryRandomly() {
         int eateryId = 10;
@@ -176,6 +184,21 @@ public class CategoryApiTest {
                 .post("/api/category/create/eatery/" + eateryId)
                 .then()
                 .statusCode(anyOf(is(200), is(201)))
+                .log().body();
+    }
+
+    // ==================== DELETE Methods ====================
+
+    /**
+     * DELETE test for removing a category.
+     */
+    @Test
+    void deleteCategory() {
+        given()
+                .when()
+                .delete("/api/category/34")
+                .then()
+                .statusCode(anyOf(is(200), is(204)))
                 .log().body();
     }
 }

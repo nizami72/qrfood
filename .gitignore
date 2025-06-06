@@ -44,4 +44,6 @@ build/
 /eatery.log
 /LOG_FILE_PATH_IS_UNDEFINED/info.log
 /rest.log
-/testLogs/
+/logsTest/
+/logsTest/
+/LOG_FILE_PATH_IS_UNDEFINED/

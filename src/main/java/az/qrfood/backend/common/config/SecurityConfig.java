@@ -87,6 +87,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/qrcode/**").permitAll()
                         .requestMatchers("/image/**").permitAll()
+                        .requestMatchers("/api/eateries/*/categories").permitAll()
                         // ============================================================================    ADMIN SECTION
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // ===================================================================    USER AND ADMIN SECTION

@@ -161,7 +161,7 @@ public class AuthController {
         // Create a new EateryDto object
         EateryDto eateryDto = new EateryDto();
         eateryDto.setName(restaurantDto.getName());
-        eateryDto.setTablesAmount(1); // Default to 1 table
+        eateryDto.setNumberOfTables(1); // Default to 1 table
         eateryDto.setOwnerProfileId(userProfile.getId()); // Set the owner profile ID
 
         // Save the restaurant to the database

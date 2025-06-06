@@ -23,7 +23,7 @@ public class EateryDto {
     private List<Long> tableIds;
     private List<Long> categoryIds;
     private List<CategoryDto> categories;
-    private int tablesAmount;
+    private int numberOfTables;
     private Double geoLat;
     private Double geoLng;
     private Long ownerProfileId;

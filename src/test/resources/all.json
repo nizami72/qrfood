@@ -4,7 +4,7 @@
     "address": "123 Main Street, Baku",
     "geoLat": 40.3800,
     "geoLng": 49.8400,
-    "tablesAmount": 3,
+    "numberOfTables": 3,
     "phones": [
       "+994501112233",
       "+994123456789"
@@ -173,6 +173,7 @@
     "address": "456 Seaside Blvd, Baku",
     "geoLat": 40.3680,
     "geoLng": 49.8350,
+    "numberOfTables": 5,
     "phones": [
       "+994557778899"
     ],
@@ -277,6 +278,7 @@
     "address": "789 Fortress St, Baku",
     "geoLat": 40.3650,
     "geoLng": 49.8300,
+    "numberOfTables": 2,
     "phones": [
       "+994709990011",
       "+994127654321"

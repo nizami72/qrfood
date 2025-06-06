@@ -48,7 +48,7 @@ public class CreateAllFakeData {
 
     @BeforeAll
     void setupLogging() throws Exception {
-        fileLog = new PrintStream(new FileOutputStream("testLogs/all.log", false));
+        fileLog = new PrintStream(new FileOutputStream("logsTest/all.log", false));
         RestAssured.filters(
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)
@@ -129,7 +129,8 @@ public class CreateAllFakeData {
                     "geoLat", eatery.geoLat(),
                     "geoLng", eatery.geoLng(),
                     "categories", eatery.categories(),
-                    "ownerProfileId", 1
+                    "ownerProfileId", 2,
+                    "numberOfTables", eatery.numberOfTables()
             );
             Response response1 = given()
 //                .log().all()
