@@ -2,14 +2,14 @@ package az.qrfood.backend.category;
 
 import az.qrfood.backend.dto.Category;
 import az.qrfood.backend.dto.Dish;
-import az.qrfood.backend.util.TestDataLoader;
-import com.fasterxml.jackson.core.type.TypeReference;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 
+import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,24 +30,52 @@ public class CategoryApiTest {
     private static PrintStream fileLog;
 
     @Value("${base.url}")
-    String BASE_URL;
-    @Value("${segment.api.eatery}")
+    String baseUrl;
+    @Value("${segment.eateries}")
     String segmentApiCategory;
     @Value("${segment.api.dish}")
     String segmentApiDish;
     List<Category> dishes;
+    String jwtToken;
+    Long userId;
 
-     @BeforeAll
+    @BeforeAll
     void setupLogging() throws Exception {
-        fileLog = new PrintStream(new FileOutputStream("categories.log", false));
+        fileLog = new PrintStream(new FileOutputStream("testLogs/categories.log", false));
         RestAssured.filters(
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)
         );
-        dishes = TestDataLoader.loadJsonListFromResource(
-                "dishes.json",
-                new TypeReference<>() {});
     }
+
+    @BeforeEach
+    void login() {
+        String authPayload = """
+                {
+                  "email": "nizami.budagov@gmail.com",
+                  "password": "qqqq1111"
+                }
+                """;
+
+        Response authResponse = given()
+                .baseUri(baseUrl)
+                .contentType("application/json")
+                .body(authPayload)
+                .when()
+                .post("/api/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+
+        jwtToken = authResponse.jsonPath().getString("jwt");
+        userId = authResponse.jsonPath().getLong("userId");
+
+    }
+
+    /**
+     * POST category.
+     */
 
     @Test
     void createCategoryWithImage() {
@@ -66,6 +94,7 @@ public class CategoryApiTest {
                 .when()
                 .post("/api/category/create/eatery/1")
                 .then()
+                .log().all()
                 .statusCode(anyOf(is(200), is(201)))
                 .log().body();
     }
@@ -73,9 +102,12 @@ public class CategoryApiTest {
     @Test
     void getCategoriesForEatery() {
         given()
+                .baseUri(baseUrl)
+                .header("Authorization", "Bearer " + jwtToken)
                 .when()
-                .get("/api/category/eatery/1")
+                .get("/api/eateries/2/categories")
                 .then()
+                .log().all()
                 .statusCode(200)
                 .log().body();
     }

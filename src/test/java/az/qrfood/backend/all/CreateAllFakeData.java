@@ -48,7 +48,7 @@ public class CreateAllFakeData {
 
     @BeforeAll
     void setupLogging() throws Exception {
-        fileLog = new PrintStream(new FileOutputStream("logs/all.log", false));
+        fileLog = new PrintStream(new FileOutputStream("testLogs/all.log", false));
         RestAssured.filters(
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)
@@ -174,7 +174,7 @@ public class CreateAllFakeData {
                 d.forEach(dish -> {
                     String json2 = TestDataLoader.serializeToJsonString(dish);
 
-                    Response r = given()
+                    Response response2 = given()
                             .baseUri(baseUrl)
                             .header("Authorization", "Bearer " + jwtToken)
                             .multiPart("data", "data.json", json2.getBytes(StandardCharsets.UTF_8), "application/json")
@@ -185,7 +185,7 @@ public class CreateAllFakeData {
                             .statusCode(200)
                             .extract()
                             .response();
-                    String createdDishId = r.getBody().asString();
+                    String createdDishId = response2.getBody().asString();
                     log.debug("Created dish [{}]", createdDishId);
                 });
             });

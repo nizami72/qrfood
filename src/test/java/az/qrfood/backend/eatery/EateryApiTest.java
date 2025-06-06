@@ -6,12 +6,14 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -25,15 +27,15 @@ public class EateryApiTest {
 
     @Value("${base.url}")
     String baseUrl;
-    @Value("${segment.api.eatery}")
+    @Value("${segment.eateries}")
     String segmentApiEatery;
     List<Eatery> eateryList;
     String jwtToken;
     Long userId;
 
-    @BeforeAll
+    @BeforeEach
     void setupLogging() throws Exception {
-        fileLog = new PrintStream(new FileOutputStream("logs/eatery.log", false));
+        fileLog = new PrintStream(new FileOutputStream("testLogs/eatery.log", false));
         RestAssured.filters(
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)
@@ -71,20 +73,22 @@ public class EateryApiTest {
 
         fileLog.println("\n==================== 📥 CREATE EATERIES =====================");
 
-        eateryList.forEach(eatery -> {
 
             Map<String, Object> requestBody = Map.of(
-                    "name", eatery.name(),
-                    "address", eatery.address(),
-                    "phones", eatery.phones(),
-                    "geoLat", eatery.geoLat(),
-                    "geoLng", eatery.geoLng()
+                    "name", "New Caffe",
+                    "address", "address",
+                    "phones", List.of("+9941234578", "+9944567812"),
+                    "geoLat", 40.1234,
+                    "geoLng", 49.4321,
+                    "tableAmount", 5,
+                    "ownerProfileId", 2
             );
 
 
             given()
 //                .log().all() // лог всего ответа
                     .baseUri(baseUrl)
+                    .header("Authorization", "Bearer " + jwtToken)
                     .contentType("application/json")
                     .body(requestBody)
                     .when()
@@ -92,7 +96,6 @@ public class EateryApiTest {
                     .then()
                     .log().all() // лог всего ответа
                     .statusCode(200); // или другой ожидаемый статус
-        });
 
     }
 
@@ -103,6 +106,7 @@ public class EateryApiTest {
         given()
                 .log().all() // лог всего ответа
                 .baseUri(baseUrl)
+                .header("Authorization", "Bearer " + jwtToken)
                 .when()
                 .get(segmentApiEatery)
                 .then()
@@ -118,6 +122,7 @@ public class EateryApiTest {
 
         given()
                 .baseUri(baseUrl)
+                .header("Authorization", "Bearer " + jwtToken)
                 .when()
                 .get(segmentApiEatery + "/{id}", eateryId)
                 .then()
@@ -132,6 +137,7 @@ public class EateryApiTest {
 
         given()
                 .baseUri(baseUrl)
+                .header("Authorization", "Bearer " + jwtToken)
                 .when()
                 .delete("/api/eatery/{id}", eateryId)
                 .then()
@@ -146,6 +152,7 @@ public class EateryApiTest {
 
         given()
                 .baseUri(baseUrl)
+                .header("Authorization", "Bearer " + jwtToken)
                 .when()
                 .delete(segmentApiEatery + "/{id}", eateryId)
                 .then()
@@ -162,6 +169,7 @@ public class EateryApiTest {
         // First, get the current eatery data
         var currentEatery = given()
                 .baseUri(baseUrl)
+                .header("Authorization", "Bearer " + jwtToken)
                 .when()
                 .get(segmentApiEatery + "/{id}", eateryId)
                 .then()
@@ -182,6 +190,7 @@ public class EateryApiTest {
         // Send update request
         given()
                 .baseUri(baseUrl)
+                .header("Authorization", "Bearer " + jwtToken)
                 .contentType("application/json")
                 .body(requestBody)
                 .when()

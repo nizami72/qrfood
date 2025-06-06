@@ -4,6 +4,7 @@
     "address": "123 Main Street, Baku",
     "geoLat": 40.3800,
     "geoLng": 49.8400,
+    "tablesAmount": 3,
     "phones": [
       "+994501112233",
       "+994123456789"

@@ -35,7 +35,7 @@ public class OrderItemApiTest {
 
     @BeforeAll
     void setupLogging() throws Exception {
-        fileLog = new PrintStream(new FileOutputStream("logs/orderitem.log", false));
+        fileLog = new PrintStream(new FileOutputStream("testLogs/orderitem.log", false));
         RestAssured.filters(
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)

@@ -1,5 +1,7 @@
 package az.qrfood.backend.dto;
 
+import lombok.Getter;
+import lombok.Setter;
 import java.util.List;
 
 /**
@@ -14,6 +16,7 @@ public record Eatery(
     String address,
     double geoLat,
     double geoLng,
+    int tablesAmount,
     List<String> phones,
     // Note: JSON uses "categories" (singular) for a list, which matches the record component name.
     // @JsonProperty is not strictly needed here as names match, but can be used for clarity
