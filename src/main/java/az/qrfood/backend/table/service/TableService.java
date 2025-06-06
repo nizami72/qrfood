@@ -72,10 +72,10 @@ public class TableService {
                 .seats(tableDto.seats())
                 .note(tableDto.note())
                 .status(tableDto.status())
-                .qrCode(qrService.createQrCodeEntity(eatery.getId(), tableDto.number(), baseUrl))
                 .build();
 
         TableInEatery savedTable = tableRepository.save(table);
+        table.setQrCode(qrService.createQrCodeEntity(eatery.getId(), table.getId(), baseUrl));
         return convertToDto(savedTable);
     }
 
@@ -115,10 +115,11 @@ public class TableService {
         TableInEatery table = TableInEatery.builder()
                 .tableNumber(String.valueOf(tableNumber))
                 .eatery(eatery)
-                .qrCode(qrService.createQrCodeEntity(eatery.getId(), tableNumber, baseUrl))
                 .build();
 
-        return tableRepository.save(table);
+        TableInEatery savedTable = tableRepository.save(table);
+        table.setQrCode(qrService.createQrCodeEntity(eatery.getId(), table.getId(), baseUrl));
+        return tableRepository.save(savedTable);
     }
 
     /**

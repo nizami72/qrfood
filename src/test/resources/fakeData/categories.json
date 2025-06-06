@@ -1,0 +1,41 @@
+[
+  {"nameAz": "Səhər yeməyi", "nameEn": "Breakfast", "nameRu": "Завтрак", "image": "breakfast.webp"},
+  {"nameAz": "Gündəlik yeməklər", "nameEn": "Daily Meals", "nameRu": "Ежедневные блюда", "image": "daily_meals.webp"},
+  {"nameAz": "Şorbalar", "nameEn": "Soups", "nameRu": "Супы", "image": "soups.webp"},
+  {"nameAz": "Salatlar", "nameEn": "Salads", "nameRu": "Салаты", "image": "salads.webp"},
+  {"nameAz": "Qarnirlər", "nameEn": "Side Dishes", "nameRu": "Гарниры", "image": "side_dishes.webp"},
+  {"nameAz": "Fast food", "nameEn": "Fast Food", "nameRu": "Фастфуд", "image": "fast_food.webp"},
+  {"nameAz": "Şirniyyatlar", "nameEn": "Desserts", "nameRu": "Десерты", "image": "desserts.webp"},
+  {"nameAz": "İçkilər", "nameEn": "Drinks", "nameRu": "Напитки", "image": "drinks.webp"},
+  {"nameAz": "Dəniz məhsulları", "nameEn": "Seafood", "nameRu": "Морепродукты", "image": "seafood.webp"},
+  {"nameAz": "Vejetaryan", "nameEn": "Vegetarian", "nameRu": "Вегетарианские", "image": "vegetarian.webp"}
+]
+
+
+# Sample dishes per category (7 each, simplified for this example)
+sample_dishes = {
+"Breakfast": [
+{"name": {"az": "Omlet", "en": "Omelette", "ru": "Омлет"}, "desc": {"az": "Pendir və göyərti ilə", "en": "With cheese and herbs", "ru": "С сыром и зеленью"}, "image": "omelette.webp"},
+{"name": {"az": "Səhər yeməyi seti", "en": "Breakfast set", "ru": "Завтрак сет"}, "desc": {"az": "Yumurta, sosiska, tərəvəz", "en": "Eggs, sausage, veggies", "ru": "Яйца, сосиски, овощи"}, "image": "breakfast_set.webp"},
+{"name": {"az": "Blinçik", "en": "Pancakes", "ru": "Блинчики"}, "desc": {"az": "Mürəbbə ilə", "en": "With jam", "ru": "С вареньем"}, "image": "pancakes.webp"},
+{"name": {"az": "Qayğanaq", "en": "Scrambled eggs", "ru": "Яичница"}, "desc": {"az": "Pomidor ilə", "en": "With tomatoes", "ru": "С помидорами"}, "image": "scrambled_eggs.webp"},
+{"name": {"az": "Bal ilə kəsmik", "en": "Cottage cheese with honey", "ru": "Творог с мёдом"}, "desc": {"az": "Bal və qoz ilə", "en": "With honey and nuts", "ru": "С мёдом и орехами"}, "image": "cottage_honey.webp"},
+{"name": {"az": "Müsli", "en": "Muesli", "ru": "Мюсли"}, "desc": {"az": "Süd və meyvə ilə", "en": "With milk and fruit", "ru": "С молоком и фруктами"}, "image": "muesli.webp"},
+{"name": {"az": "Tost", "en": "Toast", "ru": "Тост"}, "desc": {"az": "Pendirli", "en": "With cheese", "ru": "С сыром"}, "image": "toast.webp"},
+]
+}
+
+# Fill in the other categories with dummy variations of the above format
+for category in categories:
+key = category["nameEn"]
+dishes = sample_dishes.get(key, [])
+while len(dishes) < 7:
+index = len(dishes) + 1
+dishes.append(generate_dish(
+{"az": f"Yemək {index}", "en": f"Dish {index}", "ru": f"Блюдо {index}"},
+{"az": "Dadlı yemək", "en": "Tasty meal", "ru": "Вкусное блюдо"},
+f"dish_{index}.webp"
+))
+category["dishes"] = dishes
+
+categories

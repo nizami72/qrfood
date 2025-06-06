@@ -25,15 +25,18 @@ public class QrService {
     private String componentTable;
     @Value("${segment.qr.redirect}")
     private String segmentQrRedirect;
+    @Value("${component.redirect}")
+    private String componentRedirect;
+
 
     public QrService(EateryRepository eateryRepository) {
         this.eateryRepository = eateryRepository;
     }
 
-    public QrCode createQrCodeEntity(long eateryId, String tableLabel, String url) {
+    public QrCode createQrCodeEntity(long eateryId, Long tableId, String url) {
         QrCode code = new QrCode();
 
-        String qrContent = String.format(segmentQrRedirect, eateryId, tableLabel);
+        String qrContent = String.format(segmentQrRedirect, eateryId, tableId) + componentRedirect;
 
         // generating QR code
         try {

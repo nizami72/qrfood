@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
 @RestController
-@RequestMapping("${segment.api.qr}")
+@RequestMapping("${segment.api.qr-code}")
 public class QrController {
 
     private final QrService qrService;
 
-    @Value("${segment.api.qr.redirect}")
-    private String segmentRedirect;
+    @Value("${segment.clien.menu}")
+    private String segmentClientMenu;
     @Value("${segment.api.category}")
     private String segmentApiCategory;
 
@@ -30,21 +30,19 @@ public class QrController {
     }
 
     @GetMapping(value = "${component.eatery}/{eatery}${component.table}/{table}")
-    public ResponseEntity<byte []> getQrImage(@PathVariable("eatery") Long eateryId,
-                                              @PathVariable("table") Integer tableNumber) {
+    public ResponseEntity<byte[]> getQrImage(@PathVariable("eatery") Long eateryId,
+                                             @PathVariable("table") Integer tableNumber) {
         log.debug("Requested QR image for eatery [{}] and table [{}]", eateryId, tableNumber);
-        byte [] qrCode = qrService.getQrImage(eateryId, tableNumber);
+        byte[] qrCode = qrService.getQrImage(eateryId, tableNumber);
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.IMAGE_PNG)
                 .body(qrCode);
     }
 
-    @GetMapping("${component.qr.redirect}${component.eatery}/{eateryId}${component.table}/{tableNumber}")
-    public ResponseEntity<Void> redirectWithCookies(
-            @PathVariable String eateryId,
-            @PathVariable String tableNumber,
-            HttpServletResponse response) {
+    @GetMapping("${component.eatery}/{eateryId}${component.table}/{tableId}${component.redirect}")
+    public ResponseEntity<Void> redirectWithCookies(@PathVariable String eateryId, @PathVariable String tableId,
+                                                    HttpServletResponse response) {
 
         // Устанавливаем куки
         ResponseCookie eateryCookie = ResponseCookie.from("eatery", eateryId)
@@ -52,7 +50,7 @@ public class QrController {
                 .httpOnly(false)
                 .build();
 
-        ResponseCookie tableCookie = ResponseCookie.from("table", tableNumber)
+        ResponseCookie tableCookie = ResponseCookie.from("table", tableId)
                 .path("/")
                 .httpOnly(false)
                 .build();
@@ -62,7 +60,7 @@ public class QrController {
 
         // Отправляем редирект
         response.setStatus(HttpServletResponse.SC_FOUND); // 302
-        response.setHeader("Location", String.format(segmentRedirect, eateryId));
+        response.setHeader("Location", String.format(segmentClientMenu, eateryId));
 
         return ResponseEntity.status(HttpServletResponse.SC_FOUND).build();
     }

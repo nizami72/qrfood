@@ -88,6 +88,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/qrcode/**").permitAll()
                         .requestMatchers("/image/**").permitAll()
                         .requestMatchers("/api/eateries/*/categories").permitAll()
+                        .requestMatchers("/api/eateries/*").permitAll()
+                        .requestMatchers("/api/eatery/*").permitAll()
+                        .requestMatchers("/api/config/image-paths").permitAll()
                         // ============================================================================    ADMIN SECTION
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // ===================================================================    USER AND ADMIN SECTION
