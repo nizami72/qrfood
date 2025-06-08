@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDto {
+
     private Long id;
     private Long tableId;
     private String status;
@@ -23,4 +24,6 @@ public class OrderDto {
     private String tableNumber;
     private List<OrderItemDTO> items;
     private String note;
+    private double orderPrice;
+
 }

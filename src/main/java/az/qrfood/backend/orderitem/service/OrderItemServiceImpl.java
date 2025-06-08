@@ -13,9 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing OrderItem.
@@ -74,8 +72,8 @@ public class OrderItemServiceImpl implements OrderItemService {
                 .orElseThrow(() -> new EntityNotFoundException("Order not found with id " + orderItemDTO.getOrderItemId()));
 
         // Validate dish exists
-        DishEntity dish = dishRepository.findById(orderItemDTO.getDishItemId())
-                .orElseThrow(() -> new EntityNotFoundException("Dish not found with id " + orderItemDTO.getDishItemId()));
+        DishEntity dish = dishRepository.findById(orderItemDTO.getDishId())
+                .orElseThrow(() -> new EntityNotFoundException("Dish not found with id " + orderItemDTO.getDishId()));
 
         OrderItem orderItem = new OrderItem();
         orderItem.setOrder(order);

@@ -91,6 +91,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/eateries/*").permitAll()
                         .requestMatchers("/api/eatery/*").permitAll()
                         .requestMatchers("/api/config/image-paths").permitAll()
+                        .requestMatchers("/api/orders/*").permitAll()
                         // ============================================================================    ADMIN SECTION
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // ===================================================================    USER AND ADMIN SECTION

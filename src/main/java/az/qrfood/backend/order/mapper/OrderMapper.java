@@ -5,8 +5,10 @@ import az.qrfood.backend.order.dto.OrderDto;
 import az.qrfood.backend.order.dto.OrderItemDTO;
 import az.qrfood.backend.order.entity.Order;
 import az.qrfood.backend.order.entity.OrderItem;
+import az.qrfood.backend.orderitem.mapper.OrderItemMapper;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +17,12 @@ import java.util.stream.Collectors;
  */
 @Component
 public class OrderMapper {
+
+    private final OrderItemMapper orderItemMapper;
+
+    public OrderMapper(OrderItemMapper orderItemMapper) {
+        this.orderItemMapper = orderItemMapper;
+    }
 
     /**
      * Convert an Order entity to an OrderDTO.
@@ -35,6 +43,7 @@ public class OrderMapper {
                 .tableNumber(order.getTable().getTableNumber())
                 .note(order.getNote())
                 .items(mapOrderItems(order.getItems()))
+                .orderPrice(calculatePrice(order.getItems()))
                 .build();
     }
 
@@ -66,34 +75,16 @@ public class OrderMapper {
         }
 
         return items.stream()
-                .map(this::mapOrderItem)
+                .map(orderItemMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Convert an OrderItem entity to an OrderItemDTO.
-     *
-     * @param item the entity to convert
-     * @return the DTO
-     */
-    private OrderItemDTO mapOrderItem(OrderItem item) {
-        if (item == null) {
-            return null;
-        }
-
-        String dishName = null;
-        if (item.getDishEntity() != null && item.getDishEntity().getTranslations() != null && !item.getDishEntity().getTranslations().isEmpty()) {
-            // Try to get the first translation
-            DishEntityTranslation translation = item.getDishEntity().getTranslations().get(0);
-            dishName = translation.getName();
-        }
-
-        return OrderItemDTO.builder()
-                .id(item.getId())
-                .name(dishName)
-                .quantity(item.getQuantity())
-                .note(item.getNote())
-                .dishItemId(item.getId())
-                .build();
+    private double calculatePrice(List<OrderItem> orderItems) {
+        return orderItems.stream()
+                .mapToDouble(orderItem -> {
+                    return orderItem.getQuantity() * orderItem.getDishEntity().getPrice().doubleValue();
+                })
+                .sum();
     }
+
 }

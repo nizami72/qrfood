@@ -76,7 +76,7 @@ public class OrderItemServiceTest {
 
         orderItemDTO = OrderItemDTO.builder()
                 .id(1L)
-                .dishItemId(1L)
+                .dishId(1L)
                 .orderItemId(1L)
                 .name("Test Dish")
                 .quantity(2)
@@ -190,7 +190,7 @@ public class OrderItemServiceTest {
 
         OrderItemDTO updatedDTO = OrderItemDTO.builder()
                 .id(1L)
-                .dishItemId(1L)
+                .dishId(1L)
                 .orderItemId(1L)
                 .name("Test Dish")
                 .quantity(3)

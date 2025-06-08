@@ -26,7 +26,9 @@ public class OrderItemMapper {
         }
 
         String dishName = null;
-        if (orderItem.getDishEntity() != null && orderItem.getDishEntity().getTranslations() != null && !orderItem.getDishEntity().getTranslations().isEmpty()) {
+        if (orderItem.getDishEntity() != null
+                && orderItem.getDishEntity().getTranslations() != null
+                && !orderItem.getDishEntity().getTranslations().isEmpty()) {
             // Try to get the first translation
             DishEntityTranslation translation = orderItem.getDishEntity().getTranslations().get(0);
             dishName = translation.getName();
@@ -34,11 +36,12 @@ public class OrderItemMapper {
 
         return OrderItemDTO.builder()
                 .id(orderItem.getId())
-                .dishItemId(orderItem.getDishEntity().getId())
+                .dishId(orderItem.getDishEntity().getId())
                 .orderItemId(orderItem.getOrder().getId())
                 .name(dishName)
                 .quantity(orderItem.getQuantity())
                 .note(orderItem.getNote())
+                .price(orderItem.getDishEntity().getPrice())
                 .build();
     }
 

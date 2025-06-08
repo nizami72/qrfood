@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -73,7 +72,7 @@ public class OrderItemApiTest {
 
         // First create an order item to test with
         OrderItemDTO orderItemDTO = OrderItemDTO.builder()
-                .dishItemId(1L)
+                .dishId(1L)
                 .orderItemId(7L) // Assuming order with ID 1 exists
                 .quantity(2)
                 .note("Test note")
@@ -133,7 +132,7 @@ public class OrderItemApiTest {
         fileLog.println("\n========== 📤 Request: Create order item ==========");
 
         OrderItemDTO orderItemDTO = OrderItemDTO.builder()
-                .dishItemId(1L)
+                .dishId(1L)
                 .quantity(2)
                 .note("Test note")
                 .orderItemId(1l)
@@ -160,7 +159,7 @@ public class OrderItemApiTest {
 
         // First create an order item to update
         OrderItemDTO orderItemDTO = OrderItemDTO.builder()
-                .dishItemId(1L)
+                .dishId(1L)
                 .quantity(2)
                 .note("Test note")
                 .orderItemId(1l)
@@ -209,7 +208,7 @@ public class OrderItemApiTest {
 
         // First create an order item to delete
         OrderItemDTO orderItemDTO = OrderItemDTO.builder()
-                .dishItemId(5L)
+                .dishId(5L)
                 .orderItemId(1L) // Assuming order with ID 1 exists
                 .quantity(2)
                 .note("Test note")

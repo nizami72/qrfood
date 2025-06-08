@@ -20,7 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Log4j2
 public class Util {
 
-    private static final String LINKS_FILE_PATH = "/home/nizami/txt/tmp/links.txt";
+    private static final String LINKS_FILE_PATH = "links.txt";
 
 
     public static <SR, DS> DS copyProperties(SR source, Class<DS> destinationClass) {

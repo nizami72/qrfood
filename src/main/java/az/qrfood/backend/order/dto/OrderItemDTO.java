@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.math.BigDecimal;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,7 +18,7 @@ public class OrderItemDTO {
     public String toString() {
         return "{\"OrderItemDTO\":\n{"
                 + "        \"id\":\"" + id + "\""
-                + ",         \"dishItemId\":\"" + dishItemId + "\""
+                + ",         \"dishItemId\":\"" + dishId + "\""
                 + ",         \"orderItemId\":\"" + orderItemId + "\""
                 + ",         \"name\":\"" + name + "\""
                 + ",         \"quantity\":\"" + quantity + "\""
@@ -26,9 +27,10 @@ public class OrderItemDTO {
     }
 
     private Long id;
-    private Long dishItemId;
+    private Long dishId;
     private Long orderItemId;
     private String name;
     private Integer quantity;
     private String note;
+    private BigDecimal price;
 }

@@ -75,7 +75,7 @@ public class TableService {
                 .build();
 
         TableInEatery savedTable = tableRepository.save(table);
-        table.setQrCode(qrService.createQrCodeEntity(eatery.getId(), table.getId(), baseUrl));
+        table.setQrCode(qrService.createQrCodeEntity(eatery.getId(), table.getId()));
         return convertToDto(savedTable);
     }
 
@@ -118,7 +118,7 @@ public class TableService {
                 .build();
 
         TableInEatery savedTable = tableRepository.save(table);
-        table.setQrCode(qrService.createQrCodeEntity(eatery.getId(), table.getId(), baseUrl));
+        table.setQrCode(qrService.createQrCodeEntity(eatery.getId(), table.getId()));
         return tableRepository.save(savedTable);
     }
 

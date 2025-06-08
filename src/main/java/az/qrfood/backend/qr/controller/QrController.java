@@ -19,12 +19,6 @@ public class QrController {
 
     private final QrService qrService;
 
-    @Value("${segment.clien.menu}")
-    private String segmentClientMenu;
-    @Value("${segment.api.category}")
-    private String segmentApiCategory;
-
-
     public QrController(QrService qrService) {
         this.qrService = qrService;
     }
@@ -38,31 +32,6 @@ public class QrController {
                 .ok()
                 .contentType(MediaType.IMAGE_PNG)
                 .body(qrCode);
-    }
-
-    @GetMapping("${component.eatery}/{eateryId}${component.table}/{tableId}${component.redirect}")
-    public ResponseEntity<Void> redirectWithCookies(@PathVariable String eateryId, @PathVariable String tableId,
-                                                    HttpServletResponse response) {
-
-        // Устанавливаем куки
-        ResponseCookie eateryCookie = ResponseCookie.from("eatery", eateryId)
-                .path("/")
-                .httpOnly(false)
-                .build();
-
-        ResponseCookie tableCookie = ResponseCookie.from("table", tableId)
-                .path("/")
-                .httpOnly(false)
-                .build();
-
-        response.addHeader("Set-Cookie", eateryCookie.toString());
-        response.addHeader("Set-Cookie", tableCookie.toString());
-
-        // Отправляем редирект
-        response.setStatus(HttpServletResponse.SC_FOUND); // 302
-        response.setHeader("Location", String.format(segmentClientMenu, eateryId));
-
-        return ResponseEntity.status(HttpServletResponse.SC_FOUND).build();
     }
 
 }

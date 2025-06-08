@@ -80,7 +80,7 @@ public class OrderService {
     }
 
     /**
-     * Create a new order for a specific table.
+     * POST a new order for a specific table.
      *
      * @param orderDto the list of order items
      * @return the created order
@@ -100,8 +100,8 @@ public class OrderService {
         order = orderRepository.save(order);
 
         for (OrderItemDTO dto : orderDto.getItems()) {
-            DishEntity dish = dishRepository.findById(dto.getDishItemId())
-                    .orElseThrow(() -> new RuntimeException("Dish not found with id " + dto.getDishItemId()));
+            DishEntity dish = dishRepository.findById(dto.getDishId())
+                    .orElseThrow(() -> new RuntimeException("Dish not found with id " + dto.getDishId()));
 
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);

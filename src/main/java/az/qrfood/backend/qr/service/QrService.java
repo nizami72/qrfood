@@ -19,24 +19,17 @@ public class QrService {
 
     private final EateryRepository eateryRepository;
 
-    @Value("${component.eatery}")
-    private String componentEatery;
-    @Value("${component.table}")
-    private String componentTable;
-    @Value("${segment.qr.redirect}")
-    private String segmentQrRedirect;
-    @Value("${component.redirect}")
-    private String componentRedirect;
-
+    @Value("${segment.menu}")
+    private String segmentMenu;
 
     public QrService(EateryRepository eateryRepository) {
         this.eateryRepository = eateryRepository;
     }
 
-    public QrCode createQrCodeEntity(long eateryId, Long tableId, String url) {
+    public QrCode createQrCodeEntity(long eateryId, Long tableId) {
         QrCode code = new QrCode();
 
-        String qrContent = String.format(segmentQrRedirect, eateryId, tableId) + componentRedirect;
+        String qrContent = String.format(segmentMenu, eateryId, tableId);
 
         // generating QR code
         try {
@@ -45,7 +38,7 @@ public class QrService {
             throw new RuntimeException("Failed to generate QR code", e);
         }
         Util.saveLinkToFile("http://" + qrContent);
-        log.debug("Redirect link [{}]", "http://" + qrContent);
+        log.debug("Menu link [{}]", "http://" + qrContent);
 
         return code;
     }
