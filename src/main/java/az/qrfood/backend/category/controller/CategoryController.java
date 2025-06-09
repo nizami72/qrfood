@@ -43,7 +43,7 @@ public class CategoryController {
 
     /**
      * GET the category by id.
-
+     *
      * @param categoryId the category id
      * @return CategoryDto
      */
@@ -56,8 +56,8 @@ public class CategoryController {
 
     /**
      * POST a new category for the eatery specified.
-
-     * @param eateryId eatery ID the category is created dfor
+     *
+     * @param eateryId        eatery ID the category is created dfor
      * @param dishCategoryDto category data
      * @return id of created eatery
      */
@@ -67,18 +67,18 @@ public class CategoryController {
                                                    @RequestPart("image") MultipartFile file) {
         dishCategoryDto.setEateryId(eateryId);
         log.debug("Create category item: {}", dishCategoryDto);
-        Category cid = categoryService.createCategory(dishCategoryDto,file);
+        Category cid = categoryService.createCategory(dishCategoryDto, file);
 
         return ResponseEntity.ok(cid.getId());
     }
 
     /**
      * DELETE the category by its ID
-
+     *
      * @param categoryId category ID
      * @return deleted category ID
      */
-    @DeleteMapping(value="/{id}")
+    @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> deleteCategory(@PathVariable(value = "id") Long categoryId) {
         log.debug("Delete category: {}", categoryId);
         return categoryService.deleteCategory(categoryId);
@@ -87,15 +87,15 @@ public class CategoryController {
     /**
      * PUT (update) an existing category.
      *
-     * @param categoryId the category ID to update
+     * @param categoryId      the category ID to update
      * @param dishCategoryDto updated category data
-     * @param file optional new image file
+     * @param file            optional new image file
      * @return updated category ID
      */
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> updateCategory(@PathVariable(value = "id") Long categoryId,
-                                              @RequestPart("data") CategoryDto dishCategoryDto,
-                                              @RequestPart(value = "image", required = false) MultipartFile file) {
+                                               @RequestPart("data") CategoryDto dishCategoryDto,
+                                               @RequestPart(value = "image", required = false) MultipartFile file) {
         log.debug("Update category: {}", categoryId);
         dishCategoryDto.setCategoryId(categoryId);
         Category updatedCategory = categoryService.updateCategory(dishCategoryDto, file);

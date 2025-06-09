@@ -16,7 +16,7 @@ import java.util.List;
 
 @Log4j2
 @RestController
-@RequestMapping("${segment.eateries}")
+@RequestMapping("${segment.api.eateries}")
 public class EateryController {
 
     private final EateryService restaurantService;

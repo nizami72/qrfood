@@ -31,7 +31,7 @@ public class CategoryApiTest {
 
     @Value("${base.url}")
     String baseUrl;
-    @Value("${segment.eateries}")
+    @Value("${segment.api.eateries}")
     String segmentApiCategory;
     @Value("${segment.api.dish}")
     String segmentApiDish;

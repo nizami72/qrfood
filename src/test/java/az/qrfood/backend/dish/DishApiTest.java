@@ -30,8 +30,6 @@ public class DishApiTest {
 
     @Value("${base.url}")
     String baseUrl;
-    @Value("${segment.api.eatery}")
-    String segmentApiEatery;
     @Value("${segment.api.category}")
     String segmentApiCategory;
 

@@ -117,4 +117,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 This project is licensed under the [MIT License](LICENSE).
 
 ## Run on Mobile Phone
+
+
+## Cookie Flow
+The UUID cookie installed on the device **once** a client has confirmed its order 
  

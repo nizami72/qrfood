@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -86,9 +87,8 @@ public class OrderService {
      * @return the created order
      */
     @Transactional
-    public OrderDto createOrder(OrderDto orderDto) {
+    public Order createOrder(OrderDto orderDto) {
         Long tableId = orderDto.getTableId();
-        log.debug("Request to create Order for table ID: {}", tableId);
 
         TableInEatery table = tableRepository.findById(tableId)
                 .orElseThrow(() -> new RuntimeException("Table not found with id " + tableId));
@@ -97,6 +97,7 @@ public class OrderService {
         order.setTable(table);
         order.setNote(orderDto.getNote());
         order.setStatus(OrderStatus.CREATED);
+        order.setItems(new ArrayList<>());
         order = orderRepository.save(order);
 
         for (OrderItemDTO dto : orderDto.getItems()) {
@@ -108,19 +109,17 @@ public class OrderService {
             orderItem.setDishEntity(dish);
             orderItem.setQuantity(dto.getQuantity());
             orderItem.setNote(dto.getNote());
-
+            order.getItems().add(orderItem);
             // Calculate price at order time
             if (dish.getPrice() != null) {
                 BigDecimal itemTotal = dish.getPrice().multiply(BigDecimal.valueOf(dto.getQuantity()));
                 orderItem.setPriceAtOrder(itemTotal);
             }
-
-            orderItemRepository.save(orderItem);
         }
 
         // Refresh the order to get the items
         order = orderRepository.findById(order.getId()).orElse(order);
-        return orderMapper.toDto(order);
+        return order;
     }
 
     /**

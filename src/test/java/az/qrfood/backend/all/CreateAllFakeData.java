@@ -33,7 +33,7 @@ public class CreateAllFakeData {
     private static PrintStream fileLog;
     @Value("${base.url}")
     String baseUrl;
-    @Value("${segment.eateries}")
+    @Value("${segment.api.eateries}")
     String segmentEateries;
     @Value("${segment.categories}")
     String segmentCategories;

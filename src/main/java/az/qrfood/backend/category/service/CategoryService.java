@@ -24,15 +24,20 @@ import java.util.stream.Collectors;
 @Log4j2
 public class CategoryService {
 
+    //<editor-fold desc="Fields ">
     private final CategoryRepository categoryRepository;
     private final EateryRepository eateryRepository;
     private final StorageService storageService;
+    //</editor-fold>
 
-    public CategoryService(CategoryRepository categoryRepository, EateryRepository eateryRepository, StorageService storageService) {
+    //<editor-fold desc="Constructor">
+    public CategoryService(CategoryRepository categoryRepository,
+                           EateryRepository eateryRepository, StorageService storageService) {
         this.categoryRepository = categoryRepository;
         this.eateryRepository = eateryRepository;
         this.storageService = storageService;
     }
+    //</editor-fold>
 
     /**
      * Create new Category for particular eatery.
@@ -84,56 +89,6 @@ public class CategoryService {
         }
 
         return category;// what to return id,id, dto or entity
-    }
-
-
-
-    /**
-     * Todo implement all features
-     * Returns the dish category ID from dishCategoryDto or finds the entity by values or creates new entity and
-     * returns its ID.
-
-     * @param dishCategoryDto dish category DTO
-     * @return the id of Category entity
-     */
-    public Category createOrFindCategory(CategoryDto dishCategoryDto) {
-        Long dishCategoryId = dishCategoryDto.getCategoryId();
-        if (dishCategoryId != null) {
-            Optional<Category> categoryOptional = categoryRepository.findById(dishCategoryDto.getCategoryId());
-            if(categoryOptional.isPresent()) {
-                return categoryOptional.get();
-            }
-        }
-
-        Long eateryId = dishCategoryDto.getEateryId();
-        // todo try to find first then create if not found
-
-        Optional<Eatery> eateryOp = eateryRepository.findById(eateryId);
-        if (eateryOp.isEmpty()) {
-            throw new EntityNotFoundException(String.format(
-                    "Cant create category for eatery %s, eatery not found", eateryId));
-        }
-
-        List<Category> categories = eateryOp.get().getCategories();
-        if(categories.isEmpty()){
-            log.warn("Eatery [{}] dish category is empty", eateryId);
-        }
-
-        Category category1 = Category.builder()
-                .eatery(eateryOp.get())
-                .build();
-
-        Category category = categoryRepository.save(category1);
-        long id = category.getId();
-
-
-        log.debug("Dish category created [{}]", category1);
-        return category1;
-    }
-
-    public List<CategoryDto> findAllCategory() {
-        List<Category> categories = categoryRepository.findAll();
-        return convertDishCategoryToDto(categories);
     }
 
     public CategoryDto findCategoryById(Long id) {

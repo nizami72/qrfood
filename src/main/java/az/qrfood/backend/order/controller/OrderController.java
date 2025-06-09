@@ -1,8 +1,13 @@
 package az.qrfood.backend.order.controller;
 
+import az.qrfood.backend.client.service.ClientDeviceService;
 import az.qrfood.backend.order.dto.OrderDto;
 import az.qrfood.backend.order.dto.OrderStatusUpdateDTO;
+import az.qrfood.backend.order.entity.Order;
+import az.qrfood.backend.order.mapper.OrderMapper;
 import az.qrfood.backend.order.service.OrderService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,9 +29,13 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
+    private final OrderMapper orderMapper;
+    private final ClientDeviceService clientDeviceService;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, OrderMapper orderMapper, ClientDeviceService clientDeviceService) {
         this.orderService = orderService;
+        this.orderMapper = orderMapper;
+        this.clientDeviceService = clientDeviceService;
     }
 
     /**
@@ -72,14 +81,15 @@ public class OrderController {
      * @return the ResponseEntity with status 201 (Created) and with body the new order
      */
     @PostMapping("/{tableId}")
-    public ResponseEntity<OrderDto> createOrder(
-            @PathVariable Long tableId,
-            @RequestBody OrderDto orderDto
+    public ResponseEntity<OrderDto> createOrder(HttpServletResponse response, @PathVariable Long tableId,
+                                                @RequestBody OrderDto orderDto
     ) {
         log.debug("REST request to create Order for table ID: {}", tableId);
         orderDto.setTableId(tableId);
-        OrderDto result = orderService.createOrder(orderDto);
-        return ResponseEntity.ok(result);
+        Order order = orderService.createOrder(orderDto);
+        Cookie cookie = clientDeviceService.createCookieUuid(order);
+        response.addCookie(cookie);
+        return ResponseEntity.ok(orderMapper.toDto(order));
     }
 
     /**
