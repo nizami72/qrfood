@@ -118,7 +118,11 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Run on Mobile Phone
 
-
 ## Cookie Flow
 The UUID cookie installed on the device **once** a client has confirmed its order 
  
+## TODO List
+1. Finish order-decision page navigation buttons and translation
+2. Draw flow of pages interaction
+3. Make a decision where all orders page should appear
+4. Make a decision what should be header for all pages

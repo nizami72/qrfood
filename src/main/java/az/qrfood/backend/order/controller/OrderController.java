@@ -8,6 +8,7 @@ import az.qrfood.backend.order.mapper.OrderMapper;
 import az.qrfood.backend.order.service.OrderService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.websocket.server.PathParam;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,9 +29,11 @@ import java.util.List;
 @RequestMapping("${segment.api.orders}")
 public class OrderController {
 
+    //<editor-fold desc="Fields">
     private final OrderService orderService;
     private final OrderMapper orderMapper;
     private final ClientDeviceService clientDeviceService;
+    //</editor-fold>
 
     public OrderController(OrderService orderService, OrderMapper orderMapper, ClientDeviceService clientDeviceService) {
         this.orderService = orderService;
@@ -47,6 +50,17 @@ public class OrderController {
     public ResponseEntity<List<OrderDto>> getAllOrders() {
         log.debug("REST request to get all Orders");
         return ResponseEntity.ok(orderService.getAllOrders());
+    }
+
+    /**
+     * GET all orders by status.
+     *
+     * @return list of orders with defined status
+     */
+    @GetMapping("${component.status}/{status}")
+    public ResponseEntity<List<OrderDto>> getAllOrders(@PathVariable("status") String status) {
+        log.debug("GET all order by status [{}]", status);
+        return ResponseEntity.ok(orderService.getAllOrdersByStatus(status));
     }
 
     /**

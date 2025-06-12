@@ -14,13 +14,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import javax.imageio.ImageIO;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.multipart.MultipartFile;
 @Log4j2
 public class Util {
 
-    private static final String LINKS_FILE_PATH = "links.txt";
+    private static final String LINKS_FILE_PATH = "links.md";
 
 
     public static <SR, DS> DS copyProperties(SR source, Class<DS> destinationClass) {
@@ -55,7 +56,7 @@ public class Util {
             // Форматирование: ссылка + временная метка
             String timestamp = LocalDateTime.now()
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            String line = timestamp + " - " + url;
+            String line = timestamp + " - " + "[" +url + "]" + "(" + url +")";
 
             // Запись в конец файла
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(LINKS_FILE_PATH, true))) {
@@ -114,5 +115,26 @@ public class Util {
     public static String generateFileName() {
         return UUID.randomUUID().toString();
     }
+
+    public static String getFullURL(HttpServletRequest request) {
+        StringBuilder url = new StringBuilder();
+        url.append(request.getScheme()).append("://").append(request.getServerName());
+
+        int serverPort = request.getServerPort();
+        // Append port only if it's not the default for HTTP (80) or HTTPS (443)
+        if (serverPort != 80 && serverPort != 443) {
+            url.append(":").append(serverPort);
+        }
+
+        url.append(request.getRequestURI());
+
+        String queryString = request.getQueryString();
+        if (queryString != null && !queryString.isEmpty()) {
+            url.append('?').append(queryString);
+        }
+        return url.toString();
+    }
+
+
 
 }

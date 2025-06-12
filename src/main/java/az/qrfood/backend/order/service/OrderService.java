@@ -1,5 +1,6 @@
 package az.qrfood.backend.order.service;
 
+import az.qrfood.backend.common.exception.OrderNotFoundException;
 import az.qrfood.backend.order.dto.OrderDto;
 import az.qrfood.backend.order.dto.OrderItemDTO;
 import az.qrfood.backend.dish.entity.DishEntity;
@@ -11,6 +12,7 @@ import az.qrfood.backend.order.repository.CustomerOrderRepository;
 import az.qrfood.backend.dish.repository.DishRepository;
 import az.qrfood.backend.order.repository.OrderItemRepository;
 import az.qrfood.backend.table.entity.TableInEatery;
+import az.qrfood.backend.table.entity.TableStatus;
 import az.qrfood.backend.table.repository.TableRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Service for managing orders.
@@ -55,6 +58,24 @@ public class OrderService {
         return orderMapper.toDtoList(orders);
     }
 
+
+    /**
+     * Get all orders by status.
+     *
+     * @param status to be retrieved
+     * @return list of orders
+     */
+    public List<OrderDto> getAllOrdersByStatus(String status) {
+        OrderStatus ts = null;
+        try {
+            ts = OrderStatus.valueOf(status.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("There is no such status "+ status);
+        }
+        List<Order> orders = orderRepository.findByStatus(ts);
+        return orderMapper.toDtoList(orders);
+    }
+
     /**
      * Get orders by eatery ID.
      *
@@ -62,7 +83,6 @@ public class OrderService {
      * @return list of orders for the specified eatery
      */
     public List<OrderDto> getOrdersByEateryId(Long eateryId) {
-        log.debug("Request to get Orders for eatery ID: {}", eateryId);
         List<Order> orders = orderRepository.findByTableEateryId(eateryId);
         return orderMapper.toDtoList(orders);
     }
@@ -76,7 +96,7 @@ public class OrderService {
     public OrderDto getOrderById(Long id) {
         log.debug("Request to get Order : {}", id);
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found with id " + id));
+                .orElseThrow(() -> new OrderNotFoundException("Order not found with id " + id));
         return orderMapper.toDto(order);
     }
 

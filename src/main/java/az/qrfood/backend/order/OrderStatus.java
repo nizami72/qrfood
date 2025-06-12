@@ -12,7 +12,7 @@ public enum OrderStatus {
     /**
      * Order is being processed
      */
-    PROCESSING,
+//    PROCESSING,
 
     /**
      * Order is being prepared
@@ -27,7 +27,7 @@ public enum OrderStatus {
     /**
      * Order has been issued to the customer
      */
-    ISSUED,
+//    ISSUED,
 
     /**
      * Order has been paid
@@ -45,5 +45,5 @@ public enum OrderStatus {
 
     // For backward compatibility
     public static final OrderStatus NEW = CREATED;
-    public static final OrderStatus DELIVERED = ISSUED;
+//    public static final OrderStatus DELIVERED = ISSUED;
 }

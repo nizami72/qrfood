@@ -94,7 +94,7 @@ public class Configuration {
     @Qualifier("cors")
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173", "http://192.168.1.76:5173"));
+        config.setAllowedOrigins(List.of("http://localhost:5173", "http://192.168.1.76:5173", "http://127.0.0.1:5173"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true); // Must be false when using "*" for allowed origins

@@ -7,6 +7,7 @@ import az.qrfood.backend.client.dto.ClientDeviceRequestDto;
 import az.qrfood.backend.client.dto.ClientDeviceResponseDto;
 import az.qrfood.backend.client.entity.ClientDevice;
 import az.qrfood.backend.client.repository.ClientDeviceRepository;
+import az.qrfood.backend.order.OrderStatus;
 import az.qrfood.backend.order.entity.Order;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
@@ -15,6 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -25,9 +27,15 @@ public class ClientDeviceService {
 
     private final ClientDeviceRepository repository;
     private final ClientDeviceMapper mapper;
+    private final ClientDeviceRepository clientDeviceRepository;
 
+    /**
+     * Create cookie.
+
+     * @param order order
+     * @return Cookie object
+     */
     public Cookie createCookieUuid(Order order) {
-
         // NAV Cookie install
         Cookie cookie = new Cookie(DEVICE, String.valueOf(UUID.randomUUID()));
         cookie.setPath("/");
@@ -35,12 +43,7 @@ public class ClientDeviceService {
         cookie.setHttpOnly(true);
         cookie.setSecure(false);
         // cookie.setDomain("example.com");
-
-
-
-//                .sameSite("Strict")
-//                .build();
-
+        // .sameSite("Strict")
 
         ClientDevice device = new ClientDevice();
         device.setUuid(cookie.getValue());
@@ -83,8 +86,17 @@ public class ClientDeviceService {
     }
 
     public boolean resolveCookie(String cookie, Long tableId) {
+        Optional<ClientDevice> op = clientDeviceRepository.findByUuid(cookie);
+        if(op.isEmpty()){
+            throw new EntityNotFoundException("The entity of ClientDevice not found" + cookie);
+        }
+        List<Order> orders = op.get().getOrders();
 
+        return hasActive(orders);
+    }
 
-        return true;
+    private boolean hasActive(List<Order> orders) {
+        return orders.stream()
+                .anyMatch(o -> o.getStatus().equals(OrderStatus.NEW));
     }
 }

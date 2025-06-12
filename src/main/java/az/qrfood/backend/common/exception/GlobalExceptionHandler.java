@@ -1,8 +1,15 @@
 package az.qrfood.backend.common.exception;
 
+import static az.qrfood.backend.client.controller.ClientDeviceController.DEVICE;
+
+import az.qrfood.backend.common.Util;
 import az.qrfood.backend.common.response.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -10,6 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -41,11 +49,25 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.fail("Resource not found", 404));
     }
 
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleOrderNotFound(OrderNotFoundException ex,
+                                                                 HttpServletRequest request) {
+        String locale = "az";
+        if (request instanceof HttpServletRequest httpRequest) {
+            String langHeader = httpRequest.getHeader("Accept-Language");
+            locale = langHeader != null ? langHeader : "az";
+        }
+
+        log.error(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.fail(ex.getMessage(), 404));
+    }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleGeneral(Exception ex) {
+    public ResponseEntity<ApiResponse<Void>> handleGeneral(HttpServletRequest request, Exception ex) {
+        String url = Util.getFullURL(request);
         log.error("Exception", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.fail("Internal server error", 500));
+                .body(ApiResponse.fail("Internal server error while requesting " + url, 500));
     }
 }
