@@ -56,15 +56,13 @@ public class Util {
             // Форматирование: ссылка + временная метка
             String timestamp = LocalDateTime.now()
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            String line = timestamp + " - " + "[" +url + "]" + "(" + url +")";
+            String line = timestamp + " - " + "[" +url + "]" + "(" + url +")" + System.lineSeparator();
 
             // Запись в конец файла
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(LINKS_FILE_PATH, true))) {
                 writer.write(line);
                 writer.newLine();
             }
-
-            System.out.println("Saved link to: " + LINKS_FILE_PATH);
 
         } catch (IOException e) {
             System.err.println("Error writing link: " + e.getMessage());
