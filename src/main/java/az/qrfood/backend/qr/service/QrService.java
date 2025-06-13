@@ -29,9 +29,9 @@ public class QrService {
     public QrCode createQrCodeEntity(long eateryId, Long tableId) {
         QrCode code = new QrCode();
 
-        String qrContent = String.format(segmentMenu, eateryId, tableId);
+        String qrContent = String.format(segmentMenu, eateryId, tableId, "false");
 
-        // generating QR code
+        // NAV - generating QR code
         try {
             code.setQrCodeAsBytes(QrCodeGenerator.generateQRCode(qrContent, 250, 250));
         } catch (Exception e) {
