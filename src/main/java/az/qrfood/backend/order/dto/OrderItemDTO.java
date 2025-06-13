@@ -18,7 +18,7 @@ public class OrderItemDTO {
     public String toString() {
         return "{\"OrderItemDTO\":\n{"
                 + "        \"id\":\"" + id + "\""
-                + ",         \"dishItemId\":\"" + dishId + "\""
+                + ",         \"dishId\":\"" + dishId + "\""
                 + ",         \"orderItemId\":\"" + orderItemId + "\""
                 + ",         \"name\":\"" + name + "\""
                 + ",         \"quantity\":\"" + quantity + "\""

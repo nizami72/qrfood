@@ -120,20 +120,23 @@ public class OrderService {
         order.setItems(new ArrayList<>());
         order = orderRepository.save(order);
 
-        for (OrderItemDTO dto : orderDto.getItems()) {
-            DishEntity dish = dishRepository.findById(dto.getDishId())
-                    .orElseThrow(() -> new RuntimeException("Dish not found with id " + dto.getDishId()));
+        List<OrderItemDTO> orderDtoItems = orderDto.getItems();
+        if(orderDtoItems != null && !orderDtoItems.isEmpty()) {
+            for (OrderItemDTO dto : orderDto.getItems()) {
+                DishEntity dish = dishRepository.findById(dto.getDishId())
+                        .orElseThrow(() -> new RuntimeException("Dish not found with id " + dto.getDishId()));
 
-            OrderItem orderItem = new OrderItem();
-            orderItem.setOrder(order);
-            orderItem.setDishEntity(dish);
-            orderItem.setQuantity(dto.getQuantity());
-            orderItem.setNote(dto.getNote());
-            order.getItems().add(orderItem);
-            // Calculate price at order time
-            if (dish.getPrice() != null) {
-                BigDecimal itemTotal = dish.getPrice().multiply(BigDecimal.valueOf(dto.getQuantity()));
-                orderItem.setPriceAtOrder(itemTotal);
+                OrderItem orderItem = new OrderItem();
+                orderItem.setOrder(order);
+                orderItem.setDishEntity(dish);
+                orderItem.setQuantity(dto.getQuantity());
+                orderItem.setNote(dto.getNote());
+                order.getItems().add(orderItem);
+                // Calculate price at order time
+                if (dish.getPrice() != null) {
+                    BigDecimal itemTotal = dish.getPrice().multiply(BigDecimal.valueOf(dto.getQuantity()));
+                    orderItem.setPriceAtOrder(itemTotal);
+                }
             }
         }
 
