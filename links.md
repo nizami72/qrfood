@@ -1,6 +1,0 @@
-2025-06-13 13:12:38 - [http://192.168.1.76:5173/client/eatery/2/table/27/menu](http://192.168.1.76:5173/client/eatery/2/table/27/menu)
-2025-06-13 13:18:51 - [http://192.168.1.76:5173/client/eatery/2/table/29/add/false/menu](http://192.168.1.76:5173/client/eatery/2/table/29/add/false/menu)
-2025-06-13 13:26:25 - [http://192.168.1.76:5173/client/eatery/2/table/30/add/false/menu](http://192.168.1.76:5173/client/eatery/2/table/30/add/false/menu)
-2025-06-13 13:26:45 - [http://192.168.1.76:5173/client/eatery/2/table/31/add/false/menu](http://192.168.1.76:5173/client/eatery/2/table/31/add/false/menu)
-2025-06-13 13:26:56 - [http://192.168.1.76:5173/client/eatery/3/table/32/add/false/menu](http://192.168.1.76:5173/client/eatery/3/table/32/add/false/menu)
-2025-06-13 13:27:04 - [http://192.168.1.76:5173/client/eatery/3/table/33/add/false/menu](http://192.168.1.76:5173/client/eatery/3/table/33/add/false/menu)
