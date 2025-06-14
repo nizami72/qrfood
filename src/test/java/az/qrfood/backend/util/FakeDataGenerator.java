@@ -57,6 +57,29 @@ public class FakeDataGenerator {
             "Bloom & Bite"
     );
 
+    private static final List<String> fakeUsers = List.of(
+            "Liam Smith",
+            "Emma Johnson",
+            "Noah Brown",
+            "Olivia Davis",
+            "Elijah Miller",
+            "Ava Wilson",
+            "James Moore",
+            "Sophia Taylor",
+            "Benjamin Anderson",
+            "Isabella Thomas",
+            "Lucas Jackson",
+            "Mia White",
+            "Henry Harris",
+            "Amelia Martin",
+            "Alexander Thompson",
+            "Charlotte Garcia",
+            "Daniel Martinez",
+            "Harper Robinson",
+            "Matthew Clark",
+            "Evelyn Lewis"
+        );
+
     public static int getRandomInt(int min, int max) {
         return rand.nextInt(max - min) + min;
     }
@@ -90,6 +113,22 @@ public class FakeDataGenerator {
         return phones;
     }
 
+    /**
+     * Generate fake user first and last name.
+
+     * @param arg reduces selection od user to 4 means only fist arg amount might be returned.
+     * @return First Last name
+     */
+    public static String user(int arg) {
+        return fakeUsers.get(getRandomInt(0,arg));
+    }
+
+    public static String mail(String arg) {
+        return arg.replace(" ", "") + "@qrfood.az";
+    }
+
+
+
     private static double gD(double min, double max ) {
         double minq = 10.0001;
         double maxq = 10.9999;
@@ -97,9 +136,6 @@ public class FakeDataGenerator {
         return new BigDecimal(ThreadLocalRandom.current().
                 nextDouble(min, max)).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
-
-
-
 
 
     private static final List<String> fakePhoneNumbers = List.of(

@@ -34,10 +34,9 @@ public class AdminRegisterPageTest {
     private String testEmail;
     private String testPassword;
     private String testRestaurantName;
+    private int pause = 500;
 
 
-    static String[] firstNames = {"Alex", "Nina", "John", "Aylin", "Tom", "Leyla", "David", "Elmira"};
-    static String[] lastNames = {"Smith", "Aliyev", "Johnson", "Mammadov", "Taylor", "Ismayilova", "Brown"};
 
     @BeforeEach
     public void setUp() {
@@ -51,14 +50,11 @@ public class AdminRegisterPageTest {
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         
         // Generate unique test data
-        Random rand = new Random();
-        String first = firstNames[rand.nextInt(firstNames.length)];
-        String last = lastNames[rand.nextInt(lastNames.length)];
 
-        testName = first + " " + last;
-        testEmail = first + last + FakeDataGenerator.getRandomInt(100000, 999999) + "@example.com";
+        testName = FakeDataGenerator.user(4);
+        testEmail = FakeDataGenerator.mail(testName);
         testPassword = "qqqq1111";
-        testRestaurantName = "Test Eatery of " + first + " " + last;
+        testRestaurantName = "Test " + testName + "'s eatery";
     }
 
     @AfterEach
@@ -74,7 +70,7 @@ public class AdminRegisterPageTest {
         driver.get("http://192.168.1.76:5173/admin/register");
         
         // Wait for page to load
-        Thread.sleep(500);
+        Thread.sleep(pause);
         
         // 2. Enter registration details
         // Enter name
@@ -87,79 +83,79 @@ public class AdminRegisterPageTest {
         emailInput.clear();
         emailInput.sendKeys(testEmail);
 
-        Thread.sleep(500);
+        Thread.sleep(pause);
         // Enter password
         WebElement passwordInput = driver.findElement(By.id("108"));
         passwordInput.clear();
         passwordInput.sendKeys(testPassword);
 
-        Thread.sleep(500);
+        Thread.sleep(pause);
         // Confirm password
         WebElement confirmPasswordInput = driver.findElement(By.id("109"));
         confirmPasswordInput.clear();
         confirmPasswordInput.sendKeys(testPassword);
 
-        Thread.sleep(500);
+        Thread.sleep(pause);
         // Enter restaurant name
         WebElement restaurantNameInput = driver.findElement(By.id("110"));
         restaurantNameInput.clear();
         restaurantNameInput.sendKeys(testRestaurantName);
 
-        Thread.sleep(500);
+        Thread.sleep(pause);
         // 3. Click the Register button
         WebElement registerButton = driver.findElement(By.id("111"));
         registerButton.click();
 
-        Thread.sleep(500);
+        Thread.sleep(pause);
         // 4. Wait for and accept the alert
         wait.until(ExpectedConditions.alertIsPresent());
         Alert alert = driver.switchTo().alert();
         alert.accept();
 
-        Thread.sleep(500);
+        Thread.sleep(pause);
         // 5. Verify redirection to login page
         wait.until(ExpectedConditions.urlContains("/admin/login"));
         assertTrue(driver.getCurrentUrl().contains("/admin/login"), 
                 "URL should contain '/admin/login' after successful registration");
 
-        Thread.sleep(500);
+        Thread.sleep(pause);
         // 6. Login with the registered credentials
         // Wait for login page to load
         Thread.sleep(2000);
 
-        Thread.sleep(500);
+        Thread.sleep(pause);
         // Enter email
         WebElement loginEmailInput = driver.findElement(By.id("101"));
         loginEmailInput.clear();
         loginEmailInput.sendKeys(testEmail);
 
-        Thread.sleep(500);
+        Thread.sleep(pause);
         // Enter password
         WebElement loginPasswordInput = driver.findElement(By.id("102"));
         loginPasswordInput.clear();
         loginPasswordInput.sendKeys(testPassword);
 
-        Thread.sleep(500);
+        Thread.sleep(pause);
         // Click login button
         WebElement loginButton = driver.findElement(By.id("103"));
         loginButton.click();
 
-        Thread.sleep(500);
+        Thread.sleep(pause);
         // 7. Verify redirection to restaurant page
         wait.until(ExpectedConditions.urlContains("/admin/restaurant"));
         assertTrue(driver.getCurrentUrl().contains("/admin/restaurant"), 
                 "URL should contain '/admin/restaurant' after successful login");
 
-        Thread.sleep(500);
+        Thread.sleep(pause);
         // 8. Verify that there is at least one h2 element with the restaurant name
         List<WebElement> restaurantHeaders = driver.findElements(By.tagName("h2"));
 
-        Thread.sleep(500);
+        Thread.sleep(pause);
         // Ensure there is at least one restaurant header
         assertTrue(restaurantHeaders.size() >= 1, 
                 "There should be at least 1 restaurant header, but found " + restaurantHeaders.size());
 
-        Thread.sleep(500);
+        Thread.sleep(pause);
         // Check for the restaurant name
         boolean foundRestaurant = false;
         for (WebElement header : restaurantHeaders) {
