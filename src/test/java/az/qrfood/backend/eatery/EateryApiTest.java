@@ -1,7 +1,7 @@
 package az.qrfood.backend.eatery;
 
 import az.qrfood.backend.dto.Eatery;
-import az.qrfood.backend.util.FakeDataGenerator;
+import az.qrfood.backend.util.FakeData;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
@@ -74,12 +74,12 @@ public class EateryApiTest {
 
 
             Map<String, Object> requestBody = Map.of(
-                    "name", FakeDataGenerator.eateryName(),
-                    "address", FakeDataGenerator.generateFakeAddress(),
-                    "phones", FakeDataGenerator.phones(),
-                    "geoLat", FakeDataGenerator.geo1(),
-                    "geoLng", FakeDataGenerator.geo2(),
-                    "numberOfTables", FakeDataGenerator.numberOfTables(),
+                    "name", FakeData.eateryName(),
+                    "address", FakeData.generateFakeAddress(),
+                    "phones", FakeData.phones(),
+                    "geoLat", FakeData.geo1(),
+                    "geoLng", FakeData.geo2(),
+                    "numberOfTables", FakeData.numberOfTables(),
 
                     "ownerProfileId", 2
             );

@@ -1,6 +1,6 @@
 package az.qrfood.backend.ui;
 
-import az.qrfood.backend.util.FakeDataGenerator;
+import az.qrfood.backend.util.FakeData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,8 +15,6 @@ import org.openqa.selenium.Alert;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,8 +49,8 @@ public class AdminRegisterPageTest {
         
         // Generate unique test data
 
-        testName = FakeDataGenerator.user(4);
-        testEmail = FakeDataGenerator.mail(testName);
+        testName = FakeData.user(4);
+        testEmail = FakeData.mail(testName);
         testPassword = "qqqq1111";
         testRestaurantName = "Test " + testName + "'s eatery";
     }

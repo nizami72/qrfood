@@ -1,5 +1,7 @@
 package az.qrfood.backend.util;
 
+import az.qrfood.backend.category.entity.Category;
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +9,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
-public class FakeDataGenerator {
+public class FakeData {
 
 
     private static final Random rand = new Random();
@@ -127,8 +129,6 @@ public class FakeDataGenerator {
         return arg.replace(" ", "") + "@qrfood.az";
     }
 
-
-
     private static double gD(double min, double max ) {
         double minq = 10.0001;
         double maxq = 10.9999;
@@ -165,5 +165,16 @@ public class FakeDataGenerator {
            "(994) 12 4452098",
            "(994) 50 5563109"
     );
+
+    public static List<Category> categories() {
+
+        return TestDataLoader.loadJsonListFromResource(
+                "category.json",
+                new TypeReference<>() {
+                });
+
+    }
+
+
 
 }
