@@ -57,8 +57,8 @@ public class AdminRegisterPageTest {
 
         testName = first + " " + last;
         testEmail = first + last + FakeDataGenerator.getRandomInt(100000, 999999) + "@example.com";
-        testPassword = "Password123";
-        testRestaurantName = "Test Restaurant " + first;
+        testPassword = "qqqq1111";
+        testRestaurantName = "Test Eatery of " + first + " " + last;
     }
 
     @AfterEach

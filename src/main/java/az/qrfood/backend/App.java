@@ -17,13 +17,13 @@ public class App {
 		SpringApplication.run(App.class, args);
 	}
 
-	// Создаем тестового пользователя при запуске приложения
 	@Bean
 	public CommandLineRunner demoData(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+		String u = "admin@qrfood.az";
 		return args -> {
-			if (userRepository.findByUsername("admin").isEmpty()) {
+			if (userRepository.findByUsername(u).isEmpty()) {
 				User user = new User();
-				user.setUsername("admin");
+				user.setUsername(u);
 				user.setPassword(passwordEncoder.encode("admin")); // Хешируем "password"
 				user.setRoles(new HashSet<>(Collections.singletonList("ADMIN")));
 				userRepository.save(user);
