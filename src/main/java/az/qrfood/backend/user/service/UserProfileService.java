@@ -1,6 +1,8 @@
-package az.qrfood.backend.user.profile;
+package az.qrfood.backend.user.service;
 
-import az.qrfood.backend.user.User;
+import az.qrfood.backend.user.entity.User;
+import az.qrfood.backend.user.entity.UserProfile;
+import az.qrfood.backend.user.repository.UserProfileRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

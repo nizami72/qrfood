@@ -1,6 +1,5 @@
-package az.qrfood.backend.user;
+package az.qrfood.backend.user.entity;
 
-import az.qrfood.backend.user.profile.UserProfile;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,6 +1,7 @@
-package az.qrfood.backend.user.profile;
+package az.qrfood.backend.user.repository;
 
-import az.qrfood.backend.user.User;
+import az.qrfood.backend.user.entity.User;
+import az.qrfood.backend.user.entity.UserProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

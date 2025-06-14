@@ -3,12 +3,12 @@ package az.qrfood.backend.user.controller;
 import az.qrfood.backend.common.response.ApiResponse;
 import az.qrfood.backend.eatery.dto.EateryDto;
 import az.qrfood.backend.eatery.service.EateryService;
-import az.qrfood.backend.user.User;
+import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.dto.LoginRequest;
 import az.qrfood.backend.user.dto.LoginResponse;
 import az.qrfood.backend.user.dto.RegisterRequest;
-import az.qrfood.backend.user.profile.UserProfile;
-import az.qrfood.backend.user.profile.UserProfileService;
+import az.qrfood.backend.user.entity.UserProfile;
+import az.qrfood.backend.user.service.UserProfileService;
 import az.qrfood.backend.user.repository.UserRepository;
 import az.qrfood.backend.user.service.CustomUserDetailsService;
 import az.qrfood.backend.user.util.JwtUtil;
@@ -226,5 +226,31 @@ public class AuthController {
 
         // If not authenticated or user not found, return a message
         return ResponseEntity.ok(Map.of("authenticated", false, "message", "User not authenticated"));
+    }
+
+    /**
+     * Endpoint for user logout.
+     * In a JWT-based authentication system, the server doesn't maintain session state.
+     * The client is responsible for removing the JWT token from storage.
+     * This endpoint simply returns a success response to confirm the logout action.
+     *
+     * @return ResponseEntity with success message.
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        // Get the current authentication from the security context
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Log the logout attempt
+        if (authentication != null && authentication.isAuthenticated() && 
+            !authentication.getPrincipal().equals("anonymousUser")) {
+            log.debug("User logged out: {}", authentication.getName());
+        }
+
+        // Clear the security context
+        SecurityContextHolder.clearContext();
+
+        // Return success response
+        return ResponseEntity.ok(Map.of("success", true, "message", "Logout successful"));
     }
 }

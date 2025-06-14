@@ -1,6 +1,6 @@
 package az.qrfood.backend;
 
-import az.qrfood.backend.user.User;
+import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

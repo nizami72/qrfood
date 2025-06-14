@@ -2,7 +2,7 @@ package az.qrfood.backend.eatery.entity;
 
 import az.qrfood.backend.table.entity.TableInEatery;
 import az.qrfood.backend.category.entity.Category;
-import az.qrfood.backend.user.profile.UserProfile;
+import az.qrfood.backend.user.entity.UserProfile;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
