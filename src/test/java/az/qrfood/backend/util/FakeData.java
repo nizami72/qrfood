@@ -4,6 +4,7 @@ import az.qrfood.backend.category.entity.Category;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -82,6 +83,34 @@ public class FakeData {
             "Evelyn Lewis"
         );
 
+    private static final List<String> fakePhoneNumbers = List.of(
+            "99450 1234567",
+            "(994) 55 7654321",
+            "(994) 70 1122334",
+            "(994) 12 9988776",
+            "(994) 50 3456789",
+            "(994) 55 4567890",
+            "(994) 70 5678901",
+            "(994) 12 6789012",
+            "(994) 50 7890123",
+            "(994) 55 8901234",
+            "(994) 70 9012345",
+            "(994) 12 1239876",
+            "(994) 50 2341987",
+            "(994) 55 3452098",
+            "(994) 70 4563109",
+            "(994) 12 5674210",
+            "(994) 50 6785321",
+            "(994) 55 7896432",
+            "(994) 70 8907543",
+            "(994) 12 9018654",
+            "(994) 50 1129765",
+            "(994) 55 2230876",
+            "(994) 70 3341987",
+            "(994) 12 4452098",
+            "(994) 50 5563109"
+    );
+
     public static int getRandomInt(int min, int max) {
         return rand.nextInt(max - min) + min;
     }
@@ -137,44 +166,11 @@ public class FakeData {
                 nextDouble(min, max)).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
-
-    private static final List<String> fakePhoneNumbers = List.of(
-            "99450 1234567",
-           "(994) 55 7654321",
-           "(994) 70 1122334",
-           "(994) 12 9988776",
-           "(994) 50 3456789",
-           "(994) 55 4567890",
-           "(994) 70 5678901",
-           "(994) 12 6789012",
-           "(994) 50 7890123",
-           "(994) 55 8901234",
-           "(994) 70 9012345",
-           "(994) 12 1239876",
-           "(994) 50 2341987",
-           "(994) 55 3452098",
-           "(994) 70 4563109",
-           "(994) 12 5674210",
-           "(994) 50 6785321",
-           "(994) 55 7896432",
-           "(994) 70 8907543",
-           "(994) 12 9018654",
-           "(994) 50 1129765",
-           "(994) 55 2230876",
-           "(994) 70 3341987",
-           "(994) 12 4452098",
-           "(994) 50 5563109"
-    );
-
-    public static List<Category> categories() {
-
+    public static List<LinkedHashMap> categories() {
         return TestDataLoader.loadJsonListFromResource(
                 "category.json",
                 new TypeReference<>() {
                 });
-
     }
-
-
 
 }
