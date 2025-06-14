@@ -57,20 +57,20 @@ public class FakeDataGenerator {
             "Bloom & Bite"
     );
 
-    private static int getRandomIndex(int min, int max) {
+    public static int getRandomInt(int min, int max) {
         return rand.nextInt(max - min) + min;
     }
 
     public static String generateFakeAddress() {
-        return fakeAddresses.get(getRandomIndex(0, fakeAddresses.size()));
+        return fakeAddresses.get(getRandomInt(0, fakeAddresses.size()));
     }
 
     public static String eateryName() {
-        return fakeEateryNames.get(getRandomIndex(0, fakeEateryNames.size()));
+        return fakeEateryNames.get(getRandomInt(0, fakeEateryNames.size()));
     }
 
     public static int numberOfTables() {
-        return getRandomIndex(1, 4);
+        return getRandomInt(1, 4);
     }
 
     public static double geo1() {
@@ -82,10 +82,10 @@ public class FakeDataGenerator {
     }
 
     public static List<String> phones() {
-        int amount = getRandomIndex(1, 4);
+        int amount = getRandomInt(1, 4);
         List<String> phones = new ArrayList<>(amount);
         IntStream.range(0, amount).forEach(i -> {
-            phones.add(fakePhoneNumbers.get(getRandomIndex(0, fakePhoneNumbers.size())));
+            phones.add(fakePhoneNumbers.get(getRandomInt(0, fakePhoneNumbers.size())));
         });
         return phones;
     }
