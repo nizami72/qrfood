@@ -76,7 +76,7 @@ public class AuthController {
      * Endpoint for user login.
      * Accepts username and password, authenticates them and returns JWT token.
      *
-     * @param loginRequest LoginRequest object containing username and password.
+     * @param loginRequest LoginRequest object containing username, password, and optionally eateryId.
      * @return ResponseEntity with JWT token on success or error message.
      */
     @PostMapping("/login")
@@ -98,6 +98,7 @@ public class AuthController {
 
         // Get user ID and record login in user profile
         Long userId = null;
+        Long eateryId = loginRequest.getEateryId();
         Optional<User> userOptional = userRepository.findByUsername(loginRequest.getEmail());
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -106,15 +107,28 @@ public class AuthController {
             // Get the user profile to get the ID
             Optional<UserProfile> userProfileOptional = userProfileService.findProfileByUser(user);
             if (userProfileOptional.isPresent()) {
-                userId = userProfileOptional.get().getId();
+                UserProfile userProfile = userProfileOptional.get();
+                userId = userProfile.getId();
+
+                // If eateryId is not provided in the request, but the user has restaurants,
+                // use the first one as the default
+                if (eateryId == null && userProfile.getRestaurantIds() != null && !userProfile.getRestaurantIds().isEmpty()) {
+                    eateryId = userProfile.getRestaurantIds().get(0);
+                }
+
+                // Verify that the user has access to the specified eatery
+                if (eateryId != null && (userProfile.getRestaurantIds() == null || !userProfile.getRestaurantIds().contains(eateryId))) {
+                    log.debug("User does not have access to the specified eatery: {}", eateryId);
+                    eateryId = null; // Reset eateryId if user doesn't have access
+                }
             }
         }
 
-        log.debug("Generating JWT Token");
-        final String jwt = jwtUtil.generateToken(userDetails);
+        log.debug("Generating JWT Token with eateryId: {}", eateryId);
+        final String jwt = eateryId != null ? jwtUtil.generateToken(userDetails, eateryId) : jwtUtil.generateToken(userDetails);
 
-        log.debug("Return token and user ID");
-        LoginResponse response = new LoginResponse(jwt, userId);
+        log.debug("Return token, user ID, and eatery ID");
+        LoginResponse response = new LoginResponse(jwt, userId, eateryId);
         return ResponseEntity.ok(response);
     }
 
@@ -273,6 +287,71 @@ public class AuthController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.ok("User successfully created and linked to eatery!", null));
+    }
+
+    /**
+     * Endpoint to regenerate JWT token with a new eatery ID.
+     * This is used when the user changes the selected eatery in the frontend.
+     *
+     * @param requestBody Map containing the eateryId key with the ID of the newly selected eatery.
+     * @return ResponseEntity with the new JWT token.
+     */
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@RequestBody Map<String, Long> requestBody) {
+        Long eateryId = requestBody.get("eateryId");
+        log.debug("Refresh token request with eateryId: {}", eateryId);
+
+        // Get the current authentication from the security context
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Check if the user is authenticated
+        if (authentication == null || !authentication.isAuthenticated() || 
+            authentication.getPrincipal().equals("anonymousUser")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "User not authenticated"));
+        }
+
+        // Get the username from the authenticated user
+        String username = authentication.getName();
+        log.debug("Refreshing token for user: {}", username);
+
+        // Get the user entity from the repository
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "User not found"));
+        }
+
+        User user = userOptional.get();
+
+        // Get the user profile
+        Optional<UserProfile> userProfileOptional = userProfileService.findProfileByUser(user);
+        if (userProfileOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "User profile not found"));
+        }
+
+        UserProfile userProfile = userProfileOptional.get();
+        Long userId = userProfile.getId();
+
+        // Verify that the user has access to the specified eatery
+        if (eateryId != null && (userProfile.getRestaurantIds() == null || !userProfile.getRestaurantIds().contains(eateryId))) {
+            log.debug("User does not have access to the specified eatery: {}", eateryId);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "User does not have access to the specified eatery"));
+        }
+
+        // Load user details
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        // Generate a new JWT token with the eatery ID
+        log.debug("Generating new JWT Token with eateryId: {}", eateryId);
+        final String jwt = eateryId != null ? jwtUtil.generateToken(userDetails, eateryId) : jwtUtil.generateToken(userDetails);
+
+        // Return the new token
+        log.debug("Return new token with eatery ID");
+        LoginResponse response = new LoginResponse(jwt, userId, eateryId);
+        return ResponseEntity.ok(response);
     }
 
     /**

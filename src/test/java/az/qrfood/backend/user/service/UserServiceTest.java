@@ -4,6 +4,7 @@ import az.qrfood.backend.user.dto.UserRequest;
 import az.qrfood.backend.user.dto.UserResponse;
 import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.entity.UserProfile;
+import az.qrfood.backend.user.repository.UserProfileRepository;
 import az.qrfood.backend.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,9 @@ public class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private UserProfileRepository userProfileRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -255,25 +259,61 @@ public class UserServiceTest {
     }
 
     @Test
-    void mapToResponse_WithProfile() {
+    void getAllUsers_ByRestaurantId_Success() {
         // Arrange
+        Long restaurantId = 1L;
+
+        // Create a user with profile
         User userWithProfile = new User();
         userWithProfile.setId(1L);
         userWithProfile.setUsername("testuser");
         userWithProfile.setRoles(roles);
-        
+
         UserProfile profile = new UserProfile();
+        profile.setUser(userWithProfile);
         userWithProfile.setProfile(profile);
 
+        // Create a list of profiles
+        List<UserProfile> profiles = Collections.singletonList(profile);
+
+        // Mock the repository method
+        when(userProfileRepository.findByRestaurantId(restaurantId)).thenReturn(profiles);
+
         // Act
-        UserResponse response = userService.getUserById(1L); // This will call mapToResponse internally
+        List<UserResponse> responses = userService.getAllUsers(restaurantId);
+
+        // Assert
+        assertNotNull(responses);
+        assertEquals(1, responses.size());
+        assertEquals(1L, responses.get(0).getId());
+        assertEquals("testuser", responses.get(0).getUsername());
+        assertEquals(roles, responses.get(0).getRoles());
+        assertTrue(responses.get(0).isHasProfile());
+
+        verify(userProfileRepository).findByRestaurantId(restaurantId);
+    }
+
+    @Test
+    void mapToResponse_WithProfile() {
+        // Arrange
+        User userWithProfile = new User();
+        userWithProfile.setId(2L);
+        userWithProfile.setUsername("testuser");
+        userWithProfile.setRoles(roles);
+
+        UserProfile profile = new UserProfile();
+        userWithProfile.setProfile(profile);
 
         // Prepare for the internal call
         when(userRepository.findById(1L)).thenReturn(Optional.of(userWithProfile));
 
+        // Act
+        UserResponse response = userService.getUserById(1L); // This will call mapToResponse internally
+
         // Assert
         assertNotNull(response);
-        assertEquals(1L, response.getId());
+        assertEquals(2L, response.getId());
+
         assertEquals("testuser", response.getUsername());
         assertEquals(roles, response.getRoles());
         assertTrue(response.isHasProfile());

@@ -100,6 +100,25 @@ public class JwtUtil {
     }
 
     /**
+     * Генерирует JWT токен для заданного пользователя с указанным ID ресторана.
+     * @param userDetails Информация о пользователе.
+     * @param eateryId ID активного ресторана.
+     * @return Сгенерированный JWT токен.
+     */
+    public String generateToken(UserDetails userDetails, Long eateryId) {
+        Map<String, Object> claims = new HashMap<>();
+        // Добавляем роли пользователя в claims
+        claims.put("roles", userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList()));
+        // Добавляем ID активного ресторана в claims
+        if (eateryId != null) {
+            claims.put("eateryId", eateryId);
+        }
+        return createToken(claims, userDetails.getUsername());
+    }
+
+    /**
      * Создает JWT токен.
      * @param claims Утверждения (claims) для включения в токен.
      * @param subject Субъект токена (обычно имя пользователя).

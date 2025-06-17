@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * DTO (Data Transfer Object) для запроса на аутентификацию (логин).
- * Содержит имя пользователя и пароль, отправляемые клиентом.
+ * Содержит имя пользователя, пароль и ID активного ресторана, отправляемые клиентом.
  */
 @Data // Lombok аннотация для геттеров, сеттеров, toString, equals, hashCode
 @NoArgsConstructor // Lombok аннотация для конструктора без аргументов
@@ -14,4 +14,5 @@ import lombok.NoArgsConstructor;
 public class LoginRequest {
     private String email;
     private String password;
+    private Long eateryId; // ID активного ресторана
 }

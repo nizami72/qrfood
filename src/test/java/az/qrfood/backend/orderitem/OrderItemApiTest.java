@@ -46,7 +46,10 @@ public class OrderItemApiTest {
         fileLog.println("\n========== 📤 Request: Authenticate ==========");
 
         // Create login request
-        LoginRequest loginRequest = new LoginRequest("nizami.budagov@gmail.com", "qqqq1111");
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail("nizami.budagov@gmail.com");
+        loginRequest.setPassword("qqqq1111");
+        loginRequest.setEateryId(1L);
 
         // Authenticate and get JWT token
         Response response = given()

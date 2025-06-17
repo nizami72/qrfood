@@ -44,6 +44,18 @@ public class UserController {
         return ResponseEntity.ok(responses);
     }
 
+
+    /**
+     * Get all users of the eatery.
+     *
+     * @return list of user responses
+     */
+    @GetMapping("/eatery/{id}")
+    public ResponseEntity<List<UserResponse>> getAllEateryUsers(@PathVariable Long id) {
+        List<UserResponse> responses = userService.getAllUsers(id);
+        return ResponseEntity.ok(responses);
+    }
+
     /**
      * Get a user by ID.
      *

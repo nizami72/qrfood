@@ -3,6 +3,8 @@ package az.qrfood.backend.user.service;
 import az.qrfood.backend.user.dto.UserRequest;
 import az.qrfood.backend.user.dto.UserResponse;
 import az.qrfood.backend.user.entity.User;
+import az.qrfood.backend.user.entity.UserProfile;
+import az.qrfood.backend.user.repository.UserProfileRepository;
 import az.qrfood.backend.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserProfileRepository userProfileRepository;
     private final PasswordEncoder passwordEncoder;
 
     /**
@@ -54,6 +57,25 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+
+    /**
+     * Get all users that belong to a specific eatery.
+     *
+     * @param id the eatery ID
+     * @return list of user responses for users belonging to the eatery
+     */
+    @Transactional(readOnly = true)
+    public List<UserResponse> getAllUsers(Long id) {
+        // Find all user profiles associated with the given restaurant ID
+        List<UserProfile> profiles = userProfileRepository.findByRestaurantId(id);
+
+        // Extract the users from the profiles and map them to UserResponse objects
+        return profiles.stream()
+                .map(UserProfile::getUser)
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -103,12 +125,12 @@ public class UserService {
         }
 
         user.setUsername(request.getUsername());
-        
+
         // Only update password if it's provided
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
-        
+
         // Only update roles if they're provided
         if (request.getRoles() != null) {
             user.setRoles(request.getRoles());
