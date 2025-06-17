@@ -1,8 +1,8 @@
-package az.qrfood.backend.useraccess;
+package az.qrfood.backend.user;
 
+import az.qrfood.backend.user.dto.UserRequest;
+import az.qrfood.backend.user.dto.UserResponse;
 import az.qrfood.backend.user.entity.Role;
-import az.qrfood.backend.useraccess.dto.UserAccessRequest;
-import az.qrfood.backend.useraccess.dto.UserAccessResponse;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
@@ -14,40 +14,42 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Integration test for the UserAccess API.
- * This test follows a CRUD scenario for the UserAccess entity:
- * 1. Create a user access
- * 2. Get the user access by ID
- * 3. Get all user accesses
- * 4. Update the user access
- * 5. Verify the update
- * 6. Delete the user access
- * 7. Verify the deletion
+ * Integration test for the User API.
+ * This test covers the following operations for the User entity:
+ * - Create a user
+ * - Get a user by ID
+ * - Get all users
+ * - Update a user
+ * - Delete a user
  */
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class UserAccessApiTest {
+public class UserApiTest {
 
     private static PrintStream fileLog;
-    private Long createdUserAccessId;
 
     @Value("${base.url}")
     String baseUrl;
 
     String jwtToken;
-    Long userId;
+    String uniqueUsername;
+    Long createdUserId;
+    String role = Role.WAITER.name();
 
     @BeforeAll
     void setupLogging() throws Exception {
-        fileLog = new PrintStream(new FileOutputStream("logsTest/user-access.log", false));
+        fileLog = new PrintStream(new FileOutputStream("logsTest/user-api.log", false));
         RestAssured.filters(
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)
@@ -75,20 +77,25 @@ public class UserAccessApiTest {
                 .response();
 
         jwtToken = authResponse.jsonPath().getString("jwt");
-        userId = authResponse.jsonPath().getLong("userId");
     }
 
     /**
-     * Test creating a user access.
-     * Expected: 201 Created response with the new user access ID.
+     * Test creating a user.
+     * Expected: 201 Created response with the new user's ID.
      */
     @Test
     @Order(1)
-    void testCreateUserAccess() {
-        UserAccessRequest request = new UserAccessRequest();
-        request.setUserId(userId); // Using the logged-in user
-        request.setEateryId(1L);   // Assuming eatery ID 1 exists
-        request.setRole(Role.WAITER);
+    void testCreateUser() {
+        // Generate a unique username to avoid conflicts
+        uniqueUsername = "testuser_" + UUID.randomUUID().toString().substring(0, 8);
+
+        Set<String> roles = new HashSet<>();
+        roles.add(role);
+
+        UserRequest request = new UserRequest();
+        request.setUsername(uniqueUsername);
+        request.setPassword("password123");
+        request.setRoles(roles);
 
         Response response = given()
                 .baseUri(baseUrl)
@@ -96,79 +103,82 @@ public class UserAccessApiTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .post("/api/user-access")
+                .post("/api/users")
                 .then()
                 .statusCode(201)
                 .body("id", notNullValue())
-                .body("userId", equalTo(userId.intValue()))
-                .body("eateryId", equalTo(1))
-                .body("role", equalTo(Role.WAITER.toString()))
+                .body("username", equalTo(uniqueUsername))
+                .body("roles", hasItem(role))
                 .extract()
                 .response();
 
         // Store the created ID for subsequent tests
-        createdUserAccessId = response.jsonPath().getLong("id");
-        System.out.println("[DEBUG_LOG] Created UserAccess ID: " + createdUserAccessId);
+        createdUserId = response.jsonPath().getLong("id");
+        System.out.println("[DEBUG_LOG] Created User ID: " + createdUserId);
     }
 
     /**
-     * Test getting a user access by ID.
-     * Expected: 200 OK response with the user access data.
+     * Test getting a user by ID.
+     * Expected: 200 OK response with the user data corresponding to what was sent in step 1.
      */
     @Test
     @Order(2)
-    void testGetUserAccessById() {
+    void testGetUserById() {
         given()
                 .baseUri(baseUrl)
                 .header("Authorization", "Bearer " + jwtToken)
                 .when()
-                .get("/api/user-access/" + createdUserAccessId)
+                .get("/api/users/" + createdUserId)
                 .then()
                 .statusCode(200)
-                .body("id", equalTo(createdUserAccessId.intValue()))
-                .body("userId", equalTo(userId.intValue()))
-                .body("eateryId", equalTo(1))
-                .body("role", equalTo(Role.WAITER.toString()));
+                .body("id", equalTo(createdUserId.intValue()))
+                .body("username", equalTo(uniqueUsername))
+                .body("roles", hasItem(role));
     }
 
     /**
-     * Test getting all user accesses.
-     * Expected: 200 OK response with a list containing the created user access.
+     * Test getting all users.
+     * Expected: 200 OK response with a list containing the created user.
      */
     @Test
     @Order(3)
-    void testGetAllUserAccesses() {
+    void testGetAllUsers() {
         Response response = given()
                 .baseUri(baseUrl)
                 .header("Authorization", "Bearer " + jwtToken)
                 .when()
-                .get("/api/user-access")
+                .get("/api/users")
                 .then()
                 .statusCode(200)
                 .extract()
                 .response();
 
-        List<UserAccessResponse> userAccesses = response.jsonPath().getList("", UserAccessResponse.class);
+        List<UserResponse> users = response.jsonPath().getList("", UserResponse.class);
 
-        // Verify the list contains the created user access
-        boolean found = userAccesses.stream()
-                .anyMatch(ua -> ua.getId().equals(createdUserAccessId));
+        // Verify the list contains the created user
+        boolean found = users.stream()
+                .anyMatch(user -> user.getId().equals(createdUserId));
 
-        assertTrue(found, "Created user access not found in the list");
-        System.out.println("[DEBUG_LOG] Found UserAccess in list: " + found);
+        assertTrue(found, "Created user not found in the list");
+        System.out.println("[DEBUG_LOG] Found User in list: " + found);
     }
 
     /**
-     * Test updating a user access.
+     * Test updating a user.
      * Expected: 200 OK response with the updated data.
      */
     @Test
     @Order(4)
-    void testUpdateUserAccess() {
-        UserAccessRequest request = new UserAccessRequest();
-        request.setUserId(userId);
-        request.setEateryId(1L);
-        request.setRole(Role.EATERY_ADMIN); // Change role from WAITER to RESTAURANT_ADMIN
+    void testUpdateUser() {
+        String updatedUsername = uniqueUsername + "_updated";
+        Set<String> updatedRoles = new HashSet<>();
+        updatedRoles.add(role);
+        updatedRoles.add("ROLE_ADMIN");
+
+        UserRequest request = new UserRequest();
+        request.setUsername(updatedUsername);
+        request.setPassword("newpassword123");
+        request.setRoles(updatedRoles);
 
         given()
                 .baseUri(baseUrl)
@@ -176,13 +186,15 @@ public class UserAccessApiTest {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .put("/api/user-access/" + createdUserAccessId)
+                .put("/api/users/" + createdUserId)
                 .then()
                 .statusCode(200)
-                .body("id", equalTo(createdUserAccessId.intValue()))
-                .body("userId", equalTo(userId.intValue()))
-                .body("eateryId", equalTo(1))
-                .body("role", equalTo(Role.EATERY_ADMIN.toString()));
+                .body("id", equalTo(createdUserId.intValue()))
+                .body("username", equalTo(updatedUsername))
+                .body("roles", hasItems(role, "ROLE_ADMIN"));
+
+        // Update the username for subsequent tests
+        uniqueUsername = updatedUsername;
     }
 
     /**
@@ -196,27 +208,26 @@ public class UserAccessApiTest {
                 .baseUri(baseUrl)
                 .header("Authorization", "Bearer " + jwtToken)
                 .when()
-                .get("/api/user-access/" + createdUserAccessId)
+                .get("/api/users/" + createdUserId)
                 .then()
                 .statusCode(200)
-                .body("id", equalTo(createdUserAccessId.intValue()))
-                .body("userId", equalTo(userId.intValue()))
-                .body("eateryId", equalTo(1))
-                .body("role", equalTo(Role.EATERY_ADMIN.toString())); // Verify role is now RESTAURANT_ADMIN
+                .body("id", equalTo(createdUserId.intValue()))
+                .body("username", equalTo(uniqueUsername))
+                .body("roles", hasItems(role, "ROLE_ADMIN"));
     }
 
     /**
-     * Test deleting a user access.
+     * Test deleting a user.
      * Expected: 204 No Content response.
      */
     @Test
     @Order(6)
-    void testDeleteUserAccess() {
+    void testDeleteUser() {
         given()
                 .baseUri(baseUrl)
                 .header("Authorization", "Bearer " + jwtToken)
                 .when()
-                .delete("/api/user-access/" + createdUserAccessId)
+                .delete("/api/users/" + createdUserId)
                 .then()
                 .statusCode(204);
     }
@@ -232,7 +243,7 @@ public class UserAccessApiTest {
                 .baseUri(baseUrl)
                 .header("Authorization", "Bearer " + jwtToken)
                 .when()
-                .get("/api/user-access/" + createdUserAccessId)
+                .get("/api/users/" + createdUserId)
                 .then()
                 .statusCode(404);
     }

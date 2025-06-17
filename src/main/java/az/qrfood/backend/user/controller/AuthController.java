@@ -7,6 +7,7 @@ import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.dto.LoginRequest;
 import az.qrfood.backend.user.dto.LoginResponse;
 import az.qrfood.backend.user.dto.RegisterRequest;
+import az.qrfood.backend.user.dto.UserRegistrationRequest;
 import az.qrfood.backend.user.entity.UserProfile;
 import az.qrfood.backend.user.service.UserProfileService;
 import az.qrfood.backend.user.repository.UserRepository;
@@ -226,6 +227,52 @@ public class AuthController {
 
         // If not authenticated or user not found, return a message
         return ResponseEntity.ok(Map.of("authenticated", false, "message", "User not authenticated"));
+    }
+
+    /**
+     * POST for registering a new user without creating a restaurant.
+     * The user will be linked to an existing eatery.
+     *
+     * @param request UserRegistrationRequest object containing user data and eateryId.
+     * @return ResponseEntity with success or error message.
+     */
+    @PostMapping("/register-user")
+    public ResponseEntity<?> registerUserOnly(@RequestBody UserRegistrationRequest request) {
+        // Create a new User entity
+        User user = new User();
+        user.setUsername(request.getEmail());
+
+        // Check if a user with the same username already exists
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "User with this email already exists!"));
+        }
+
+        // Hash the password before saving to the database
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        // Set the default role for the new user (ROLE_ADMIN for restaurant staff)
+        user.setRoles(new HashSet<>(Collections.singletonList("ROLE_ADMIN")));
+
+        // Save the user to the database
+        user = userRepository.save(user);
+
+        // Create a user profile for the user
+        List<String> phones = new ArrayList<>();
+        // If there is a name in the request, add it to the profile
+        if (request.getName() != null && !request.getName().isEmpty()) {
+            phones.add(request.getName());
+        }
+        UserProfile userProfile = userProfileService.createUserProfile(user, phones);
+
+        // Add the eatery ID to the user profile
+        userProfileService.addRestaurantToProfile(userProfile, request.getEateryId());
+
+        log.debug("User [{}] successfully created and linked to eatery [{}].",
+                userProfile.getUser(),
+                request.getEateryId());
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.ok("User successfully created and linked to eatery!", null));
     }
 
     /**
