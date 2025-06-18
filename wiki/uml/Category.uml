@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>az.qrfood.backend.category.entity.Category</OriginalElement>
+  <nodes>
+    <node x="-239.18106312292366" y="4.5">az.qrfood.backend.user.entity.Role</node>
+    <node x="-146.7624584717608" y="220.5">az.qrfood.backend.table.entity.TableStatus</node>
+    <node x="-54.622923588039896" y="4.5">az.qrfood.backend.client.entity.ClientDevice</node>
+    <node x="-190.00830564784053" y="291.74169435215947">az.qrfood.backend.qr.entity.QrCode</node>
+    <node x="498.6071428571429" y="229.25747508305665">az.qrfood.backend.category.entity.CategoryTranslation</node>
+    <node x="1032.9933554817276" y="14.973421926910305">az.qrfood.backend.user.entity.User</node>
+    <node x="425.6071428571429" y="407.0">az.qrfood.backend.category.entity.Category</node>
+    <node x="447.6071428571429" y="803.8289036544851">az.qrfood.backend.dish.entity.DishEntity</node>
+    <node x="1097.0" y="1009.1976744186046">az.qrfood.backend.dish.entity.DishEntityTranslation</node>
+    <node x="1111.0" y="407.0">az.qrfood.backend.user.entity.UserProfile</node>
+    <node x="137.62292358803984" y="512.2475083056479">az.qrfood.backend.eatery.entity.Eatery</node>
+    <node x="-172.50830564784053" y="671.2109634551496">az.qrfood.backend.eatery.entity.EateryPhone</node>
+    <node x="112.5" y="220.5">az.qrfood.backend.table.entity.TableInEatery</node>
+    <node x="335.0" y="4.5">az.qrfood.backend.order.entity.Order</node>
+    <node x="595.0" y="4.5">az.qrfood.backend.order.entity.OrderItem</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="az.qrfood.backend.client.entity.ClientDevice" target="az.qrfood.backend.order.entity.Order" relationship="TO_MANY">
+      <point x="85.49992358803989" y="0.0" />
+      <point x="317.5" y="48.0" />
+      <point x="317.5" y="209.0" />
+      <point x="438.0" y="209.0" />
+      <point x="0.0" y="91.5" />
+    </edge>
+    <edge source="az.qrfood.backend.eatery.entity.Eatery" target="az.qrfood.backend.category.entity.Category" relationship="TO_MANY">
+      <point x="7.641196015129026E-5" y="115.50049169435215" />
+      <point x="251.123" y="774.0" />
+      <point x="581.107" y="774.0" />
+      <point x="-1.4285714291872864E-4" y="79.5" />
+    </edge>
+    <edge source="az.qrfood.backend.dish.entity.DishEntity" target="az.qrfood.backend.dish.entity.DishEntityTranslation" relationship="TO_MANY">
+      <point x="0.0" y="79.5" />
+      <point x="610.1071428571429" y="1091.698" />
+      <point x="-120.5" y="15.0003255813956" />
+    </edge>
+    <edge source="az.qrfood.backend.table.entity.TableInEatery" target="az.qrfood.backend.eatery.entity.Eatery" relationship="TO_ONE">
+      <point x="0.0" y="115.5" />
+      <point x="198.0" y="482.0" />
+      <point x="251.123" y="482.0" />
+      <point x="7.641196015129026E-5" y="-115.49950830564785" />
+    </edge>
+    <edge source="az.qrfood.backend.table.entity.TableInEatery" target="az.qrfood.backend.table.entity.TableStatus" relationship="TO_ONE">
+      <point x="-85.5" y="-101.5" />
+      <point x="74.5" y="0.0" />
+    </edge>
+    <edge source="az.qrfood.backend.category.entity.Category" target="az.qrfood.backend.eatery.entity.Eatery" relationship="TO_ONE">
+      <point x="-155.50014285714286" y="33.24800000000005" />
+      <point x="382.123" y="519.748" />
+      <point x="382.123" y="482.0" />
+      <point x="251.123" y="482.0" />
+      <point x="7.641196015129026E-5" y="-115.49950830564785" />
+    </edge>
+    <edge source="az.qrfood.backend.table.entity.TableInEatery" target="az.qrfood.backend.order.entity.Order" relationship="TO_MANY">
+      <point x="85.5" y="-3.242999999999995" />
+      <point x="481.107" y="332.757" />
+      <point x="481.107" y="209.0" />
+      <point x="438.0" y="209.0" />
+      <point x="0.0" y="91.5" />
+    </edge>
+    <edge source="az.qrfood.backend.dish.entity.DishEntityTranslation" target="az.qrfood.backend.dish.entity.DishEntity" relationship="TO_ONE">
+      <point x="-120.5" y="3.2558139560023847E-4" />
+      <point x="807.0" y="1076.698" />
+      <point x="807.0" y="883.329" />
+      <point x="162.49985714285708" y="9.63455148621506E-5" />
+    </edge>
+    <edge source="az.qrfood.backend.eatery.entity.Eatery" target="az.qrfood.backend.table.entity.TableInEatery" relationship="TO_MANY">
+      <point x="91.37707641196016" y="-115.49950830564785" />
+      <point x="342.5" y="358.0" />
+      <point x="85.5" y="22.0" />
+    </edge>
+    <edge source="az.qrfood.backend.order.entity.Order" target="az.qrfood.backend.order.entity.OrderItem" relationship="TO_MANY">
+      <point x="103.0" y="0.0" />
+      <point x="-103.0" y="0.0" />
+    </edge>
+    <edge source="az.qrfood.backend.category.entity.Category" target="az.qrfood.backend.category.entity.CategoryTranslation" relationship="TO_MANY">
+      <point x="29.0" y="-79.5" />
+      <point x="0.0" y="55.5" />
+    </edge>
+    <edge source="az.qrfood.backend.category.entity.CategoryTranslation" target="az.qrfood.backend.category.entity.Category" relationship="TO_ONE">
+      <point x="111.49985714285708" y="-4.750830566422337E-4" />
+      <point x="754.107" y="284.757" />
+      <point x="754.107" y="774.0" />
+      <point x="581.107" y="774.0" />
+      <point x="-1.4285714291872864E-4" y="79.5" />
+    </edge>
+    <edge source="az.qrfood.backend.order.entity.OrderItem" target="az.qrfood.backend.order.entity.Order" relationship="TO_ONE">
+      <point x="0.0" y="91.5" />
+      <point x="698.0" y="209.0" />
+      <point x="438.0" y="209.0" />
+      <point x="0.0" y="91.5" />
+    </edge>
+    <edge source="az.qrfood.backend.order.entity.OrderItem" target="az.qrfood.backend.dish.entity.DishEntity" relationship="TO_ONE">
+      <point x="56.10699999999997" y="91.5" />
+      <point x="754.107" y="221.757" />
+      <point x="807.0" y="221.757" />
+      <point x="807.0" y="883.329" />
+      <point x="162.49985714285708" y="9.63455148621506E-5" />
+    </edge>
+    <edge source="az.qrfood.backend.user.entity.User" target="az.qrfood.backend.user.entity.UserProfile" relationship="TO_ONE">
+      <point x="22.006644518272424" y="139.5" />
+      <point x="0.0" y="-115.5" />
+    </edge>
+    <edge source="az.qrfood.backend.user.entity.UserProfile" target="az.qrfood.backend.user.entity.User" relationship="TO_ONE">
+      <point x="15.0" y="-115.5" />
+      <point x="37.006644518272424" y="139.5" />
+    </edge>
+    <edge source="az.qrfood.backend.eatery.entity.Eatery" target="az.qrfood.backend.eatery.entity.EateryPhone" relationship="TO_MANY">
+      <point x="-113.5" y="98.96345514950167" />
+      <point x="85.5" y="0.0" />
+    </edge>
+    <edge source="az.qrfood.backend.table.entity.TableInEatery" target="az.qrfood.backend.qr.entity.QrCode" relationship="TO_ONE">
+      <point x="-85.5" y="23.24169435215947" />
+      <point x="103.0" y="0.0" />
+    </edge>
+    <edge source="az.qrfood.backend.eatery.entity.EateryPhone" target="az.qrfood.backend.eatery.entity.Eatery" relationship="TO_ONE">
+      <point x="3.0564784053410676E-4" y="-55.499963455149555" />
+      <point x="-87.008" y="482.0" />
+      <point x="251.123" y="482.0" />
+      <point x="7.641196015129026E-5" y="-115.49950830564785" />
+    </edge>
+    <edge source="az.qrfood.backend.order.entity.Order" target="az.qrfood.backend.table.entity.TableInEatery" relationship="TO_ONE">
+      <point x="15.0" y="91.5" />
+      <point x="453.0" y="317.757" />
+      <point x="318.0" y="317.757" />
+      <point x="318.0" y="358.0" />
+      <point x="85.5" y="22.0" />
+    </edge>
+    <edge source="az.qrfood.backend.category.entity.Category" target="az.qrfood.backend.dish.entity.DishEntity" relationship="TO_MANY">
+      <point x="155.49985714285708" y="0.0" />
+      <point x="807.0" y="486.5" />
+      <point x="807.0" y="883.329" />
+      <point x="162.49985714285708" y="9.63455148621506E-5" />
+    </edge>
+    <edge source="az.qrfood.backend.dish.entity.DishEntity" target="az.qrfood.backend.category.entity.Category" relationship="TO_ONE">
+      <point x="-1.4285714291872864E-4" y="-79.49990365448514" />
+      <point x="610.107" y="774.0" />
+      <point x="581.107" y="774.0" />
+      <point x="-1.4285714291872864E-4" y="79.5" />
+    </edge>
+  </edges>
+  <settings layout="Compact" zoom="0.7898363479758829" showDependencies="true" x="569.0000000000001" y="584.5000000000001" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

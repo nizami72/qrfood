@@ -25,7 +25,7 @@ public class FrontendPathConfig {
     private String imagesDishesUri;
     @Value("${full.path.fe.api.tables.image}")
     private String urlApiTables;
-    @Value("${full.path.fe.add.dishes.2.category}")
+    @Value("${segment.dishes}")
     private String urlAddDish;
     @Value("${full.path.fe.add.dish.2.order}")
     private String urlAddDish2Order;

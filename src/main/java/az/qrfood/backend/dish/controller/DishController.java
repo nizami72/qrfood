@@ -67,6 +67,8 @@ public class DishController {
 
     /**
      * GET all dishes in the category.
+     *
+     * @param categoryId the category ID
      */
     @Operation(summary = "Retrieve the eatery dishes included into specific category.")
     @ApiResponses(value = {
@@ -150,6 +152,13 @@ public class DishController {
         return ResponseEntity.ok(dishEntity.getId());
     }
 
+    /**
+     * GET a dish by category id and dish ID
+
+     * @param categoryId the category ID
+     * @param dishId the dish ID
+     * @return DishEntity
+     */
 
     private DishEntity getDishOrThrow(@PathVariable Long categoryId, @PathVariable Long dishId) {
         Optional<Category> category = categoryRepository.findById(categoryId);
