@@ -1,6 +1,7 @@
 package az.qrfood.backend.common.config;
 
 import az.qrfood.backend.common.CustomAuthenticationEntryPoint;
+import az.qrfood.backend.user.filter.EateryIdCheckFilter;
 import az.qrfood.backend.user.filter.JwtRequestFilter;
 import az.qrfood.backend.user.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,17 +12,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -36,6 +32,7 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     private final JwtRequestFilter jwtRequestFilter;
+    private final EateryIdCheckFilter eateryIdCheckFilter;
     private final CorsConfigurationSource corsConfig;
 
     @Value("${segment.api.client.all}")
@@ -59,11 +56,13 @@ public class SecurityConfig {
             CustomAuthenticationEntryPoint customEntryPoint,
             CustomUserDetailsService userDetailsService,
             JwtRequestFilter jwtRequestFilter,
+            EateryIdCheckFilter eateryIdCheckFilter,
             @Qualifier("cors") CorsConfigurationSource corsConfig) {
         this.passwordEncoder = passwordEncoder;
         this.customEntryPoint = customEntryPoint;
         this.userDetailsService = userDetailsService;
         this.jwtRequestFilter = jwtRequestFilter;
+        this.eateryIdCheckFilter = eateryIdCheckFilter;
         this.corsConfig = corsConfig;
     }
 
@@ -118,6 +117,10 @@ public class SecurityConfig {
         // Добавляем наш JWT-фильтр перед стандартным фильтром аутентификации по имени пользователя/паролю
         // Это гарантирует, что JWT будет проверен перед тем, как Spring Security будет принимать решения об авторизации.
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // Добавляем фильтр проверки eateryId после JWT-фильтра
+        // Это гарантирует, что проверка eateryId будет выполнена после аутентификации пользователя
+        http.addFilterAfter(eateryIdCheckFilter, JwtRequestFilter.class);
 
         return http.build();
     }
