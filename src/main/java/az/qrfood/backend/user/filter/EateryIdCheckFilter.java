@@ -6,7 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -58,7 +58,7 @@ public class EateryIdCheckFilter extends OncePerRequestFilter {
 
             Long pathEateryId = Long.parseLong(eateryIdStr);
 
-            // Get JWT token from Authorization header
+            // Get JWT token from the Authorization header
             String authorizationHeader = request.getHeader("Authorization");
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 String jwt = authorizationHeader.substring(7);
@@ -71,7 +71,7 @@ public class EateryIdCheckFilter extends OncePerRequestFilter {
                     log.error("Error extracting eateryId from JWT token", e);
                 }
 
-                // If eateryId is in the token and doesn't match the path eateryId, logout and redirect
+                // todo If eateryId is in the token and doesn't match the path's eateryId then logout and redirect
                 if (tokenEateryId != null && !tokenEateryId.equals(pathEateryId)) {
                     log.error("EateryId mismatch: token eateryId {} does not match path eateryId {}", 
                               tokenEateryId, pathEateryId);
@@ -80,7 +80,8 @@ public class EateryIdCheckFilter extends OncePerRequestFilter {
                     SecurityContextHolder.clearContext();
 
                     // todo Redirect to login page doesnt work
-                    response.sendRedirect("/api/auth/login");
+                    response.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+                    response.getWriter().write("EateryId mismatch");
                     return;
                 }
             }

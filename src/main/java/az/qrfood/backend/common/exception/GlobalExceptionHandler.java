@@ -1,15 +1,10 @@
 package az.qrfood.backend.common.exception;
 
-import static az.qrfood.backend.client.controller.ClientDeviceController.DEVICE;
-
 import az.qrfood.backend.common.Util;
 import az.qrfood.backend.common.response.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,7 +12,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 @RestControllerAdvice

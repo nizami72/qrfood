@@ -63,12 +63,11 @@ GET {{url}}{{apiCategories}}{{categoryId}}{{dishes}}{{dishId}}
 Authorization: Bearer {{accessToken}}
 
 
-
-
 ### GET ALL DISHES IN A CATEGORY
 //_____________________________________________________________________
 @categoryId2=/19
-GET {{url}}{{apiCategories}}{{categoryId2}}{{dishes}}
+@eateryId=/1
+GET {{url}}{{api}}{{eatery}}{{eateryId}}{{category}}{{categoryId2}}
 Authorization: Bearer {{accessToken}}
 
 
