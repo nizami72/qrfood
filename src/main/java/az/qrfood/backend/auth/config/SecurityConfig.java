@@ -1,9 +1,9 @@
-package az.qrfood.backend.common.config;
+package az.qrfood.backend.auth.config;
 
 import az.qrfood.backend.common.CustomAuthenticationEntryPoint;
-import az.qrfood.backend.user.filter.EateryIdCheckFilter;
-import az.qrfood.backend.user.filter.JwtRequestFilter;
-import az.qrfood.backend.user.service.CustomUserDetailsService;
+import az.qrfood.backend.auth.filter.EateryIdCheckFilter;
+import az.qrfood.backend.auth.filter.JwtRequestFilter;
+import az.qrfood.backend.auth.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -35,8 +35,10 @@ public class SecurityConfig {
     private final EateryIdCheckFilter eateryIdCheckFilter;
     private final CorsConfigurationSource corsConfig;
 
-    @Value("${segment.api.client.all}")
-    String segmentApiClientAll;
+    @Value("${api.user.register}")
+    String apiUserRegister;
+    @Value("${api.eatery}")
+    String apiEateryArgCategoryArg;
 
     /**
      * Определяет менеджер аутентификации.
@@ -87,13 +89,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/qrcode/**").permitAll()
                         .requestMatchers("/image/**").permitAll()
-                        .requestMatchers("/api/eateries/*/categories").permitAll()
-                        .requestMatchers("/api/eateries/*").permitAll()
-                        .requestMatchers("/api/eatery/*").permitAll()
                         .requestMatchers("/api/config/image-paths").permitAll()
                         .requestMatchers("/api/orders/*").permitAll()
                         .requestMatchers("/api/orders/status/*").permitAll()
                         .requestMatchers("/api/client/eatery/**").permitAll()
+                        .requestMatchers(apiUserRegister).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/tables/*").permitAll()
                         // ============================================================================    ADMIN SECTION
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
@@ -101,7 +101,7 @@ public class SecurityConfig {
                         // Требуем роль "USER" или "ADMIN" для доступа к /api/user/**
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/tables/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/eatery/**").hasAnyRole("USER", "ADMIN")
+//                        .requestMatchers("/api/eatery/**").hasAnyRole("EATERY_ADMIN", "ADMIN")
                         .requestMatchers("/api/order-items/**").hasAnyRole("USER", "ADMIN")
                         // ==============================================================    ALL OTHERS NEED TO HAVE JWT
                         // Все остальные запросы требуют аутентификации (наличия валидного JWT)

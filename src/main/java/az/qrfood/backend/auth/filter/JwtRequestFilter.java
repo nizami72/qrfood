@@ -1,7 +1,7 @@
-package az.qrfood.backend.user.filter;
+package az.qrfood.backend.auth.filter;
 
-import az.qrfood.backend.user.service.CustomUserDetailsService;
-import az.qrfood.backend.user.util.JwtUtil;
+import az.qrfood.backend.auth.service.CustomUserDetailsService;
+import az.qrfood.backend.auth.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

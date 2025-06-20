@@ -27,6 +27,8 @@ public class UserProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
+
     /**
      * The user associated with this profile.
      */

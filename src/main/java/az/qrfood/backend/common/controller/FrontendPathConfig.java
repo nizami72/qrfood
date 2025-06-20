@@ -1,5 +1,8 @@
 package az.qrfood.backend.common.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -33,7 +36,8 @@ public class FrontendPathConfig {
     private String urlDeleteMenuItem;
     @Value("${relative.path.api.client.eatery.arg.table.arg}")
     private String clientGetMenuUrl;
-
+    @Value("${api.eatery.id}")
+    String apiEateryId;
 
     @GetMapping("/image-paths")
     public Map<String, String> getImagePaths() {
@@ -46,7 +50,20 @@ public class FrontendPathConfig {
         paths.put("urlAddDish2Order", urlAddDish2Order);
         paths.put("urlDeleteMenuItemFromOrder", urlDeleteMenuItem);
         paths.put("clientGetMenuUrl", clientGetMenuUrl);
-        log.debug("FE requested path config [{}]", paths);
+        paths.put("apiEateryId", apiEateryId);
+        log.debug("FE requested path config [{}]", prettyPrintMao(paths));
         return paths;
+    }
+
+    private String prettyPrintMao(Map<String, String> map) {
+        String out = "Unable to pretty print map";
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT); // включаем отступы
+        try {
+            out = mapper.writeValueAsString(map);
+        } catch (JsonProcessingException ex) {
+            log.error(ex.getMessage());
+        }
+        return out;
     }
 }

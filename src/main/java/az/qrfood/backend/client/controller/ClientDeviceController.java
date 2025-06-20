@@ -50,7 +50,7 @@ public class ClientDeviceController {
      * @param myCookieValue cookie value
      * @return List of categories aka menu
      */
-    @GetMapping("${component.eatery}/{eateryId}${component.table}/{tableId}")
+    @GetMapping("${eatery}/{eateryId}${table}/{tableId}")
     public ResponseEntity<List<CategoryDto>> eateryCategories(
             @PathVariable(value = "eateryId") Long eateryId,
             @PathVariable(value = "tableId") Long tableId,
@@ -89,7 +89,7 @@ public class ClientDeviceController {
 
      * @return List of categories aka menu
      */
-    @GetMapping("${component.eatery}/{eateryId}")
+    @GetMapping("${eatery}/{eateryId}")
     public ResponseEntity<List<CategoryDto>> eateryCategories(@PathVariable(value = "eateryId") Long eateryId){
         log.debug("Find all categories for eatery when table and eatery already known in the device");
         List<CategoryDto> id = categoryService.findAllCategoryForEatery(eateryId);

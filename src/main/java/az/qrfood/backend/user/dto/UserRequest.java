@@ -1,8 +1,10 @@
 package az.qrfood.backend.user.dto;
 
+import az.qrfood.backend.user.entity.Role;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +16,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserRequest {
 
     /**
@@ -33,5 +36,5 @@ public class UserRequest {
     /**
      * The roles assigned to the user.
      */
-    private Set<String> roles;
+    private Set<Role> roles;
 }

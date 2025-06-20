@@ -6,6 +6,7 @@ import az.qrfood.backend.category.service.CategoryService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +20,8 @@ import java.util.List;
 
 @Log4j2
 @RestController
-@RequestMapping("${segment.categories}")
+//@RequestMapping("${segment.category}")
+@RequestMapping("${api.eatery}")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -34,7 +36,7 @@ public class CategoryController {
      * @param eateryId the eatery id
      * @return Liast of Categories DTO
      */
-    @GetMapping()
+    @GetMapping("/{eateryId}${category}")
     public ResponseEntity<List<CategoryDto>> eateryCategories(@PathVariable(value = "eateryId") Long eateryId) {
         log.debug("Find all categories for eatery {}", eateryId);
         List<CategoryDto> id = categoryService.findAllCategoryForEatery(eateryId);
@@ -47,7 +49,7 @@ public class CategoryController {
      * @param categoryId the category id
      * @return CategoryDto
      */
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{eateryId}${category}/{id}")
     public ResponseEntity<CategoryDto> categoryById(@PathVariable(value = "id") Long categoryId) {
         log.debug("Find the category by ID {}", categoryId);
         CategoryDto category = categoryService.findCategoryById(categoryId);
@@ -61,7 +63,9 @@ public class CategoryController {
      * @param dishCategoryDto category data
      * @return id of created eatery
      */
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{eateryId}${category}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+
     public ResponseEntity<Long> createDishCategory(@PathVariable Long eateryId,
                                                    @RequestPart("data") CategoryDto dishCategoryDto,
                                                    @RequestPart("image") MultipartFile file) {
@@ -78,7 +82,7 @@ public class CategoryController {
      * @param categoryId category ID
      * @return deleted category ID
      */
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{eateryId}${category}/{id}")
     public ResponseEntity<String> deleteCategory(@PathVariable(value = "id") Long categoryId) {
         log.debug("Delete category: {}", categoryId);
         return categoryService.deleteCategory(categoryId);
@@ -92,7 +96,7 @@ public class CategoryController {
      * @param file            optional new image file
      * @return updated category ID
      */
-    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/{eateryId}${category}/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> updateCategory(@PathVariable(value = "id") Long categoryId,
                                                @RequestPart("data") CategoryDto dishCategoryDto,
                                                @RequestPart(value = "image", required = false) MultipartFile file) {

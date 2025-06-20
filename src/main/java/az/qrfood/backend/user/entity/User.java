@@ -36,12 +36,10 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    // Список ролей пользователя, например, "ROLE_USER", "ROLE_ADMIN"
-    // Используем ElementCollection для хранения ролей в отдельной таблице
     @ElementCollection(fetch = FetchType.EAGER) // Получаем роли сразу при загрузке пользователя
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
-    private Set<String> roles;
+    private Set<Role> roles;
 
     /**
      * The user profile associated with this user.
@@ -59,7 +57,7 @@ public class User implements UserDetails {
             return Collections.emptyList();
         }
         return roles.stream()
-                .map(SimpleGrantedAuthority::new) // Преобразуем строковые роли в SimpleGrantedAuthority
+                .map(r -> new SimpleGrantedAuthority(r.name())) // Преобразуем строковые роли в SimpleGrantedAuthority
                 .collect(Collectors.toList());
     }
 

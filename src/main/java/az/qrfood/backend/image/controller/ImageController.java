@@ -5,7 +5,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("${component.image}")
+@RequestMapping("${image}")
 @Log4j2
 public class ImageController {
 
@@ -38,7 +37,7 @@ public class ImageController {
         return paths;
     }
 
-    @RequestMapping(value = {"${component.eatery}/{id}/{fileName}"})
+    @RequestMapping(value = {"${eatery}/{id}/{fileName}"})
     public ResponseEntity<byte[]> getEateryImage(@PathVariable("id") String dir,
                                                  @PathVariable("fileName") String photo, HttpServletResponse response) {
         log.debug("Requested eatery image [{}]", photo);

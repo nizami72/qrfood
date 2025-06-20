@@ -1,4 +1,4 @@
-package az.qrfood.backend.user.util;
+package az.qrfood.backend.auth.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -1,5 +1,6 @@
 package az.qrfood.backend.user.dto;
 
+import az.qrfood.backend.user.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

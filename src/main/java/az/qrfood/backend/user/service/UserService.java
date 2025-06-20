@@ -1,19 +1,32 @@
 package az.qrfood.backend.user.service;
 
+import az.qrfood.backend.user.dto.RegisterRequest;
+import az.qrfood.backend.common.response.ApiResponse;
+import az.qrfood.backend.eatery.dto.EateryDto;
+import az.qrfood.backend.eatery.service.EateryService;
 import az.qrfood.backend.user.dto.UserRequest;
 import az.qrfood.backend.user.dto.UserResponse;
+import az.qrfood.backend.user.entity.Role;
 import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.entity.UserProfile;
 import az.qrfood.backend.user.repository.UserProfileRepository;
 import az.qrfood.backend.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springdoc.core.utils.SpringDocUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -21,11 +34,14 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class UserService {
 
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserProfileService userProfileService;
+    private final EateryService eateryService;
 
     /**
      * Create a new user.
@@ -35,7 +51,7 @@ public class UserService {
      */
     @Transactional
     public UserResponse createUser(UserRequest request) {
-        // Check if username already exists
+        // Check if a username already exists
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new IllegalStateException("Username already exists: " + request.getUsername());
         }
@@ -153,6 +169,90 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    public ResponseEntity<?> registerUser(RegisterRequest registerRequest) {
+
+        // Extract user information from the DTO
+        RegisterRequest.UserDto userDto = registerRequest.getUser();
+        RegisterRequest.UserProfileRequest userProfileRequest = registerRequest.getUserProfileRequest();
+
+        // Create a new User entity
+        User user = new User();
+        user.setUsername(userDto.getEmail());
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            log.error("User with this email already exists!");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "Пользователь с таким email уже существует!"));
+        }
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        user.setRoles(registerRequest.getUser().getRoles());
+        // Save the user to the database
+        user = userRepository.save(user);
+
+
+        UserProfile userProfile = userProfileService.createUserProfile(user, userProfileRequest);
+
+        // Extract restaurant information from the DTO
+        RegisterRequest.RestaurantDto restaurantDto = registerRequest.getRestaurant();
+        if(restaurantDto != null) {
+
+
+            // Create a new EateryDto object
+            EateryDto eateryDto = new EateryDto();
+            eateryDto.setName(restaurantDto.getName());
+            eateryDto.setNumberOfTables(1); // Default to 1 table
+            eateryDto.setOwnerProfileId(userProfile.getId()); // Set the owner profile ID
+
+            // Save the restaurant to the database
+            Long eateryId = eateryService.createEatery(eateryDto);
+
+            // Add the restaurant ID to the user profile
+            userProfileService.addRestaurantToProfile(userProfile, eateryId);
+            log.debug("Eatery [{}] successfully created.", eateryId);
+        }
+
+        log.debug("User [{}] successfully created.",
+                userProfile.getUser());
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.ok( "User and a eatery successfully created!", null));
+    }
+
+//    public ResponseEntity<?> registerUserOnly(UserRegistrationRequest request) {
+//
+//        // Create a new User entity
+//        User user = new User();
+//        user.setUsername(request.getEmail());
+//
+//        // Check if a user with the same username already exists
+//        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+//            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "User with this email already exists!"));
+//        }
+//
+//        // Hash the password before saving to the database
+//        user.setPassword(passwordEncoder.encode(request.getPassword()));
+//
+//        // Set the default role for the new user (ROLE_ADMIN for restaurant staff)
+//        user.setRoles(request.getRoles());
+//
+//        // Save the user to the database
+//        user = userRepository.save(user);
+//
+//        // Create a user profile for the user
+//        List<String> phones = new ArrayList<>();
+//        if (request.getPhone() != null && !request.getPhone().isEmpty()) {
+//            phones.add(request.getPhone());
+//        }
+//        UserProfileRequest userProfile = userProfileService.createUserProfile(user, phones);
+//
+//        // Add the eatery ID to the user profile
+//        userProfileService.addRestaurantToProfile(userProfile, request.getEateryId());
+//
+//        log.debug("User [{}] successfully created and linked to eatery [{}].",
+//                userProfile.getUser(),
+//                request.getEateryId());
+//        return null;
+//    }
+
+
     /**
      * Map a User entity to a UserResponse DTO.
      *
@@ -163,7 +263,9 @@ public class UserService {
         return new UserResponse(
                 user.getId(),
                 user.getUsername(),
-                user.getRoles(),
+                user.getRoles().stream()
+                        .map(Enum::name)
+                        .collect(Collectors.toSet()),
                 user.getProfile() != null
         );
     }

@@ -3,8 +3,8 @@ package az.qrfood.backend.orderitem;
 import static io.restassured.RestAssured.given;
 
 import az.qrfood.backend.order.dto.OrderItemDTO;
-import az.qrfood.backend.user.dto.LoginRequest;
-import az.qrfood.backend.user.dto.LoginResponse;
+import az.qrfood.backend.auth.dto.LoginRequest;
+import az.qrfood.backend.auth.dto.LoginResponse;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;

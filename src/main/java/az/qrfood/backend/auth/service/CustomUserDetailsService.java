@@ -1,4 +1,4 @@
-package az.qrfood.backend.user.service;
+package az.qrfood.backend.auth.service;
 
 import az.qrfood.backend.user.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -1,10 +1,12 @@
 package az.qrfood.backend.user.service;
 
+import az.qrfood.backend.user.dto.RegisterRequest;
 import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.entity.UserProfile;
 import az.qrfood.backend.user.repository.UserProfileRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -12,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Service class for managing UserProfile entities.
+ * Service class for managing UserProfileRequest entities.
  */
 @Service
 public class UserProfileService {
@@ -24,32 +26,25 @@ public class UserProfileService {
     }
 
     /**
-     * Creates a new user profile for the given user.
-     *
-     * @param user The user entity
-     * @return The created user profile
-     */
-    @Transactional
-    public UserProfile createUserProfile(User user) {
-        return createUserProfile(user, new ArrayList<>());
-    }
-
-    /**
      * Creates a new user profile for the given user with phone numbers.
      *
      * @param user The user entity
-     * @param phones List of phone numbers
      * @return The created user profile
      */
     @Transactional
-    public UserProfile createUserProfile(User user, List<String> phones) {
-        // Check if profile already exists
+    public UserProfile createUserProfile(User user, RegisterRequest.UserProfileRequest userProfileRequest) {
+
         if (userProfileRepository.existsByUser(user)) {
             throw new IllegalStateException("User profile already exists for user: " + user.getUsername());
+        }
+        List<String> phones = new ArrayList<>();
+        if (StringUtils.hasText(userProfileRequest.getPhone())) {
+            phones.add(userProfileRequest.getPhone());
         }
 
         UserProfile profile = new UserProfile();
         profile.setUser(user);
+        profile.setName(userProfileRequest.getName());
         profile.setPhones(phones);
         profile.setIsActive(true);
         profile.setCreated(LocalDateTime.now());

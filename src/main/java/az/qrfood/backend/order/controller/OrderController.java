@@ -8,7 +8,6 @@ import az.qrfood.backend.order.mapper.OrderMapper;
 import az.qrfood.backend.order.service.OrderService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.websocket.server.PathParam;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -57,7 +56,7 @@ public class OrderController {
      *
      * @return list of orders with defined status
      */
-    @GetMapping("${component.status}/{status}")
+    @GetMapping("${status}/{status}")
     public ResponseEntity<List<OrderDto>> getAllOrders(@PathVariable("status") String status) {
         log.debug("GET all order by status [{}]", status);
         return ResponseEntity.ok(orderService.getAllOrdersByStatus(status));
@@ -69,7 +68,7 @@ public class OrderController {
      * @param eateryId the ID of the eatery
      * @return list of orders for the specified eatery
      */
-    @GetMapping("${component.eatery}/{eateryId}")
+    @GetMapping("${eatery}/{eateryId}")
     public ResponseEntity<List<OrderDto>> getOrdersByEateryId(@PathVariable Long eateryId) {
         log.debug("REST request to get Orders for eatery ID: {}", eateryId);
         return ResponseEntity.ok(orderService.getOrdersByEateryId(eateryId));

@@ -127,3 +127,15 @@ The UUID cookie is installed on the device when a client has confirmed its order
 3. Make a decision where all orders pages should appear
 4. Make a decision what should be header for all pages
 5. Add headers to all pages
+
+
+
+
+| Role / Entity      | <span style="color:red"> Eatery</span> | Category | Dish | Tables | Orders | Users | Receipts |
+|--------------------|----------------------------------------|----------|------|--------|--------|-------|----------|
+| **CLIENT**         | R                                      | R        | R    | R      | C, R   | –     | R        |
+| **EATERY\_ADMIN**  | RCU                                    | RCUD     | RCUD | RCUD   | RCUD   | RCUD  | R        |
+| **KITCHEN\_ADMIN** | –                                      | –        | R    | –      | R, U   | –     | –        |
+| **WAITER**         | –                                      | –        | –    | –      | R, U   | –     | –        |
+| **CASHIER**        | –                                      | –        | –    | –      | R      | –     | R, U     |
+| **SUPER_ADMIN**    | RCUD                                   | RCUD     | RCUD | RCUD   | RCUD   | RCUD  | RCUD     |

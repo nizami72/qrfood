@@ -89,8 +89,8 @@ public class UserApiTest {
         // Generate a unique username to avoid conflicts
         uniqueUsername = "testuser_" + UUID.randomUUID().toString().substring(0, 8);
 
-        Set<String> roles = new HashSet<>();
-        roles.add(role);
+        Set<Role> roles = new HashSet<>();
+        roles.add(Role.valueOf(role));
 
         UserRequest request = new UserRequest();
         request.setUsername(uniqueUsername);
@@ -171,9 +171,9 @@ public class UserApiTest {
     @Order(4)
     void testUpdateUser() {
         String updatedUsername = uniqueUsername + "_updated";
-        Set<String> updatedRoles = new HashSet<>();
-        updatedRoles.add(role);
-        updatedRoles.add("ROLE_ADMIN");
+        Set<Role> updatedRoles = new HashSet<>();
+        updatedRoles.add(Role.fromString(role));
+        updatedRoles.add(Role.fromString("ROLE_ADMIN"));
 
         UserRequest request = new UserRequest();
         request.setUsername(updatedUsername);

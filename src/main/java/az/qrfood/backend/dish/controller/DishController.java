@@ -11,8 +11,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,13 +30,18 @@ import java.util.Optional;
 
 @Log4j2
 @RestController
-@RequestMapping("${segment.dishes}")
+@RequestMapping("${api.eatery}")
 public class DishController {
 
     //<editor-fold desc="Fields">
     private final DishService dishService;
     private final DishRepository dishRepository;
     private final CategoryRepository categoryRepository;
+    @Value("${category}")
+    String category;
+    @Value("${dish}")
+    String dish;
+
     //</editor-fold>
 
     //<editor-fold desc="Constructor">
@@ -56,7 +63,8 @@ public class DishController {
             @ApiResponse(responseCode = "200", description = "Dish found and returned successfully"),
             @ApiResponse(responseCode = "404", description = "Dish or category not found")
     })
-    @GetMapping("/{dishId}")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'WAITER')")
+    @GetMapping("/{eateryId}${category}/{categoryId}${dish}/{dishId}")
     public DishDto getDish(@PathVariable Long categoryId, @PathVariable Long dishId) {
         log.debug("Requested dish [{}] form category [{}]", dishId, categoryId);
         DishEntity d = getDishOrThrow(categoryId, dishId);
@@ -75,7 +83,7 @@ public class DishController {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Restaurant was not found")
     })
-    @GetMapping()
+    @GetMapping("/{eateryId}${category}/{categoryId}${dish}")
     public ResponseEntity<List<DishDto>> getDishes(@PathVariable Long categoryId) {
         log.debug("Retrieve the category dish by ID");
 
@@ -96,7 +104,7 @@ public class DishController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "404", description = "Category not found")
     })
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{eateryId}${category}/{categoryId}${dish}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> createDish(@PathVariable("categoryId") Long categoryId,
                                            @RequestPart("data") DishDto dishDto,
                                            @RequestPart(value = "image", required = false) MultipartFile file) {
@@ -119,7 +127,7 @@ public class DishController {
             @ApiResponse(responseCode = "404", description = "Dish or category not found")
     })
     @Transactional
-    @DeleteMapping("/{dishId}")
+    @DeleteMapping("/{eateryId}${category}/{categoryId}${dish}/{dishId}")
     public ResponseEntity<String> deleteDishItemById(@PathVariable Long categoryId, @PathVariable Long dishId) {
         log.debug("Requested to delete dish [{}] from category [{}]", dishId, categoryId);
         return dishService.deleteDishItemById(categoryId,dishId);
@@ -140,7 +148,7 @@ public class DishController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "404", description = "Dish or category not found")
     })
-    @PutMapping(value = "/{dishId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/{eateryId}${category}/{categoryId}${dish}/{dishId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> updateDish(@PathVariable("categoryId") Long categoryId,
                                            @PathVariable("dishId") Long dishId,
                                            @RequestPart("data") DishDto dishDto,

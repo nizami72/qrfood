@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repository interface for UserProfile entity.
+ * Repository interface for UserProfileRequest entity.
  * Provides methods to interact with the user_profiles table in the database.
  */
 @Repository

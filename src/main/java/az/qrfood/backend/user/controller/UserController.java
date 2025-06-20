@@ -1,10 +1,12 @@
 package az.qrfood.backend.user.controller;
 
+import az.qrfood.backend.user.dto.RegisterRequest;
 import az.qrfood.backend.user.dto.UserRequest;
 import az.qrfood.backend.user.dto.UserResponse;
 import az.qrfood.backend.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +17,9 @@ import java.util.List;
  * REST controller for managing User entities.
  */
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("${api.user}")
 @RequiredArgsConstructor
+@Log4j2
 public class UserController {
 
     private final UserService userService;
@@ -105,5 +108,16 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * POST for registering a new user with a restaurant.
+     *
+     * @param registerRequest RegisterRequest object containing user and restaurant data.
+     * @return ResponseEntity with a success or error message.
+     */
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
+       return userService.registerUser(registerRequest);
     }
 }

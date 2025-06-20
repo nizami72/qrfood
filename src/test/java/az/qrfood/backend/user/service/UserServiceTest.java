@@ -2,6 +2,7 @@ package az.qrfood.backend.user.service;
 
 import az.qrfood.backend.user.dto.UserRequest;
 import az.qrfood.backend.user.dto.UserResponse;
+import az.qrfood.backend.user.entity.Role;
 import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.entity.UserProfile;
 import az.qrfood.backend.user.repository.UserProfileRepository;
@@ -38,13 +39,13 @@ public class UserServiceTest {
 
     private User user;
     private UserRequest userRequest;
-    private Set<String> roles;
+    private Set<Role> roles;
 
     @BeforeEach
     void setUp() {
         // Set up test data
         roles = new HashSet<>();
-        roles.add("ROLE_USER");
+        roles.add(Role.fromString("ROLE_USER"));
 
         user = new User();
         user.setId(1L);
@@ -173,13 +174,17 @@ public class UserServiceTest {
         UserRequest updateRequest = new UserRequest();
         updateRequest.setUsername("updateduser");
         updateRequest.setPassword("newpassword");
-        updateRequest.setRoles(new HashSet<>(Arrays.asList("ROLE_USER", "ROLE_ADMIN")));
+        updateRequest.setRoles(new HashSet<>(Arrays.asList(
+                Role.fromString("ROLE_USER"),
+                Role.fromString("ROLE_ADMIN"))));
 
         User updatedUser = new User();
         updatedUser.setId(1L);
         updatedUser.setUsername("updateduser");
         updatedUser.setPassword("encodedNewPassword");
-        updatedUser.setRoles(new HashSet<>(Arrays.asList("ROLE_USER", "ROLE_ADMIN")));
+        updatedUser.setRoles(new HashSet<>(Arrays.asList(
+                Role.fromString("ROLE_USER"),
+                Role.fromString("ROLE_ADMIN"))));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.findByUsername("updateduser")).thenReturn(Optional.empty());

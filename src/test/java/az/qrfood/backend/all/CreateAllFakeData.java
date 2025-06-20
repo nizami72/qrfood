@@ -33,14 +33,17 @@ public class CreateAllFakeData {
     private static PrintStream fileLog;
     @Value("${base.url}")
     String baseUrl;
-    @Value("${segment.api.eateries}")
+    @Value("${api.eatery}")
     String segmentEateries;
-    @Value("${segment.categories}")
+    @Value("${segment.category}")
     String segmentCategories;
     @Value("${segment.dishes}")
     String segmentDishes;
-    @Value("${component.categories}")
+    @Value("${categories}")
     String componentCategories;
+    @Value("${api.user.register}")
+    String apiUserRegister;
+
     List<Eatery> eateries;
 
     String jwtToken;
@@ -63,16 +66,24 @@ public class CreateAllFakeData {
     void registerUserAndEatery() {
         // Fetch token
         String authPayload = """
-                            {
-                    "user": {
-                    "name": "Nizami Budagov",
-                            "email": "nizami.budagov@gmail.com",
-                            "password": "qqqq1111"
-                },
-                    "restaurant": {
-                    "name": "My First Restaurant"
+                {
+                  "user": {
+                  "name": "Nizami Budagov",
+                    "email": "nizami.budagov1@gmail.com",
+                    "password": "qqqq1111",
+                    "roles": [
+                      "EATERY_ADMIN"
+                    ]
+                  },
+                  "restaurant": {
+                    "name": "Fake Bistro"
+                  },
+                  "userProfileRequest": {
+                    "name": "John Doe",
+                    "phone": "+994501234567"
+                  }
                 }
-                }
+                
                 """;
 
         Response authResponse = given()
@@ -80,7 +91,7 @@ public class CreateAllFakeData {
                 .contentType("application/json")
                 .body(authPayload)
                 .when()
-                .post("/api/auth/register")
+                .post(apiUserRegister)
                 .then()
                 .statusCode(201)
                 .extract()
@@ -94,7 +105,7 @@ public class CreateAllFakeData {
         // Fetch token
         String authPayload = """
                 {
-                  "email": "nizami.budagov@gmail.com",
+                  "email": "nizami.budagov1@gmail.com",
                   "password": "qqqq1111"
                 }
                 """;
@@ -114,7 +125,6 @@ public class CreateAllFakeData {
         userId = authResponse.jsonPath().getLong("userId");
 
     }
-
 
     @Test
     void shouldCreateCategoryWithImageAndDishWithImage() {

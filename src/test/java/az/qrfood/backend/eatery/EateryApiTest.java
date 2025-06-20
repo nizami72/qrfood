@@ -26,7 +26,7 @@ public class EateryApiTest {
 
     @Value("${base.url}")
     String baseUrl;
-    @Value("${segment.api.eateries}")
+    @Value("${api.eatery}")
     String segmentApiEatery;
     List<Eatery> eateryList;
     String jwtToken;

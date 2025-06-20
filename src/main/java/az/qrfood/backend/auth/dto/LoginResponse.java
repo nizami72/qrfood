@@ -1,4 +1,4 @@
-package az.qrfood.backend.user.dto;
+package az.qrfood.backend.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
