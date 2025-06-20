@@ -21,8 +21,7 @@ import java.util.List;
 
 @Log4j2
 @RestController
-@RequestMapping("${api.eatery}")
-@Tag(name = "Eatery Management", description = "API endpoints for managing restaurants/eateries")
+@Tag(name = "Eatery Management", description = "API endpoints for managing eateries")
 public class EateryController {
 
     private final EateryService eateryService;
@@ -42,7 +41,7 @@ public class EateryController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @GetMapping
+    @GetMapping("${eatery}")
     public ResponseEntity<List<EateryDto>> getAllRestaurants() {
         return ResponseEntity.ok(eateryService.getAllRestaurants());
     }
@@ -59,8 +58,8 @@ public class EateryController {
             @ApiResponse(responseCode = "404", description = "Owner not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EAQTERY_ADMIN')")
-    @GetMapping("/owner/{ownerId}")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    @GetMapping("${eatery.owner}")
     public ResponseEntity<List<EateryDto>> getEateriesByOwnerId(@PathVariable("ownerId") Long userProfileId) {
         log.debug("Request to get all eateries of owner with profile ID [{}]", userProfileId);
         return ResponseEntity.ok(eateryService.findEateriesByUserProfileId(userProfileId));
@@ -79,8 +78,8 @@ public class EateryController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EAQTERY_ADMIN')")
-    @GetMapping("/{id}")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    @GetMapping("${eatery.id}")
     public ResponseEntity<EateryDto> getEateryById(@PathVariable("id") Long id) {
         log.debug("Request to get Eatery : {}", id);
         return ResponseEntity.ok(eateryService.getEateryById(id));
@@ -98,8 +97,8 @@ public class EateryController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EAQTERY_ADMIN')")
-    @PostMapping(consumes = "application/json")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    @PostMapping(value="${eatery}", consumes = "application/json")
     public ResponseEntity<Long> createRestaurant(@RequestBody EateryDto eateryDto) {
         log.debug("Request to create eatery [{}]", eateryDto);
         return ResponseEntity.ok(eateryService.createEatery(eateryDto));
@@ -117,9 +116,9 @@ public class EateryController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'SUPER_ADMIN')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Long> deleteEatery(@PathVariable("id") Long id) {
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    @DeleteMapping("${eatery.id}")
+    public ResponseEntity<Long> deleteEatery(@PathVariable("eateryId") Long id) {
         return ResponseEntity.ok(eateryService.deleteEatery(id));
     }
 
@@ -137,9 +136,9 @@ public class EateryController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EAQTERY_ADMIN')")
-    @PutMapping(value = "/{id}", consumes = "application/json")
-    public ResponseEntity<Long> updateEatery(@PathVariable("id") Long id, @RequestBody EateryDto eateryDTO) {
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    @PutMapping(value = "${eatery.id}", consumes = "application/json")
+    public ResponseEntity<Long> updateEatery(@PathVariable("eateryId") Long id, @RequestBody EateryDto eateryDTO) {
         log.debug("Request to update eatery with ID [{}]: {}", id, eateryDTO);
         return ResponseEntity.ok(eateryService.updateEatery(id, eateryDTO));
     }

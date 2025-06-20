@@ -39,7 +39,7 @@ public class CreateAllFakeData {
     String segmentCategories;
     @Value("${segment.dishes}")
     String segmentDishes;
-    @Value("${categories}")
+    @Value("${eatery.id.category}")
     String componentCategories;
     @Value("${api.user.register}")
     String apiUserRegister;
@@ -173,7 +173,7 @@ public class CreateAllFakeData {
                         .multiPart("data", "data.json", json1.getBytes(StandardCharsets.UTF_8), "application/json")
                         .multiPart("image", new File("src/test/resources/image/" + category.image()))
                         .when()
-                        .post(segmentEateries + "/" + createdEateryId + componentCategories)
+                        .post()
                         .then()
                         .statusCode(200)
                         .extract()
