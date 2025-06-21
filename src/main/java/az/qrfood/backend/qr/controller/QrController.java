@@ -38,7 +38,7 @@ public class QrController {
             @ApiResponse(responseCode = "404", description = "Eatery or table not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = "${eatery}/{eatery}${table}/{table}")
+    @GetMapping(value = "${eatery}/{eatery}/table/{table}")
     public ResponseEntity<byte[]> getQrImage(@PathVariable("eatery") Long eateryId,
                                              @PathVariable("table") Integer tableNumber) {
         log.debug("Requested QR image for eatery [{}] and table [{}]", eateryId, tableNumber);

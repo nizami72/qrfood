@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/tables")
 @Log4j2
 @Tag(name = "Table Management", description = "API endpoints for managing tables in eateries")
 public class TableController {
@@ -34,7 +33,7 @@ public class TableController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("/eatery/{eateryId}")
+    @GetMapping("${table}")
     public ResponseEntity<List<TableDto>> getTables(@PathVariable Long eateryId) {
         return ResponseEntity.ok(tableService.listTablesForEatery(eateryId));
     }
@@ -48,7 +47,7 @@ public class TableController {
             @ApiResponse(responseCode = "404", description = "Table not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("/{id}")
+    @GetMapping("${table.id}")
     public ResponseEntity<TableDto> getTable(@PathVariable Long id) {
         return tableService.findById(id)
                 .map(ResponseEntity::ok)
@@ -64,7 +63,7 @@ public class TableController {
             @ApiResponse(responseCode = "400", description = "Invalid input data or eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping
+    @PostMapping("${table}")
     public ResponseEntity<TableDto> createTable(@RequestBody TableDto tableDto) {
         try {
             TableDto createdTable = tableService.createTable(tableDto);
@@ -85,7 +84,7 @@ public class TableController {
             @ApiResponse(responseCode = "404", description = "Table not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PutMapping("/{id}")
+    @PutMapping("${table.id}")
     public ResponseEntity<TableDto> updateTable(@PathVariable Long id, @RequestBody TableDto tableDto) {
         try {
             TableDto updatedTable = tableService.updateTable(id, tableDto);
@@ -104,7 +103,7 @@ public class TableController {
             @ApiResponse(responseCode = "404", description = "Table not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping("${table.id}")
     public ResponseEntity<Void> deleteTable(@PathVariable Long id) {
         try {
             tableService.deleteTable(id);

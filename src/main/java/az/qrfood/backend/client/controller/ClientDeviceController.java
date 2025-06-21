@@ -50,7 +50,7 @@ public class ClientDeviceController {
      * @param myCookieValue cookie value
      * @return List of categories aka menu
      */
-    @GetMapping("${eatery}/{eateryId}${table}/{tableId}")
+    @GetMapping("${eatery}/{eateryId}/table/{tableId}")
     public ResponseEntity<List<CategoryDto>> eateryCategories(
             @PathVariable(value = "eateryId") Long eateryId,
             @PathVariable(value = "tableId") Long tableId,
