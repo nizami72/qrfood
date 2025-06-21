@@ -48,8 +48,8 @@ public class TableController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("${table.id}")
-    public ResponseEntity<TableDto> getTable(@PathVariable Long id) {
-        return tableService.findById(id)
+    public ResponseEntity<TableDto> getTable(@PathVariable Long eateryId) {
+        return tableService.findById(eateryId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -85,9 +85,9 @@ public class TableController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PutMapping("${table.id}")
-    public ResponseEntity<TableDto> updateTable(@PathVariable Long id, @RequestBody TableDto tableDto) {
+    public ResponseEntity<TableDto> updateTable(@PathVariable Long tableId, @RequestBody TableDto tableDto) {
         try {
-            TableDto updatedTable = tableService.updateTable(id, tableDto);
+            TableDto updatedTable = tableService.updateTable(tableId, tableDto);
             return ResponseEntity.ok(updatedTable);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -104,9 +104,9 @@ public class TableController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @DeleteMapping("${table.id}")
-    public ResponseEntity<Void> deleteTable(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTable(@PathVariable Long tableId) {
         try {
-            tableService.deleteTable(id);
+            tableService.deleteTable(tableId);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();

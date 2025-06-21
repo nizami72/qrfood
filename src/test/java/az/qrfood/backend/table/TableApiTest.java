@@ -1,13 +1,15 @@
 package az.qrfood.backend.table;
 
-import az.qrfood.backend.table.dto.TableDto;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.io.FileOutputStream;
@@ -16,15 +18,20 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
-@SpringBootTest
+@SpringBootTest(properties = "spring.config.name=application-test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TableApiTest {
 
     private static PrintStream fileLog;
 
     @Value("${base.url}")
     String baseUrl;
-    
+    @Value("${table}")
+    String tableEndpoint;
+    @Value("${table.id}")
+    String tableIdEndpoint;
+
     String jwtToken;
     Long userId;
     Long eateryId = 1L; // Use an existing eatery ID
@@ -32,7 +39,7 @@ public class TableApiTest {
 
     @BeforeAll
     void setupLogging() throws Exception {
-        fileLog = new PrintStream(new FileOutputStream("testLogs/table.log", false));
+        fileLog = new PrintStream(new FileOutputStream("logsTest/table.log", false));
         RestAssured.filters(
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)
@@ -65,6 +72,7 @@ public class TableApiTest {
      * =============================== CREATE TABLE REQUEST =============================
      */
     @Test
+    @Order(1)
     void createTable() {
         fileLog.println("\n==================== 📥 CREATE TABLE =====================");
 
@@ -79,7 +87,7 @@ public class TableApiTest {
                 .contentType("application/json")
                 .body(requestBody)
                 .when()
-                .post("/api/tables")
+                .post(tableEndpoint.replace("{eateryId}", eateryId.toString()))
                 .then()
                 .log().all()
                 .statusCode(201)
@@ -91,6 +99,7 @@ public class TableApiTest {
     }
 
     @Test
+    @Order(2)
     void getAllTablesForEatery() {
         fileLog.println("\n===== 🟢 GET ALL TABLES FOR EATERY ID: " + eateryId + " =====");
 
@@ -98,13 +107,14 @@ public class TableApiTest {
                 .baseUri(baseUrl)
                 .header("Authorization", "Bearer " + jwtToken) // ✅ Токен
                 .when()
-                .get("/api/tables/eatery/{eateryId}", eateryId)
+                .get(tableEndpoint.replace("{eateryId}", eateryId.toString()))
                 .then()
                 .log().all()
                 .statusCode(200);
     }
 
     @Test
+    @Order(3)
     void getTableById() {
         Long tableId = 1L; // Use an existing table ID
         fileLog.println("\n===== 🟢 GET TABLE BY ID: " + tableId + " =====");
@@ -113,13 +123,14 @@ public class TableApiTest {
                 .baseUri(baseUrl)
                 .header("Authorization", "Bearer " + jwtToken) // ✅ Токен
                 .when()
-                .get("/api/tables/{id}", tableId)
+                .get(tableIdEndpoint.replace("{eateryId}", eateryId.toString()).replace("{tableId}", tableId.toString()))
                 .then()
                 .log().all()
                 .statusCode(200);
     }
 
     @Test
+    @Order(4)
     void updateTable() {
         Long tableId = 1L; // Use an existing table ID
         fileLog.println("\n===== 🔄 UPDATE TABLE ID: " + tableId + " =====");
@@ -129,7 +140,7 @@ public class TableApiTest {
                 .baseUri(baseUrl)
                 .header("Authorization", "Bearer " + jwtToken) // ✅ Токен
                 .when()
-                .get("/api/tables/{id}", tableId)
+                .get(tableIdEndpoint.replace("{eateryId}", eateryId.toString()).replace("{tableId}", tableId.toString()))
                 .then()
                 .statusCode(200)
                 .extract()
@@ -150,7 +161,7 @@ public class TableApiTest {
                 .contentType("application/json")
                 .body(requestBody)
                 .when()
-                .put("/api/tables/{id}", tableId)
+                .put(tableIdEndpoint.replace("{eateryId}", eateryId.toString()).replace("{tableId}", tableId.toString()))
                 .then()
                 .log().all()
                 .statusCode(200);
@@ -160,13 +171,14 @@ public class TableApiTest {
                 .baseUri(baseUrl)
                 .header("Authorization", "Bearer " + jwtToken) // ✅ Токен
                 .when()
-                .get("/api/tables/{id}", tableId)
+                .get(tableIdEndpoint.replace("{eateryId}", eateryId.toString()).replace("{tableId}", tableId.toString()))
                 .then()
                 .log().all()
                 .statusCode(200);
     }
 
     @Test
+    @Order(5)
     void deleteTable() {
 
         Long tableId = 5L; // Use an existing table ID
@@ -176,7 +188,7 @@ public class TableApiTest {
                 .baseUri(baseUrl)
                 .header("Authorization", "Bearer " + jwtToken) // ✅ Токен
                 .when()
-                .delete("/api/tables/{id}", tableId)
+                .delete(tableIdEndpoint.replace("{eateryId}", eateryId.toString()).replace("{tableId}", tableId.toString()))
                 .then()
                 .log().all()
                 .statusCode(204);
