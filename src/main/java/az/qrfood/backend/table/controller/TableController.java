@@ -10,6 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class TableController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("${table}")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'WAITER')")
     public ResponseEntity<List<TableDto>> getTables(@PathVariable Long eateryId) {
         return ResponseEntity.ok(tableService.listTablesForEatery(eateryId));
     }

@@ -94,14 +94,15 @@ public class SecurityConfig {
                         .requestMatchers("/api/orders/status/*").permitAll()
                         .requestMatchers("/api/client/eatery/**").permitAll()
                         .requestMatchers(apiUserRegister).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/tables/*").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/api/table/**").permitAll()
+
+                        .requestMatchers("/api/eatery/**").permitAll()
                         // ============================================================================    ADMIN SECTION
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // ===================================================================    USER AND ADMIN SECTION
-                        // Требуем роль "USER" или "ADMIN" для доступа к /api/user/**
-                        .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/tables/**").hasAnyRole("USER", "ADMIN")
-//                        .requestMatchers("/api/eatery/**").hasAnyRole("EATERY_ADMIN", "ADMIN")
+                        .requestMatchers("/api/user/**").hasAnyRole("USER", "EATERY_ADMIN")
+                        .requestMatchers("/api/table/**").hasAnyRole("EATERY_ADMIN", "SUPER_ADMIN")
+//                        .requestMatchers("/api/eatery/**").hasAnyRole("EATERY_ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/api/order-items/**").hasAnyRole("USER", "ADMIN")
                         // ==============================================================    ALL OTHERS NEED TO HAVE JWT
                         // Все остальные запросы требуют аутентификации (наличия валидного JWT)
