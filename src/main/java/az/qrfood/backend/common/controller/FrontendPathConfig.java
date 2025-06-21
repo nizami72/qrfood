@@ -28,29 +28,54 @@ public class FrontendPathConfig {
     private String imagesDishesUri;
     @Value("${full.path.fe.api.tables.image}")
     private String urlApiTables;
-    @Value("${segment.dishes}")
-    private String urlAddDish;
     @Value("${full.path.fe.add.dish.2.order}")
     private String urlAddDish2Order;
     @Value("${full.path.fe.delete.menu-item}")
     private String urlDeleteMenuItem;
     @Value("${relative.path.api.client.eatery.arg.table.arg}")
     private String clientGetMenuUrl;
-    @Value("${api.eatery.id}")
-    String apiEateryId;
+
+    // new new
+
+    @Value("${eatery}")
+    String eatery;
+    @Value("${eatery.id}")
+    String eateryId;
+    @Value("${eatery.owner}")
+    String eateryOwner;
+    @Value("${eatery.id.category}")
+    String eateryIdCategory;
+    @Value("${eatery.id.category.id}")
+    String eateryIdCategoryId;
+    @Value("${eatery.id.category.id.dish}")
+    String eateryIdCategoryIdDish;
+    @Value("${eatery.id.category.id.dish.id}")
+    String eateryIdCategoryIdDishId;
+
 
     @GetMapping("/image-paths")
     public Map<String, String> getImagePaths() {
         Map<String, String> paths = new HashMap<>();
-        paths.put("eatery", imagesEateryUri);
+
+        //NEW
+        paths.put("eatery", eatery);
+        paths.put("eateryId", eateryId);
+        paths.put("eateryOwner", eateryOwner);
+        paths.put("eateryIdCategory", eateryIdCategory);
+        paths.put("eateryIdCategoryId", eateryIdCategoryId);
+        paths.put("eateryIdCategoryIdDish", eateryIdCategoryIdDish);
+        paths.put("eateryIdCategoryIdDishId", eateryIdCategoryIdDishId);
+        //.
+
+        paths.put("eateryImage", imagesEateryUri);
         paths.put("categories", imagesCategoriesUri);
         paths.put("dishes", imagesDishesUri);
         paths.put("tables", urlApiTables);
-        paths.put("urlAddDish", urlAddDish);
         paths.put("urlAddDish2Order", urlAddDish2Order);
         paths.put("urlDeleteMenuItemFromOrder", urlDeleteMenuItem);
         paths.put("clientGetMenuUrl", clientGetMenuUrl);
-        paths.put("apiEateryId", apiEateryId);
+
+
         log.debug("FE requested path config [{}]", prettyPrintMao(paths));
         return paths;
     }
@@ -63,6 +88,7 @@ public class FrontendPathConfig {
             out = mapper.writeValueAsString(map);
         } catch (JsonProcessingException ex) {
             log.error(ex.getMessage());
+            return out;
         }
         return out;
     }

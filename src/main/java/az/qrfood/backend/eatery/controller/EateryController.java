@@ -80,7 +80,7 @@ public class EateryController {
     })
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @GetMapping("${eatery.id}")
-    public ResponseEntity<EateryDto> getEateryById(@PathVariable("id") Long id) {
+    public ResponseEntity<EateryDto> getEateryById(@PathVariable("eateryId") Long id) {
         log.debug("Request to get Eatery : {}", id);
         return ResponseEntity.ok(eateryService.getEateryById(id));
     }

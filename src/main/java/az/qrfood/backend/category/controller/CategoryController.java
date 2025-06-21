@@ -24,8 +24,6 @@ import java.util.List;
 
 @Log4j2
 @RestController
-//@RequestMapping("${segment.category}")
-@RequestMapping("${api.eatery}")
 @Tag(name = "Category Management", description = "API endpoints for managing food categories in eateries")
 public class CategoryController {
 
@@ -47,7 +45,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("/{eateryId}${category}")
+    @GetMapping("${eatery.id.category}")
     public ResponseEntity<List<CategoryDto>> eateryCategories(@PathVariable(value = "eateryId") Long eateryId) {
         log.debug("Find all categories for eatery {}", eateryId);
         List<CategoryDto> id = categoryService.findAllCategoryForEatery(eateryId);
@@ -66,8 +64,8 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = "/{eateryId}${category}/{id}")
-    public ResponseEntity<CategoryDto> categoryById(@PathVariable(value = "id") Long categoryId) {
+    @GetMapping(value = "${eatery.id.category.id}")
+    public ResponseEntity<CategoryDto> categoryById(@PathVariable(value = "categoryId") Long categoryId) {
         log.debug("Find the category by ID {}", categoryId);
         CategoryDto category = categoryService.findCategoryById(categoryId);
         return ResponseEntity.ok(category);
@@ -87,7 +85,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping(value = "/{eateryId}${category}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "${eatery.id.category}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     public ResponseEntity<Long> createDishCategory(@PathVariable Long eateryId,
                                                    @RequestPart("data") CategoryDto dishCategoryDto,
@@ -111,8 +109,8 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @DeleteMapping(value = "/{eateryId}${category}/{id}")
-    public ResponseEntity<String> deleteCategory(@PathVariable(value = "id") Long categoryId) {
+    @DeleteMapping(value = "${eatery.id.category.id}")
+    public ResponseEntity<String> deleteCategory(@PathVariable(value = "categoryId") Long categoryId) {
         log.debug("Delete category: {}", categoryId);
         return categoryService.deleteCategory(categoryId);
     }
@@ -132,8 +130,8 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PutMapping(value = "/{eateryId}${category}/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Long> updateCategory(@PathVariable(value = "id") Long categoryId,
+    @PutMapping(value = "${eatery.id.category.id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Long> updateCategory(@PathVariable(value = "categoryId") Long categoryId,
                                                @RequestPart("data") CategoryDto dishCategoryDto,
                                                @RequestPart(value = "image", required = false) MultipartFile file) {
         log.debug("Update category: {}", categoryId);
