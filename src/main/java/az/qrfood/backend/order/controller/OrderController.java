@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
@@ -29,7 +28,6 @@ import java.util.List;
  */
 @Log4j2
 @RestController
-@RequestMapping("${segment.api.orders}")
 @Tag(name = "Order Management", description = "API endpoints for managing orders in eateries")
 public class OrderController {
 
@@ -46,22 +44,6 @@ public class OrderController {
     }
 
     /**
-     * GET all orders.
-     *
-     * @return list of orders
-     */
-    @Operation(summary = "Get all orders", description = "Retrieves a list of all orders in the system")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved list of orders"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @GetMapping
-    public ResponseEntity<List<OrderDto>> getAllOrders() {
-        log.debug("REST request to get all Orders");
-        return ResponseEntity.ok(orderService.getAllOrders());
-    }
-
-    /**
      * GET all orders by status.
      *
      * @param status the status to filter orders by
@@ -73,14 +55,14 @@ public class OrderController {
             @ApiResponse(responseCode = "400", description = "Invalid status value"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("${status}/{status}")
+    @GetMapping("${order.status}")
     public ResponseEntity<List<OrderDto>> getAllOrders(@PathVariable("status") String status) {
         log.debug("GET all order by status [{}]", status);
         return ResponseEntity.ok(orderService.getAllOrdersByStatus(status));
     }
 
     /**
-     * GET orders by eatery ID.
+     * GET all orders by eatery ID.
      *
      * @param eateryId the ID of the eatery
      * @return list of orders for the specified eatery
@@ -91,7 +73,7 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("${eatery}/{eateryId}")
+    @GetMapping("${order}")
     public ResponseEntity<List<OrderDto>> getOrdersByEateryId(@PathVariable Long eateryId) {
         log.debug("REST request to get Orders for eatery ID: {}", eateryId);
         return ResponseEntity.ok(orderService.getOrdersByEateryId(eateryId));
@@ -100,7 +82,7 @@ public class OrderController {
     /**
      * GET order by ID.
      *
-     * @param id the ID of the order to retrieve
+     * @param orderId the ID of the order to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the order, or with status 404 (Not Found)
      */
     @Operation(summary = "Get order by ID", description = "Retrieves a specific order by its ID")
@@ -109,17 +91,16 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "Order not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("/{id}")
-    public ResponseEntity<OrderDto> getOrderById(@PathVariable Long id) {
-        log.debug("REST request to get Order : {}", id);
-        return ResponseEntity.ok(orderService.getOrderById(id));
+    @GetMapping("${order.id}")
+    public ResponseEntity<OrderDto> getOrderById(@PathVariable Long orderId) {
+        log.debug("REST request to get Order : {}", orderId);
+        return ResponseEntity.ok(orderService.getOrderById(orderId));
     }
 
     /**
      * POST a new order for a specific eatery table.
      *
      * @param response HTTP response to add cookie
-     * @param tableId the ID of the table
      * @param orderDto the list of order items
      * @return the ResponseEntity with status 201 (Created) and with body the new order
      */
@@ -130,12 +111,11 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "Table not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping("/{tableId}")
-    public ResponseEntity<OrderDto> createOrder(HttpServletResponse response, @PathVariable Long tableId,
-                                                @RequestBody OrderDto orderDto
+    @PostMapping("${order}")
+    public ResponseEntity<OrderDto> postOrder(HttpServletResponse response, @PathVariable Long eateryId,
+                                              @RequestBody OrderDto orderDto
     ) {
-        log.debug("REST request to create Order for table ID: {}", tableId);
-        orderDto.setTableId(tableId);
+        log.debug("REST request to create Order for table ID: {}", eateryId);
         Order order = orderService.createOrder(orderDto);
         Cookie cookie = clientDeviceService.createCookieUuid(order);
         response.addCookie(cookie);
@@ -145,7 +125,7 @@ public class OrderController {
     /**
      * Update an existing order.
      *
-     * @param id the ID of the order to update
+     * @param orderId the ID of the order to update
      * @param orderDTO the order to update
      * @return the ResponseEntity with status 200 (OK) and with body the updated order
      */
@@ -156,13 +136,13 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "Order not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PutMapping("/{id}")
+    @PutMapping("${order.id}")
     public ResponseEntity<OrderDto> updateOrder(
-            @PathVariable Long id,
+            @PathVariable Long orderId,
             @RequestBody OrderDto orderDTO
     ) {
-        log.debug("REST request to update Order : {}", id);
-        return ResponseEntity.ok(orderService.updateOrder(id, orderDTO));
+        log.debug("REST request to update Order : {}", orderId);
+        return ResponseEntity.ok(orderService.updateOrder(orderId, orderDTO));
     }
 
     /**
@@ -179,7 +159,7 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "Order not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PutMapping("/{id}/status")
+//    @PutMapping("${order.id}")
     public ResponseEntity<OrderDto> updateOrderStatus(
             @PathVariable Long id,
             @RequestBody OrderStatusUpdateDTO statusDTO
@@ -191,7 +171,7 @@ public class OrderController {
     /**
      * DELETE an order.
      *
-     * @param id the ID of the order to delete
+     * @param orderId the ID of the order to delete
      * @return the ResponseEntity with status 200 (OK)
      */
     @Operation(summary = "Delete an order", description = "Deletes an order with the specified ID")
@@ -200,9 +180,9 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "Order not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
-        orderService.deleteOrder(id);
+    @DeleteMapping("${order.id}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
+        orderService.deleteOrder(orderId);
         return ResponseEntity.ok().build();
     }
 }

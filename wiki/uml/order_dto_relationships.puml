@@ -1,0 +1,51 @@
+@startuml
+title Order Data Transfer Objects
+
+' DTOs
+class OrderDto {
+  +Long id
+  +Long tableId
+  +String status
+  +LocalDateTime createdAt
+  +String tableNumber
+  +String note
+  +double orderPrice
+}
+
+class OrderItemDTO {
+  +Long id
+  +Long dishId
+  +Long orderItemId
+  +String name
+  +Integer quantity
+  +String note
+  +BigDecimal price
+}
+
+' Relationships
+OrderDto "1" *-- "many" OrderItemDTO : contains >
+
+' Mapping to Entities
+note right of OrderDto
+  Maps to Order entity:
+  - id -> Order.id
+  - tableId -> Order.table.id
+  - status -> Order.status.name()
+  - createdAt -> Order.createdAt
+  - tableNumber -> Order.table.tableNumber
+  - note -> Order.note
+  - orderPrice -> calculated from items
+end note
+
+note right of OrderItemDTO
+  Maps to OrderItem entity:
+  - id -> OrderItem.id
+  - dishId -> OrderItem.dishEntity.id
+  - orderItemId -> OrderItem.id
+  - name -> OrderItem.dishEntity.name (from translations)
+  - quantity -> OrderItem.quantity
+  - note -> OrderItem.note
+  - price -> OrderItem.priceAtOrder
+end note
+
+@enduml

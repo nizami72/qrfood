@@ -13,7 +13,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +24,6 @@ import java.util.stream.Collectors;
 @Log4j2
 public class ClientDeviceService {
 
-    private final ClientDeviceRepository repository;
     private final ClientDeviceMapper mapper;
     private final ClientDeviceRepository clientDeviceRepository;
 
@@ -48,7 +46,7 @@ public class ClientDeviceService {
         ClientDevice device = new ClientDevice();
         device.setUuid(cookie.getValue());
         device.getOrders().add(order);
-        repository.save(device);
+        clientDeviceRepository.save(device);
         log.debug("Created order [{}] for device [{}]", order.getId(), cookie.getValue());
 
         return cookie;
@@ -58,34 +56,34 @@ public class ClientDeviceService {
 
     public ClientDeviceResponseDto create(ClientDeviceRequestDto dto) {
         ClientDevice device = mapper.toEntity(dto);
-        return mapper.toDto(repository.save(device));
+        return mapper.toDto(clientDeviceRepository.save(device));
     }
 
     public ClientDeviceResponseDto getById(Long id) {
-        ClientDevice device = repository.findById(id)
+        ClientDevice device = clientDeviceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("ClientDevice not found"));
         return mapper.toDto(device);
     }
 
     public List<ClientDeviceResponseDto> getAll() {
-        return repository.findAll()
+        return clientDeviceRepository.findAll()
                 .stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
 
     public ClientDeviceResponseDto update(Long id, ClientDeviceRequestDto dto) {
-        ClientDevice device = repository.findById(id)
+        ClientDevice device = clientDeviceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("ClientDevice not found"));
         mapper.updateEntity(device, dto);
-        return mapper.toDto(repository.save(device));
+        return mapper.toDto(clientDeviceRepository.save(device));
     }
 
     public void delete(Long id) {
-        repository.deleteById(id);
+        clientDeviceRepository.deleteById(id);
     }
 
-    public boolean resolveCookie(String cookie, Long tableId) {
+    public boolean resolveCookie(String cookie) {
         Optional<ClientDevice> op = clientDeviceRepository.findByUuid(cookie);
         if(op.isEmpty()){
             throw new EntityNotFoundException("The entity of ClientDevice not found" + cookie);

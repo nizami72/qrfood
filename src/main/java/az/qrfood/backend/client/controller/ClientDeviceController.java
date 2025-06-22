@@ -27,7 +27,6 @@ import java.util.List;
 @Log4j2
 // NAV - Client flow
 @RequestMapping("${segment.api.client}")
-//@RequestMapping("${segment.api.client.eatery.arg.table.arg}")
 public class ClientDeviceController {
 
     private final ClientDeviceService service;
@@ -66,7 +65,7 @@ public class ClientDeviceController {
         if (!myCookieValue.isEmpty()) {
             // if cookie found check non completed orders and if any, send him redirect to the page where he can see
             // all that orders
-            boolean hasOrders = clientDeviceService.resolveCookie(myCookieValue, tableId);
+            boolean hasOrders = clientDeviceService.resolveCookie(myCookieValue);
 
             if (hasOrders) {
                 // redirect to already existing orders if any ordered from this device

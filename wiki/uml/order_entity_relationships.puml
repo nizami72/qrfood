@@ -1,0 +1,57 @@
+@startuml
+title Order Entity Relationships
+
+' Entities
+class Order {
+  +Long id
+  +LocalDateTime createdAt
+  +OrderStatus status
+  +String note
+}
+
+class OrderItem {
+  +Long id
+  +int quantity
+  +String note
+  +BigDecimal priceAtOrder
+}
+
+class TableInEatery {
+  +Long id
+  +String tableNumber
+  +int seats
+  +String note
+  +TableStatus status
+}
+
+class DishEntity {
+  +Long id
+  +BigDecimal price
+  +String image
+  +boolean isAvailable
+}
+
+class Category {
+  +Long id
+  +String categoryImageFileName
+  +int hash
+}
+
+class Eatery {
+  +Long id
+}
+
+class QrCode {
+  +Long id
+}
+
+' Relationships
+Order "1" *-- "many" OrderItem : contains >
+TableInEatery "1" -- "many" Order : has >
+DishEntity "1" -- "many" OrderItem : referenced by >
+Category "1" -- "many" DishEntity : contains >
+Eatery "1" -- "many" Category : has >
+Eatery "1" -- "many" TableInEatery : has >
+TableInEatery "1" -- "1" QrCode : has >
+
+@enduml

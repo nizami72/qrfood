@@ -1,0 +1,91 @@
+@startuml
+title Order Creation Flow
+
+actor "Client" as client
+participant "OrderController" as controller
+participant "OrderService" as service
+participant "TableRepository" as tableRepo
+participant "DishRepository" as dishRepo
+participant "OrderRepository" as orderRepo
+participant "OrderItemRepository" as orderItemRepo
+participant "ClientDeviceService" as clientDeviceService
+database "Database" as db
+
+== Request Processing ==
+client -> controller: POST /api/orders with OrderDto
+note right of client
+  OrderDto contains:
+  - tableId
+  - note
+  - items (List<OrderItemDTO>)
+end note
+
+controller -> service: createOrder(orderDto)
+
+== Order Creation ==
+service -> tableRepo: findById(tableId)
+tableRepo -> db: SELECT * FROM table_in_eatery WHERE id = ?
+db --> tableRepo: TableInEatery
+tableRepo --> service: TableInEatery
+
+service -> service: Create new Order
+note right of service
+  Order object with:
+  - table (TableInEatery)
+  - note (from OrderDto)
+  - status = OrderStatus.CREATED
+  - items = new ArrayList<>()
+end note
+
+service -> orderRepo: save(order)
+orderRepo -> db: INSERT INTO order (table_id, note, status, created_at) VALUES (?, ?, ?, ?)
+db --> orderRepo: Order with ID
+orderRepo --> service: Saved Order
+
+== Order Items Creation ==
+loop for each OrderItemDTO in orderDto.getItems()
+  service -> dishRepo: findById(dishId)
+  dishRepo -> db: SELECT * FROM dish WHERE id = ?
+  db --> dishRepo: DishEntity
+  dishRepo --> service: DishEntity
+  
+  service -> service: Create new OrderItem
+  note right of service
+    OrderItem object with:
+    - order (Order)
+    - dishEntity (DishEntity)
+    - quantity (from OrderItemDTO)
+    - note (from OrderItemDTO)
+    - priceAtOrder (dish.getPrice() * quantity)
+  end note
+  
+  service -> service: Add OrderItem to Order.items
+end
+
+service -> orderRepo: findById(order.getId())
+orderRepo -> db: SELECT * FROM order WHERE id = ? (with items)
+db --> orderRepo: Order with items
+orderRepo --> service: Refreshed Order
+
+service --> controller: Order
+
+== Response Processing ==
+controller -> clientDeviceService: createCookieUuid(order)
+clientDeviceService --> controller: Cookie
+
+controller -> controller: orderMapper.toDto(order)
+note right of controller
+  OrderDto with:
+  - id
+  - tableId
+  - status
+  - createdAt
+  - tableNumber
+  - items (List<OrderItemDTO>)
+  - note
+  - orderPrice
+end note
+
+controller --> client: HTTP 200 OK with OrderDto and Cookie
+
+@enduml
