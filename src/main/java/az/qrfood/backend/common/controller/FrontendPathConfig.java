@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Setter
@@ -63,13 +64,30 @@ public class FrontendPathConfig {
     String orderTableId;
     @Value("${order}")
     String order;
+    @Value("${order.item.order.id}")
+    String orderItemOrderId;
+    @Value("${order.item.id}")
+    String orderItemId;
+    @Value("${order.item}")
+    String orderItem;
 
 
     @GetMapping("/image-paths")
     public Map<String, String> getImagePaths() {
-        Map<String, String> paths = new HashMap<>();
+        Map<String, String> paths = new LinkedHashMap<>();
+
+        paths.put("OLD PATHS", "----------------------");
+        paths.put("eateryImage", imagesEateryUri);
+        paths.put("categories", imagesCategoriesUri);
+        paths.put("dishes", imagesDishesUri);
+        paths.put("tables", urlApiTables);
+        paths.put("urlAddDish2Order", urlAddDish2Order);
+        paths.put("urlDeleteMenuItemFromOrder", urlDeleteMenuItem);
+        paths.put("clientGetMenuUrl", clientGetMenuUrl);
+        paths.put("______________", "_________________");
 
         //NEW
+        paths.put("EATERY", "--------------------");
         paths.put("eatery", eatery);
         paths.put("eateryId", eateryId);
         paths.put("eateryOwner", eateryOwner);
@@ -79,19 +97,17 @@ public class FrontendPathConfig {
         paths.put("eateryIdCategoryIdDishId", eateryIdCategoryIdDishId);
         paths.put("eateryIdTable", eateryIdTable);
         paths.put("eateryIdTableId", eateryIdTableId);
+        paths.put("ORDERS", "--------------------");
         paths.put("orderStatus", orderStatus);
         paths.put("orderId", orderId);
         paths.put("orderTableId", orderTableId);
         paths.put("order", order);
+        paths.put("ORDER ITEMS", "--------------------");
+        paths.put("orderItem", orderItem);
+        paths.put("orderItemId", orderItemId);
+        paths.put("orderItemOrderId", orderItemOrderId);
         //.
 
-        paths.put("eateryImage", imagesEateryUri);
-        paths.put("categories", imagesCategoriesUri);
-        paths.put("dishes", imagesDishesUri);
-        paths.put("tables", urlApiTables);
-        paths.put("urlAddDish2Order", urlAddDish2Order);
-        paths.put("urlDeleteMenuItemFromOrder", urlDeleteMenuItem);
-        paths.put("clientGetMenuUrl", clientGetMenuUrl);
 
 
         log.debug("FE requested path config [{}]", prettyPrintMao(paths));
