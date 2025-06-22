@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -93,6 +92,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/orders/*").permitAll()
                         .requestMatchers("/api/orders/status/*").permitAll()
                         .requestMatchers("/api/client/eatery/**").permitAll()
+                                .requestMatchers("/admin.html").permitAll()
+                                .requestMatchers("/redoc.html").permitAll()
+                                .requestMatchers("/index.html").permitAll()
+                                .requestMatchers("/favicon.ico").permitAll()
+
                         .requestMatchers(apiUserRegister).permitAll()
 //                        .requestMatchers(HttpMethod.GET, "/api/table/**").permitAll()
 

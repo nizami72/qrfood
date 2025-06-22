@@ -67,7 +67,7 @@ public class OrderController {
      * @param eateryId the ID of the eatery
      * @return list of orders for the specified eatery
      */
-    @Operation(summary = "Get orders by eatery ID", description = "Retrieves a list of all orders for the specified eatery")
+    @Operation(summary = "Get orders by eatery ID", description = "Retrieves a list of all orders for the specified eatery", tags={"Order Management"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved list of orders"),
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
@@ -85,7 +85,7 @@ public class OrderController {
      * @param orderId the ID of the order to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the order, or with status 404 (Not Found)
      */
-    @Operation(summary = "Get order by ID", description = "Retrieves a specific order by its ID")
+    @Operation(summary = "Get order by ID", description = "Retrieves a specific order by its ID", tags={"Order Management"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved the order"),
             @ApiResponse(responseCode = "404", description = "Order not found"),
@@ -104,7 +104,7 @@ public class OrderController {
      * @param orderDto the list of order items
      * @return the ResponseEntity with status 201 (Created) and with body the new order
      */
-    @Operation(summary = "Create a new order", description = "Creates a new order for a specific table with the provided items")
+    @Operation(summary = "Create a new order", description = "Creates a new order for a specific table with the provided items", tags={"Order Management"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Order created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
@@ -129,7 +129,7 @@ public class OrderController {
      * @param orderDTO the order to update
      * @return the ResponseEntity with status 200 (OK) and with body the updated order
      */
-    @Operation(summary = "Update an existing order", description = "Updates an order with the specified ID using the provided data")
+    @Operation(summary = "Update an existing order", description = "Updates an order with the specified ID using the provided data", tags={"Order Management"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Order updated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
@@ -152,7 +152,7 @@ public class OrderController {
      * @param statusDTO the status update DTO
      * @return the ResponseEntity with status 200 (OK) and with body the updated order
      */
-    @Operation(summary = "Update order status", description = "Updates the status of an order with the specified ID")
+    @Operation(summary = "Update order status", description = "Updates the status of an order with the specified ID", tags={"Order Management"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Order status updated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid status value"),
@@ -174,7 +174,7 @@ public class OrderController {
      * @param orderId the ID of the order to delete
      * @return the ResponseEntity with status 200 (OK)
      */
-    @Operation(summary = "Delete an order", description = "Deletes an order with the specified ID")
+    @Operation(summary = "Delete an order", description = "Deletes an order with the specified ID", tags={"Order Management"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Order deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Order not found"),

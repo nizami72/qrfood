@@ -8,6 +8,8 @@ import az.qrfood.backend.user.service.UserProfileService;
 import az.qrfood.backend.user.repository.UserRepository;
 import az.qrfood.backend.auth.service.CustomUserDetailsService;
 import az.qrfood.backend.auth.util.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +35,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/auth")
 @Log4j2
+@Tag(name = "Auth", description = "API endpoints for managing auth calls")
 public class AuthController {
 
     //<editor-fold desc="Fields">
@@ -68,6 +71,7 @@ public class AuthController {
      * @return ResponseEntity with JWT token on success or error message.
      */
     @PostMapping("/login")
+    @Operation(summary = "Logins a user", description = "Logins user, use email as login and password")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest) {
         log.debug("Login request: {}", loginRequest);
         try {

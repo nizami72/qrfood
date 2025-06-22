@@ -52,9 +52,18 @@ public class FrontendPathConfig {
     @Value("${eatery.id.category.id.dish.id}")
     String eateryIdCategoryIdDishId;
     @Value("${table}")
-    String  eateryIdTable;
+    String eateryIdTable;
     @Value("${table.id}")
     String eateryIdTableId;
+    @Value("${order.status}")
+    String orderStatus;
+    @Value("${order.id}")
+    String orderId;
+    @Value("${order.table.id}")
+    String orderTableId;
+    @Value("${order}")
+    String order;
+
 
     @GetMapping("/image-paths")
     public Map<String, String> getImagePaths() {
@@ -70,6 +79,10 @@ public class FrontendPathConfig {
         paths.put("eateryIdCategoryIdDishId", eateryIdCategoryIdDishId);
         paths.put("eateryIdTable", eateryIdTable);
         paths.put("eateryIdTableId", eateryIdTableId);
+        paths.put("orderStatus", orderStatus);
+        paths.put("orderId", orderId);
+        paths.put("orderTableId", orderTableId);
+        paths.put("order", order);
         //.
 
         paths.put("eateryImage", imagesEateryUri);

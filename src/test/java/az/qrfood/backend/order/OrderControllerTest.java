@@ -29,7 +29,6 @@ import java.util.Map;
 import static io.restassured.RestAssured.given;
 
 @SpringBootTest(properties = "spring.config.name=application-test")
-@TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class OrderControllerTest {
