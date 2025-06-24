@@ -92,6 +92,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/orders/*").permitAll()
                         .requestMatchers("/api/orders/status/*").permitAll()
                         .requestMatchers("/api/client/eatery/**").permitAll()
+                                .requestMatchers("/api/admin/**").permitAll()
                                 .requestMatchers("/admin.html").permitAll()
                                 .requestMatchers("/redoc.html").permitAll()
                                 .requestMatchers("/index.html").permitAll()

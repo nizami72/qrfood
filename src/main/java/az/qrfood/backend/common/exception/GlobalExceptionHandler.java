@@ -5,6 +5,7 @@ import az.qrfood.backend.common.response.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -37,8 +38,9 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleNoResourceFound(NoResourceFoundException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleNoResourceFound(HttpRequest httpRequest, NoResourceFoundException ex) {
         log.error("No resource found", ex);
+        log.error("No resource found url [{}]", httpRequest.getURI());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.fail("Resource not found", 404));
     }

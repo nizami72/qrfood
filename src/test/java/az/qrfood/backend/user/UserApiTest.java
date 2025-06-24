@@ -54,12 +54,16 @@ public class UserApiTest {
 
     //<editor-fold desc="Field">
     private static PrintStream fileLog;
+    @Value("${admin}")
+    String uriSuperAdminRegister;
+    @Value("${admin.eatery}")
+    String uriAdminEateryRegister;
+
+
     @Value("${base.url}")
     String baseUrl;
     @Value("${usr}")
     String controllerPath1;
-    @Value("${user.register}")
-    String userRegister;
     @Value("${user.general}")
     String userRegisterGeneral;
     @Value("${user.n}")
@@ -109,10 +113,6 @@ public class UserApiTest {
     @Test
     @Order(1)
     void postJustUser() {
-        String pass = "qqqq1111";
-        String mail = "nizami.budagov@gmail.com";
-        String jwt = login(mail, pass);
-
         fileLog.println("\n !!Test1 ==================== 📥 POST User Order =====================");
         // Generate a unique username to avoid conflicts
         String uniqueUsername = "testuser_" + UUID.randomUUID().toString().substring(0, 8);
@@ -127,11 +127,10 @@ public class UserApiTest {
 
         Response response = given()
                 .baseUri(baseUrl)
-                .header("Authorization", "Bearer " + jwt)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .post(controllerPath + userRegister)
+                .post(uriSuperAdminRegister)
                 .then()
                 .statusCode(201)
                 .body("id", notNullValue())
@@ -140,19 +139,23 @@ public class UserApiTest {
                 .extract()
                 .response();
 
-        // Store the created ID for subsequent tests
         Long createdUserId = response.jsonPath().getLong("id");
         log.debug(" Created User ID [{}]", createdUserId);
 
+        String pass = "qqqq1111";
+        String mail = "nizami.budagov@gmail.com";
+        String jwt = login(mail, pass);
+
         fileLog.println("\n==================== 📥 Get User by ID =====================");
         UserResponse userResponse = getUserById(createdUserId);
+        assertEquals(uniqueUsername, userResponse.getUsername());
 
         fileLog.println("\n==================== 📥 Delete user =====================");
         given()
                 .baseUri(baseUrl)
-                .header("Authorization", "Bearer " + jwtToken)
+                .header("Authorization", "Bearer " + jwt)
                 .when()
-                .delete(controllerPath + userId.replace("{userId}", userResponse.getId().toString()))
+                .delete(uriSuperAdminRegister + "/" + userResponse.getId().toString())
                 .then()
                 .statusCode(204);
     }
@@ -171,7 +174,9 @@ public class UserApiTest {
 
         // create admin and eatery
         adminRegisterRequest = TestUtil.createRegisterRequest();
-        adminRegisterResponse = postUserAndEateryAsAdmin(superAdminJwt, adminRegisterRequest).as(RegisterResponse.class);
+        adminRegisterResponse = postUserAndEateryAsAdmin(superAdminJwt, adminRegisterRequest,
+                uriSuperAdminRegister + uriAdminEateryRegister)
+                .as(RegisterResponse.class);
         assertTrue(adminRegisterResponse.success());
         fileLog.println("Created eatery and its admin: " + adminRegisterResponse);
     }
@@ -324,7 +329,7 @@ public class UserApiTest {
         return jwtToken;
     }
 
-    private Response postUserAndEateryAsAdmin(String jwt, RegisterRequest registerRequest) {
+    private Response postUserAndEateryAsAdmin(String jwt, RegisterRequest registerRequest, String uri) {
         fileLog.println("\n==================== 📥 POST User with Eatery Order =====================");
         return given()
                 .baseUri(baseUrl)
@@ -332,7 +337,7 @@ public class UserApiTest {
                 .contentType(ContentType.JSON)
                 .body(registerRequest)
                 .when()
-                .post(controllerPath)
+                .post(uri)
                 .then()
                 .statusCode(201)
                 .extract()

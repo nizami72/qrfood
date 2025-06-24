@@ -37,11 +37,11 @@ public class CreateAllFakeData {
     String segmentEateries;
     @Value("${segment.category}")
     String segmentCategories;
-    @Value("${segment.dishes}")
-    String segmentDishes;
     @Value("${eatery.id.category}")
     String componentCategories;
-    @Value("${api.user.register}")
+    @Value("${usr}")
+    String userController;
+    @Value("${user.register}")
     String apiUserRegister;
 
     List<Eatery> eateries;
@@ -64,6 +64,7 @@ public class CreateAllFakeData {
 
     @BeforeAll
     void registerUserAndEatery() {
+        String url = userController.replace("{eateryId}", "2");
         // Fetch token
         String authPayload = """
                 {
@@ -71,6 +72,7 @@ public class CreateAllFakeData {
                   "name": "Nizami Budagov",
                     "email": "nizami.budagov1@gmail.com",
                     "password": "qqqq1111",
+                    
                     "roles": [
                       "EATERY_ADMIN"
                     ]
@@ -91,7 +93,7 @@ public class CreateAllFakeData {
                 .contentType("application/json")
                 .body(authPayload)
                 .when()
-                .post(apiUserRegister)
+                .post(url)
                 .then()
                 .statusCode(201)
                 .extract()

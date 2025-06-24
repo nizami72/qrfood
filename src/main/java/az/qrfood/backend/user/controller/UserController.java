@@ -32,24 +32,6 @@ public class UserController {
     }
 
     /**
-     * Create a new user, no eatery created and assigned here.
-     *
-     * @param request the user request
-     * @return the created user response
-     */
-    @Operation(summary = "Create a new user", description = "Creates a new user with the provided data")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @PostMapping("${user.register}")
-    public ResponseEntity<UserResponse> postAdminUser(@Valid @RequestBody UserRequest request) {
-        UserResponse response = userService.createUser(request);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
-    /**
      * Get all users.
      *
      * @return list of user responses
@@ -159,22 +141,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * POST for registering a new user with a restaurant.
-     *
-     * @param registerRequest RegisterRequest object containing user and restaurant data.
-     * @return ResponseEntity with a success or error message.
-     */
-    @Operation(summary = "Register a new user with a restaurant", description = "Registers a new user with the provided restaurant data")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User registered successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @PostMapping()
-    public ResponseEntity<?> postAdminUser(@RequestBody RegisterRequest registerRequest, @PathVariable Long eateryId) {
-       return userService.createAdminUser(registerRequest);
-    }
+
 
     /**
      * POST new not admin user and assigns it to an already existing eatery.
