@@ -41,6 +41,7 @@ public class RegisterRequest {
     @AllArgsConstructor
     @Builder
     public static class RestaurantDto {
+        private Long eateryId;
         private String name;
     }
 

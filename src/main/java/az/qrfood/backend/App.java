@@ -31,7 +31,7 @@ public class App {
         String u = "nizami.budagov@gmail.com";
         return args -> {
             if (userRepository.findByUsername(u).isEmpty()) {
-                userService.registerUser(
+                userService.createAdminUser(
                         RegisterRequest.builder()
                                 .restaurant(null)
                                 .user(RegisterRequest.UserDto.builder()

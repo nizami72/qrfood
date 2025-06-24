@@ -4,8 +4,11 @@ import az.qrfood.backend.user.dto.RegisterRequest;
 import az.qrfood.backend.user.dto.UserRequest;
 import az.qrfood.backend.user.dto.UserResponse;
 import az.qrfood.backend.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,21 +20,31 @@ import java.util.List;
  * REST controller for managing User entities.
  */
 @RestController
-@RequestMapping("${api.user}")
-@RequiredArgsConstructor
+@RequestMapping("/api/eatery/{eateryId}/user")
 @Log4j2
+@Tag(name = "User Management", description = "API endpoints for managing users")
 public class UserController {
 
     private final UserService userService;
 
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
     /**
-     * Create a new user.
+     * Create a new user, no eatery created and assigned here.
      *
      * @param request the user request
      * @return the created user response
      */
-    @PostMapping
-    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest request) {
+    @Operation(summary = "Create a new user", description = "Creates a new user with the provided data")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "User created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PostMapping("${user.register}")
+    public ResponseEntity<UserResponse> postAdminUser(@Valid @RequestBody UserRequest request) {
         UserResponse response = userService.createUser(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -41,7 +54,12 @@ public class UserController {
      *
      * @return list of user responses
      */
-    @GetMapping
+    @Operation(summary = "Get all users", description = "Retrieves a list of all users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved list of users"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping("${users}")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<UserResponse> responses = userService.getAllUsers();
         return ResponseEntity.ok(responses);
@@ -53,60 +71,91 @@ public class UserController {
      *
      * @return list of user responses
      */
-    @GetMapping("/eatery/{id}")
-    public ResponseEntity<List<UserResponse>> getAllEateryUsers(@PathVariable Long id) {
-        List<UserResponse> responses = userService.getAllUsers(id);
+    @Operation(summary = "Get all users of an eatery", description = "Retrieves a list of all users for the specified eatery")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved list of eatery users"),
+            @ApiResponse(responseCode = "404", description = "Eatery not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping()
+    public ResponseEntity<List<UserResponse>> getAllEateryUsers(@PathVariable Long eateryId) {
+        List<UserResponse> responses = userService.getAllUsers(eateryId);
         return ResponseEntity.ok(responses);
     }
 
     /**
      * Get a user by ID.
      *
-     * @param id the user ID
+     * @param userId the user ID
      * @return the user response
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
-        UserResponse response = userService.getUserById(id);
+    @Operation(summary = "Get a user by ID", description = "Retrieves a specific user by their ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the user"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping("${user.id}")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long userId) {
+        UserResponse response = userService.getUserById(userId);
         return ResponseEntity.ok(response);
     }
 
     /**
      * Get a user by username.
      *
-     * @param username the username
+     * @param userName the userName
      * @return the user response
      */
-    @GetMapping("/by-username/{username}")
-    public ResponseEntity<UserResponse> getUserByUsername(@PathVariable String username) {
-        UserResponse response = userService.getUserByUsername(username);
+    @Operation(summary = "Get a user by username", description = "Retrieves a specific user by their username")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the user"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping("${user.n}")
+    public ResponseEntity<UserResponse> getUserByUsername(@PathVariable String userName) {
+        UserResponse response = userService.getUserByUsername(userName);
         return ResponseEntity.ok(response);
     }
 
     /**
-     * Update a user.
+     * PUT a user.
      *
      * @param id the user ID
      * @param request the user request
      * @return the updated user response
      */
-    @PutMapping("/{id}")
+    @Operation(summary = "Update an existing user", description = "Updates a user with the specified ID using the provided data")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PutMapping("${user.id}")
     public ResponseEntity<UserResponse> updateUser(
-            @PathVariable Long id,
+            @PathVariable Long userId,
             @Valid @RequestBody UserRequest request) {
-        UserResponse response = userService.updateUser(id, request);
+        UserResponse response = userService.updateUser(userId, request);
         return ResponseEntity.ok(response);
     }
 
     /**
      * Delete a user.
      *
-     * @param id the user ID
+     * @param userId the user ID
      * @return no content response
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+    @Operation(summary = "Delete a user", description = "Deletes a user with the specified ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @DeleteMapping("${user.id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
 
@@ -116,8 +165,33 @@ public class UserController {
      * @param registerRequest RegisterRequest object containing user and restaurant data.
      * @return ResponseEntity with a success or error message.
      */
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
-       return userService.registerUser(registerRequest);
+    @Operation(summary = "Register a new user with a restaurant", description = "Registers a new user with the provided restaurant data")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User registered successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PostMapping()
+    public ResponseEntity<?> postAdminUser(@RequestBody RegisterRequest registerRequest, @PathVariable Long eateryId) {
+       return userService.createAdminUser(registerRequest);
     }
+
+    /**
+     * POST new not admin user and assigns it to an already existing eatery.
+     *
+     * @param registerRequest RegisterRequest object containing user and restaurant data.
+     * @return ResponseEntity with a success or error message.
+     */
+    @Operation(summary = "Register a new user with a restaurant", description = "Registers a new user with the provided restaurant data")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User registered successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PostMapping("${user.general}")
+    public ResponseEntity<?> postGeneralUser(@RequestBody RegisterRequest registerRequest, @PathVariable Long eateryId) {
+        return userService.createGeneralUser(registerRequest, eateryId);
+    }
+
+
 }
