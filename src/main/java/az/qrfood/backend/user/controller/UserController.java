@@ -104,7 +104,7 @@ public class UserController {
     /**
      * PUT a user.
      *
-     * @param id the user ID
+     * @param userId the user ID
      * @param request the user request
      * @return the updated user response
      */

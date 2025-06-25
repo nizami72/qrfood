@@ -1,6 +1,5 @@
 package az.qrfood.backend.user.service;
 
-import az.qrfood.backend.common.response.ApiResponse;
 import az.qrfood.backend.eatery.dto.EateryDto;
 import az.qrfood.backend.eatery.service.EateryService;
 import az.qrfood.backend.user.dto.RegisterRequest;
@@ -205,6 +204,7 @@ public class UserService {
 
             // Add the restaurant ID to the user profile
             userProfileService.addRestaurantToProfile(userProfile, eateryId);
+
             log.debug("Eatery [{}] successfully created.", eateryId);
         }
 

@@ -2,11 +2,15 @@ package az.qrfood.backend.all;
 
 import static io.restassured.RestAssured.given;
 
+import az.qrfood.backend.auth.dto.LoginRequest;
 import az.qrfood.backend.dto.Category;
 import az.qrfood.backend.dto.CategoryDto;
 import az.qrfood.backend.dto.Dish;
 import az.qrfood.backend.dto.Eatery;
+import az.qrfood.backend.user.dto.RegisterRequest;
+import az.qrfood.backend.user.entity.Role;
 import az.qrfood.backend.util.TestDataLoader;
+import az.qrfood.backend.util.TestUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -24,6 +28,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Log4j2
 @SpringBootTest
@@ -33,24 +38,22 @@ public class CreateAllFakeData {
     private static PrintStream fileLog;
     @Value("${base.url}")
     String baseUrl;
-    @Value("${api.eatery}")
+    @Value("${full.admin.eatery}")
+    String fullAdminEatery;
+    @Value("${eatery.id.category.id.dish}")
+    String urlPostDish;
+    @Value("${eatery}")
     String segmentEateries;
-    @Value("${segment.category}")
-    String segmentCategories;
-    @Value("${eatery.id.category}")
+    @Value("${category}")
     String componentCategories;
-    @Value("${usr}")
-    String userController;
-    @Value("${user.register}")
-    String apiUserRegister;
-
     List<Eatery> eateries;
-
     String jwtToken;
     Long userId;
+    String userName;
+    String password;
 
     @BeforeAll
-    void setupLogging() throws Exception {
+    void setupLoggingAndCreateFakes() throws Exception {
         fileLog = new PrintStream(new FileOutputStream("logsTest/all.log", false));
         RestAssured.filters(
                 new RequestLoggingFilter(fileLog),
@@ -64,69 +67,30 @@ public class CreateAllFakeData {
 
     @BeforeAll
     void registerUserAndEatery() {
-        String url = userController.replace("{eateryId}", "2");
-        // Fetch token
-        String authPayload = """
-                {
-                  "user": {
-                  "name": "Nizami Budagov",
-                    "email": "nizami.budagov1@gmail.com",
-                    "password": "qqqq1111",
-                    
-                    "roles": [
-                      "EATERY_ADMIN"
-                    ]
-                  },
-                  "restaurant": {
-                    "name": "Fake Bistro"
-                  },
-                  "userProfileRequest": {
-                    "name": "John Doe",
-                    "phone": "+994501234567"
-                  }
-                }
-                
-                """;
+
+        RegisterRequest authPayload = TestUtil.createRegisterRequest(Set.of(Role.EATERY_ADMIN));
+        userName = authPayload.getUser().getEmail();
+        password = authPayload.getUser().getPassword();
 
         Response authResponse = given()
                 .baseUri(baseUrl)
                 .contentType("application/json")
                 .body(authPayload)
                 .when()
-                .post(url)
+                .post(fullAdminEatery)
                 .then()
                 .statusCode(201)
                 .extract()
                 .response();
-        log.debug("Registered user");
-        login();
+        log.debug("Registered user [{}]", userName);
+
+        // after registration and getting new eateryId, we need to log in and get a token
+        login(
+                userName,
+                password,
+                ((Integer) authResponse.as(Map.class).get("eateryId")).longValue());
     }
 
-    //    @BeforeAll
-    void login() {
-        // Fetch token
-        String authPayload = """
-                {
-                  "email": "nizami.budagov1@gmail.com",
-                  "password": "qqqq1111"
-                }
-                """;
-
-        Response authResponse = given()
-                .baseUri(baseUrl)
-                .contentType("application/json")
-                .body(authPayload)
-                .when()
-                .post("/api/auth/login")
-                .then()
-                .statusCode(200)
-                .extract()
-                .response();
-
-        jwtToken = authResponse.jsonPath().getString("jwt");
-        userId = authResponse.jsonPath().getLong("userId");
-
-    }
 
     @Test
     void shouldCreateCategoryWithImageAndDishWithImage() {
@@ -158,9 +122,14 @@ public class CreateAllFakeData {
                     .extract()
                     .response();
 
-
-            String createdEateryId = response1.getBody().asString();
+            Long createdEateryId = Long.valueOf(response1.getBody().asString());
             log.debug("Eatery created [{}]", createdEateryId);
+
+            // refresh token to change category of eatery
+            login(
+                    userName,
+                    password,
+                    createdEateryId);
 
             List<Category> categoryList = eatery.categories();
 
@@ -175,37 +144,72 @@ public class CreateAllFakeData {
                         .multiPart("data", "data.json", json1.getBytes(StandardCharsets.UTF_8), "application/json")
                         .multiPart("image", new File("src/test/resources/image/" + category.image()))
                         .when()
-                        .post()
+                        .post(segmentEateries + "/" + createdEateryId + componentCategories)
                         .then()
                         .statusCode(200)
                         .extract()
                         .response();
                 String createdCategoryId = response.getBody().asString();
-                log.debug("Created category [{}]", createdCategoryId);
+                log.debug("Category created [{}]", createdCategoryId);
 
                 List<Dish> d = category.dishes();
+                // dishes creation
                 d.forEach(dish -> {
                     String json2 = TestDataLoader.serializeToJsonString(dish);
-
+                    String url = urlPostDish
+                            .replace("{eateryId}", createdEateryId.toString())
+                            .replace("{categoryId}", createdCategoryId);
                     Response response2 = given()
                             .baseUri(baseUrl)
                             .header("Authorization", "Bearer " + jwtToken)
                             .multiPart("data", "data.json", json2.getBytes(StandardCharsets.UTF_8), "application/json")
                             .multiPart("image", new File("src/test/resources/image/" + dish.image()))
                             .when()
-                            .post("/api/categories" + "/" + createdCategoryId + "/dishes")
+                            .post(url)
                             .then()
                             .statusCode(200)
                             .extract()
                             .response();
                     String createdDishId = response2.getBody().asString();
-                    log.debug("Created dish [{}]", createdDishId);
+                    log.debug("Dish Created [{}]", createdDishId);
                 });
             });
         });
-
-
         fileLog.println("========== 📥 The dish has been successfully loaded.==========\n");
+    }
+
+    private <T, R> T request(String url, R body, String jwt, Class<T> clazz) {
+        Response response2 = given()
+                .baseUri(baseUrl)
+                .header("Authorization", "Bearer " + jwt)
+                .contentType("application/json")
+                .body(body)
+                .when()
+                .post(url)
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+        return response2.as(clazz);
+
+    }
+
+    //    @BeforeAll
+    void login(String login, String pass, Long eateryId) {
+        LoginRequest loginRequest = new LoginRequest(login, pass, eateryId);
+        Response authResponse = given()
+                .baseUri(baseUrl)
+                .contentType("application/json")
+                .body(loginRequest)
+                .when()
+                .post("/api/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .response();
+        jwtToken = authResponse.jsonPath().getString("jwt");
+        userId = authResponse.jsonPath().getLong("userId");
+        log.debug("New JWT for user [{}] was created", userId);
     }
 
 

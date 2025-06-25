@@ -4,6 +4,8 @@ import az.qrfood.backend.user.dto.RegisterRequest;
 import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.entity.UserProfile;
 import az.qrfood.backend.user.repository.UserProfileRepository;
+import az.qrfood.backend.user.repository.UserRepository;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -20,9 +22,11 @@ import java.util.Optional;
 public class UserProfileService {
 
     private final UserProfileRepository userProfileRepository;
+    private final UserRepository userRepository;
 
-    public UserProfileService(UserProfileRepository userProfileRepository) {
+    public UserProfileService(UserProfileRepository userProfileRepository, UserRepository userRepository) {
         this.userProfileRepository = userProfileRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -56,17 +60,23 @@ public class UserProfileService {
     /**
      * Adds a restaurant ID to the user profile's list of owned restaurants.
      *
-     * @param profile The user profile
+     * @param profile      The user profile
      * @param restaurantId The restaurant ID to add
-     * @return The updated user profile
      */
     @Transactional
-    public UserProfile addRestaurantToProfile(UserProfile profile, Long restaurantId) {
+    public void addRestaurantToProfile(UserProfile profile, Long restaurantId) {
         if (!profile.getRestaurantIds().contains(restaurantId)) {
             profile.getRestaurantIds().add(restaurantId);
             profile = userProfileRepository.save(profile);
         }
-        return profile;
+    }
+
+    @Transactional
+    public void addRestaurantToProfile(UserDetails userDetails, Long eateryId) {
+        String userName = userDetails.getUsername();
+        User user = userRepository.findByUsername(userName).get();
+        UserProfile userProfile = findProfileByUser(user).get();
+        addRestaurantToProfile(userProfile, eateryId);
     }
 
     /**

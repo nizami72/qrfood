@@ -38,9 +38,9 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleNoResourceFound(HttpRequest httpRequest, NoResourceFoundException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleNoResourceFound(NoResourceFoundException ex) {
         log.error("No resource found", ex);
-        log.error("No resource found url [{}]", httpRequest.getURI());
+//        log.error("No resource found url [{}]", httpRequest.getURI());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.fail("Resource not found", 404));
     }
@@ -60,8 +60,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleGeneral(HttpServletRequest request, Exception ex) {
-        String url = Util.getFullURL(request);
+    public ResponseEntity<ApiResponse<Void>> handleGeneral(Exception ex) {
+        String url = "Util.getFullURL(request)";
         log.error("Exception", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.fail("Internal server error while requesting " + url, 500));

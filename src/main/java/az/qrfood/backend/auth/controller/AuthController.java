@@ -33,7 +33,6 @@ import java.util.Optional;
  * REST controller for handling requests related to authentication and registration.
  */
 @RestController
-@RequestMapping("/api/auth")
 @Log4j2
 @Tag(name = "Auth", description = "API endpoints for managing auth calls")
 public class AuthController {
@@ -70,7 +69,7 @@ public class AuthController {
      * @param loginRequest LoginRequest object containing username, password, and optionally eateryId.
      * @return ResponseEntity with JWT token on success or error message.
      */
-    @PostMapping("/login")
+    @PostMapping("${auth.login}")
     @Operation(summary = "Logins a user", description = "Logins user, use email as login and password")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest) {
         log.debug("Login request: {}", loginRequest);
@@ -129,7 +128,7 @@ public class AuthController {
      * 
      * @return ResponseEntity with user information if authenticated, or a message if not.
      */
-    @GetMapping("/status")
+    @GetMapping("${auth.status}")
     public ResponseEntity<?> status() {
         // Get the current authentication from the security context
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -181,7 +180,7 @@ public class AuthController {
      * @param requestBody Map containing the eateryId key with the ID of the newly selected eatery.
      * @return ResponseEntity with the new JWT token.
      */
-    @PostMapping("/refresh-token")
+    @PostMapping("${auth.refresh}")
     public ResponseEntity<?> refreshToken(@RequestBody Map<String, Long> requestBody) {
         Long eateryId = requestBody.get("eateryId");
         log.debug("Refresh token request with eateryId: {}", eateryId);
@@ -247,7 +246,7 @@ public class AuthController {
      *
      * @return ResponseEntity with success message.
      */
-    @PostMapping("/logout")
+    @PostMapping("${auth.logout}")
     public ResponseEntity<?> logout() {
         // Get the current authentication from the security context
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

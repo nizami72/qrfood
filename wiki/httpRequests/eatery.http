@@ -7,7 +7,7 @@ POST http://localhost:8080/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "nizami.budagov@gmail.com",
+  "email": "nizami.budagov1@gmail.com",
   "password": "qqqq1111"
 }
 

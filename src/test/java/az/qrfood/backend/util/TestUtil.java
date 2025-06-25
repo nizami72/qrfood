@@ -2,7 +2,6 @@ package az.qrfood.backend.util;
 
 import az.qrfood.backend.user.dto.RegisterRequest;
 import az.qrfood.backend.user.entity.Role;
-import org.springframework.security.core.userdetails.User;
 import java.util.Set;
 
 public class TestUtil {
@@ -12,7 +11,8 @@ public class TestUtil {
         String mail = FakeData.mail(name);
         String eateryName = FakeData.eateryName();
         String phone = FakeData.phones().get(0);
-        String password = mail.split("@")[0] + FakeData.getRandomInt(1111, 9999);
+//        String password = mail.split("@")[0] + FakeData.getRandomInt(1111, 9999);
+        String password = "qqqq1111";
         return RegisterRequest.builder()
                 .user(RegisterRequest.UserDto.builder()
                         .email(mail)
@@ -28,7 +28,6 @@ public class TestUtil {
                         .phone(phone)
                         .build())
                 .build();
-
     }
 
     public static RegisterRequest createRegisterRequest(Set<Role> role) {
