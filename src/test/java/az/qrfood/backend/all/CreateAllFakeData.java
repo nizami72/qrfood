@@ -125,7 +125,7 @@ public class CreateAllFakeData {
             Long createdEateryId = Long.valueOf(response1.getBody().asString());
             log.debug("Eatery created [{}]", createdEateryId);
 
-            // refresh token to change category of eatery
+            // refresh token to change the category of eatery
             login(
                     userName,
                     password,
