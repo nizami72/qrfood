@@ -146,6 +146,14 @@ public class UserService {
             user.setRoles(request.getRoles());
         }
 
+        // Only update name if it provided
+        if (request.getName() != null) {
+            UserProfile userProfile = userProfileRepository.findByUser(user).orElseThrow();
+            userProfile.setName(request.getName());
+            userProfileRepository.save(userProfile);
+            log.debug("Updated name of the user [{}]", user.getUsername());
+        }
+
         User updatedUser = userRepository.save(user);
         return mapToResponse(updatedUser);
     }
@@ -260,6 +268,7 @@ public class UserService {
         return new UserResponse(
                 user.getId(),
                 user.getUsername(),
+                userProfileRepository.findByUser(user).get().getName(),
                 user.getRoles().stream()
                         .map(Enum::name)
                         .collect(Collectors.toSet()),

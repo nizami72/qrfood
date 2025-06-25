@@ -9,14 +9,14 @@ public class PermissionChecker {
 
     public boolean isSuperAdmin(Authentication auth) {
         return auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_SUPER_ADMIN"));
+                .anyMatch(a -> a.getAuthority().equals("SUPER_ADMIN"));
     }
 
     public boolean hasAnyRole(Authentication auth, String... roles) {
         if (isSuperAdmin(auth)) return true;
 
         for (String role : roles) {
-            if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_" + role))) {
+            if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(role))) {
                 return true;
             }
         }

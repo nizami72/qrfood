@@ -21,9 +21,14 @@ public class UserResponse {
     private Long id;
 
     /**
-     * The username of the user.
+     * The username of the user that is unique mail.
      */
     private String username;
+
+    /**
+     * The name of the user.
+     */
+    private String name;
 
     /**
      * The roles assigned to the user.

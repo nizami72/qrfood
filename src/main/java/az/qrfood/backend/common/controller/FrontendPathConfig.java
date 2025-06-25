@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -70,6 +69,16 @@ public class FrontendPathConfig {
     String orderItemId;
     @Value("${order.item}")
     String orderItem;
+    @Value("${user.n}")
+    String userN;
+    @Value("${users}")
+    String users;
+    @Value("${user.id}")
+    String userId;
+    @Value("${user.general}")
+    String userGeneral;
+    @Value("${usr}")
+    String usr;
 
 
     @GetMapping("/image-paths")
@@ -106,8 +115,13 @@ public class FrontendPathConfig {
         paths.put("orderItem", orderItem);
         paths.put("orderItemId", orderItemId);
         paths.put("orderItemOrderId", orderItemOrderId);
+        paths.put("USERS", "--------------------");
+        paths.put("userN", userN);
+        paths.put("users", users);
+        paths.put("userId", userId);
+        paths.put("userGeneral", userGeneral);
+        paths.put("usr", usr);
         //.
-
 
 
         log.debug("FE requested path config [{}]", prettyPrintMao(paths));

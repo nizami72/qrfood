@@ -1,17 +1,18 @@
 package az.qrfood.backend.common.exception;
 
-import az.qrfood.backend.common.Util;
 import az.qrfood.backend.common.response.ApiResponse;
+import az.qrfood.backend.user.exception.UserExceptionHandler;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import org.springframework.security.access.AccessDeniedException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,6 +58,17 @@ public class GlobalExceptionHandler {
         log.error(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.fail(ex.getMessage(), 404));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<UserExceptionHandler.ErrorResponse> handleAccessDeniedExceptions(AccessDeniedException ex) {
+        log.error("Access denied");
+        UserExceptionHandler.ErrorResponse errorResponse = new UserExceptionHandler.ErrorResponse(
+                HttpStatus.FORBIDDEN.value(),
+                "Yau are not allowed to execute this operation",
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(Exception.class)

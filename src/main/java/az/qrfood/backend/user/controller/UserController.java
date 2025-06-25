@@ -10,17 +10,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 /**
  * REST controller for managing User entities.
  */
 @RestController
-@RequestMapping("/api/eatery/{eateryId}/user")
 @Log4j2
 @Tag(name = "User Management", description = "API endpoints for managing users")
 public class UserController {
@@ -59,7 +57,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping()
+    @GetMapping("${usr}")
     public ResponseEntity<List<UserResponse>> getAllEateryUsers(@PathVariable Long eateryId) {
         List<UserResponse> responses = userService.getAllUsers(eateryId);
         return ResponseEntity.ok(responses);
@@ -116,7 +114,8 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PutMapping("${user.id}")
-    public ResponseEntity<UserResponse> updateUser(
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    public ResponseEntity<UserResponse> putUser(
             @PathVariable Long userId,
             @Valid @RequestBody UserRequest request) {
         UserResponse response = userService.updateUser(userId, request);
