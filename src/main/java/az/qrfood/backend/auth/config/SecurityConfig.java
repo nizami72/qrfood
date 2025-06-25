@@ -1,5 +1,7 @@
 package az.qrfood.backend.auth.config;
 
+import static org.springframework.http.HttpMethod.GET;
+
 import az.qrfood.backend.common.CustomAuthenticationEntryPoint;
 import az.qrfood.backend.auth.filter.EateryIdCheckFilter;
 import az.qrfood.backend.auth.filter.JwtRequestFilter;
@@ -94,6 +96,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/orders/*").permitAll()
                         .requestMatchers("/api/orders/status/*").permitAll()
                         .requestMatchers("/api/client/eatery/**").permitAll()
+                                .requestMatchers(GET, "/api/eatery/*").permitAll()
                                 .requestMatchers("/api/admin/**").permitAll()
                                 .requestMatchers("/admin.html").permitAll()
                                 .requestMatchers("/redoc.html").permitAll()

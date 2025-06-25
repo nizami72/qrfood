@@ -5,6 +5,7 @@ import az.qrfood.backend.user.exception.UserExceptionHandler;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -61,8 +62,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<UserExceptionHandler.ErrorResponse> handleAccessDeniedExceptions(AccessDeniedException ex) {
-        log.error("Access denied");
+    public ResponseEntity<UserExceptionHandler.ErrorResponse> handleAccessDeniedExceptions(HttpServletRequest request,
+                                                                                           AccessDeniedException ex) {
+
+        String requestUri = request.getRequestURI(); // <-- вот здесь получаешь URI
+        log.error("Access to [{}] denied", requestUri);
+
         UserExceptionHandler.ErrorResponse errorResponse = new UserExceptionHandler.ErrorResponse(
                 HttpStatus.FORBIDDEN.value(),
                 "Yau are not allowed to execute this operation",

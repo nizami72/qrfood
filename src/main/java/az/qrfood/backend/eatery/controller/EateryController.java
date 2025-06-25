@@ -89,7 +89,7 @@ public class EateryController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+//    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @GetMapping("${eatery.id}")
     public ResponseEntity<EateryDto> getEateryById(@PathVariable("eateryId") Long id) {
         log.debug("Request to get Eatery : {}", id);
