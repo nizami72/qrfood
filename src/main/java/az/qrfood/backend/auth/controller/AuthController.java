@@ -1,13 +1,13 @@
 package az.qrfood.backend.auth.controller;
 
-import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.auth.dto.LoginRequest;
 import az.qrfood.backend.auth.dto.LoginResponse;
-import az.qrfood.backend.user.entity.UserProfile;
-import az.qrfood.backend.user.service.UserProfileService;
-import az.qrfood.backend.user.repository.UserRepository;
 import az.qrfood.backend.auth.service.CustomUserDetailsService;
 import az.qrfood.backend.auth.util.JwtUtil;
+import az.qrfood.backend.user.entity.User;
+import az.qrfood.backend.user.entity.UserProfile;
+import az.qrfood.backend.user.repository.UserRepository;
+import az.qrfood.backend.user.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
@@ -19,11 +19,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +40,6 @@ public class AuthController {
     private final CustomUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final UserProfileService userProfileService;
     //</editor-fold>
 
@@ -51,13 +48,11 @@ public class AuthController {
                           CustomUserDetailsService userDetailsService,
                           JwtUtil jwtUtil,
                           UserRepository userRepository,
-                          PasswordEncoder passwordEncoder,
                           UserProfileService userProfileService) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
         this.userProfileService = userProfileService;
     }
     //</editor-fold>
@@ -66,8 +61,8 @@ public class AuthController {
      * Endpoint for user login.
      * Accepts username and password, authenticates them and returns JWT token.
      *
-     * @param loginRequest LoginRequest object containing username, password, and optionally eateryId.
-     * @return ResponseEntity with JWT token on success or error message.
+     * @param loginRequest LoginRequest object containing username, password and optionally eateryId.
+     * @return ResponseEntity with JWT token on a success or error message.
      */
     @PostMapping("${auth.login}")
     @Operation(summary = "Logins a user", description = "Logins user, use email as login and password")
@@ -87,7 +82,7 @@ public class AuthController {
         log.debug("Attempting to authenticate user using CustomUserDetailsService");
         final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
 
-        // Get user ID and record login in user profile
+        // Get user ID and record login in the user profile
         Long userId = null;
         Long eateryId = loginRequest.getEateryId();
         Optional<User> userOptional = userRepository.findByUsername(loginRequest.getEmail());
@@ -104,13 +99,13 @@ public class AuthController {
                 // If eateryId is not provided in the request, but the user has restaurants,
                 // use the first one as the default
                 if (eateryId == null && userProfile.getRestaurantIds() != null && !userProfile.getRestaurantIds().isEmpty()) {
-                    eateryId = userProfile.getRestaurantIds().get(0);
+                    eateryId = userProfile.getRestaurantIds().getFirst();
                 }
 
                 // Verify that the user has access to the specified eatery
                 if (eateryId != null && (userProfile.getRestaurantIds() == null || !userProfile.getRestaurantIds().contains(eateryId))) {
                     log.debug("User does not have access to the specified eatery: {}", eateryId);
-                    eateryId = null; // Reset eateryId if user doesn't have access
+                    eateryId = null; // Reset eateryId if the user doesn't have access
                 }
             }
         }
@@ -240,11 +235,11 @@ public class AuthController {
 
     /**
      * Endpoint for user logout.
-     * In a JWT-based authentication system, the server doesn't maintain session state.
+     * In a JWT-based authentication system, the server doesn't maintain the session state.
      * The client is responsible for removing the JWT token from storage.
      * This endpoint simply returns a success response to confirm the logout action.
      *
-     * @return ResponseEntity with success message.
+     * @return ResponseEntity with a success message.
      */
     @PostMapping("${auth.logout}")
     public ResponseEntity<?> logout() {

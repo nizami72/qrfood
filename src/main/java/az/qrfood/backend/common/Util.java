@@ -31,7 +31,7 @@ public class Util {
             // use instance
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
-            log.error("Error instantiating " + destinationClass, e);
+            log.error("Error instantiating [{}]", destinationClass, e);
         }
         assert target != null;
         BeanUtils.copyProperties(source, target);

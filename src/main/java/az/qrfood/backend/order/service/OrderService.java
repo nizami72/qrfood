@@ -66,7 +66,7 @@ public class OrderService {
      * @return list of orders
      */
     public List<OrderDto> getAllOrdersByStatus(String status) {
-        OrderStatus ts = null;
+        OrderStatus ts;
         try {
             ts = OrderStatus.valueOf(status.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {

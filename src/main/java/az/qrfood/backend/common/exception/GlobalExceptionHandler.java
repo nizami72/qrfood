@@ -50,11 +50,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(OrderNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleOrderNotFound(OrderNotFoundException ex,
                                                                  HttpServletRequest request) {
-        String locale = "az";
-        if (request instanceof HttpServletRequest httpRequest) {
-            String langHeader = httpRequest.getHeader("Accept-Language");
-            locale = langHeader != null ? langHeader : "az";
-        }
 
         log.error(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)

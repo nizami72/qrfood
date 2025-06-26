@@ -5,6 +5,7 @@ import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.entity.UserProfile;
 import az.qrfood.backend.user.repository.UserProfileRepository;
 import az.qrfood.backend.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,15 +68,16 @@ public class UserProfileService {
     public void addRestaurantToProfile(UserProfile profile, Long restaurantId) {
         if (!profile.getRestaurantIds().contains(restaurantId)) {
             profile.getRestaurantIds().add(restaurantId);
-            profile = userProfileRepository.save(profile);
         }
     }
 
     @Transactional
     public void addRestaurantToProfile(UserDetails userDetails, Long eateryId) {
         String userName = userDetails.getUsername();
-        User user = userRepository.findByUsername(userName).get();
-        UserProfile userProfile = findProfileByUser(user).get();
+        User user = userRepository.findByUsername(userName)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + userName));
+        UserProfile userProfile = findProfileByUser(user)
+                .orElseThrow(() -> new EntityNotFoundException("User profile not found: " + user));
         addRestaurantToProfile(userProfile, eateryId);
     }
 

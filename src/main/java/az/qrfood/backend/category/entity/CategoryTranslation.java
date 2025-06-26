@@ -14,7 +14,6 @@ import java.util.Objects;
 @Table(name = "category_translation", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"category_id", "lang"})
 })
-@EqualsAndHashCode(of = {"language", "name"})
 public class CategoryTranslation extends BaseEntity {
 
     @ManyToOne

@@ -268,7 +268,7 @@ public class UserService {
         return new UserResponse(
                 user.getId(),
                 user.getUsername(),
-                userProfileRepository.findByUser(user).get().getName(),
+                userProfileRepository.findByUser(user).orElseThrow(() -> new EntityNotFoundException("User entity not found: " + user)).getName(),
                 user.getRoles().stream()
                         .map(Enum::name)
                         .collect(Collectors.toSet()),

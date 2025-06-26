@@ -62,7 +62,7 @@ public class ImageController {
     }
 
     private ResponseEntity<byte[]> getImage(String imgPath, HttpServletResponse response) {
-        byte[] data = null;
+        byte[] data;
         try {
             data = Files.readAllBytes(Paths.get(imgPath));
         } catch (IOException ioe) {
