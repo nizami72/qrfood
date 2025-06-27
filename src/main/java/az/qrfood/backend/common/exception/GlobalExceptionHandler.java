@@ -5,7 +5,6 @@ import az.qrfood.backend.user.exception.UserExceptionHandler;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,17 +16,38 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Global exception handler for the application.
+ * <p>
+ * This class intercepts exceptions thrown by controllers and services,
+ * providing centralized exception handling and returning consistent
+ * {@link ApiResponse} error responses to the client.
+ * </p>
+ */
 @RestControllerAdvice
 @Log4j2
 public class GlobalExceptionHandler {
 
+    /**
+     * Handles {@link EntityNotFoundException} and returns a 404 Not Found response.
+     *
+     * @param ex The caught {@link EntityNotFoundException}.
+     * @return A {@link ResponseEntity} with an {@link ApiResponse} indicating the error.
+     */
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleNotFound(EntityNotFoundException ex) {
-        log.error("Error: [{}}", ex.getMessage());
+        log.error("Error: [{}]", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.fail(ex.getMessage(), HttpStatus.NOT_FOUND.value()));
     }
 
+    /**
+     * Handles {@link MethodArgumentNotValidException} (validation errors) and returns a 400 Bad Request response.
+     * It extracts field-specific error messages and includes them in the response.
+     *
+     * @param ex The caught {@link MethodArgumentNotValidException}.
+     * @return A {@link ResponseEntity} with an {@link ApiResponse} containing validation errors.
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Map<String, String>>> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -39,14 +59,27 @@ public class GlobalExceptionHandler {
     }
 
 
+    /**
+     * Handles {@link NoResourceFoundException} (e.g., for non-existent API endpoints or static resources)
+     * and returns a 404 Not Found response.
+     *
+     * @param ex The caught {@link NoResourceFoundException}.
+     * @return A {@link ResponseEntity} with an {@link ApiResponse} indicating the resource was not found.
+     */
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleNoResourceFound(NoResourceFoundException ex) {
         log.error("No resource found", ex);
-//        log.error("No resource found url [{}]", httpRequest.getURI());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.fail("Resource not found", 404));
     }
 
+    /**
+     * Handles {@link OrderNotFoundException} and returns a 404 Not Found response.
+     *
+     * @param ex      The caught {@link OrderNotFoundException}.
+     * @param request The current {@link HttpServletRequest}.
+     * @return A {@link ResponseEntity} with an {@link ApiResponse} indicating the order was not found.
+     */
     @ExceptionHandler(OrderNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleOrderNotFound(OrderNotFoundException ex,
                                                                  HttpServletRequest request) {
@@ -56,26 +89,40 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.fail(ex.getMessage(), 404));
     }
 
+    /**
+     * Handles {@link AccessDeniedException} and returns a 403 Forbidden response.
+     * This exception is typically thrown when an authenticated user attempts to access
+     * a resource they do not have permission for.
+     *
+     * @param request The current {@link HttpServletRequest}.
+     * @param ex      The caught {@link AccessDeniedException}.
+     * @return A {@link ResponseEntity} with an {@link UserExceptionHandler.ErrorResponse} indicating access denied.
+     */
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<UserExceptionHandler.ErrorResponse> handleAccessDeniedExceptions(HttpServletRequest request,
                                                                                            AccessDeniedException ex) {
 
-        String requestUri = request.getRequestURI(); // <-- вот здесь получаешь URI
+        String requestUri = request.getRequestURI();
         log.error("Access to [{}] denied", requestUri);
 
         UserExceptionHandler.ErrorResponse errorResponse = new UserExceptionHandler.ErrorResponse(
                 HttpStatus.FORBIDDEN.value(),
-                "Yau are not allowed to execute this operation",
+                "You are not allowed to execute this operation",
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
+    /**
+     * Catches all other unhandled {@link Exception} types and returns a generic 500 Internal Server Error response.
+     *
+     * @param ex The caught {@link Exception}.
+     * @return A {@link ResponseEntity} with an {@link ApiResponse} indicating an internal server error.
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneral(Exception ex) {
-        String url = "Util.getFullURL(request)";
-        log.error("Exception", ex);
+        log.error("An unexpected error occurred", ex); // Log the full exception stack trace
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.fail("Internal server error while requesting " + url, 500));
+                .body(ApiResponse.fail("Internal server error.", 500));
     }
 }

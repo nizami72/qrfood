@@ -24,19 +24,29 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * REST controller for managing orders.
+ * REST controller for managing orders within eateries.
+ * <p>
+ * This controller provides API endpoints for creating, retrieving, updating,
+ * and deleting orders. It also handles order status updates and integrates
+ * with client device management for cookie-based sessions.
+ * </p>
  */
 @Log4j2
 @RestController
 @Tag(name = "Order Management", description = "API endpoints for managing orders in eateries")
 public class OrderController {
 
-    //<editor-fold desc="Fields">
     private final OrderService orderService;
     private final OrderMapper orderMapper;
     private final ClientDeviceService clientDeviceService;
-    //</editor-fold>
 
+    /**
+     * Constructs the OrderController with necessary service and mapper dependencies.
+     *
+     * @param orderService      The service for handling order business logic.
+     * @param orderMapper       The mapper for converting between Order entities and DTOs.
+     * @param clientDeviceService The service for managing client devices and cookies.
+     */
     public OrderController(OrderService orderService, OrderMapper orderMapper, ClientDeviceService clientDeviceService) {
         this.orderService = orderService;
         this.orderMapper = orderMapper;
@@ -44,10 +54,11 @@ public class OrderController {
     }
 
     /**
-     * GET all orders by status.
+     * Retrieves a list of all orders filtered by their status.
      *
-     * @param status the status to filter orders by
-     * @return list of orders with defined status
+     * @param status The status to filter orders by (e.g., "CREATED", "PREPARING", "READY").
+     * @return A {@link ResponseEntity} containing a list of {@link OrderDto} objects
+     *         that match the specified status.
      */
     @Operation(summary = "Get all orders by status", description = "Retrieves a list of all orders with the specified status")
     @ApiResponses(value = {
@@ -62,10 +73,11 @@ public class OrderController {
     }
 
     /**
-     * GET all orders by eatery ID.
+     * Retrieves a list of all orders for a specific eatery.
      *
-     * @param eateryId the ID of the eatery
-     * @return list of orders for the specified eatery
+     * @param eateryId The ID of the eatery to retrieve orders for.
+     * @return A {@link ResponseEntity} containing a list of {@link OrderDto} objects
+     *         associated with the specified eatery.
      */
     @Operation(summary = "Get orders by eatery ID", description = "Retrieves a list of all orders for the specified eatery", tags={"Order Management"})
     @ApiResponses(value = {
@@ -80,10 +92,11 @@ public class OrderController {
     }
 
     /**
-     * GET order by ID.
+     * Retrieves a specific order by its ID.
      *
-     * @param orderId the ID of the order to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the order, or with status 404 (Not Found)
+     * @param orderId The ID of the order to retrieve.
+     * @return A {@link ResponseEntity} with status 200 (OK) and the {@link OrderDto} in the body,
+     *         or status 404 (Not Found) if the order does not exist.
      */
     @Operation(summary = "Get order by ID", description = "Retrieves a specific order by its ID", tags={"Order Management"})
     @ApiResponses(value = {
@@ -98,11 +111,16 @@ public class OrderController {
     }
 
     /**
-     * POST a new order for a specific eatery table.
+     * Creates a new order for a specific eatery table.
+     * <p>
+     * This endpoint also handles the creation of a client device cookie if one
+     * does not already exist, associating the order with the client device.
+     * </p>
      *
-     * @param response HTTP response to add cookie
-     * @param orderDto the list of order items
-     * @return the ResponseEntity with status 201 (Created) and with body the new order
+     * @param response The {@link HttpServletResponse} to add the client device cookie.
+     * @param eateryId The ID of the eatery where the order is placed.
+     * @param orderDto The {@link OrderDto} containing the details of the order items.
+     * @return A {@link ResponseEntity} with status 200 (OK) and the newly created {@link OrderDto} in the body.
      */
     @Operation(summary = "Create a new order", description = "Creates a new order for a specific table with the provided items", tags={"Order Management"})
     @ApiResponses(value = {
@@ -123,11 +141,11 @@ public class OrderController {
     }
 
     /**
-     * Update an existing order.
+     * Updates an existing order.
      *
-     * @param orderId the ID of the order to update
-     * @param orderDTO the order to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated order
+     * @param orderId  The ID of the order to update.
+     * @param orderDTO The {@link OrderDto} containing the updated order data.
+     * @return A {@link ResponseEntity} with status 200 (OK) and the updated {@link OrderDto} in the body.
      */
     @Operation(summary = "Update an existing order", description = "Updates an order with the specified ID using the provided data", tags={"Order Management"})
     @ApiResponses(value = {
@@ -146,11 +164,11 @@ public class OrderController {
     }
 
     /**
-     * Update the status of an order.
+     * Updates the status of an order.
      *
-     * @param id the ID of the order to update
-     * @param statusDTO the status update DTO
-     * @return the ResponseEntity with status 200 (OK) and with body the updated order
+     * @param id        The ID of the order to update.
+     * @param statusDTO The {@link OrderStatusUpdateDTO} containing the new status.
+     * @return A {@link ResponseEntity} with status 200 (OK) and the updated {@link OrderDto} in the body.
      */
     @Operation(summary = "Update order status", description = "Updates the status of an order with the specified ID", tags={"Order Management"})
     @ApiResponses(value = {
@@ -159,7 +177,7 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "Order not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-//    @PutMapping("${order.id}")
+//    @PutMapping("${order.id}") // This mapping is commented out in the original code
     public ResponseEntity<OrderDto> updateOrderStatus(
             @PathVariable Long id,
             @RequestBody OrderStatusUpdateDTO statusDTO
@@ -169,10 +187,10 @@ public class OrderController {
     }
 
     /**
-     * DELETE an order.
+     * Deletes an order by its ID.
      *
-     * @param orderId the ID of the order to delete
-     * @return the ResponseEntity with status 200 (OK)
+     * @param orderId The ID of the order to delete.
+     * @return A {@link ResponseEntity} with status 200 (OK) upon successful deletion.
      */
     @Operation(summary = "Delete an order", description = "Deletes an order with the specified ID", tags={"Order Management"})
     @ApiResponses(value = {

@@ -6,6 +6,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 
+/**
+ * Service class for managing file storage operations within the application.
+ * <p>
+ * This service handles the creation of specific folders for different types of images
+ * (eateries, categories, dishes) and provides a method for saving multipart files.
+ * </p>
+ */
 @Service
 public class StorageService {
 
@@ -17,9 +24,10 @@ public class StorageService {
     private String APP_IMAGES_FOLDER_DISHES;
 
     /**
-     * Creates folder to hold the images related to eatery with particular id.
-
-     * @param eateryId eatery ID as folder name
+     * Creates a dedicated folder for storing images related to a specific eatery.
+     * The folder name will be the eatery's ID.
+     *
+     * @param eateryId The ID of the eatery for which to create the folder.
      */
     public void createEateryFolder(Long eateryId) {
         String folder = APP_IMAGES_FOLDER_EATERY + File.separator + eateryId;
@@ -28,9 +36,11 @@ public class StorageService {
 
 
     /**
-     * Saves category image.
+     * Creates a dedicated folder for storing images related to a specific category.
+     * The folder name will be the category's ID.
      *
-     * @param folderName category id as folder name
+     * @param folderName The ID of the category, used as the folder name.
+     * @return The absolute path to the created folder if successful, otherwise {@code null}.
      */
     public String createCategoryFolder(Long folderName) {
         String folder = APP_IMAGES_FOLDER_CATEGORIES + File.separator + folderName;
@@ -42,9 +52,11 @@ public class StorageService {
     }
 
     /**
-     * Saves category image.
+     * Creates a dedicated folder for storing images related to a specific dish.
+     * The folder name will be the dish's ID.
      *
-     * @param folderName dish id as folder name
+     * @param folderName The ID of the dish, used as the folder name.
+     * @return The absolute path to the created folder if successful, otherwise {@code null}.
      */
     public String createDishesFolder(Long folderName) {
         String folder = APP_IMAGES_FOLDER_DISHES + File.separator + folderName;
@@ -55,6 +67,13 @@ public class StorageService {
         }
     }
 
+    /**
+     * Saves a {@link MultipartFile} to the specified folder, optionally renaming the file.
+     *
+     * @param folder The destination folder path.
+     * @param file   The {@link MultipartFile} to save.
+     * @param rename An optional new name for the file. If {@code null}, the original file name is used.
+     */
     public void saveFile(String folder, MultipartFile file, String rename) {
         Util.saveFile(folder, file, rename);
     }

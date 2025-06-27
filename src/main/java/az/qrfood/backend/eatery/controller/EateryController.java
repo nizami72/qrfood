@@ -23,6 +23,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
+/**
+ * REST controller for managing eatery-related operations.
+ * <p>
+ * This controller provides API endpoints for retrieving, creating, updating,
+ * and deleting eatery information. It leverages Spring Security for access control
+ * and integrates with Swagger for API documentation.
+ * </p>
+ */
 @Log4j2
 @RestController
 @Tag(name = "Eatery Management", description = "API endpoints for managing eateries")
@@ -33,6 +41,14 @@ public class EateryController {
     private final UserProfileService userProfileService;
     private final UserService userService;
 
+    /**
+     * Constructs an EateryController with necessary service and repository dependencies.
+     *
+     * @param eateryService      The service for handling eatery business logic.
+     * @param userRepository     The repository for user data.
+     * @param userProfileService The service for managing user profiles.
+     * @param userService        The service for user-related operations.
+     */
     public EateryController(EateryService eateryService, UserRepository userRepository,
                             UserProfileService userProfileService, UserService userService) {
         this.eateryService = eateryService;
@@ -42,9 +58,10 @@ public class EateryController {
     }
 
     /**
-     * GET all eateries.
+     * Retrieves a list of all registered eateries.
+     * This endpoint requires 'EATERY_ADMIN' role.
      *
-     * @return list of eatery
+     * @return A {@link ResponseEntity} containing a list of {@link EateryDto} objects.
      */
     @Operation(summary = "Get all eateries", description = "Retrieves a list of all registered eateries")
     @ApiResponses(value = {
@@ -58,10 +75,12 @@ public class EateryController {
     }
 
     /**
-     * GET all eateries owned by a specific user.
+     * Retrieves all eateries owned by a specific user profile.
+     * This endpoint requires 'EATERY_ADMIN' role.
      *
-     * @param userProfileId the ID of the eatery-responsible person
-     * @return list of eateries owned by the specified user
+     * @param userProfileId The ID of the user profile whose eateries are to be retrieved.
+     * @return A {@link ResponseEntity} containing a list of {@link EateryDto} objects
+     *         owned by the specified user.
      */
     @Operation(summary = "Get eateries by owner ID", description = "Retrieves all eateries owned by a specific user")
     @ApiResponses(value = {
@@ -78,10 +97,10 @@ public class EateryController {
 
 
     /**
-     * GET eatery by id.
+     * Retrieves a specific eatery by its ID.
      *
-     * @param id eatery ID
-     * @return the eatery with the specified ID
+     * @param id The ID of the eatery to retrieve.
+     * @return A {@link ResponseEntity} containing the {@link EateryDto} of the found eatery.
      */
     @Operation(summary = "Get eatery by ID", description = "Retrieves a specific eatery by its ID")
     @ApiResponses(value = {
@@ -89,7 +108,7 @@ public class EateryController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-//    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+//    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')") // Commented out as per original code
     @GetMapping("${eatery.id}")
     public ResponseEntity<EateryDto> getEateryById(@PathVariable("eateryId") Long id) {
         log.debug("Request to get Eatery : {}", id);
@@ -97,10 +116,12 @@ public class EateryController {
     }
 
     /**
-     * POST a new eatery.
+     * Creates a new eatery with the provided data.
+     * This endpoint requires 'EATERY_ADMIN' role.
      *
-     * @param eateryDto created eatery data
-     * @return ID of created eatery
+     * @param eateryDto   The {@link EateryDto} containing the data for the new eatery.
+     * @param userDetails The authenticated user's details, used to associate the eatery with the user profile.
+     * @return A {@link ResponseEntity} containing the ID of the newly created eatery.
      */
     @Operation(summary = "Create a new eatery", description = "Creates a new eatery with the provided data")
     @ApiResponses(value = {
@@ -120,10 +141,11 @@ public class EateryController {
     }
 
     /**
-     * DELETE the eatery by ID.
+     * Deletes an eatery by its ID.
+     * This endpoint requires 'EATERY_ADMIN' role.
      *
-     * @param id deleted eatery ID
-     * @return ID of the deleted eatery
+     * @param id The ID of the eatery to delete.
+     * @return A {@link ResponseEntity} containing the ID of the deleted eatery.
      */
     @Operation(summary = "Delete an eatery", description = "Deletes an eatery with the specified ID")
     @ApiResponses(value = {
@@ -138,11 +160,12 @@ public class EateryController {
     }
 
     /**
-     * UPDATE an existing eatery.
+     * Updates an existing eatery with new information.
+     * This endpoint requires 'EATERY_ADMIN' role.
      *
-     * @param id        The ID of the eatery to update
-     * @param eateryDTO The updated eatery data
-     * @return The ID of the updated eatery
+     * @param id        The ID of the eatery to update.
+     * @param eateryDTO The {@link EateryDto} containing the updated eatery data.
+     * @return A {@link ResponseEntity} containing the ID of the updated eatery.
      */
     @Operation(summary = "Update an existing eatery", description = "Updates an eatery with the specified ID using the provided data")
     @ApiResponses(value = {

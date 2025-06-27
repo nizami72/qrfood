@@ -16,8 +16,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Filter that checks if the eateryId in the JWT token matches the eateryId in the URL path.
- * If they don't match, the user is logged out and redirected to the login page.
+ * A Spring Web Filter that intercepts requests to check for consistency between
+ * the eatery ID present in the JWT token and the eatery ID specified in the URL path.
+ * <p>
+ * This filter is crucial for multi-eatery environments, ensuring that a user
+ * authenticated for one eatery does not inadvertently (or maliciously) access
+ * resources belonging to another eatery via URL manipulation. If a mismatch is
+ * detected, the request is rejected with a {@code 412 Precondition Failed} status.
+ * </p>
  */
 @Component
 @Slf4j
@@ -27,10 +33,29 @@ public class EateryIdCheckFilter extends OncePerRequestFilter {
     // Pattern to match URLs with eateryId in the path
     private static final Pattern EATERY_ID_PATTERN = Pattern.compile("/api/eatery/(\\d+)|/api/eateries/(\\d+)|/api/users/eatery/(\\d+)");
 
+    /**
+     * Constructs the EateryIdCheckFilter with a JwtUtil dependency.
+     *
+     * @param jwtUtil The utility for JWT token operations.
+     */
     public EateryIdCheckFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 
+    /**
+     * Performs the internal filtering logic for each request.
+     * <p>
+     * This method extracts the eatery ID from the request URI and compares it
+     * with the eatery ID extracted from the JWT token. If a mismatch occurs,
+     * the request is terminated with an HTTP 412 (Precondition Failed) status.
+     * </p>
+     *
+     * @param request     The HTTP servlet request.
+     * @param response    The HTTP servlet response.
+     * @param filterChain The filter chain to proceed with if the check passes.
+     * @throws ServletException If a servlet-related error occurs.
+     * @throws IOException      If an I/O error occurs.
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -69,19 +94,23 @@ public class EateryIdCheckFilter extends OncePerRequestFilter {
                     tokenEateryId = jwtUtil.extractClaim(jwt, claims -> claims.get("eateryId", Long.class));
                 } catch (Exception e) {
                     log.error("Error extracting eateryId from JWT token", e);
+                    // If token is invalid or eateryId cannot be extracted, treat as mismatch
+                    response.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+                    response.getWriter().write("Invalid or malformed JWT token.");
+                    return;
                 }
 
-                // todo If eateryId is in the token and doesn't match the path's eateryId then logout and redirect
+                // If eateryId is in the token and doesn't match the path's eateryId
                 if (tokenEateryId != null && !tokenEateryId.equals(pathEateryId)) {
                     log.error("EateryId mismatch: token eateryId {} does not match path eateryId {}", 
                               tokenEateryId, pathEateryId);
 
-                    // todo Clear authentication doesnt work
-                    SecurityContextHolder.clearContext();
-
-                    // todo Redirect to login page doesnt work
+                    // In a stateless JWT system, clearing security context or redirecting
+                    // is typically handled on the client side by invalidating the token.
+                    // Here, we simply reject the request.
+                    SecurityContextHolder.clearContext(); // Clear context for this request
                     response.setStatus(HttpStatus.PRECONDITION_FAILED.value());
-                    response.getWriter().write("EateryId mismatch");
+                    response.getWriter().write("EateryId mismatch: Access denied for the requested eatery.");
                     return;
                 }
             }

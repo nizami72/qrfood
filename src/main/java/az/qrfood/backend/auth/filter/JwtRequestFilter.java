@@ -16,8 +16,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 /**
- * Фильтр для обработки JWT токенов в каждом запросе.
- * Проверяет наличие и валидность JWT в заголовке Authorization.
+ * Filter for processing JWT tokens in each request.
+ * <p>
+ * This filter intercepts incoming HTTP requests, extracts the JWT from the
+ * Authorization header, validates it, and sets the authentication in the
+ * Spring SecurityContext if the token is valid.
+ * </p>
  */
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -26,9 +30,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
 
     /**
-     * Конструктор для внедрения зависимостей.
-     * @param userDetailsService Пользовательский сервис для загрузки данных пользователя.
-     * @param jwtUtil Утилита для работы с JWT.
+     * Constructs the JwtRequestFilter with necessary dependencies.
+     *
+     * @param userDetailsService The custom user details service for loading user data.
+     * @param jwtUtil            The utility for JWT token operations.
      */
     public JwtRequestFilter(CustomUserDetailsService userDetailsService, JwtUtil jwtUtil) {
         this.userDetailsService = userDetailsService;
@@ -36,13 +41,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Выполняет фильтрацию запроса.
-     * Извлекает JWT, валидирует его и устанавливает аутентификацию в SecurityContext.
-     * @param request HTTP-запрос.
-     * @param response HTTP-ответ.
-     * @param filterChain Цепочка фильтров.
-     * @throws ServletException при ошибке сервлета.
-     * @throws IOException при ошибке ввода-вывода.
+     * Performs the internal filtering logic for each request.
+     * <p>
+     * This method extracts the JWT from the request, validates it, and if valid,
+     * sets up the authentication in the {@link SecurityContextHolder}.
+     * </p>
+     *
+     * @param request     The HTTP servlet request.
+     * @param response    The HTTP servlet response.
+     * @param filterChain The filter chain to proceed with.
+     * @throws ServletException If a servlet-related error occurs.
+     * @throws IOException      If an I/O error occurs.
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -53,29 +62,29 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String username = null;
         String jwt = null;
 
-        // Проверяем наличие заголовка Authorization и его формат (должен начинаться с "Bearer ")
+        // Check for the presence and format of the Authorization header (must start with "Bearer ")
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7); // Извлекаем сам токен
-            username = jwtUtil.extractUsername(jwt); // Извлекаем имя пользователя из токена
+            jwt = authorizationHeader.substring(7); // Extract the token itself
+            username = jwtUtil.extractUsername(jwt); // Extract the username from the token
         }
 
-        // Если имя пользователя извлечено и текущий SecurityContext не содержит аутентификации
+        // If a username is extracted and the current SecurityContext does not contain authentication
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-            // Валидируем токен
+            // Validate the token
             if (jwtUtil.validateToken(jwt, userDetails)) {
-                // Если токен валиден, создаем объект аутентификации
+                // If the token is valid, create an authentication object
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                // Устанавливаем детали аутентификации из HTTP-запроса
+                // Set authentication details from the HTTP request
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                // Устанавливаем объект аутентификации в SecurityContext
+                // Set the authentication object in the SecurityContext
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
         }
-        // Передаем запрос дальше по цепочке фильтров
+        // Pass the request further down the filter chain
         filterChain.doFilter(request, response);
     }
 }

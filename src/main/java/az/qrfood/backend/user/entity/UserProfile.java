@@ -11,7 +11,11 @@ import java.util.List;
 
 /**
  * Entity representing a user profile with additional information about the user.
- * Created at the same time as User and linked to restaurants owned by the user.
+ * <p>
+ * This entity is created at the same time as a {@link User} and is linked to
+ * restaurants owned by that user. It stores personal details, contact information,
+ * and activity timestamps.
+ * </p>
  */
 @Entity
 @Table(name = "user_profiles")
@@ -27,17 +31,22 @@ public class UserProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * The full name of the user.
+     */
     private String name;
 
     /**
-     * The user associated with this profile.
+     * The {@link User} entity associated with this profile.
+     * This is a one-to-one relationship, where each user has one profile.
      */
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     /**
-     * List of phone numbers associated with the user.
+     * A list of phone numbers associated with the user.
+     * Stored as a collection of elements in a separate join table.
      */
     @ElementCollection
     @CollectionTable(name = "user_profile_phones", joinColumns = @JoinColumn(name = "profile_id"))
@@ -46,18 +55,21 @@ public class UserProfile {
 
     /**
      * Flag indicating if the user profile is active.
+     * Defaults to {@code true}.
      */
     @Column(nullable = false)
     private Boolean isActive = true;
 
     /**
      * Timestamp when the user profile was created.
+     * This field is set automatically on creation and is not updatable.
      */
     @Column(nullable = false, updatable = false)
     private LocalDateTime created;
 
     /**
      * Timestamp when the user profile was last updated.
+     * This field is set automatically on creation and on every update.
      */
     @Column(nullable = false)
     private LocalDateTime updated;
@@ -68,7 +80,8 @@ public class UserProfile {
     private LocalDateTime lastLogin;
 
     /**
-     * List of restaurant IDs owned by this user.
+     * A list of IDs of restaurants (eateries) owned by this user.
+     * Stored as a collection of elements in a separate join table.
      */
     @ElementCollection
     @CollectionTable(name = "user_profile_restaurants", joinColumns = @JoinColumn(name = "profile_id"))
@@ -76,7 +89,8 @@ public class UserProfile {
     private List<Long> restaurantIds = new ArrayList<>();
 
     /**
-     * Pre-persist hook to set created and updated timestamps before saving.
+     * Pre-persist hook to set the {@code created} and {@code updated} timestamps
+     * before the entity is first saved to the database.
      */
     @PrePersist
     protected void onCreate() {
@@ -85,7 +99,8 @@ public class UserProfile {
     }
 
     /**
-     * Pre-update hook to update the updated timestamp before updating.
+     * Pre-update hook to update the {@code updated} timestamp
+     * before the entity is updated in the database.
      */
     @PreUpdate
     protected void onUpdate() {

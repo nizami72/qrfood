@@ -24,6 +24,11 @@ import java.util.Locale;
 
 /**
  * Service for managing orders.
+ * <p>
+ * This class encapsulates the business logic for creating, retrieving, updating,
+ * and deleting customer orders. It interacts with various repositories to manage
+ * order data, order items, dishes, and tables.
+ * </p>
  */
 @Log4j2
 @Service
@@ -35,6 +40,15 @@ public class OrderService {
     private final TableRepository tableRepository;
     private final OrderMapper orderMapper;
 
+    /**
+     * Constructs an OrderService with necessary dependencies.
+     *
+     * @param orderRepository     The repository for customer orders.
+     * @param orderItemRepository The repository for order items.
+     * @param dishRepository      The repository for dish entities.
+     * @param tableRepository     The repository for table entities.
+     * @param orderMapper         The mapper for converting between Order entities and DTOs.
+     */
     public OrderService(CustomerOrderRepository orderRepository,
                         OrderItemRepository orderItemRepository,
                         DishRepository dishRepository,
@@ -48,9 +62,9 @@ public class OrderService {
     }
 
     /**
-     * Get all orders.
+     * Retrieves all orders in the system.
      *
-     * @return list of orders
+     * @return A list of {@link OrderDto} representing all orders.
      */
     public List<OrderDto> getAllOrders() {
         log.debug("Request to get all Orders");
@@ -60,27 +74,28 @@ public class OrderService {
 
 
     /**
-     * Get all orders by status.
+     * Retrieves all orders filtered by their status.
      *
-     * @param status to be retrieved
-     * @return list of orders
+     * @param status The status string to filter orders by (e.g., "CREATED", "PREPARING").
+     * @return A list of {@link OrderDto} representing orders with the specified status.
+     * @throws RuntimeException if the provided status string is invalid.
      */
     public List<OrderDto> getAllOrdersByStatus(String status) {
         OrderStatus ts;
         try {
             ts = OrderStatus.valueOf(status.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("There is no such status "+ status);
+            throw new RuntimeException("There is no such status " + status);
         }
         List<Order> orders = orderRepository.findByStatus(ts);
         return orderMapper.toDtoList(orders);
     }
 
     /**
-     * Get orders by eatery ID.
+     * Retrieves orders associated with a specific eatery ID.
      *
-     * @param eateryId the ID of the eatery
-     * @return list of orders for the specified eatery
+     * @param eateryId The ID of the eatery.
+     * @return A list of {@link OrderDto} representing orders for the specified eatery.
      */
     public List<OrderDto> getOrdersByEateryId(Long eateryId) {
         List<Order> orders = orderRepository.findByTableEateryId(eateryId);
@@ -88,10 +103,11 @@ public class OrderService {
     }
 
     /**
-     * Get order by ID.
+     * Retrieves a single order by its ID.
      *
-     * @param id the ID of the order to retrieve
-     * @return the order
+     * @param id The ID of the order to retrieve.
+     * @return An {@link OrderDto} representing the found order.
+     * @throws OrderNotFoundException if the order with the given ID is not found.
      */
     public OrderDto getOrderById(Long id) {
         log.debug("Request to get Order : {}", id);
@@ -101,10 +117,15 @@ public class OrderService {
     }
 
     /**
-     * POST a new order for a specific table.
+     * Creates a new order based on the provided DTO.
+     * <p>
+     * This method handles the creation of the order entity, its associated order items,
+     * and links it to a specific table. It also calculates the price for each order item.
+     * </p>
      *
-     * @param orderDto the list of order items
-     * @return the created order
+     * @param orderDto The {@link OrderDto} containing the details for the new order.
+     * @return The newly created {@link Order} entity.
+     * @throws RuntimeException if the specified table or dish is not found.
      */
     @Transactional
     public Order createOrder(OrderDto orderDto) {
@@ -146,11 +167,15 @@ public class OrderService {
     }
 
     /**
-     * Update an existing order.
+     * Updates an existing order with new information.
+     * <p>
+     * This method allows updating the order's status and notes.
+     * </p>
      *
-     * @param id the ID of the order to update
-     * @param orderDTO the order to update
-     * @return the updated order
+     * @param id       The ID of the order to update.
+     * @param orderDTO The {@link OrderDto} containing the updated order data.
+     * @return The updated {@link OrderDto}.
+     * @throws RuntimeException if the order with the given ID is not found.
      */
     @Transactional
     public OrderDto updateOrder(Long id, OrderDto orderDTO) {
@@ -178,11 +203,12 @@ public class OrderService {
     }
 
     /**
-     * Update the status of an order.
+     * Updates the status of an order.
      *
-     * @param id the ID of the order to update
-     * @param newStatus the new status
-     * @return the updated order
+     * @param id        The ID of the order to update.
+     * @param newStatus The new status string for the order.
+     * @return The updated {@link OrderDto}.
+     * @throws RuntimeException if the order with the given ID is not found or if the new status is invalid.
      */
     @Transactional
     public OrderDto updateOrderStatus(Long id, String newStatus) {
@@ -204,9 +230,9 @@ public class OrderService {
     }
 
     /**
-     * Delete an order.
+     * Deletes an order by its ID.
      *
-     * @param id the ID of the order to delete
+     * @param id The ID of the order to delete.
      */
     @Transactional
     public void deleteOrder(Long id) {
@@ -215,10 +241,10 @@ public class OrderService {
     }
 
     /**
-     * Get orders by status.
+     * Retrieves orders filtered by their {@link OrderStatus} enum value.
      *
-     * @param status the status
-     * @return list of orders with the specified status
+     * @param status The {@link OrderStatus} enum value to filter orders by.
+     * @return A list of {@link OrderDto} representing orders with the specified status.
      */
     public List<OrderDto> getOrdersByStatus(OrderStatus status) {
         log.debug("Request to get Orders by status : {}", status);

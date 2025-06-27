@@ -22,6 +22,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
+/**
+ * REST controller for managing client device-related operations and client-facing menu requests.
+ * <p>
+ * This controller handles requests from client devices, including retrieving menus,
+ * managing client device records, and handling cookie-based session management.
+ * </p>
+ */
 @RestController
 @RequiredArgsConstructor
 @Log4j2
@@ -39,15 +46,20 @@ public class ClientDeviceController {
     public static final String DEVICE = "Device_UUID";
 
     /**
-     * GET all categories for eatery(aka menu). NAV-1
-     * A client requests menu for eatery and table. If the client has already ordered from this device, he will be
-     * redirected to the page where he can see all that orders. If not, the menu will be sent back and a new cookie
-     * will be installed when the user confirms new order.
-
-     * @param eateryId eatery ID
-     * @param tableId table ID where the client is sitting
-     * @param myCookieValue cookie value
-     * @return List of categories aka menu
+     * Retrieves all categories (menu) for a specific eatery and table.
+     * <p>
+     * This endpoint is designed for clients scanning a QR code at a table.
+     * It checks for an existing client device cookie. If a cookie is found and
+     * the device has active (uncompleted) orders, the client is redirected to
+     * their orders page. Otherwise, the menu for the specified eatery is returned.
+     * A new cookie will be installed on the client's device upon order confirmation.
+     * </p>
+     *
+     * @param eateryId      The ID of the eatery.
+     * @param tableId       The ID of the table where the client is seated.
+     * @param myCookieValue The value of the client's device UUID cookie (if present).
+     * @return A {@link ResponseEntity} containing a list of {@link CategoryDto} representing the menu,
+     *         or a redirect header if active orders exist, or {@code HttpStatus.NOT_FOUND} if the table does not exist.
      */
     @GetMapping("${eatery}/{eateryId}/table/{tableId}")
     public ResponseEntity<List<CategoryDto>> eateryCategories(
@@ -84,9 +96,11 @@ public class ClientDeviceController {
     }
 
     /**
-     * User already made order and now wants to have one more.
-
-     * @return List of categories aka menu
+     * Retrieves all categories (menu) for a specific eatery when the table and eatery
+     * are already known by the client device (e.g., for subsequent orders).
+     *
+     * @param eateryId The ID of the eatery.
+     * @return A {@link ResponseEntity} containing a list of {@link CategoryDto} representing the menu.
      */
     @GetMapping("${eatery}/{eateryId}")
     public ResponseEntity<List<CategoryDto>> eateryCategories(@PathVariable(value = "eateryId") Long eateryId){
@@ -97,27 +111,58 @@ public class ClientDeviceController {
 
 
 
+    /**
+     * Creates a new client device record.
+     *
+     * @param dto The {@link ClientDeviceRequestDto} containing the details for the new device.
+     * @return A {@link ResponseEntity} containing the {@link ClientDeviceResponseDto} of the newly created device
+     *         with {@code HttpStatus.CREATED}.
+     */
     @PostMapping
     public ResponseEntity<ClientDeviceResponseDto> create(@RequestBody ClientDeviceRequestDto dto) {
         return new ResponseEntity<>(service.create(dto), HttpStatus.CREATED);
     }
 
+    /**
+     * Retrieves a specific client device by its ID.
+     *
+     * @param id The ID of the client device to retrieve.
+     * @return A {@link ResponseEntity} containing the {@link ClientDeviceResponseDto} of the found device.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ClientDeviceResponseDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.getById(id));
     }
 
+    /**
+     * Retrieves all client device records.
+     *
+     * @return A {@link ResponseEntity} containing a list of {@link ClientDeviceResponseDto} objects.
+     */
     @GetMapping
     public ResponseEntity<List<ClientDeviceResponseDto>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 
+    /**
+     * Updates an existing client device record.
+     *
+     * @param id  The ID of the client device to update.
+     * @param dto The {@link ClientDeviceRequestDto} containing the updated details.
+     * @return A {@link ResponseEntity} containing the {@link ClientDeviceResponseDto} of the updated device.
+     */
     @PutMapping("/{id}")
     public ResponseEntity<ClientDeviceResponseDto> update(@PathVariable Long id,
                                                           @RequestBody ClientDeviceRequestDto dto) {
         return ResponseEntity.ok(service.update(id, dto));
     }
 
+    /**
+     * Deletes a client device record by its ID.
+     *
+     * @param id The ID of the client device to delete.
+     * @return A {@link ResponseEntity} with no content and {@code HttpStatus.NO_CONTENT}.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);

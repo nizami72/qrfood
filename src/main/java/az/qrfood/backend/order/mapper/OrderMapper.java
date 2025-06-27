@@ -13,22 +13,35 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Mapper for converting between Order entities and DTOs.
+ * Mapper component for converting between {@link Order} entities and {@link OrderDto} Data Transfer Objects.
+ * <p>
+ * This class handles the transformation of order data, including mapping order items
+ * and calculating the total price of an order.
+ * </p>
  */
 @Component
 public class OrderMapper {
 
     private final OrderItemMapper orderItemMapper;
 
+    /**
+     * Constructs an OrderMapper with an OrderItemMapper dependency.
+     *
+     * @param orderItemMapper The mapper for converting between OrderItem entities and DTOs.
+     */
     public OrderMapper(OrderItemMapper orderItemMapper) {
         this.orderItemMapper = orderItemMapper;
     }
 
     /**
-     * Convert an Order entity to an OrderDTO.
+     * Converts an {@link Order} entity to an {@link OrderDto}.
+     * <p>
+     * This method maps all relevant fields from the entity to the DTO,
+     * including mapping its associated order items and calculating the total order price.
+     * </p>
      *
-     * @param order the entity to convert
-     * @return the DTO
+     * @param order The {@link Order} entity to convert.
+     * @return The converted {@link OrderDto}, or {@code null} if the input order is {@code null}.
      */
     public OrderDto toDto(Order order) {
         if (order == null) {
@@ -48,10 +61,10 @@ public class OrderMapper {
     }
 
     /**
-     * Convert a list of Order entities to a list of OrderDTOs.
+     * Converts a list of {@link Order} entities to a list of {@link OrderDto}s.
      *
-     * @param orders the entities to convert
-     * @return the DTOs
+     * @param orders The list of {@link Order} entities to convert.
+     * @return A list of converted {@link OrderDto}s, or {@code null} if the input list is {@code null}.
      */
     public List<OrderDto> toDtoList(List<Order> orders) {
         if (orders == null) {
@@ -64,10 +77,10 @@ public class OrderMapper {
     }
 
     /**
-     * Convert a list of OrderItem entities to a list of OrderItemResponseDTOs.
+     * Converts a list of {@link OrderItem} entities to a list of {@link OrderItemDTO}s.
      *
-     * @param items the entities to convert
-     * @return the DTOs
+     * @param items The list of {@link OrderItem} entities to convert.
+     * @return A list of converted {@link OrderItemDTO}s, or {@code null} if the input list is {@code null}.
      */
     private List<OrderItemDTO> mapOrderItems(List<OrderItem> items) {
         if (items == null) {
@@ -79,6 +92,13 @@ public class OrderMapper {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Calculates the total price of an order based on its items.
+     * The price is calculated by summing the product of each item's quantity and its price at the time of order.
+     *
+     * @param orderItems The list of {@link OrderItem}s in the order.
+     * @return The total price of the order as a double.
+     */
     private double calculatePrice(List<OrderItem> orderItems) {
         return orderItems.stream()
                 .mapToDouble(orderItem -> {

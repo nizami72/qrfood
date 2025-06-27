@@ -20,30 +20,47 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Service class for managing {@link Category} entities.
+ * <p>
+ * This class encapsulates the business logic related to menu categories,
+ * including CRUD operations, handling category images, and managing translations.
+ * </p>
+ */
 @Service
 @Log4j2
 public class CategoryService {
 
-    //<editor-fold desc="Fields ">
     private final CategoryRepository categoryRepository;
     private final EateryRepository eateryRepository;
     private final StorageService storageService;
-    //</editor-fold>
 
-    //<editor-fold desc="Constructor">
+    /**
+     * Constructs a CategoryService with necessary dependencies.
+     *
+     * @param categoryRepository The repository for Category entities.
+     * @param eateryRepository   The repository for Eatery entities.
+     * @param storageService     The service for handling file storage operations.
+     */
     public CategoryService(CategoryRepository categoryRepository,
                            EateryRepository eateryRepository, StorageService storageService) {
         this.categoryRepository = categoryRepository;
         this.eateryRepository = eateryRepository;
         this.storageService = storageService;
     }
-    //</editor-fold>
 
     /**
-     * Create new Category for particular eatery.
-
-     * @param dishCategoryDto category data
-     * @return Category
+     * Creates a new category for a specific eatery.
+     * <p>
+     * This method handles the creation of the category entity, its translations,
+     * and the storage of its associated image file. It also checks for existing
+     * categories with the same hash to prevent duplicates.
+     * </p>
+     *
+     * @param dishCategoryDto The DTO containing the category data (name, eatery ID, etc.).
+     * @param multipartFile   The image file for the category icon.
+     * @return The newly created or existing {@link Category} entity.
+     * @throws EntityNotFoundException if the specified eatery does not exist.
      */
     public Category createCategory(CategoryDto dishCategoryDto, MultipartFile multipartFile) {
 
@@ -91,6 +108,13 @@ public class CategoryService {
         return category;// what to return id,id, dto or entity
     }
 
+    /**
+     * Finds a category by its unique identifier and converts it to a DTO.
+     *
+     * @param id The ID of the category to find.
+     * @return A {@link CategoryDto} representing the found category.
+     * @throws EntityNotFoundException if the category with the given ID is not found.
+     */
     public CategoryDto findCategoryById(Long id) {
         Optional<Category> category = categoryRepository.findById(id);
         if(category.isEmpty()) {throw new EntityNotFoundException(
@@ -98,6 +122,13 @@ public class CategoryService {
         return convertDishCategoryToDto(category.get());
     }
 
+    /**
+     * Finds all categories associated with a specific eatery.
+     *
+     * @param eateryId The ID of the eatery.
+     * @return A list of {@link CategoryDto} representing the categories for the specified eatery.
+     * @throws EntityNotFoundException if the eatery with the given ID is not found.
+     */
     public List<CategoryDto> findAllCategoryForEatery(long eateryId) {
 
         Optional<Eatery> eateryOp = eateryRepository.findById(eateryId);
@@ -112,6 +143,12 @@ public class CategoryService {
         return convertDishCategoryToDto(categories);
     }
 
+    /**
+     * Converts a list of {@link Category} entities to a list of {@link CategoryDto}s.
+     *
+     * @param categories The list of Category entities to convert.
+     * @return A list of converted Category DTOs.
+     */
     private List<CategoryDto> convertDishCategoryToDto(List<Category> categories) {
         List<CategoryDto> categoryDtoList = new ArrayList<>();
         for (Category category : categories) {
@@ -120,6 +157,16 @@ public class CategoryService {
         return categoryDtoList;
     }
 
+    /**
+     * Converts a single {@link Category} entity to a {@link CategoryDto}.
+     * <p>
+     * This method maps the entity's properties to the DTO, including its associated
+     * dishes and translations for different languages.
+     * </p>
+     *
+     * @param category The Category entity to convert.
+     * @return The converted Category DTO.
+     */
     private CategoryDto convertDishCategoryToDto(Category category) {
 
             CategoryDto dto = new CategoryDto();
@@ -143,17 +190,28 @@ public class CategoryService {
         return dto;
     }
 
+    /**
+     * Deletes a category by its unique identifier.
+     *
+     * @param categoryId The ID of the category to delete.
+     * @return A {@link ResponseEntity} with a success message.
+     */
     public ResponseEntity<String> deleteCategory(Long categoryId) {
         categoryRepository.deleteById(categoryId);
         return ResponseEntity.ok(String.format("Category [%s] deleted successfully", categoryId));
     }
 
     /**
-     * Update existing Category.
+     * Updates an existing category with new data.
+     * <p>
+     * This method updates the category's translations, and optionally its image.
+     * It also recalculates the category's hash.
+     * </p>
      *
-     * @param categoryDto category data with updated values
-     * @param multipartFile optional new image file
-     * @return updated Category
+     * @param categoryDto   The DTO containing the updated category data.
+     * @param multipartFile An optional new image file for the category.
+     * @return The updated {@link Category} entity.
+     * @throws EntityNotFoundException if the category to update is not found.
      */
     public Category updateCategory(CategoryDto categoryDto, MultipartFile multipartFile) {
         Long categoryId = categoryDto.getCategoryId();

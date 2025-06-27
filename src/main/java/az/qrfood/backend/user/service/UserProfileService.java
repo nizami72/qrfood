@@ -17,7 +17,12 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Service class for managing UserProfileRequest entities.
+ * Service class for managing {@link UserProfile} entities.
+ * <p>
+ * This service handles the business logic related to user profiles,
+ * including creation, updating, and retrieval of profile information,
+ * as well as linking profiles to users and restaurants.
+ * </p>
  */
 @Service
 public class UserProfileService {
@@ -25,16 +30,24 @@ public class UserProfileService {
     private final UserProfileRepository userProfileRepository;
     private final UserRepository userRepository;
 
+    /**
+     * Constructs a UserProfileService with necessary repository dependencies.
+     *
+     * @param userProfileRepository The repository for UserProfile entities.
+     * @param userRepository        The repository for User entities.
+     */
     public UserProfileService(UserProfileRepository userProfileRepository, UserRepository userRepository) {
         this.userProfileRepository = userProfileRepository;
         this.userRepository = userRepository;
     }
 
     /**
-     * Creates a new user profile for the given user with phone numbers.
+     * Creates a new user profile for the given user with provided phone numbers and name.
      *
-     * @param user The user entity
-     * @return The created user profile
+     * @param user             The {@link User} entity for whom the profile is being created.
+     * @param userProfileRequest The {@link RegisterRequest.UserProfileRequest} containing profile details.
+     * @return The newly created {@link UserProfile}.
+     * @throws IllegalStateException if a user profile already exists for the given user.
      */
     @Transactional
     public UserProfile createUserProfile(User user, RegisterRequest.UserProfileRequest userProfileRequest) {
@@ -61,8 +74,8 @@ public class UserProfileService {
     /**
      * Adds a restaurant ID to the user profile's list of owned restaurants.
      *
-     * @param profile      The user profile
-     * @param restaurantId The restaurant ID to add
+     * @param profile      The {@link UserProfile} to which the restaurant ID will be added.
+     * @param restaurantId The ID of the restaurant to add.
      */
     @Transactional
     public void addRestaurantToProfile(UserProfile profile, Long restaurantId) {
@@ -71,6 +84,14 @@ public class UserProfileService {
         }
     }
 
+    /**
+     * Adds a restaurant ID to the user profile associated with the given {@link UserDetails}.
+     * This method retrieves the user and their profile before adding the restaurant ID.
+     *
+     * @param userDetails The {@link UserDetails} of the user.
+     * @param eateryId    The ID of the eatery to add to the user's profile.
+     * @throws EntityNotFoundException if the user or user profile is not found.
+     */
     @Transactional
     public void addRestaurantToProfile(UserDetails userDetails, Long eateryId) {
         String userName = userDetails.getUsername();
@@ -82,9 +103,9 @@ public class UserProfileService {
     }
 
     /**
-     * Records a user login by updating the lastLogin timestamp.
+     * Records a user login by updating the {@code lastLogin} timestamp in their profile.
      *
-     * @param user The user entity
+     * @param user The {@link User} entity whose login is to be recorded.
      */
     @Transactional
     public void recordLogin(User user) {
@@ -97,20 +118,20 @@ public class UserProfileService {
     }
 
     /**
-     * Finds a user profile by user.
+     * Finds a user profile by the associated {@link User} entity.
      *
-     * @param user The user entity
-     * @return Optional containing the user profile if found
+     * @param user The {@link User} entity for which to find the profile.
+     * @return An {@link Optional} containing the user profile if found, or empty if not found.
      */
     public Optional<UserProfile> findProfileByUser(User user) {
         return userProfileRepository.findByUser(user);
     }
 
     /**
-     * Finds a user profile by ID.
+     * Finds a user profile by its unique ID.
      *
-     * @param id The profile ID
-     * @return Optional containing the user profile if found
+     * @param id The ID of the user profile to find.
+     * @return An {@link Optional} containing the user profile if found, or empty if not found.
      */
     public Optional<UserProfile> findProfileById(Long id) {
         return userProfileRepository.findById(id);

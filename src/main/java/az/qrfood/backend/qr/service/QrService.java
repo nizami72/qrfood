@@ -13,6 +13,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service class for managing QR code generation and retrieval.
+ * <p>
+ * This service handles the creation of QR code entities, generating QR code images
+ * based on eatery and table information, and retrieving existing QR code images.
+ * </p>
+ */
 @Service
 @Log4j2
 public class QrService {
@@ -22,10 +29,27 @@ public class QrService {
     @Value("${segment.menu}")
     private String segmentMenu;
 
+    /**
+     * Constructs a QrService with an EateryRepository dependency.
+     *
+     * @param eateryRepository The repository for Eatery entities.
+     */
     public QrService(EateryRepository eateryRepository) {
         this.eateryRepository = eateryRepository;
     }
 
+    /**
+     * Creates a new {@link QrCode} entity and generates its corresponding QR code image.
+     * <p>
+     * The QR code content is a URL that links to the menu for a specific eatery and table.
+     * The generated QR code image is stored as a byte array within the {@link QrCode} entity.
+     * </p>
+     *
+     * @param eateryId  The ID of the eatery.
+     * @param tableId   The ID of the table.
+     * @return The newly created {@link QrCode} entity with the generated QR code image.
+     * @throws RuntimeException if there is an error during QR code image generation.
+     */
     public QrCode createQrCodeEntity(long eateryId, Long tableId) {
         QrCode code = new QrCode();
 
@@ -43,6 +67,14 @@ public class QrService {
         return code;
     }
 
+    /**
+     * Retrieves the QR code image (as a byte array) for a specific eatery and table number.
+     *
+     * @param eateryId    The ID of the eatery.
+     * @param tableNumber The number of the table.
+     * @return A byte array representing the QR code image.
+     * @throws EntityNotFoundException if the eatery or the table/QR code for the given eatery and table number is not found.
+     */
     public byte[] getQrImage(Long eateryId, Integer tableNumber) {
         Eatery eatery = eateryRepository.findById(eateryId).orElseThrow(EntityNotFoundException::new);
         List<TableInEatery> tableInEateryList = eatery.getTables();

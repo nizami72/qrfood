@@ -18,17 +18,32 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+/**
+ * A utility class providing various helper methods for common tasks
+ * such as object property copying, image manipulation, file operations,
+ * and URL generation.
+ */
 @Log4j2
 public class Util {
 
     private static final String LINKS_FILE_PATH = "links.md";
 
-
+    /**
+     * Copies properties from a source object to a new instance of a destination class.
+     * This method uses Spring's {@link BeanUtils#copyProperties(Object, Object)} internally.
+     *
+     * @param source           The source object from which properties will be copied.
+     * @param destinationClass The {@link Class} object representing the destination type.
+     * @param <SR>             The type of the source object.
+     * @param <DS>             The type of the destination object.
+     * @return A new instance of the destination class with properties copied from the source,
+     *         or {@code null} if an error occurs during instantiation.
+     */
     public static <SR, DS> DS copyProperties(SR source, Class<DS> destinationClass) {
         DS target = null;
         try {
             target = destinationClass.getDeclaredConstructor().newInstance();
-            // use instance
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
             log.error("Error instantiating [{}]", destinationClass, e);
@@ -38,27 +53,40 @@ public class Util {
         return target;
     }
 
+    /**
+     * Creates a {@link BufferedImage} from a byte array representing image data.
+     *
+     * @param imageBytes The byte array containing the image data.
+     * @return A {@link BufferedImage} created from the provided bytes.
+     * @throws IOException If an I/O error occurs during image reading.
+     */
     public static BufferedImage createImageFromBytes(byte[] imageBytes) throws IOException {
         try (ByteArrayInputStream bis = new ByteArrayInputStream(imageBytes)) {
             return ImageIO.read(bis);
         }
     }
 
-
+    /**
+     * Saves a given URL to a markdown file named "links.md".
+     * Each link is prepended with a timestamp and formatted as a markdown link.
+     * The file is created if it does not already exist.
+     *
+     * @param url The URL string to be saved.
+     */
     public static void saveLinkToFile(String url) {
         try {
-            // Создание файла, если не существует
+            // Create the file if it does not exist
             Path path = Paths.get(LINKS_FILE_PATH);
             if (!Files.exists(path)) {
                 Files.createFile(path);
             }
 
-            // Форматирование: ссылка + временная метка
+            // Format: link + timestamp
             String timestamp = LocalDateTime.now()
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            String line = timestamp + " - " + "[" +url + "]" + "(" + url +")" + System.lineSeparator();
+            String line = timestamp + " - " + "[" + url + "]" + "(" + url +")" + System.lineSeparator();
 
-            // Запись в конец файла
+            // Append to the file
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(LINKS_FILE_PATH, true))) {
                 writer.write(line);
                 writer.newLine();
@@ -69,6 +97,13 @@ public class Util {
         }
     }
 
+    /**
+     * Creates a folder at the specified path if it does not already exist.
+     *
+     * @param folderName The absolute or relative path of the folder to create.
+     * @return {@code true} if the folder exists after the operation (either created or already existed),
+     *         {@code false} if the folder could not be created.
+     */
     public static boolean createFolderIfNotExists(String folderName) {
         File folder = new File(folderName);
         if (!folder.exists()) {
@@ -84,6 +119,16 @@ public class Util {
         return folder.exists();
     }
 
+    /**
+     * Saves a {@link MultipartFile} to a specified path, optionally renaming the file.
+     *
+     * @param path      The directory path where the file should be saved.
+     * @param imageFile The {@link MultipartFile} to save.
+     * @param rename    An optional new name for the file. If {@code null} or empty,
+     *                  the original file name from {@code imageFile} will be used.
+     * @return The absolute path to the saved file as a string.
+     * @throws RuntimeException If an I/O error occurs during file storage or if the file name is invalid.
+     */
     public static String saveFile(String path, MultipartFile imageFile, String rename) {
 
         String fileName;
@@ -110,10 +155,23 @@ public class Util {
         }
     }
 
+    /**
+     * Generates a universally unique identifier (UUID) as a string.
+     * This is commonly used for creating unique file names or identifiers.
+     *
+     * @return A randomly generated UUID string.
+     */
     public static String generateFileName() {
         return UUID.randomUUID().toString();
     }
 
+    /**
+     * Constructs the full URL of the current request from an {@link HttpServletRequest} object.
+     * This includes the scheme, server name, port (if not default), request URI, and query string.
+     *
+     * @param request The {@link HttpServletRequest} object.
+     * @return The complete URL of the current request.
+     */
     public static String getFullURL(HttpServletRequest request) {
         StringBuilder url = new StringBuilder();
         url.append(request.getScheme()).append("://").append(request.getServerName());
@@ -132,7 +190,5 @@ public class Util {
         }
         return url.toString();
     }
-
-
-
 }
+

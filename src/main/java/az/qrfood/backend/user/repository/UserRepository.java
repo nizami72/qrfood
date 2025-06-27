@@ -7,15 +7,20 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * Репозиторий для доступа к данным пользователей.
- * Предоставляет стандартные CRUD-операции и метод для поиска пользователя по имени.
+ * Spring Data JPA repository for the {@link User} entity.
+ * <p>
+ * This interface provides standard CRUD (Create, Read, Update, Delete)
+ * operations for {@link User} entities and supports custom query methods
+ * for retrieving users by their username.
+ * </p>
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     /**
-     * Находит пользователя по его имени (логину).
-     * @param username Имя пользователя для поиска.
-     * @return Optional, содержащий пользователя, если найден, иначе пустой Optional.
+     * Retrieves a user by their username (login).
+     *
+     * @param username The username to search for.
+     * @return An {@link Optional} containing the user if found, or empty if not found.
      */
     Optional<User> findByUsername(String username);
 }

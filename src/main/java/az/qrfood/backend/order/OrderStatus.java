@@ -1,49 +1,45 @@
 package az.qrfood.backend.order;
 
 /**
- * Enum for order status, aligned with frontend expectations.
+ * Enumeration representing the possible statuses of an order.
+ * <p>
+ * This enum defines the lifecycle of an order within the QR Food Order system,
+ * from creation to completion or cancellation.
+ * </p>
  */
 public enum OrderStatus {
     /**
-     * Order has just been created
+     * The order has just been created.
      */
     CREATED,
 
     /**
-     * Order is being processed
-     */
-//    PROCESSING,
-
-    /**
-     * Order is being prepared
+     * The order is currently being prepared (e.g., in the kitchen).
      */
     PREPARING,
 
     /**
-     * Order is ready for delivery
+     * The order is ready for pickup or delivery.
      */
     READY,
 
     /**
-     * Order has been issued to the customer
-     */
-//    ISSUED,
-
-    /**
-     * Order has been paid
+     * The order has been paid for.
      */
     PAID,
+
     /**
-     * Order creation started
+     * The order creation process has started but is not yet complete.
      */
     IN_PROGRESS,
 
     /**
-     * Order has been cancelled
+     * The order has been cancelled.
      */
     CANCELLED;
 
-    // For backward compatibility
+    /**
+     * Alias for {@link #CREATED} for backward compatibility.
+     */
     public static final OrderStatus NEW = CREATED;
-//    public static final OrderStatus DELIVERED = ISSUED;
 }

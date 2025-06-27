@@ -16,7 +16,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * Service Implementation for managing OrderItem.
+ * Service Implementation for managing {@link OrderItem} entities.
+ * <p>
+ * This class provides the concrete implementation of the {@link OrderItemService} interface,
+ * handling business logic for order items, including CRUD operations and interactions
+ * with related entities like {@link Order} and {@link DishEntity}.
+ * </p>
  */
 @Log4j2
 @Service
@@ -27,6 +32,14 @@ public class OrderItemServiceImpl implements OrderItemService {
     private final DishRepository dishRepository;
     private final OrderItemMapper orderItemMapper;
 
+    /**
+     * Constructs an OrderItemServiceImpl with necessary dependencies.
+     *
+     * @param orderItemRepository The repository for order items.
+     * @param orderRepository     The repository for customer orders.
+     * @param dishRepository      The repository for dish entities.
+     * @param orderItemMapper     The mapper for converting between OrderItem entities and DTOs.
+     */
     public OrderItemServiceImpl(OrderItemRepository orderItemRepository,
                                CustomerOrderRepository orderRepository,
                                DishRepository dishRepository,
@@ -37,12 +50,18 @@ public class OrderItemServiceImpl implements OrderItemService {
         this.orderItemMapper = orderItemMapper;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<OrderItemDTO> getAllOrderItems() {
         log.debug("Request to get all OrderItems");
         return orderItemMapper.toDtoList(orderItemRepository.findAll());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<OrderItemDTO> getOrderItemsByOrderId(Long orderId) {
         log.debug("Request to get OrderItems for Order ID: {}", orderId);
@@ -54,6 +73,9 @@ public class OrderItemServiceImpl implements OrderItemService {
         return orderItemMapper.toDtoList(orderItems);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public OrderItemDTO getOrderItemById(Long id) {
         log.debug("Request to get OrderItem : {}", id);
@@ -62,6 +84,9 @@ public class OrderItemServiceImpl implements OrderItemService {
         return orderItemMapper.toDto(orderItem);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public OrderItemDTO createOrderItem(OrderItemDTO orderItemDTO) {
@@ -86,6 +111,9 @@ public class OrderItemServiceImpl implements OrderItemService {
         return orderItemMapper.toDto(savedOrderItem);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public OrderItemDTO updateOrderItem(Long id, OrderItemDTO orderItemDTO) {
@@ -107,6 +135,9 @@ public class OrderItemServiceImpl implements OrderItemService {
         return orderItemMapper.toDto(updatedOrderItem);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public void deleteOrderItem(Long id) {

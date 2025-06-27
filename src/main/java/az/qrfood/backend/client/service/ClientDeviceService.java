@@ -1,6 +1,5 @@
 package az.qrfood.backend.client.service;
 
-
 import static az.qrfood.backend.client.controller.ClientDeviceController.DEVICE;
 
 import az.qrfood.backend.client.dto.ClientDeviceRequestDto;
@@ -19,6 +18,13 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Service class for managing {@link ClientDevice} entities and their associated operations.
+ * <p>
+ * This service handles the creation, retrieval, updating, and deletion of client device records.
+ * It also manages the creation of UUID-based cookies for client devices and tracks their orders.
+ * </p>
+ */
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -28,10 +34,14 @@ public class ClientDeviceService {
     private final ClientDeviceRepository clientDeviceRepository;
 
     /**
-     * Create cookie.
-
-     * @param order order
-     * @return Cookie object
+     * Creates a new cookie with a unique UUID for a client device and associates it with an order.
+     * <p>
+     * This method generates a new UUID, creates a {@link Cookie} object, and persists
+     * a new {@link ClientDevice} entity linked to the provided order.
+     * </p>
+     *
+     * @param order The {@link Order} to associate with the new client device.
+     * @return A {@link Cookie} object containing the generated UUID.
      */
     public Cookie createCookieUuid(Order order) {
         // NAV Cookie install
@@ -54,17 +64,35 @@ public class ClientDeviceService {
     }
 
 
+    /**
+     * Creates a new {@link ClientDevice} based on the provided DTO.
+     *
+     * @param dto The {@link ClientDeviceRequestDto} containing the details for the new device.
+     * @return A {@link ClientDeviceResponseDto} representing the newly created device.
+     */
     public ClientDeviceResponseDto create(ClientDeviceRequestDto dto) {
         ClientDevice device = mapper.toEntity(dto);
         return mapper.toDto(clientDeviceRepository.save(device));
     }
 
+    /**
+     * Retrieves a {@link ClientDevice} by its unique identifier.
+     *
+     * @param id The ID of the client device to retrieve.
+     * @return A {@link ClientDeviceResponseDto} representing the found device.
+     * @throws EntityNotFoundException if no client device with the given ID is found.
+     */
     public ClientDeviceResponseDto getById(Long id) {
         ClientDevice device = clientDeviceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("ClientDevice not found"));
         return mapper.toDto(device);
     }
 
+    /**
+     * Retrieves all {@link ClientDevice} records in the system.
+     *
+     * @return A list of {@link ClientDeviceResponseDto} representing all client devices.
+     */
     public List<ClientDeviceResponseDto> getAll() {
         return clientDeviceRepository.findAll()
                 .stream()
@@ -72,6 +100,14 @@ public class ClientDeviceService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Updates an existing {@link ClientDevice} with new information.
+     *
+     * @param id  The ID of the client device to update.
+     * @param dto The {@link ClientDeviceRequestDto} containing the updated details.
+     * @return A {@link ClientDeviceResponseDto} representing the updated device.
+     * @throws EntityNotFoundException if no client device with the given ID is found.
+     */
     public ClientDeviceResponseDto update(Long id, ClientDeviceRequestDto dto) {
         ClientDevice device = clientDeviceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("ClientDevice not found"));
@@ -79,10 +115,23 @@ public class ClientDeviceService {
         return mapper.toDto(clientDeviceRepository.save(device));
     }
 
+    /**
+     * Deletes a {@link ClientDevice} by its unique identifier.
+     *
+     * @param id The ID of the client device to delete.
+     */
     public void delete(Long id) {
         clientDeviceRepository.deleteById(id);
     }
 
+    /**
+     * Resolves a client device based on its UUID cookie and checks if it has any active orders.
+     *
+     * @param cookie The UUID string from the client's cookie.
+     * @return {@code true} if the client device exists and has at least one active order (status {@code NEW}),
+     *         {@code false} otherwise.
+     * @throws EntityNotFoundException if no client device with the given UUID is found.
+     */
     public boolean resolveCookie(String cookie) {
         Optional<ClientDevice> op = clientDeviceRepository.findByUuid(cookie);
         if(op.isEmpty()){
@@ -93,6 +142,12 @@ public class ClientDeviceService {
         return hasActive(orders);
     }
 
+    /**
+     * Checks if any of the provided orders have a status of {@code NEW}.
+     *
+     * @param orders A list of {@link Order} objects.
+     * @return {@code true} if at least one order has a status of {@code NEW}, {@code false} otherwise.
+     */
     private boolean hasActive(List<Order> orders) {
         return orders.stream()
                 .anyMatch(o -> o.getStatus().equals(OrderStatus.NEW));

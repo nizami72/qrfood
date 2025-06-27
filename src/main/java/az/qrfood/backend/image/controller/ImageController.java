@@ -15,6 +15,14 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * REST controller for serving image files.
+ * <p>
+ * This controller provides endpoints to retrieve images for eateries, categories, and dishes.
+ * It handles file retrieval from the local file system and serves them as byte arrays.
+ * A fallback image is provided if the requested image is not found.
+ * </p>
+ */
 @RestController
 @RequestMapping("${image}")
 @Log4j2
@@ -29,6 +37,11 @@ public class ImageController {
     @Value("${fall.back.photo}")
     private String fallBackPhoto;
 
+    /**
+     * Retrieves a map of base image paths configured for different entities.
+     *
+     * @return A {@link Map} containing the base paths for eatery, category, and dish images.
+     */
     public Map<String, String> getImagePaths() {
         Map<String, String> paths = new HashMap<>();
         paths.put("eatery", eateryImagePath);
@@ -37,6 +50,15 @@ public class ImageController {
         return paths;
     }
 
+    /**
+     * Retrieves an image for a specific eatery.
+     * The image is identified by its directory (eatery ID) and file name.
+     *
+     * @param dir      The directory name, typically the eatery ID.
+     * @param photo    The file name of the image.
+     * @param response The {@link HttpServletResponse} to set content type.
+     * @return A {@link ResponseEntity} containing the image as a byte array.
+     */
     @RequestMapping(value = {"${eatery}/{id}/{fileName}"})
     public ResponseEntity<byte[]> getEateryImage(@PathVariable("id") String dir,
                                                  @PathVariable("fileName") String photo, HttpServletResponse response) {
@@ -45,6 +67,15 @@ public class ImageController {
         return getImage(path, response);
     }
 
+    /**
+     * Retrieves an image for a specific category.
+     * The image is identified by its directory (category ID) and file name.
+     *
+     * @param dir      The directory name, typically the category ID.
+     * @param photo    The file name of the image.
+     * @param response The {@link HttpServletResponse} to set content type.
+     * @return A {@link ResponseEntity} containing the image as a byte array.
+     */
     @RequestMapping(value = {"/category/{id}/{fileName}"})
     public ResponseEntity<byte[]> getCategoryImage(@PathVariable("id") String dir,
                                                  @PathVariable("fileName") String photo, HttpServletResponse response) {
@@ -53,6 +84,15 @@ public class ImageController {
         return getImage(path, response);
     }
 
+    /**
+     * Retrieves an image for a specific dish.
+     * The image is identified by its directory (dish ID) and file name.
+     *
+     * @param dir      The directory name, typically the dish ID.
+     * @param photo    The file name of the image.
+     * @param response The {@link HttpServletResponse} to set content type.
+     * @return A {@link ResponseEntity} containing the image as a byte array.
+     */
     @RequestMapping(value = {"/dish/{id}/{fileName}"})
     public ResponseEntity<byte[]> getDishImage(@PathVariable("id") String dir,
                                                  @PathVariable("fileName") String photo, HttpServletResponse response) {
@@ -61,6 +101,14 @@ public class ImageController {
         return getImage(path, response);
     }
 
+    /**
+     * Helper method to retrieve an image from the file system.
+     * If the image is not found, a fallback image is loaded.
+     *
+     * @param imgPath  The full path to the image file.
+     * @param response The {@link HttpServletResponse} to set content type.
+     * @return A {@link ResponseEntity} containing the image data.
+     */
     private ResponseEntity<byte[]> getImage(String imgPath, HttpServletResponse response) {
         byte[] data;
         try {
@@ -72,6 +120,13 @@ public class ImageController {
         return ResponseEntity.ok().contentType(MediaType.valueOf("image/webp")).body(data);
     }
 
+    /**
+     * Loads a default fallback image if the requested image is not found.
+     * It attempts to find the fallback image with common image extensions.
+     *
+     * @param response The {@link HttpServletResponse} to set status if fallback image is not found.
+     * @return A byte array of the fallback image, or {@code null} if no fallback image can be loaded.
+     */
     private byte[] loadDefaultImage(HttpServletResponse response) {
         byte[] data = null;
         try {

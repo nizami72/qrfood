@@ -13,6 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * REST controller that exposes frontend path configurations to the client.
+ * <p>
+ * This controller provides various URI paths and segments used by the frontend
+ * application to construct API requests and image URLs. This centralizes path
+ * management and makes it easier to update frontend configurations without
+ * redeploying the frontend application.
+ * </p>
+ */
 @Setter
 @Getter
 @RestController
@@ -20,12 +29,15 @@ import java.util.Map;
 @RequestMapping("/api/config")
 public class FrontendPathConfig {
 
+    // Image paths
     @Value("${full.path.fe.eatery.image}")
     private String imagesEateryUri;
     @Value("${full.path.fe.category.image}")
     private String imagesCategoriesUri;
     @Value("${full.path.fe.dish.image}")
     private String imagesDishesUri;
+
+    // API URLs for specific actions
     @Value("${full.path.fe.api.tables.image}")
     private String urlApiTables;
     @Value("${full.path.fe.add.dish.2.order}")
@@ -35,8 +47,7 @@ public class FrontendPathConfig {
     @Value("${relative.path.api.client.eatery.arg.table.arg}")
     private String clientGetMenuUrl;
 
-    // new new
-
+    // New API path segments (from application.properties)
     @Value("${eatery}")
     String eatery;
     @Value("${eatery.id}")
@@ -81,6 +92,15 @@ public class FrontendPathConfig {
     String usr;
 
 
+    /**
+     * Retrieves a map of image and API paths used by the frontend.
+     * <p>
+     * This endpoint provides a centralized way for the frontend to fetch
+     * dynamic path configurations, reducing hardcoding and simplifying updates.
+     * </p>
+     *
+     * @return A {@link Map} where keys are descriptive names and values are the corresponding URI paths.
+     */
     @GetMapping("/image-paths")
     public Map<String, String> getImagePaths() {
         Map<String, String> paths = new LinkedHashMap<>();
@@ -129,10 +149,16 @@ public class FrontendPathConfig {
         return paths;
     }
 
+    /**
+     * Pretty prints a map of strings to strings as a JSON string with indentation.
+     *
+     * @param map The map to pretty print.
+     * @return A pretty-printed JSON string representation of the map, or an error message if serialization fails.
+     */
     private String prettyPrintMao(Map<String, String> map) {
         String out = "Unable to pretty print map";
         ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT); // включаем отступы
+        mapper.enable(SerializationFeature.INDENT_OUTPUT); // Enable indentation
         try {
             out = mapper.writeValueAsString(map);
         } catch (JsonProcessingException ex) {

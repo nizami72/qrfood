@@ -10,25 +10,35 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * Spring Data JPA repository for the Order entity.
+ * Spring Data JPA repository for the {@link Order} entity.
+ * <p>
+ * This interface provides standard CRUD operations for {@link Order} entities
+ * and supports custom query methods for retrieving orders based on their status
+ * or the associated eatery.
+ * </p>
  */
 @Repository
 public interface CustomerOrderRepository extends JpaRepository<Order, Long> {
 
     /**
-     * Find orders by status.
+     * Retrieves a list of orders with the specified status.
      *
-     * @param status the status
-     * @return list of orders with the specified status
+     * @param status The {@link OrderStatus} to filter orders by.
+     * @return A list of {@link Order} entities matching the given status.
      */
     List<Order> findByStatus(OrderStatus status);
 
     /**
-     * Find orders by eatery ID.
+     * Retrieves a list of orders associated with a specific eatery ID.
+     * <p>
+     * This method uses a custom JPQL query to fetch orders where the table
+     * associated with the order belongs to the given eatery ID.
+     * </p>
      *
-     * @param eateryId the ID of the eatery
-     * @return list of orders for the specified eatery
+     * @param eateryId The ID of the eatery.
+     * @return A list of {@link Order} entities belonging to the specified eatery.
      */
     @Query("SELECT o FROM Order o WHERE o.table.eatery.id = :eateryId")
     List<Order> findByTableEateryId(@Param("eateryId") Long eateryId);
 }
+

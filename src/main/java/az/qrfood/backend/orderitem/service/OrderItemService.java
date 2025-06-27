@@ -5,54 +5,58 @@ import az.qrfood.backend.order.entity.OrderItem;
 import java.util.List;
 
 /**
- * Service Interface for managing OrderItem.
+ * Service interface for managing {@link OrderItem} entities.
+ * <p>
+ * This interface defines the contract for business operations related to order items,
+ * including CRUD operations and retrieval based on various criteria.
+ * </p>
  */
 public interface OrderItemService {
 
     /**
-     * Get all order items.
+     * Retrieves a list of all order items in the system.
      *
-     * @return the list of order items
+     * @return A list of {@link OrderItemDTO} representing all order items.
      */
     List<OrderItemDTO> getAllOrderItems();
 
     /**
-     * Get order items by order ID.
+     * Retrieves a list of order items associated with a specific order ID.
      *
-     * @param orderId the ID of the order
-     * @return the list of order items for the specified order
+     * @param orderId The ID of the order for which to retrieve items.
+     * @return A list of {@link OrderItemDTO} representing the order items for the specified order.
      */
     List<OrderItemDTO> getOrderItemsByOrderId(Long orderId);
 
     /**
-     * Get order item by ID.
+     * Retrieves a single order item by its unique identifier.
      *
-     * @param id the ID of the order item
-     * @return the order item
+     * @param id The ID of the order item to retrieve.
+     * @return An {@link OrderItemDTO} representing the found order item.
      */
     OrderItemDTO getOrderItemById(Long id);
 
     /**
-     * Create a new order item.
+     * Creates a new order item.
      *
-     * @param orderItemDTO the order item to create
-     * @return the created order item
+     * @param orderItemDTO The {@link OrderItemDTO} containing the data for the new order item.
+     * @return The newly created {@link OrderItemDTO}.
      */
     OrderItemDTO createOrderItem(OrderItemDTO orderItemDTO);
 
     /**
-     * Update an existing order item.
+     * Updates an existing order item.
      *
-     * @param id the ID of the order item to update
-     * @param orderItemDTO the order item to update
-     * @return the updated order item
+     * @param id           The ID of the order item to update.
+     * @param orderItemDTO The {@link OrderItemDTO} containing the updated order item data.
+     * @return The updated {@link OrderItemDTO}.
      */
     OrderItemDTO updateOrderItem(Long id, OrderItemDTO orderItemDTO);
 
     /**
-     * Delete an order item.
+     * Deletes an order item by its unique identifier.
      *
-     * @param id the ID of the order item to delete
+     * @param id The ID of the order item to delete.
      */
     void deleteOrderItem(Long id);
 }

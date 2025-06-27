@@ -28,22 +28,33 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * REST controller for handling requests related to authentication and registration.
+ * REST controller for handling user authentication and registration.
+ * <p>
+ * This controller provides endpoints for user login, checking authentication status,
+ * refreshing JWT tokens, and logging out. It interacts with Spring Security's
+ * authentication mechanisms and JWT utilities.
+ * </p>
  */
 @RestController
 @Log4j2
 @Tag(name = "Auth", description = "API endpoints for managing auth calls")
 public class AuthController {
 
-    //<editor-fold desc="Fields">
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final UserProfileService userProfileService;
-    //</editor-fold>
 
-    //<editor-fold desc="Constructor">
+    /**
+     * Constructs the AuthController with necessary dependencies.
+     *
+     * @param authenticationManager The Spring Security AuthenticationManager for user authentication.
+     * @param userDetailsService    The custom user details service for loading user information.
+     * @param jwtUtil               The utility for generating and validating JWT tokens.
+     * @param userRepository        The repository for accessing user data.
+     * @param userProfileService    The service for managing user profiles.
+     */
     public AuthController(AuthenticationManager authenticationManager,
                           CustomUserDetailsService userDetailsService,
                           JwtUtil jwtUtil,
@@ -55,14 +66,19 @@ public class AuthController {
         this.userRepository = userRepository;
         this.userProfileService = userProfileService;
     }
-    //</editor-fold>
 
     /**
      * Endpoint for user login.
-     * Accepts username and password, authenticates them and returns JWT token.
+     * <p>
+     * Accepts a {@link LoginRequest} containing username (email) and password.
+     * Authenticates the user and, upon successful authentication, generates a JWT token.
+     * It also handles associating the user with an eatery if applicable.
+     * </p>
      *
-     * @param loginRequest LoginRequest object containing username, password and optionally eateryId.
-     * @return ResponseEntity with JWT token on a success or error message.
+     * @param loginRequest The {@link LoginRequest} object containing user credentials and optional eatery ID.
+     * @return A {@link ResponseEntity} containing a {@link LoginResponse} with the JWT token,
+     *         user ID, and eatery ID on success, or an error message with {@code HttpStatus.UNAUTHORIZED}
+     *         if authentication fails.
      */
     @PostMapping("${auth.login}")
     @Operation(summary = "Logins a user", description = "Logins user, use email as login and password")
@@ -119,9 +135,15 @@ public class AuthController {
     }
 
     /**
-     * Endpoint to check if a user is logged in and return user information.
-     * 
-     * @return ResponseEntity with user information if authenticated, or a message if not.
+     * Endpoint to check if a user is logged in and return their information.
+     * <p>
+     * This method retrieves the current authentication from the security context
+     * and, if the user is authenticated, returns a map containing various user details
+     * such as username, user ID, profile ID, roles, and associated restaurant IDs.
+     * </p>
+     *
+     * @return A {@link ResponseEntity} with user information if authenticated,
+     *         or a message indicating that the user is not authenticated.
      */
     @GetMapping("${auth.status}")
     public ResponseEntity<?> status() {
@@ -169,11 +191,17 @@ public class AuthController {
 
 
     /**
-     * Endpoint to regenerate JWT token with a new eatery ID.
-     * This is used when the user changes the selected eatery in the frontend.
+     * Endpoint to regenerate a JWT token with a potentially new eatery ID.
+     * <p>
+     * This is typically used when the user changes their selected eatery in the frontend,
+     * requiring a new token that reflects access to the new eatery.
+     * </p>
      *
-     * @param requestBody Map containing the eateryId key with the ID of the newly selected eatery.
-     * @return ResponseEntity with the new JWT token.
+     * @param requestBody A {@link Map} containing the "eateryId" key with the ID of the newly selected eatery.
+     * @return A {@link ResponseEntity} containing a {@link LoginResponse} with the new JWT token,
+     *         user ID, and the updated eatery ID. Returns {@code HttpStatus.UNAUTHORIZED} if not authenticated,
+     *         {@code HttpStatus.NOT_FOUND} if user or profile not found, or {@code HttpStatus.FORBIDDEN}
+     *         if the user does not have access to the specified eatery.
      */
     @PostMapping("${auth.refresh}")
     public ResponseEntity<?> refreshToken(@RequestBody Map<String, Long> requestBody) {
@@ -235,11 +263,13 @@ public class AuthController {
 
     /**
      * Endpoint for user logout.
-     * In a JWT-based authentication system, the server doesn't maintain the session state.
-     * The client is responsible for removing the JWT token from storage.
-     * This endpoint simply returns a success response to confirm the logout action.
+     * <p>
+     * In a JWT-based authentication system, the server typically doesn't maintain session state.
+     * Therefore, this endpoint primarily serves to clear the security context on the server-side
+     * and signals to the client that they should remove their JWT token from local storage.
+     * </p>
      *
-     * @return ResponseEntity with a success message.
+     * @return A {@link ResponseEntity} with a success message confirming the logout action.
      */
     @PostMapping("${auth.logout}")
     public ResponseEntity<?> logout() {

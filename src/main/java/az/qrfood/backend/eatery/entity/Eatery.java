@@ -16,7 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a restaurant that uses the QR food ordering system.
+ * Represents a single restaurant or eatery in the system.
+ * <p>
+ * This entity holds all the core information about a restaurant, including its name,
+ * address, and contact details. It also serves as the root for its associated data,
+ * such as its menu categories, tables, and phone numbers.
+ * </p>
  */
 @Entity
 @Getter
@@ -26,46 +31,73 @@ import java.util.List;
 public class Eatery {
 
     /**
-     * Unique identifier for the restaurant.
+     * The unique identifier for the eatery.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
-     * Name of the restaurant.
+     * The official name of the eatery.
      */
     private String name;
 
     /**
-     * Physical address of the restaurant.
+     * The physical address of the eatery.
      */
     private String address;
 
+    /**
+     * A list of phone numbers associated with the eatery.
+     * <p>
+     * This is a one-to-many relationship, where one eatery can have multiple phone numbers.
+     * The {@code orphanRemoval=true} option ensures that if a phone number is removed
+     * from this list, it is also deleted from the database.
+     * </p>
+     */
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EateryPhone> phones;
+
+    /**
+     * A list of all the tables within this eatery.
+     * <p>
+     * This relationship links the eatery to its physical tables, which are represented
+     * by the {@link TableInEatery} entity.
+     * </p>
+     */
+    @OneToMany(mappedBy = "eatery", cascade = CascadeType.ALL)
+    private List<TableInEatery> tables;
+
+    /**
+     * A list of all menu categories offered by this eatery.
+     * <p>
+     * This relationship links the eatery to its menu structure, starting with the
+     * top-level categories.
+     * </p>
+     */
+    @OneToMany(mappedBy = "eatery", cascade = CascadeType.ALL)
+    private List<Category> categories;
+
+    /**
+     * The geographical latitude of the eatery.
+     * Useful for location-based services and validation.
+     */
+    private Double geoLat;
+
+    /**
+     * The geographical longitude of the eatery.
+     * Useful for location-based services and validation.
+     */
+    private Double geoLng;
+
+    /**
+     * Default constructor. Initializes the lists for phones, tables, and categories.
+     */
     public Eatery() {
         this.phones = new ArrayList<>();
         this.tables = new ArrayList<>();
         this.categories = new ArrayList<>();
     }
-
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EateryPhone> phones;
-
-    @OneToMany(mappedBy = "eatery", cascade = CascadeType.ALL)
-    private List<TableInEatery> tables;
-
-    @OneToMany(mappedBy = "eatery", cascade = CascadeType.ALL)
-    private List<Category> categories;
-
-    /**
-     * Latitude coordinate of the restaurant (for location validation, optional).
-     */
-    private Double geoLat;
-
-    /**
-     * Longitude coordinate of the restaurant (for location validation, optional).
-     */
-    private Double geoLng;
 
     @Override
     public String toString() {
@@ -80,5 +112,4 @@ public class Eatery {
                 "  categoriesCount=" + (categories != null ? categories.size() : 0) + "\n" +
                 '}';
     }
-
 }

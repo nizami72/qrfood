@@ -9,16 +9,24 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Mapper for converting between OrderItem entities and DTOs.
+ * Mapper component for converting between {@link OrderItem} entities and {@link OrderItemDTO} Data Transfer Objects.
+ * <p>
+ * This class handles the transformation of order item data, including extracting
+ * dish names from translations and mapping other relevant fields.
+ * </p>
  */
 @Component
 public class OrderItemMapper {
 
     /**
-     * Convert an OrderItem entity to an OrderItemDTO.
+     * Converts an {@link OrderItem} entity to an {@link OrderItemDTO}.
+     * <p>
+     * This method maps all relevant fields from the entity to the DTO,
+     * including extracting the dish name from its translations.
+     * </p>
      *
-     * @param orderItem the entity to convert
-     * @return the DTO
+     * @param orderItem The {@link OrderItem} entity to convert.
+     * @return The converted {@link OrderItemDTO}, or {@code null} if the input order item is {@code null}.
      */
     public OrderItemDTO toDto(OrderItem orderItem) {
         if (orderItem == null) {
@@ -46,10 +54,10 @@ public class OrderItemMapper {
     }
 
     /**
-     * Convert a list of OrderItem entities to a list of OrderItemDTOs.
+     * Converts a list of {@link OrderItem} entities to a list of {@link OrderItemDTO}s.
      *
-     * @param orderItems the entities to convert
-     * @return the DTOs
+     * @param orderItems The list of {@link OrderItem} entities to convert.
+     * @return A list of converted {@link OrderItemDTO}s, or {@code null} if the input list is {@code null}.
      */
     public List<OrderItemDTO> toDtoList(List<OrderItem> orderItems) {
         if (orderItems == null) {

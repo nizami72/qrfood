@@ -19,30 +19,43 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+/**
+ * Service class for managing {@link DishEntity} entities.
+ * <p>
+ * This class encapsulates the business logic related to dishes,
+ * including CRUD operations, handling dish images, and managing translations.
+ * </p>
+ */
 @Service
 @Log4j2
 public class DishService {
 
-    //<editor-fold desc="Fields">
     private final DishRepository dishRepository;
     private final CategoryRepository categoryRepository;
     private final StorageService storageService;
-    //</editor-fold>
 
-    //<editor-fold desc="Constructor">
+    /**
+     * Constructs a DishService with necessary dependencies.
+     *
+     * @param dishRepository     The repository for Dish entities.
+     * @param categoryRepository The repository for Category entities.
+     * @param storageService     The service for handling file storage operations.
+     */
     public DishService(DishRepository dishRepository,
                        CategoryRepository categoryRepository, StorageService storageService) {
         this.dishRepository = dishRepository;
         this.categoryRepository = categoryRepository;
         this.storageService = storageService;
     }
-    //</editor-fold>
 
     /**
-     * Returns all DishItems for particular category.
-
-     * @param categoryId the category ID
+     * Retrieves all dishes for a particular category.
+     *
+     * @param categoryId The ID of the category.
+     * @return A list of {@link DishDto} representing all dishes in the specified category.
+     * @throws EntityNotFoundException if the category with the given ID is not found.
      */
     public List<DishDto> getAllDishesInCategory(Long categoryId) {
         Optional<Category> categories = categoryRepository.findById(categoryId);
@@ -60,6 +73,18 @@ public class DishService {
         return dishDtos;
     }
 
+    /**
+     * Adds a new dish to a category.
+     * <p>
+     * This method handles the creation of the dish entity, its translations,
+     * and the storage of its associated image file.
+     * </p>
+     *
+     * @param dto           The {@link DishDto} containing the dish data.
+     * @param multipartFile The image file for the dish.
+     * @return The newly created {@link DishEntity}.
+     * @throws IllegalArgumentException if the specified category is not found.
+     */
     public DishEntity addDish(DishDto dto, MultipartFile multipartFile) {
         Optional<Category> optionalCategory = categoryRepository.findById(dto.getCategoryId());
         if (optionalCategory.isEmpty()) {
@@ -82,10 +107,10 @@ public class DishService {
         dishRepository.save(dishEntity);
 
         Long categoryId = dishEntity.getCategory().getId();
-        Long eateryId = dishEntity.getTranslations().get(0).getId();
+        Long eateryId = dishEntity.getTranslations().get(0).getId(); // This line seems incorrect, translations don't have eateryId
         Long dishId = dishEntity.getId();
 
-        String f = eateryId + System.lineSeparator() + categoryId  + System.lineSeparator() + dishId;
+        String f = eateryId + System.lineSeparator() + categoryId  + System.lineSeparator() + dishId; // 'f' is unused
 
         String folder = storageService.createDishesFolder(dishEntity.getId());
 
@@ -105,6 +130,16 @@ public class DishService {
                 .build();
     }
 
+    /**
+     * Converts a {@link DishEntity} to a {@link DishDto}.
+     * <p>
+     * This is a static method, allowing it to be called directly without an instance of {@code DishService}.
+     * It maps the entity's properties to the DTO, including its associated translations.
+     * </p>
+     *
+     * @param dishEntity The {@link DishEntity} to convert.
+     * @return The converted {@link DishDto}.
+     */
     public static DishDto convertEntityToDto(DishEntity dishEntity) {
         DishDto dto = DishDto.builder()
                 .dishId(dishEntity.getId())
@@ -131,6 +166,20 @@ public class DishService {
     }
 
 
+    /**
+     * Deletes a dish from a specific category.
+     * <p>
+     * This method is transactional. It finds the category and the dish within it,
+     * then removes the dish from the category's item list. Due to {@code orphanRemoval=true}
+     * on the {@code items} collection in {@link Category}, the dish entity will be
+     * automatically deleted from the database when the transaction commits.
+     * </p>
+     *
+     * @param categoryId The ID of the category from which to delete the dish.
+     * @param dishId     The ID of the dish to delete.
+     * @return A {@link ResponseEntity} with a success message.
+     * @throws EntityNotFoundException if the category or the dish within the category is not found.
+     */
     @Transactional
     public ResponseEntity<String> deleteDishItemById(Long categoryId, Long dishId) {
         log.debug("Requested to delete dish [{}] from category [{}]", dishId, categoryId);
@@ -144,7 +193,7 @@ public class DishService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Category [%s] does not contain dish [%s]", categoryId, dishId)));
 
-        // 🟢 Remove from list — this triggers orphanRemoval
+        // Remove from list — this triggers orphanRemoval
         category.getItems().remove(dish);
 
         // No need to call dishRepository.deleteById()
@@ -153,6 +202,20 @@ public class DishService {
         return ResponseEntity.ok(String.format("Dish [%s] deleted successfully", dishId));
     }
 
+    /**
+     * Updates an existing dish within a specific category.
+     * <p>
+     * This method is transactional. It updates the dish's price, availability,
+     * and translations. It also handles updating the dish's image if a new one is provided.
+     * </p>
+     *
+     * @param categoryId    The ID of the category containing the dish.
+     * @param dishId        The ID of the dish to update.
+     * @param dto           The {@link DishDto} containing the updated dish data.
+     * @param multipartFile An optional new image file for the dish.
+     * @return The updated {@link DishEntity}.
+     * @throws EntityNotFoundException if the category or the dish within the category is not found.
+     */
     @Transactional
     public DishEntity updateDish(Long categoryId, Long dishId, DishDto dto, MultipartFile multipartFile) {
         log.debug("Updating dish [{}] in category [{}]", dishId, categoryId);

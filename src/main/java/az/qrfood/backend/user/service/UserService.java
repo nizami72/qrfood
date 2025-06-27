@@ -26,7 +26,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Service for managing User entities.
+ * Service class for managing {@link User} entities and their associated profiles.
+ * <p>
+ * This service handles user creation, retrieval, updating, and deletion,
+ * as well as managing user roles and linking users to eateries.
+ * </p>
  */
 @Service
 @RequiredArgsConstructor
@@ -40,10 +44,14 @@ public class UserService {
     private final EateryService eateryService;
 
     /**
-     * Create a new user.
+     * Creates a new user based on the provided request.
+     * <p>
+     * This method checks for existing usernames and encrypts the password before saving.
+     * </p>
      *
-     * @param request the user request
-     * @return the created user response
+     * @param request The {@link UserRequest} containing user details.
+     * @return A {@link UserResponse} representing the newly created user.
+     * @throws IllegalStateException if a user with the same username already exists.
      */
     @Transactional
     public UserResponse createUser(UserRequest request) {
@@ -56,9 +64,9 @@ public class UserService {
     }
 
     /**
-     * Get all users.
+     * Retrieves a list of all users in the system.
      *
-     * @return list of user responses
+     * @return A list of {@link UserResponse} representing all users.
      */
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers() {
@@ -69,10 +77,10 @@ public class UserService {
 
 
     /**
-     * Get all users that belong to a specific eatery.
+     * Retrieves a list of all users that belong to a specific eatery.
      *
-     * @param id the eatery ID
-     * @return list of user responses for users belonging to the eatery
+     * @param id The ID of the eatery.
+     * @return A list of {@link UserResponse} for users associated with the specified eatery.
      */
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers(Long id) {
@@ -87,10 +95,11 @@ public class UserService {
     }
 
     /**
-     * Get a user by ID.
+     * Retrieves a user by their unique ID.
      *
-     * @param id the user ID
-     * @return the user response
+     * @param id The ID of the user to retrieve.
+     * @return A {@link UserResponse} representing the found user.
+     * @throws EntityNotFoundException if the user with the given ID is not found.
      */
     @Transactional(readOnly = true)
     public UserResponse getUserById(Long id) {
@@ -100,10 +109,11 @@ public class UserService {
     }
 
     /**
-     * Get a user by username.
+     * Retrieves a user by their username.
      *
-     * @param username the username
-     * @return the user response
+     * @param username The username of the user to retrieve.
+     * @return A {@link UserResponse} representing the found user.
+     * @throws EntityNotFoundException if the user with the given username is not found.
      */
     @Transactional(readOnly = true)
     public UserResponse getUserByUsername(String username) {
@@ -113,11 +123,16 @@ public class UserService {
     }
 
     /**
-     * Update a user.
+     * Updates an existing user.
+     * <p>
+     * This method allows updating the username, password (if provided), roles, and user profile name.
+     * </p>
      *
-     * @param id      the user ID
-     * @param request the user request
-     * @return the updated user response
+     * @param id      The ID of the user to update.
+     * @param request The {@link UserRequest} containing the updated user data.
+     * @return A {@link UserResponse} representing the updated user.
+     * @throws EntityNotFoundException if the user with the given ID is not found.
+     * @throws IllegalStateException   if the new username already exists.
      */
     @Transactional
     public UserResponse updateUser(Long id, UserRequest request) {
@@ -155,9 +170,10 @@ public class UserService {
     }
 
     /**
-     * Delete a user.
+     * Deletes a user by their ID.
      *
-     * @param id the user ID
+     * @param id The ID of the user to delete.
+     * @throws EntityNotFoundException if the user with the given ID is not found.
      */
     @Transactional
     public void deleteUser(Long id) {
@@ -168,10 +184,14 @@ public class UserService {
     }
 
     /**
-     * Create a user as eatery admin
+     * Creates a new user with the 'EATERY_ADMIN' role and optionally associates them with a new eatery.
+     * <p>
+     * This method handles user registration, profile creation, and if restaurant details are provided,
+     * it creates a new eatery and links it to the user's profile.
+     * </p>
      *
-     * @param registerRequest
-     * @return
+     * @param registerRequest The {@link RegisterRequest} containing user and optional restaurant details.
+     * @return A {@link ResponseEntity} with a {@link RegisterResponse} indicating the outcome of the registration.
      */
     public ResponseEntity<?> createAdminUser(RegisterRequest registerRequest) {
 
@@ -255,10 +275,11 @@ public class UserService {
     }
 
     /**
-     * Map a User entity to a UserResponse DTO.
+     * Maps a {@link User} entity to a {@link UserResponse} DTO.
      *
-     * @param user the user entity
-     * @return the user response DTO
+     * @param user The {@link User} entity to map.
+     * @return The corresponding {@link UserResponse} DTO.
+     * @throws EntityNotFoundException if the user's profile is not found.
      */
     private UserResponse mapToResponse(User user) {
         return new UserResponse(
@@ -272,6 +293,14 @@ public class UserService {
         );
     }
 
+    /**
+     * Creates and saves a new {@link User} entity.
+     *
+     * @param userName The username (email) for the new user.
+     * @param password The plain-text password for the new user.
+     * @param roles    The set of {@link Role}s to assign to the new user.
+     * @return The newly created and saved {@link User} entity.
+     */
     private User createUser(String userName, String password, Set<Role> roles) {
         User user = new User();
         user.setUsername(userName);

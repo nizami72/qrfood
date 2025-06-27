@@ -24,15 +24,21 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+/**
+ * Spring Security configuration for the QR Food Order backend application.
+ * <p>
+ * This class defines the security chain, authentication providers, and
+ * authorization rules for various API endpoints. It configures JWT-based
+ * authentication and role-based access control.
+ * </p>
+ */
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true) // <= обязательно!
+@EnableGlobalMethodSecurity(prePostEnabled = true) // Enables Spring Security's pre/post annotations for method-level security
 public class SecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
-
     private final CustomAuthenticationEntryPoint customEntryPoint;
-
     private final CustomUserDetailsService userDetailsService;
     private final JwtRequestFilter jwtRequestFilter;
     private final EateryIdCheckFilter eateryIdCheckFilter;
@@ -44,18 +50,15 @@ public class SecurityConfig {
     String apiEateryArgCategoryArg;
 
     /**
-     * Определяет менеджер аутентификации.
-     * Этот бин необходим для ручной аутентификации пользователя, например, в AuthController.
+     * Constructs the SecurityConfig with necessary dependencies.
      *
-     * @param config Конфигурация аутентификации, предоставляемая Spring Security.
-     * @return Экземпляр AuthenticationManager.
-     * @throws Exception при ошибке получения менеджера аутентификации.
+     * @param passwordEncoder    The password encoder for user authentication.
+     * @param customEntryPoint   The custom authentication entry point for handling unauthorized access.
+     * @param userDetailsService The custom user details service for loading user-specific data.
+     * @param jwtRequestFilter   The JWT request filter for validating JWT tokens.
+     * @param eateryIdCheckFilter The filter for checking eatery ID permissions.
+     * @param corsConfig         The CORS configuration source.
      */
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
-
     public SecurityConfig(
             PasswordEncoder passwordEncoder,
             CustomAuthenticationEntryPoint customEntryPoint,
@@ -72,17 +75,38 @@ public class SecurityConfig {
     }
 
     /**
-     * Определяет цепочку фильтров безопасности для HTTP-запросов.
-     * Здесь настраиваются правила авторизации для различных URL-путей.
+     * Defines the AuthenticationManager bean.
+     * <p>
+     * This bean is essential for manual user authentication, for example,
+     * within an authentication controller.
+     * </p>
      *
-     * @param http Объект HttpSecurity для настройки безопасности.
-     * @return Цепочка фильтров безопасности.
-     * @throws Exception при ошибке конфигурации.
+     * @param config The AuthenticationConfiguration provided by Spring Security.
+     * @return An instance of {@link AuthenticationManager}.
+     * @throws Exception if an error occurs while retrieving the authentication manager.
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    /**
+     * Configures the security filter chain for HTTP requests.
+     * <p>
+     * This method sets up authorization rules for various URL paths,
+     * disables CSRF for REST APIs (as JWT is used), configures CORS,
+     * and sets the session creation policy to STATELESS for JWT-based authentication.
+     * It also adds custom JWT and Eatery ID check filters to the chain.
+     * </p>
+     *
+     * @param http The {@link HttpSecurity} object for configuring security.
+     * @return The configured {@link SecurityFilterChain}.
+     * @throws Exception if an error occurs during configuration.
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // Отключаем CSRF для REST API, так как используем JWT
+                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for REST APIs, as JWT is used
                 .authorizeHttpRequests(authorize -> authorize
                         // =======================================================================    PERMIT ALL SECTION
                         .requestMatchers("/swagger-ui/**").permitAll()
@@ -96,12 +120,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/orders/*").permitAll()
                         .requestMatchers("/api/orders/status/*").permitAll()
                         .requestMatchers("/api/client/eatery/**").permitAll()
-                                .requestMatchers(GET, "/api/eatery/*").permitAll()
-                                .requestMatchers("/api/admin/**").permitAll()
-                                .requestMatchers("/admin.html").permitAll()
-                                .requestMatchers("/redoc.html").permitAll()
-                                .requestMatchers("/index.html").permitAll()
-                                .requestMatchers("/favicon.ico").permitAll()
+                        .requestMatchers(GET, "/api/eatery/*").permitAll()
+                        .requestMatchers("/api/admin/**").permitAll()
+                        .requestMatchers("/admin.html").permitAll()
+                        .requestMatchers("/redoc.html").permitAll()
+                        .requestMatchers("/index.html").permitAll()
+                        .requestMatchers("/favicon.ico").permitAll()
 
                         .requestMatchers(apiUserRegister).permitAll()
 //                        .requestMatchers(HttpMethod.GET, "/api/table/**").permitAll()
@@ -115,31 +139,36 @@ public class SecurityConfig {
 //                        .requestMatchers("/api/eatery/**").hasAnyRole("EATERY_ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/api/order-items/**").hasAnyRole("USER", "ADMIN")
                         // ==============================================================    ALL OTHERS NEED TO HAVE JWT
-                        // Все остальные запросы требуют аутентификации (наличия валидного JWT)
+                        // All other requests require authentication (presence of a valid JWT)
                         .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(corsConfig))
                 .sessionManagement(session -> session
-                        // Устанавливаем политику создания сессий как STATELESS (без сохранения состояния)
-                        // Это критично для JWT, так как токен содержит всю необходимую информацию.
+                        // Set session creation policy to STATELESS (no session state)
+                        // This is critical for JWT, as the token contains all necessary information.
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
 
-        // Добавляем наш JWT-фильтр перед стандартным фильтром аутентификации по имени пользователя/паролю
-        // Это гарантирует, что JWT будет проверен перед тем, как Spring Security будет принимать решения об авторизации.
+        // Add our JWT filter before the standard UsernamePasswordAuthenticationFilter
+        // This ensures that the JWT is validated before Spring Security makes authorization decisions.
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-        // Добавляем фильтр проверки eateryId после JWT-фильтра
-        // Это гарантирует, что проверка eateryId будет выполнена после аутентификации пользователя
+        // Add the eateryIdCheckFilter after the JwtRequestFilter
+        // This ensures that the eateryId check is performed after user authentication
         http.addFilterAfter(eateryIdCheckFilter, JwtRequestFilter.class);
 
         return http.build();
     }
 
     /**
-     * Определяет провайдер аутентификации.
+     * Defines the AuthenticationProvider bean.
+     * <p>
+     * This provider uses a {@link DaoAuthenticationProvider} to authenticate users
+     * against the {@link CustomUserDetailsService} and uses the configured
+     * {@link PasswordEncoder} for password verification.
+     * </p>
      *
-     * @return Экземпляр AuthenticationProvider.
+     * @return An instance of {@link AuthenticationProvider}.
      */
     @Bean
     public AuthenticationProvider authenticationProvider() {

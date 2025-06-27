@@ -17,50 +17,67 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Утилитарный класс для работы с JWT (JSON Web Tokens).
- * Отвечает за создание, извлечение информации и валидацию токенов.
+ * Utility class for working with JWT (JSON Web Tokens).
+ * <p>
+ * This class is responsible for generating, extracting information from, and validating JWT tokens.
+ * It uses a secret key for signing and verifying tokens, and manages token expiration.
+ * </p>
  */
 @Component
 public class JwtUtil {
 
-    // Секретный ключ для подписи JWT. Должен быть достаточно длинным и храниться в безопасности.
-    // Рекомендуется получать его из переменных окружения или другого безопасного источника.
+    /**
+     * The secret key used for signing JWTs.
+     * It should be sufficiently long (at least 256 bits) and securely stored.
+     * In a production environment, it's recommended to retrieve this from environment variables
+     * or a secure configuration management system.
+     */
     @Value("${jwt.secret:yourVerySecretKeyThatIsAtLeast256BitsLongAndShouldBeChangedInProduction}")
     private String secret;
 
-    // Время жизни токена в миллисекундах (например, 10 часов)
+    /**
+     * The expiration time for JWT tokens in milliseconds (e.g., 10 hours).
+     */
     @Value("${jwt.expiration:36000000}")
-    private long expiration; // 10 часов
+    private long expiration; // 10 hours
 
+    /**
+     * Generates the signing key from the secret string.
+     *
+     * @return The {@link Key} used for signing and verifying JWTs.
+     */
     private Key getSigningKey() {
-        // Генерируем ключ из секретной строки
+        // Generate the key from the secret string
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
     /**
-     * Извлекает имя пользователя из JWT токена.
-     * @param token JWT токен.
-     * @return Имя пользователя.
+     * Extracts the username (subject) from the given JWT token.
+     *
+     * @param token The JWT token.
+     * @return The username extracted from the token.
      */
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
     /**
-     * Извлекает дату истечения срока действия из JWT токена.
-     * @param token JWT токен.
-     * @return Дата истечения срока действия.
+     * Extracts the expiration date from the given JWT token.
+     *
+     * @param token The JWT token.
+     * @return The expiration {@link Date} of the token.
      */
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
     /**
-     * Извлекает определенное утверждение (claim) из JWT токена.
-     * @param token JWT токен.
-     * @param claimsResolver Функция для разрешения утверждения.
-     * @param <T> Тип утверждения.
-     * @return Извлеченное утверждение.
+     * Extracts a specific claim from the JWT token using a claims resolver function.
+     *
+     * @param token          The JWT token.
+     * @param claimsResolver A function to resolve the desired claim from the {@link Claims}.
+     * @param <T>            The type of the claim to be extracted.
+     * @return The extracted claim.
      */
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
@@ -68,31 +85,37 @@ public class JwtUtil {
     }
 
     /**
-     * Извлекает все утверждения (claims) из JWT токена.
-     * @param token JWT токен.
-     * @return Объект Claims, содержащий все утверждения.
+     * Extracts all claims from the given JWT token.
+     *
+     * @param token The JWT token.
+     * @return A {@link Claims} object containing all claims from the token.
      */
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
     }
 
     /**
-     * Проверяет, истек ли срок действия JWT токена.
-     * @param token JWT токен.
-     * @return true, если срок действия токена истек, false в противном случае.
+     * Checks if the given JWT token has expired.
+     *
+     * @param token The JWT token.
+     * @return {@code true} if the token's expiration date is before the current date, {@code false} otherwise.
      */
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
     /**
-     * Генерирует JWT токен для заданного пользователя.
-     * @param userDetails Информация о пользователе.
-     * @return Сгенерированный JWT токен.
+     * Generates a JWT token for the given user details.
+     * <p>
+     * This method creates a token that includes the user's roles as claims.
+     * </p>
+     *
+     * @param userDetails The {@link UserDetails} object containing user information.
+     * @return The generated JWT token.
      */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        // Добавляем роли пользователя в claims
+        // Add user roles to claims
         claims.put("roles", userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));
@@ -100,18 +123,23 @@ public class JwtUtil {
     }
 
     /**
-     * Генерирует JWT токен для заданного пользователя с указанным ID ресторана.
-     * @param userDetails Информация о пользователе.
-     * @param eateryId ID активного ресторана.
-     * @return Сгенерированный JWT токен.
+     * Generates a JWT token for the given user details, including an eatery ID.
+     * <p>
+     * This method creates a token that includes the user's roles and a specific
+     * eatery ID as claims. This is useful for scoping user access to a particular eatery.
+     * </p>
+     *
+     * @param userDetails The {@link UserDetails} object containing user information.
+     * @param eateryId    The ID of the active eatery to be included in the token claims.
+     * @return The generated JWT token.
      */
     public String generateToken(UserDetails userDetails, Long eateryId) {
         Map<String, Object> claims = new HashMap<>();
-        // Добавляем роли пользователя в claims
+        // Add user roles to claims
         claims.put("roles", userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));
-        // Добавляем ID активного ресторана в claims
+        // Add the active eatery ID to claims if provided
         if (eateryId != null) {
             claims.put("eateryId", eateryId);
         }
@@ -119,10 +147,11 @@ public class JwtUtil {
     }
 
     /**
-     * Создает JWT токен.
-     * @param claims Утверждения (claims) для включения в токен.
-     * @param subject Субъект токена (обычно имя пользователя).
-     * @return Созданный JWT токен.
+     * Creates a JWT token with the specified claims and subject.
+     *
+     * @param claims  The claims to be included in the token.
+     * @param subject The subject of the token (typically the username).
+     * @return The created JWT token string.
      */
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
@@ -135,10 +164,15 @@ public class JwtUtil {
     }
 
     /**
-     * Валидирует JWT токен.
-     * @param token JWT токен.
-     * @param userDetails Информация о пользователе.
-     * @return true, если токен действителен для данного пользователя и не истек, false в противном случае.
+     * Validates the given JWT token against the provided user details.
+     * <p>
+     * The token is considered valid if its username matches the user details' username
+     * and the token has not expired.
+     * </p>
+     *
+     * @param token       The JWT token to validate.
+     * @param userDetails The {@link UserDetails} object to validate against.
+     * @return {@code true} if the token is valid for the given user and has not expired, {@code false} otherwise.
      */
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);

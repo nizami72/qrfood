@@ -13,6 +13,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * REST controller for managing QR code generation and retrieval.
+ * <p>
+ * This controller provides API endpoints for generating QR code images
+ * for specific eatery tables.
+ * </p>
+ */
 @Log4j2
 @RestController
 @RequestMapping("${segment.api.qr-code}")
@@ -21,16 +28,24 @@ public class QrController {
 
     private final QrService qrService;
 
+    /**
+     * Constructs a QrController with a QrService dependency.
+     *
+     * @param qrService The service for handling QR code business logic.
+     */
     public QrController(QrService qrService) {
         this.qrService = qrService;
     }
 
     /**
-     * Generate a QR code image for a specific eatery table.
+     * Generates and retrieves a QR code image for a specific eatery table.
+     * <p>
+     * The QR code content will typically link to the menu for the specified table.
+     * </p>
      *
-     * @param eateryId the ID of the eatery
-     * @param tableNumber the table number
-     * @return QR code image as byte array
+     * @param eateryId    The ID of the eatery.
+     * @param tableNumber The number of the table for which to generate the QR code.
+     * @return A {@link ResponseEntity} containing the QR code image as a byte array (PNG format).
      */
     @Operation(summary = "Generate QR code for table", description = "Generates a QR code image for a specific eatery table")
     @ApiResponses(value = {
