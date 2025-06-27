@@ -6,6 +6,7 @@ import az.qrfood.backend.user.dto.RegisterRequest;
 import az.qrfood.backend.user.dto.RegisterResponse;
 import az.qrfood.backend.user.dto.UserRequest;
 import az.qrfood.backend.user.dto.UserResponse;
+import az.qrfood.backend.user.entity.Role;
 import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.entity.UserProfile;
 import az.qrfood.backend.user.repository.UserProfileRepository;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -49,13 +51,7 @@ public class UserService {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new IllegalStateException("Username already exists: " + request.getUsername());
         }
-
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRoles(request.getRoles() != null ? request.getRoles() : new HashSet<>());
-
-        User savedUser = userRepository.save(user);
+        User savedUser = createUser(request.getUsername(), request.getPassword(), request.getRoles());
         return mapToResponse(savedUser);
     }
 
@@ -178,22 +174,26 @@ public class UserService {
      * @return
      */
     public ResponseEntity<?> createAdminUser(RegisterRequest registerRequest) {
+
+        String email = registerRequest.getUser().getEmail();
+        if (userRepository.findByUsername(email).isPresent()) {
+            log.error("User with this email already exists!");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                    new RegisterResponse(
+                            null,
+                            null,
+                            email,
+                            "User with such email already registered!",
+                            false));
+        }
+
         Long eateryId = null;
         // Extract user information from the DTO
         RegisterRequest.UserDto userDto = registerRequest.getUser();
         RegisterRequest.UserProfileRequest userProfileRequest = registerRequest.getUserProfileRequest();
 
         // Create a new User entity
-        User user = new User();
-        user.setUsername(userDto.getEmail());
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            log.error("User with this email already exists!");
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "Пользователь с таким email уже существует!"));
-        }
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setRoles(registerRequest.getUser().getRoles());
-        // Save the user to the database
-        user = userRepository.save(user);
+        User user = createUser(userDto.getEmail(), userDto.getPassword(), userDto.getRoles());
 
         UserProfile userProfile = userProfileService.createUserProfile(user, userProfileRequest);
 
@@ -233,17 +233,13 @@ public class UserService {
         RegisterRequest.UserDto userDto = registerRequest.getUser();
         RegisterRequest.UserProfileRequest userProfileRequest = registerRequest.getUserProfileRequest();
 
-        // Create a new User entity
-        User user = new User();
-        user.setUsername(userDto.getEmail());
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+        if (userRepository.findByUsername(userDto.getEmail()).isPresent()) {
             log.error("User with this email already exists!");
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "Пользователь с таким email уже существует!"));
         }
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setRoles(registerRequest.getUser().getRoles());
-        // Save the user to the database
-        user = userRepository.save(user);
+
+        // Create a new User entity nad save it
+        User user = createUser(userDto.getEmail(), userDto.getPassword(), userDto.getRoles());
 
         UserProfile userProfile = userProfileService.createUserProfile(user, userProfileRequest);
         userProfileService.addRestaurantToProfile(userProfile, eateryId);
@@ -274,5 +270,13 @@ public class UserService {
                         .collect(Collectors.toSet()),
                 user.getProfile() != null
         );
+    }
+
+    private User createUser(String userName, String password, Set<Role> roles) {
+        User user = new User();
+        user.setUsername(userName);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRoles(roles != null ? roles : new HashSet<>());
+        return userRepository.save(user);
     }
 }
