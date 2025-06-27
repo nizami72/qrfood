@@ -2,6 +2,14 @@
 
 A comprehensive QR code-based food ordering system for restaurants and eateries. This application allows customers to scan QR codes at restaurant tables to view menus and place orders, while providing restaurant staff with tools to manage menus, track orders, and streamline the dining experience.
 
+## TODO List
+1. Finish order-decision page navigation buttons and translation
+2. Draw flow of pages interaction
+3. Make a decision where all orders pages should appear
+4. Make a decision what should be header for all pages
+5. Add headers to all pages
+6. Decide what if the same email belomgs to different eateries
+
 ## Features
 
 - **QR Code Generation**: Create unique QR codes for each table in your restaurant
@@ -121,12 +129,7 @@ This project is licensed under the [MIT License](LICENSE).
 ## Cookie Flow
 The UUID cookie is installed on the device when a client has confirmed its order 
  
-## TODO List
-1. Finish order-decision page navigation buttons and translation
-2. Draw flow of pages interaction
-3. Make a decision where all orders pages should appear
-4. Make a decision what should be header for all pages
-5. Add headers to all pages
+
 
 
 
