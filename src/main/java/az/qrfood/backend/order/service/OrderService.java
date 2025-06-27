@@ -187,7 +187,7 @@ public class OrderService {
         // Update only allowed fields
         if (orderDTO.getStatus() != null) {
             try {
-                OrderStatus status = OrderStatus.valueOf(orderDTO.getStatus());
+                OrderStatus status = orderDTO.getStatus();
                 order.setStatus(status);
             } catch (IllegalArgumentException e) {
                 log.warn("Invalid status: {}", orderDTO.getStatus());

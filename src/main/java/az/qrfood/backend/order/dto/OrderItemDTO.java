@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import java.math.BigDecimal;
 
 /**
@@ -19,6 +20,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Builder
+@ToString
 public class OrderItemDTO {
 
     /**
@@ -29,7 +31,7 @@ public class OrderItemDTO {
     /**
      * The ID of the dish (menu item) being ordered.
      */
-    private Long dishId;
+    private Long dishId;// todo: orderItemId vs id
 
     /**
      * The ID of the order item itself, potentially distinct from the dish ID.
@@ -56,20 +58,5 @@ public class OrderItemDTO {
      */
     private BigDecimal price;
 
-    /**
-     * Provides a string representation of the OrderItemDTO object.
-     *
-     * @return A formatted string including the order item's details.
-     */
-    @Override
-    public String toString() {
-        return "{\"OrderItemDTO\":\n{"
-                + "        \"id\":\"" + id + "\""
-                + ",         \"dishId\":\"" + dishId + "\""
-                + ",         \"orderItemId\":\"" + orderItemId + "\""
-                + ",         \"name\":\"" + name + "\""
-                + ",         \"quantity\":\"" + quantity + "\""
-                + ",         \"note\":\"" + note + "\""
-                + "\n}\n}";
-    }
+
 }

@@ -98,7 +98,7 @@ class OrderControllerTest {
         // Simplified order with minimal required fields
         OrderDto orderDto = OrderDto.builder()
                 .tableId(tableId)
-                .status("CREATED")
+                .status(OrderStatus.CREATED)
                 .tableNumber("Table - 1")
                 .note("Prepare by 25 minutes please!")
                 .items(List.of(

@@ -1,10 +1,12 @@
 package az.qrfood.backend.order.dto;
 
+import az.qrfood.backend.order.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -36,7 +38,7 @@ public class OrderDto {
      * The current status of the order (e.g., "CREATED", "PREPARING", "READY").
      * This maps to {@link az.qrfood.backend.order.OrderStatus}.
      */
-    private String status;
+    private OrderStatus status;
 
     /**
      * The timestamp when the order was created.
@@ -61,6 +63,6 @@ public class OrderDto {
     /**
      * The total price of the order.
      */
-    private double orderPrice;
+    private BigDecimal orderPrice;
 
 }

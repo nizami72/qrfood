@@ -51,7 +51,7 @@ public class OrderMapper {
         return OrderDto.builder()
                 .id(order.getId())
                 .tableId(order.getTable().getId())
-                .status(order.getStatus().name())
+                .status(order.getStatus())
                 .createdAt(order.getCreatedAt())
                 .tableNumber(order.getTable().getTableNumber())
                 .note(order.getNote())
@@ -99,12 +99,12 @@ public class OrderMapper {
      * @param orderItems The list of {@link OrderItem}s in the order.
      * @return The total price of the order as a double.
      */
-    private double calculatePrice(List<OrderItem> orderItems) {
+    private BigDecimal calculatePrice(List<OrderItem> orderItems) {
         return orderItems.stream()
-                .mapToDouble(orderItem -> {
-                    return orderItem.getQuantity() * orderItem.getDishEntity().getPrice().doubleValue();
+                .map(orderItem -> {
+                    return orderItem.getDishEntity().getPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
                 })
-                .sum();
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
 }

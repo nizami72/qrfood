@@ -46,6 +46,6 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
      * @param restaurantId The ID of the restaurant to search for within user profiles.
      * @return A {@link List} of {@link UserProfile} entities associated with the given restaurant ID.
      */
-    @Query("SELECT up FROM UserProfile up JOIN up.restaurantIds rid WHERE rid WHERE rid = :restaurantId")
+    @Query("SELECT up FROM UserProfile up JOIN up.restaurantIds rid WHERE rid = :restaurantId")
     List<UserProfile> findByRestaurantId(@Param("restaurantId") Long restaurantId);
 }
