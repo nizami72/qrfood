@@ -7,6 +7,7 @@ import az.qrfood.backend.qr.entity.QrCode;
 import az.qrfood.backend.qr.service.QrService;
 import az.qrfood.backend.table.dto.TableDto;
 import az.qrfood.backend.table.entity.TableInEatery;
+import az.qrfood.backend.table.entity.TableStatus;
 import az.qrfood.backend.table.repository.TableRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,12 +67,13 @@ public class TableService {
         Eatery eatery = eateryRepository.findById(tableDto.eateryId())
                 .orElseThrow(() -> new EntityNotFoundException("Eatery not found with id: " + tableDto.eateryId()));
 
+        TableStatus s = tableDto.status();
         TableInEatery table = TableInEatery.builder()
                 .eatery(eatery)
                 .tableNumber(tableDto.number())
                 .seats(tableDto.seats())
                 .note(tableDto.note())
-                .status(tableDto.status())
+                .status(s == null ? TableStatus.ACTIVE :tableDto.status())
                 .build();
 
         TableInEatery savedTable = tableRepository.save(table);
