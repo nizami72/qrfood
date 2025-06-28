@@ -173,7 +173,7 @@ public class UserApiTest {
         String superAdminJwt = login(superAdminMail, superAdminPassword);
 
         // create admin and eatery
-        adminRegisterRequest = TestUtil.createRegisterRequest();
+        adminRegisterRequest = TestUtil.createRegisterRequest(true);
         adminRegisterResponse = postUserAndEateryAsAdmin(superAdminJwt, adminRegisterRequest,
                 uriSuperAdminRegister + uriAdminEateryRegister)
                 .as(RegisterResponse.class);
@@ -188,9 +188,9 @@ public class UserApiTest {
         Long eatery = adminRegisterResponse.eateryId();
         String adminJwt = login(adminRegisterRequest.getUser().getEmail(), adminRegisterRequest.getUser().getPassword());
         List<RegisterRequest> requests = List.of(
-                TestUtil.createRegisterRequest(Set.of(Role.WAITER)),
-                TestUtil.createRegisterRequest(Set.of(Role.CASHIER)),
-                TestUtil.createRegisterRequest(Set.of(Role.KITCHEN_ADMIN))
+                TestUtil.createRegisterRequest(Set.of(Role.WAITER), false),
+                TestUtil.createRegisterRequest(Set.of(Role.CASHIER), false),
+                TestUtil.createRegisterRequest(Set.of(Role.KITCHEN_ADMIN), false)
         );
         generalUserRegisterResponses = requests.stream()
                 .map(r -> {

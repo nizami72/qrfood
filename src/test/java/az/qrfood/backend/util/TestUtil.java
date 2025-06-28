@@ -6,8 +6,17 @@ import java.util.Set;
 
 public class TestUtil {
 
-    public static RegisterRequest createRegisterRequest() {
+    /**
+     * The first user always John Kimber
+     *
+     * @param first if true, first is created. random another way
+     * @return RegisterRequest
+     */
+    public static RegisterRequest createRegisterRequest(boolean first) {
         String name = FakeData.user(10);
+        if(first) {
+            name = "John Kimber";
+        }
         String mail = FakeData.mail(name);
         String eateryName = FakeData.eateryName();
         String phone = FakeData.phones().get(0);
@@ -30,8 +39,8 @@ public class TestUtil {
                 .build();
     }
 
-    public static RegisterRequest createRegisterRequest(Set<Role> role) {
-        RegisterRequest r = createRegisterRequest();
+    public static RegisterRequest createRegisterRequest(Set<Role> role, boolean first) {
+        RegisterRequest r = createRegisterRequest(first);
         r.getUser().setRoles(role);
         return r;
     }

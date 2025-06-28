@@ -8,6 +8,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +40,24 @@ public class UserExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+
+    /**
+     * Handles {@link UserAlreadyExistsException} and returns a 409 Conflict response.
+     * This exception is thrown when attempting to create a user that already exists.
+     *
+     * @param ex The caught {@link UserAlreadyExistsException}.
+     * @return A {@link ResponseEntity} with an {@link ErrorResponse} indicating the conflict.
+     */
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
 
     /**
      * Handles {@link IllegalStateException} and returns a 409 Conflict response.

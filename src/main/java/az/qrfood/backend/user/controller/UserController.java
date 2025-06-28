@@ -102,7 +102,7 @@ public class UserController {
     /**
      * PUT a user.
      *
-     * @param userId the user ID
+     * @param userId  the user ID
      * @param request the user request
      * @return the updated user response
      */
@@ -141,7 +141,6 @@ public class UserController {
     }
 
 
-
     /**
      * POST new not admin user and assigns it to an already existing eatery.
      *
@@ -155,8 +154,8 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping("${user.general}")
-    public ResponseEntity<?> postGeneralUser(@RequestBody RegisterRequest registerRequest, @PathVariable Long eateryId) {
-        return userService.createGeneralUser(registerRequest, eateryId);
+    public ResponseEntity<?> registerEateryStaff(@RequestBody RegisterRequest registerRequest, @PathVariable Long eateryId) {
+        return userService.registerEateryStaff(registerRequest, eateryId);
     }
 
 

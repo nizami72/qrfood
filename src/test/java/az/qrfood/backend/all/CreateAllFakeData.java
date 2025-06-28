@@ -68,7 +68,7 @@ public class CreateAllFakeData {
     @BeforeAll
     void registerUserAndEatery() {
 
-        RegisterRequest authPayload = TestUtil.createRegisterRequest(Set.of(Role.EATERY_ADMIN));
+        RegisterRequest authPayload = TestUtil.createRegisterRequest(Set.of(Role.EATERY_ADMIN), true);
         userName = authPayload.getUser().getEmail();
         password = authPayload.getUser().getPassword();
 

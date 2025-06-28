@@ -9,6 +9,7 @@ import az.qrfood.backend.user.dto.UserResponse;
 import az.qrfood.backend.user.entity.Role;
 import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.entity.UserProfile;
+import az.qrfood.backend.user.exception.UserAlreadyExistsException;
 import az.qrfood.backend.user.repository.UserProfileRepository;
 import az.qrfood.backend.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,9 +20,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -55,11 +56,8 @@ public class UserService {
      */
     @Transactional
     public UserResponse createUser(UserRequest request) {
-        // Check if a username already exists
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new IllegalStateException("Username already exists: " + request.getUsername());
-        }
-        User savedUser = createUser(request.getUsername(), request.getPassword(), request.getRoles());
+        validateUserDoesNotExist(request.getUsername());
+        User savedUser = createUserEntity(request.getUsername(), request.getPassword(), request.getRoles());
         return mapToResponse(savedUser);
     }
 
@@ -79,15 +77,12 @@ public class UserService {
     /**
      * Retrieves a list of all users that belong to a specific eatery.
      *
-     * @param id The ID of the eatery.
+     * @param eateryId The ID of the eatery.
      * @return A list of {@link UserResponse} for users associated with the specified eatery.
      */
     @Transactional(readOnly = true)
-    public List<UserResponse> getAllUsers(Long id) {
-        // Find all user profiles associated with the given restaurant ID
-        List<UserProfile> profiles = userProfileRepository.findByRestaurantId(id);
-
-        // Extract the users from the profiles and map them to UserResponse objects
+    public List<UserResponse> getAllUsers(Long eateryId) {
+        List<UserProfile> profiles = userProfileRepository.findByRestaurantId(eateryId);
         return profiles.stream()
                 .map(UserProfile::getUser)
                 .map(this::mapToResponse)
@@ -103,8 +98,7 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public UserResponse getUserById(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        User user = findUserById(id);
         return mapToResponse(user);
     }
 
@@ -117,8 +111,7 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public UserResponse getUserByUsername(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
+        User user = findUserByUsername(username);
         return mapToResponse(user);
     }
 
@@ -136,16 +129,12 @@ public class UserService {
      */
     @Transactional
     public UserResponse updateUser(Long id, UserRequest request) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        User user = findUserById(id);
 
-        // Check if username is being changed and if it already exists
-        if (!user.getUsername().equals(request.getUsername()) &&
-                userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new IllegalStateException("Username already exists: " + request.getUsername());
+        if (!user.getUsername().equals(request.getUsername())) {
+            validateUserDoesNotExist(request.getUsername());
+            user.setUsername(request.getUsername());
         }
-
-        user.setUsername(request.getUsername());
 
         // Only update password if it's provided
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
@@ -159,7 +148,8 @@ public class UserService {
 
         // Only update name if it provided
         if (request.getName() != null) {
-            UserProfile userProfile = userProfileRepository.findByUser(user).orElseThrow();
+            UserProfile userProfile = userProfileRepository.findByUser(user)
+                    .orElseThrow(() -> new EntityNotFoundException("User profile not found for user: " + user.getUsername()));
             userProfile.setName(request.getName());
             userProfileRepository.save(userProfile);
             log.debug("Updated name of the user [{}]", user.getUsername());
@@ -183,129 +173,78 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    /**
-     * Creates a new user with the 'EATERY_ADMIN' role and optionally associates them with a new eatery.
-     * <p>
-     * This method handles user registration, profile creation, and if restaurant details are provided,
-     * it creates a new eatery and links it to the user's profile.
-     * </p>
-     *
-     * @param registerRequest The {@link RegisterRequest} containing user and optional restaurant details.
-     * @return A {@link ResponseEntity} with a {@link RegisterResponse} indicating the outcome of the registration.
-     */
-    public ResponseEntity<?> createAdminUser(RegisterRequest registerRequest) {
+    @Transactional
+    public ResponseEntity<RegisterResponse> registerAdminAndEatery(RegisterRequest request) {
+        return registerUser(request, null, true);
+    }
 
-        String email = registerRequest.getUser().getEmail();
-        if (userRepository.findByUsername(email).isPresent()) {
-            log.error("User with this email already exists!");
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                    new RegisterResponse(
-                            null,
-                            null,
-                            email,
-                            "User with such email already registered!",
-                            false));
-        }
+    @Transactional
+    public ResponseEntity<RegisterResponse> registerEateryStaff(RegisterRequest request, Long eateryId) {
+        return registerUser(request, eateryId, false);
+    }
 
-        Long eateryId = null;
-        // Extract user information from the DTO
-        RegisterRequest.UserDto userDto = registerRequest.getUser();
-        RegisterRequest.UserProfileRequest userProfileRequest = registerRequest.getUserProfileRequest();
+    private ResponseEntity<RegisterResponse> registerUser(RegisterRequest request, Long eateryId, boolean isAdmin) {
+        validateUserDoesNotExist(request.getUser().getEmail());
 
-        // Create a new User entity
-        User user = createUser(userDto.getEmail(), userDto.getPassword(), userDto.getRoles());
+        User user = createUserEntity(request.getUser().getEmail(), request.getUser().getPassword(), request.getUser().getRoles());
+        UserProfile userProfile = userProfileService.createUserProfile(user, request.getUserProfileRequest());
 
-        UserProfile userProfile = userProfileService.createUserProfile(user, userProfileRequest);
-
-        // Extract restaurant information from the DTO
-        RegisterRequest.RestaurantDto restaurantDto = registerRequest.getRestaurant();
-
-        if (restaurantDto != null) {
-            // Create a new EateryDto object
-            EateryDto eateryDto = new EateryDto();
-            eateryDto.setName(restaurantDto.getName());
-            eateryDto.setNumberOfTables(1); // Default to 1 table
-            eateryDto.setOwnerProfileId(userProfile.getId()); // Set the owner profile ID
-
-            // Save the restaurant to the database
-            eateryId = eateryService.createEatery(eateryDto);
-
-            // Add the restaurant ID to the user profile
+        if (isAdmin && request.getRestaurant() != null) {
+            eateryId = createAndLinkEatery(userProfile, request.getRestaurant());
+        } else if (eateryId != null) {
             userProfileService.addRestaurantToProfile(userProfile, eateryId);
-
-            log.debug("Eatery [{}] successfully created.", eateryId);
         }
 
-        log.debug("User [{}] successfully created.", userProfile.getUser());
-
+        log.debug("User [{}] successfully created.", user.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new RegisterResponse(
-                        user.getId(),
-                        eateryId,
-                        userProfile.getName(),
-                        "User and a eatery successfully created!",
-                        true));
+                .body(new RegisterResponse(user.getId(), eateryId, userProfile.getName(), "User registered successfully", true));
     }
 
-    public ResponseEntity<?> createGeneralUser(RegisterRequest registerRequest, Long eateryId) {
-
-        // Extract user information from the DTO
-        RegisterRequest.UserDto userDto = registerRequest.getUser();
-        RegisterRequest.UserProfileRequest userProfileRequest = registerRequest.getUserProfileRequest();
-
-        if (userRepository.findByUsername(userDto.getEmail()).isPresent()) {
-            log.error("User with this email already exists!");
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "Пользователь с таким email уже существует!"));
+    private void validateUserDoesNotExist(String email) {
+        if (userRepository.findByUsername(email).isPresent()) {
+            throw new UserAlreadyExistsException("User with email " + email + " already exists.");
         }
-
-        // Create a new User entity nad save it
-        User user = createUser(userDto.getEmail(), userDto.getPassword(), userDto.getRoles());
-
-        UserProfile userProfile = userProfileService.createUserProfile(user, userProfileRequest);
-        userProfileService.addRestaurantToProfile(userProfile, eateryId);
-        log.debug("User [{}] successfully created.", userProfile.getUser());
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new RegisterResponse(
-                        user.getId(),
-                        eateryId,
-                        userProfile.getName(),
-                        "User and a eatery successfully created!",
-                        true));
     }
 
-    /**
-     * Maps a {@link User} entity to a {@link UserResponse} DTO.
-     *
-     * @param user The {@link User} entity to map.
-     * @return The corresponding {@link UserResponse} DTO.
-     * @throws EntityNotFoundException if the user's profile is not found.
-     */
+    private User createUserEntity(String username, String password, Set<Role> roles) {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRoles(roles != null ? roles : new HashSet<>());
+        return userRepository.save(user);
+    }
+
+    private Long createAndLinkEatery(UserProfile profile, RegisterRequest.RestaurantDto restaurantDto) {
+        EateryDto eateryDto = new EateryDto();
+        eateryDto.setName(restaurantDto.getName());
+        eateryDto.setNumberOfTables(1);
+        eateryDto.setOwnerProfileId(profile.getId());
+        Long eateryId = eateryService.createEatery(eateryDto);
+        userProfileService.addRestaurantToProfile(profile, eateryId);
+        return eateryId;
+    }
+
+    private User findUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+    }
+
+    private User findUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
+    }
+
     private UserResponse mapToResponse(User user) {
+        UserProfile userProfile = userProfileRepository.findByUser(user)
+                .orElseThrow(() -> new EntityNotFoundException("User profile not found for user: " + user.getUsername()));
         return new UserResponse(
                 user.getId(),
                 user.getUsername(),
-                userProfileRepository.findByUser(user).orElseThrow(() -> new EntityNotFoundException("User entity not found: " + user)).getName(),
+                userProfile.getName(),
                 user.getRoles().stream()
                         .map(Enum::name)
                         .collect(Collectors.toSet()),
                 user.getProfile() != null
         );
-    }
-
-    /**
-     * Creates and saves a new {@link User} entity.
-     *
-     * @param userName The username (email) for the new user.
-     * @param password The plain-text password for the new user.
-     * @param roles    The set of {@link Role}s to assign to the new user.
-     * @return The newly created and saved {@link User} entity.
-     */
-    private User createUser(String userName, String password, Set<Role> roles) {
-        User user = new User();
-        user.setUsername(userName);
-        user.setPassword(passwordEncoder.encode(password));
-        user.setRoles(roles != null ? roles : new HashSet<>());
-        return userRepository.save(user);
     }
 }

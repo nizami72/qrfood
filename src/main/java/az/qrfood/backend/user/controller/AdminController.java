@@ -68,7 +68,7 @@ public class AdminController {
     })
     @PostMapping("${admin.eatery}")
     public ResponseEntity<?> postEateryAdminUser(@RequestBody RegisterRequest registerRequest) {
-        return userService.createAdminUser(registerRequest);
+        return userService.registerAdminAndEatery(registerRequest);
     }
 
     /**
