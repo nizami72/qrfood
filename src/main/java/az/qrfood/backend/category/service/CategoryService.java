@@ -176,6 +176,7 @@ public class CategoryService {
                     .collect(Collectors.toList())
             );
             dto.setCategoryId(category.getId());
+            dto.setImage(category.getCategoryImageFileName());
 
             category.getTranslations().forEach(t -> {
                 if (t.getLang().equals(Language.az.name())) {
@@ -238,7 +239,7 @@ public class CategoryService {
 
         // Update image if provided
         if (multipartFile != null && !multipartFile.isEmpty()) {
-            // Generate new filename for the image
+            // Generate a new filename for the image
             String newFileName = Util.generateFileName() + ".webp";
             category.setCategoryImageFileName(newFileName);
 

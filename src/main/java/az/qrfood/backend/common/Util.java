@@ -38,7 +38,7 @@ public class Util {
      * @param <SR>             The type of the source object.
      * @param <DS>             The type of the destination object.
      * @return A new instance of the destination class with properties copied from the source,
-     *         or {@code null} if an error occurs during instantiation.
+     * or {@code null} if an error occurs during instantiation.
      */
     public static <SR, DS> DS copyProperties(SR source, Class<DS> destinationClass) {
         DS target = null;
@@ -84,7 +84,7 @@ public class Util {
             // Format: link + timestamp
             String timestamp = LocalDateTime.now()
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            String line = timestamp + " - " + "[" + url + "]" + "(" + url +")" + System.lineSeparator();
+            String line = timestamp + " - " + "[" + url + "]" + "(" + url + ")" + System.lineSeparator();
 
             // Append to the file
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(LINKS_FILE_PATH, true))) {
@@ -102,7 +102,7 @@ public class Util {
      *
      * @param folderName The absolute or relative path of the folder to create.
      * @return {@code true} if the folder exists after the operation (either created or already existed),
-     *         {@code false} if the folder could not be created.
+     * {@code false} if the folder could not be created.
      */
     public static boolean createFolderIfNotExists(String folderName) {
         File folder = new File(folderName);
@@ -189,6 +189,22 @@ public class Util {
             url.append('?').append(queryString);
         }
         return url.toString();
+    }
+
+    public static void deleteFiles(String sFolder) {
+        File folder = new File(sFolder);
+        if (folder.exists() && folder.isDirectory()) {
+            File[] files = folder.listFiles();
+
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isFile()) {
+                        boolean deleted = file.delete();
+                        log.debug("the file [{}] deleted form [{}]", deleted, sFolder);
+                    }
+                }
+            }
+        }
     }
 }
 
