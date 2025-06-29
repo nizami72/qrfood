@@ -32,7 +32,7 @@ public class OrderItemControllerTest {
 
     //<editor-fold desc="Fields">
     // Hardcoded values to avoid property resolution issues
-    String baseUrl = "http://localhost:8080";
+    String baseUrl = "http://localhost:8081";
     String eateryId = "2";
     // the login end point
     String segmentApiAuth = "/api/auth/login";

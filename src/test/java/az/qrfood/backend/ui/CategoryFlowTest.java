@@ -1,5 +1,4 @@
 package az.qrfood.backend.ui;
-import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.util.FakeData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,12 +11,9 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
 import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -31,7 +27,7 @@ public class CategoryFlowTest {
     // Test data
     private String testEmail;
     private String testPassword;
-    private int pause = 500;
+    private int pause = 2000;
 
     @BeforeEach
     public void setUp() {
@@ -46,7 +42,7 @@ public class CategoryFlowTest {
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
         // Set test credentials
-        testEmail = "nizami.budagov@gmail.com";
+        testEmail = "JohnKimber@qrfood.az";
         testPassword = "qqqq1111";
     }
 
@@ -94,17 +90,18 @@ public class CategoryFlowTest {
             System.out.println("Language selector not found or not accessible. Continuing with test.");
         }
 
-        // 5. Wait for admin page to load and click Category Management
-        // Note: Using XPath here as there is no element ID for the Category Management button
-        WebElement categoryManagementButton = wait.until(
-            ExpectedConditions.elementToBeClickable(By.xpath("//span[contains(text(), 'Category Management')]")));
-        categoryManagementButton.click();
+        // 5. Navigate directly to the Category Management page
+        driver.get("http://192.168.1.76:5173/admin/categories");
+
+        // Wait for the page to load by checking for the Add Category button
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("add-category-button")));
 
         Thread.sleep(pause);
 
         // 6. Click Add Category
-        // Note: Using XPath here as there is no element ID for the Add Category button
-        WebElement addCategoryButton = driver.findElement(By.id("126"));
+        // Using ID-based selector with explicit wait
+        WebElement addCategoryButton = wait.until(
+            ExpectedConditions.visibilityOfElementLocated(By.id("add-category-button")));
         addCategoryButton.click();
 
         Thread.sleep(pause);
@@ -121,63 +118,49 @@ public class CategoryFlowTest {
         String imageName = c.get("image").toString();
 
         // 8. Enter category names in different languages
-        // Note: Using XPath here as there are no element IDs for the input fields
+        // Using ID-based selectors
         // Enter Azerbaijani name
-        WebElement nameAzInput = driver.findElement(By.id("127"));
+        WebElement nameAzInput = driver.findElement(By.id("category-name-az"));
         nameAzInput.clear();
         nameAzInput.sendKeys(nameAz);
 
         // Enter English name
-        WebElement nameEnInput = driver.findElement(By.id("128"));
+        WebElement nameEnInput = driver.findElement(By.id("category-name-en"));
         nameEnInput.clear();
         nameEnInput.sendKeys(nameEn);
 
         // Enter Russian name
-        WebElement nameRuInput = driver.findElement(By.id("129"));
+        WebElement nameRuInput = driver.findElement(By.id("category-name-ru"));
         nameRuInput.clear();
         nameRuInput.sendKeys(nameRu);
 
         Thread.sleep(pause);
 
         // 9. Upload image
-        // Note: Using XPath here as there is no element ID for the file input
-        WebElement fileInput = driver.findElement(By.xpath("//input[@type='file']"));
+        // Using ID-based selector
+        WebElement fileInput = driver.findElement(By.id("category-image-upload"));
         String imagePath = "/home/nizami/Dropbox/projects/Java/qrfood/src/test/resources/image/" + imageName;
         fileInput.sendKeys(imagePath);
 
         Thread.sleep(pause);
 
         // 10. Click Add Category button to submit the form
-        // Note: Using XPath here as there is no element ID for the Add Category button
-        WebElement submitButton = driver.findElement(
-            By.xpath("//button[contains(text(), 'Add Category')]"));
+        // Using ID-based selector
+        WebElement submitButton = driver.findElement(By.id("category-form-submit"));
         submitButton.click();
 
         // 11. Wait for the category to be added and verify the buttons
         Thread.sleep(2000); // Wait a bit longer for the operation to complete
 
-        // 12. Verify that there are 3 buttons with the expected text
-        // Note: Using tagName here as there are no element IDs for the buttons
-        List<WebElement> buttons = driver.findElements(By.tagName("button"));
+        // 12. Verify that there are 3 buttons with the expected IDs
+        // Using CSS selectors to find buttons with IDs that start with specific prefixes
+        List<WebElement> editCategoryButtons = driver.findElements(By.cssSelector("button[id^='edit-category-']"));
+        List<WebElement> editDishesButtons = driver.findElements(By.cssSelector("button[id^='edit-dishes-']"));
+        List<WebElement> deleteButtons = driver.findElements(By.cssSelector("button[id^='delete-category-']"));
 
-        boolean hasEditCategory = false;
-        boolean hasEditDishes = false;
-        boolean hasDelete = false;
-
-        for (WebElement button : buttons) {
-            String buttonText = button.getText();
-            if (buttonText.contains("Edit Category")) {
-                hasEditCategory = true;
-            } else if (buttonText.contains("Edit Dishes")) {
-                hasEditDishes = true;
-            } else if (buttonText.contains("Delete")) {
-                hasDelete = true;
-            }
-        }
-
-        // Assert that all three buttons are present
-        assertTrue(hasEditCategory, "Edit Category button should be present");
-        assertTrue(hasEditDishes, "Edit Dishes button should be present");
-        assertTrue(hasDelete, "Delete button should be present");
+        // Assert that all three types of buttons are present
+        assertTrue(!editCategoryButtons.isEmpty(), "Edit Category button should be present");
+        assertTrue(!editDishesButtons.isEmpty(), "Edit Dishes button should be present");
+        assertTrue(!deleteButtons.isEmpty(), "Delete button should be present");
     }
 }

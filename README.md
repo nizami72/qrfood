@@ -41,8 +41,8 @@ A comprehensive, QR code-based food ordering system designed for restaurants and
 
 3.  **Access the services:**
     - **Frontend:** [http://localhost:5173](http://localhost:5173)
-    - **Backend API:** [http://localhost:8080](http://localhost:8080)
-    - **Swagger API Docs:** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+    - **Backend API:** [http://localhost:8081](http://localhost:8081)
+    - **Swagger API Docs:** [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html)
 
 ### Manual Installation
 For detailed instructions on setting up the backend and frontend services manually, please refer to the `MANUAL_SETUP.md` guide. *(I can create this file for you next)*.

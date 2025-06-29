@@ -34,7 +34,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
  */
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true) // Enables Spring Security's pre/post annotations for method-level security
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+// Enables Spring Security's pre/post annotations for method-level security
 public class SecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
@@ -52,12 +53,12 @@ public class SecurityConfig {
     /**
      * Constructs the SecurityConfig with necessary dependencies.
      *
-     * @param passwordEncoder    The password encoder for user authentication.
-     * @param customEntryPoint   The custom authentication entry point for handling unauthorized access.
-     * @param userDetailsService The custom user details service for loading user-specific data.
-     * @param jwtRequestFilter   The JWT request filter for validating JWT tokens.
+     * @param passwordEncoder     The password encoder for user authentication.
+     * @param customEntryPoint    The custom authentication entry point for handling unauthorized access.
+     * @param userDetailsService  The custom user details service for loading user-specific data.
+     * @param jwtRequestFilter    The JWT request filter for validating JWT tokens.
      * @param eateryIdCheckFilter The filter for checking eatery ID permissions.
-     * @param corsConfig         The CORS configuration source.
+     * @param corsConfig          The CORS configuration source.
      */
     public SecurityConfig(
             PasswordEncoder passwordEncoder,
@@ -108,39 +109,40 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for REST APIs, as JWT is used
                 .authorizeHttpRequests(authorize -> authorize
-                        // =======================================================================    PERMIT ALL SECTION
-                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/swagger-ui.html").permitAll()
-                        .requestMatchers("/v3/api-docs/**").permitAll()
-                        .requestMatchers("/v3/api-docs").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/qrcode/**").permitAll()
-                        .requestMatchers("/image/**").permitAll()
-                        .requestMatchers("/api/config/image-paths").permitAll()
-                        .requestMatchers("/api/orders/*").permitAll()
-                        .requestMatchers("/api/orders/status/*").permitAll()
-                        .requestMatchers("/api/client/eatery/**").permitAll()
-                        .requestMatchers(GET, "/api/eatery/*").permitAll()
-                        .requestMatchers("/api/admin/**").permitAll()
-                        .requestMatchers("/admin.html").permitAll()
-                        .requestMatchers("/redoc.html").permitAll()
-                        .requestMatchers("/index.html").permitAll()
-                        .requestMatchers("/favicon.ico").permitAll()
+                                // =======================================================================    PERMIT ALL SECTION
+                                .requestMatchers("/swagger-ui/**").permitAll()
+                                .requestMatchers("/swagger-ui.html").permitAll()
+                                .requestMatchers("/v3/api-docs/**").permitAll()
+                                .requestMatchers("/v3/api-docs").permitAll()
+                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api/qrcode/**").permitAll()
+                                .requestMatchers("/image/**").permitAll()
+                                .requestMatchers("/api/config/image-paths").permitAll()
+                                .requestMatchers("/api/orders/*").permitAll()
+                                .requestMatchers("/api/orders/status/*").permitAll()
+                                .requestMatchers("/api/client/eatery/**").permitAll()
+                                .requestMatchers(GET, "/api/eatery/*").permitAll()
+                                .requestMatchers("/api/admin/**").permitAll()
+                                .requestMatchers("/admin.html").permitAll()
+                                .requestMatchers("/redoc.html").permitAll()
+                                .requestMatchers("/index.html").permitAll()
+                                .requestMatchers("/favicon.ico").permitAll()
+                                .requestMatchers("/alive").permitAll()
 
-                        .requestMatchers(apiUserRegister).permitAll()
+                                .requestMatchers(apiUserRegister).permitAll()
 //                        .requestMatchers(HttpMethod.GET, "/api/table/**").permitAll()
 
-                        .requestMatchers("/api/eatery/**").permitAll()
-                        // ============================================================================    ADMIN SECTION
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        // ===================================================================    USER AND ADMIN SECTION
-                        .requestMatchers("/api/user/**").hasAnyRole("USER", "EATERY_ADMIN")
-                        .requestMatchers("/api/table/**").hasAnyRole("EATERY_ADMIN", "SUPER_ADMIN")
+                                .requestMatchers("/api/eatery/**").permitAll()
+                                // ============================================================================    ADMIN SECTION
+                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                // ===================================================================    USER AND ADMIN SECTION
+                                .requestMatchers("/api/user/**").hasAnyRole("USER", "EATERY_ADMIN")
+                                .requestMatchers("/api/table/**").hasAnyRole("EATERY_ADMIN", "SUPER_ADMIN")
 //                        .requestMatchers("/api/eatery/**").hasAnyRole("EATERY_ADMIN", "SUPER_ADMIN")
-                        .requestMatchers("/api/order-items/**").hasAnyRole("USER", "ADMIN")
-                        // ==============================================================    ALL OTHERS NEED TO HAVE JWT
-                        // All other requests require authentication (presence of a valid JWT)
-                        .anyRequest().authenticated()
+                                .requestMatchers("/api/order-items/**").hasAnyRole("USER", "ADMIN")
+                                // ==============================================================    ALL OTHERS NEED TO HAVE JWT
+                                // All other requests require authentication (presence of a valid JWT)
+                                .anyRequest().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(corsConfig))
                 .sessionManagement(session -> session

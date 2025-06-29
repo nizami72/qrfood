@@ -1,0 +1,16 @@
+[Unit]
+Description=qrfood service
+# Requires=network.target remote-fs.target
+# After=network.target remote-fs.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/apps
+EnvironmentFile=/home/qrfood/env.conf
+ExecStart=/usr/bin/java -jar qrfood.jar
+Restart=on-failure
+RestartSec=20
+
+[Install]
+WantedBy=multi-user.target
