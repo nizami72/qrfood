@@ -27,7 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Log4j2
 public class Util {
 
-    private static final String LINKS_FILE_PATH = "links.md";
+    private static final String LINKS_FILE_PATH = "logs/links.md";
 
     /**
      * Copies properties from a source object to a new instance of a destination class.

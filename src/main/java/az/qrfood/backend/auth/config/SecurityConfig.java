@@ -2,10 +2,11 @@ package az.qrfood.backend.auth.config;
 
 import static org.springframework.http.HttpMethod.GET;
 
-import az.qrfood.backend.common.CustomAuthenticationEntryPoint;
 import az.qrfood.backend.auth.filter.EateryIdCheckFilter;
 import az.qrfood.backend.auth.filter.JwtRequestFilter;
 import az.qrfood.backend.auth.service.CustomUserDetailsService;
+import az.qrfood.backend.auth.util.JwtUtil;
+import az.qrfood.backend.common.CustomAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -41,9 +42,8 @@ public class SecurityConfig {
     private final PasswordEncoder passwordEncoder;
     private final CustomAuthenticationEntryPoint customEntryPoint;
     private final CustomUserDetailsService userDetailsService;
-    private final JwtRequestFilter jwtRequestFilter;
-    private final EateryIdCheckFilter eateryIdCheckFilter;
     private final CorsConfigurationSource corsConfig;
+    private final JwtUtil jwtUtil;
 
     @Value("${api.user.register}")
     String apiUserRegister;
@@ -53,26 +53,22 @@ public class SecurityConfig {
     /**
      * Constructs the SecurityConfig with necessary dependencies.
      *
-     * @param passwordEncoder     The password encoder for user authentication.
-     * @param customEntryPoint    The custom authentication entry point for handling unauthorized access.
-     * @param userDetailsService  The custom user details service for loading user-specific data.
-     * @param jwtRequestFilter    The JWT request filter for validating JWT tokens.
-     * @param eateryIdCheckFilter The filter for checking eatery ID permissions.
-     * @param corsConfig          The CORS configuration source.
+     * @param passwordEncoder    The password encoder for user authentication.
+     * @param customEntryPoint   The custom authentication entry point for handling unauthorized access.
+     * @param userDetailsService The custom user details service for loading user-specific data.
+     * @param corsConfig         The CORS configuration source.
      */
     public SecurityConfig(
             PasswordEncoder passwordEncoder,
             CustomAuthenticationEntryPoint customEntryPoint,
             CustomUserDetailsService userDetailsService,
-            JwtRequestFilter jwtRequestFilter,
-            EateryIdCheckFilter eateryIdCheckFilter,
-            @Qualifier("cors") CorsConfigurationSource corsConfig) {
+            @Qualifier("cors") CorsConfigurationSource corsConfig,
+            JwtUtil jwtUtil) {
         this.passwordEncoder = passwordEncoder;
         this.customEntryPoint = customEntryPoint;
         this.userDetailsService = userDetailsService;
-        this.jwtRequestFilter = jwtRequestFilter;
-        this.eateryIdCheckFilter = eateryIdCheckFilter;
         this.corsConfig = corsConfig;
+        this.jwtUtil = jwtUtil;
     }
 
     /**
@@ -110,35 +106,33 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for REST APIs, as JWT is used
                 .authorizeHttpRequests(authorize -> authorize
                                 // =======================================================================    PERMIT ALL SECTION
-                                .requestMatchers("/swagger-ui/**").permitAll()
-                                .requestMatchers("/swagger-ui.html").permitAll()
-                                .requestMatchers("/v3/api-docs/**").permitAll()
-                                .requestMatchers("/v3/api-docs").permitAll()
-                                .requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/api/qrcode/**").permitAll()
-                                .requestMatchers("/image/**").permitAll()
-                                .requestMatchers("/api/config/image-paths").permitAll()
-                                .requestMatchers("/api/orders/*").permitAll()
-                                .requestMatchers("/api/orders/status/*").permitAll()
-                                .requestMatchers("/api/client/eatery/**").permitAll()
-                                .requestMatchers(GET, "/api/eatery/*").permitAll()
-                                .requestMatchers("/api/admin/**").permitAll()
-                                .requestMatchers("/admin.html").permitAll()
-                                .requestMatchers("/redoc.html").permitAll()
-                                .requestMatchers("/index.html").permitAll()
-                                .requestMatchers("/favicon.ico").permitAll()
-                                .requestMatchers("/alive").permitAll()
-
-                                .requestMatchers(apiUserRegister).permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/api/table/**").permitAll()
-
-                                .requestMatchers("/api/eatery/**").permitAll()
+                                .requestMatchers("/api/**").permitAll()
+//                                .requestMatchers("/swagger-ui.html").permitAll()
+//                                .requestMatchers("/v3/api-docs/**").permitAll()
+//                                .requestMatchers("/v3/api-docs").permitAll()
+//                                .requestMatchers("/api/auth/**").permitAll()
+//                                .requestMatchers("/api/qrcode/**").permitAll()
+//                                .requestMatchers("/image/**").permitAll()
+//                                .requestMatchers("/api/config/image-paths").permitAll()
+//                                .requestMatchers("/api/orders/*").permitAll()
+//                                .requestMatchers("/api/orders/status/*").permitAll()
+//                                .requestMatchers("/api/client/eatery/**").permitAll()
+//                                .requestMatchers(GET, "/api/eatery/*").permitAll()
+//                                .requestMatchers("/api/admin/**").permitAll()
+//                                .requestMatchers("/redoc.html").permitAll()
+//                                .requestMatchers("/index.html").permitAll()
+//                                .requestMatchers("/favicon.ico").permitAll()
+//                                .requestMatchers("/alive").permitAll()
+//                                .requestMatchers("/assets/**").permitAll()
+//                                .requestMatchers("/logo*.*").permitAll()
+//                                .requestMatchers("/index.html").permitAll()
+//                                .requestMatchers(apiUserRegister).permitAll()
+//                                .requestMatchers("/api/eatery/**").permitAll()
                                 // ============================================================================    ADMIN SECTION
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 // ===================================================================    USER AND ADMIN SECTION
                                 .requestMatchers("/api/user/**").hasAnyRole("USER", "EATERY_ADMIN")
                                 .requestMatchers("/api/table/**").hasAnyRole("EATERY_ADMIN", "SUPER_ADMIN")
-//                        .requestMatchers("/api/eatery/**").hasAnyRole("EATERY_ADMIN", "SUPER_ADMIN")
                                 .requestMatchers("/api/order-items/**").hasAnyRole("USER", "ADMIN")
                                 // ==============================================================    ALL OTHERS NEED TO HAVE JWT
                                 // All other requests require authentication (presence of a valid JWT)
@@ -151,13 +145,18 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
 
+        http
+                .addFilterBefore(new JwtRequestFilter(userDetailsService, jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new EateryIdCheckFilter(jwtUtil), JwtRequestFilter.class);
+
         // Add our JWT filter before the standard UsernamePasswordAuthenticationFilter
         // This ensures that the JWT is validated before Spring Security makes authorization decisions.
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+//        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         // Add the eateryIdCheckFilter after the JwtRequestFilter
         // This ensures that the eateryId check is performed after user authentication
-        http.addFilterAfter(eateryIdCheckFilter, JwtRequestFilter.class);
+//        http.addFilterAfter(eateryIdCheckFilter, JwtRequestFilter.class);
+//        http.addFilterBefore(eateryIdCheckFilter, JwtRequestFilter.class);
 
         return http.build();
     }
@@ -178,6 +177,14 @@ public class SecurityConfig {
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
+    }
+
+    public JwtRequestFilter jwtRequestFilter() {
+        return new JwtRequestFilter(userDetailsService, jwtUtil);
+    }
+
+    public EateryIdCheckFilter eateryIdCheckFilter() {
+        return new EateryIdCheckFilter(jwtUtil);
     }
 
 }

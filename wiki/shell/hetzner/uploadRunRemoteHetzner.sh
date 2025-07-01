@@ -1,29 +1,14 @@
 #!/bin/bash
 cd /home/nizami/Dropbox/projects/Java/qrfood
-# $0 is the script name, $1 id the first ARG, $2 is second...
 ip=157.180.16.28
 
-# Function to check if variables are defined
-check_variables() {
-    for var in "$@"; do
-        if [ -z "${!var}" ]; then
-            echo "Variable '$var' is not defined."
-            return 1
-        fi
-    done
-    return 0
-}
-
-# Check if variables are defined
-check_variables ip
-
-# If variables are not defined, wait for user input
-while [ $? -ne 0 ]; do
-    read -p "Please enter the remote server ip: " ip
-    check_variables ip
-done
-
 echo "Working dir:"$(pwd)
+
+# --- Build FE ---
+echo "Building frontend for production..."
+cd frontend
+npm run build
+cd ..
 
 # local clean and build jar file
 echo "Clean last build ..."
@@ -38,6 +23,13 @@ scp -i /home/nizami/.ssh/key2 /home/nizami/Dropbox/projects/Java/qrfood/wiki/she
 # upload jar file to EC2
 echo "Upload jar file ..."
 scp -i /home/nizami/.ssh/key2  target/qrfood.jar  root@$ip:/opt/apps/
+
+# --- upload frontend files ---
+FRONTEND_LOCAL_PATH="/home/nizami/Dropbox/projects/Java/qrfood/frontend/dist"
+FRONTEND_REMOTE_PATH="/var/www/qrfood.az/dist"
+
+echo "Uploading frontend files from $FRONTEND_LOCAL_PATH to root@$ip:$FRONTEND_REMOTE_PATH ..."
+scp -i /home/nizami/.ssh/key2 -r $FRONTEND_LOCAL_PATH/* root@$ip:$FRONTEND_REMOTE_PATH/
 
 # restart service
 echo "Restarting service ... "

@@ -3,8 +3,8 @@
 # Настройки подключения
 
 DB_NAME="qrfood"
-DB_USER="intellij"
-DB_PASS="intellijpass"
+DB_USER="qrfood"
+DB_PASS="HJuy67Qw@HjymPa"
 
 # Подтверждение (необязательно — можно убрать для автоудаления)
 # read -p "Вы уверены, что хотите удалить базу данных '$DB_NAME'? [y/N]: " confirm

@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -25,13 +26,18 @@ import java.util.regex.Pattern;
  * detected, the request is rejected with a {@code 412 Precondition Failed} status.
  * </p>
  */
-@Component
 @Slf4j
-public class EateryIdCheckFilter extends OncePerRequestFilter {
+public class EateryIdCheckFilter extends OncePerRequestFilter implements Ordered {
+
 
     private final JwtUtil jwtUtil;
     // Pattern to match URLs with eateryId in the path
     private static final Pattern EATERY_ID_PATTERN = Pattern.compile("/api/eatery/(\\d+)|/api/eateries/(\\d+)|/api/users/eatery/(\\d+)");
+
+    @Override
+    public int getOrder() {
+        return Ordered.LOWEST_PRECEDENCE - 9;
+    }
 
     /**
      * Constructs the EateryIdCheckFilter with a JwtUtil dependency.
