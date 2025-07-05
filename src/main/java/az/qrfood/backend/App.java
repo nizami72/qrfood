@@ -65,7 +65,7 @@ public class App {
                         RegisterRequest.builder()
                                 .restaurant(null)
                                 .user(RegisterRequest.UserDto.builder()
-                                        .email("nizami.budagov@gmail.com")
+                                        .email(u)
                                         .password("qqqq1111")
                                         .roles(Set.of(Role.fromString("SUPER_ADMIN")))
                                         .build())

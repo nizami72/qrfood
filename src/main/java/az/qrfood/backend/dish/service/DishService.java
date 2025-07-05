@@ -102,23 +102,13 @@ public class DishService {
                 new DishEntityTranslation(dishEntity, Language.en.name(), dto.getNameEn(), dto.getDescriptionEn()),
                 new DishEntityTranslation(dishEntity, Language.ru.name(), dto.getNameRu(), dto.getDescriptionRu())
         );
+
         log.debug("Dish Item created [{}]", dishEntity);
         dishEntity.getTranslations().addAll(translations);
-        dishRepository.save(dishEntity);
 
-        Long categoryId = dishEntity.getCategory().getId();
-        Long eateryId = dishEntity.getTranslations().get(0).getId(); // This line seems incorrect, translations don't have eateryId
-        Long dishId = dishEntity.getId();
+        saveImage(multipartFile, dishEntity);
 
-        String f = eateryId + System.lineSeparator() + categoryId  + System.lineSeparator() + dishId; // 'f' is unused
-
-        String folder = storageService.createDishesFolder(dishEntity.getId());
-
-        if(multipartFile != null) {
-            storageService.saveFile(folder, multipartFile, dishEntity.getImage());
-        }
-
-        return dishEntity;
+        return dishRepository.save(dishEntity);
     }
 
     private CategoryDto convertDtoToEntity(DishDto dish) {
@@ -249,16 +239,20 @@ public class DishService {
             }
         });
 
-        // Update image if provided
+        saveImage(multipartFile, dishEntity);
+
+        // Save the updated dish
+        return dishRepository.save(dishEntity);
+    }
+
+    // Update image if provided
+    private void saveImage(MultipartFile multipartFile, DishEntity dishEntity) {
         if (multipartFile != null && !multipartFile.isEmpty()) {
             String folder = storageService.createDishesFolder(dishEntity.getId());
             String fileName = multipartFile.getOriginalFilename();
             storageService.deleteAllAndSaveFile(folder, multipartFile, fileName);
             dishEntity.setImage(fileName);
         }
-
-        // Save the updated dish
-        return dishRepository.save(dishEntity);
     }
 
 }
