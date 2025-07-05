@@ -107,9 +107,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                                 // =======================================================================    PERMIT ALL SECTION
                                 .requestMatchers("/api/**").permitAll()
-//                                .requestMatchers("/swagger-ui.html").permitAll()
-//                                .requestMatchers("/v3/api-docs/**").permitAll()
-//                                .requestMatchers("/v3/api-docs").permitAll()
+                                .requestMatchers("/swagger-ui/**").permitAll()
+                                .requestMatchers("/swagger-ui/index.html").permitAll()
+                                .requestMatchers("/v3/api-docs/**").permitAll()
+                                .requestMatchers("/v3/api-docs").permitAll()
+                                .requestMatchers("/image/**").permitAll()
 //                                .requestMatchers("/api/auth/**").permitAll()
 //                                .requestMatchers("/api/qrcode/**").permitAll()
 //                                .requestMatchers("/image/**").permitAll()
