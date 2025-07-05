@@ -58,3 +58,15 @@ Contributions are welcome! Please feel free to submit a pull request.
 
 ## License
 This project is licensed under the MIT License.
+
+## See Logs Quickly
+
+SSH
+``` 
+ssh -i /home/nizami/.ssh/key2 root@157.180.16.28
+```
+
+Expose Logs
+```
+tail -f -n 500 /home/qrfood/logs/info.log
+```

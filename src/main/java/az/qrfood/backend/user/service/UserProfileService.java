@@ -56,7 +56,7 @@ public class UserProfileService {
             throw new IllegalStateException("User profile already exists for user: " + user.getUsername());
         }
         List<String> phones = new ArrayList<>();
-        if (StringUtils.hasText(userProfileRequest.getPhone())) {
+        if (userProfileRequest != null && StringUtils.hasText(userProfileRequest.getPhone())) {
             phones.add(userProfileRequest.getPhone());
         }
 

@@ -24,7 +24,7 @@ public class AliveController {
 
      * @return alive
      */
-    @RequestMapping(value = "/alive", method = RequestMethod.GET, produces = {"application/json"})
+    @RequestMapping(value = "/api/alive", method = RequestMethod.GET, produces = {"application/json"})
     @ResponseBody
     public Alive test() {
         log.info("Live requested");

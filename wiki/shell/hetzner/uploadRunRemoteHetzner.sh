@@ -39,6 +39,6 @@ echo "Sleeping for application rebooting ..."
 sleep 20s
 
 # get app output
-wget -qO- https://qrfood.az/alive
+wget -qO- https://qrfood.az/api/alive
 
 echo -e "\nFinished"

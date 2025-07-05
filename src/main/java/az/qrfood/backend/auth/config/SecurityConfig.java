@@ -111,7 +111,6 @@ public class SecurityConfig {
                                 .requestMatchers("/swagger-ui/index.html").permitAll()
                                 .requestMatchers("/v3/api-docs/**").permitAll()
                                 .requestMatchers("/v3/api-docs").permitAll()
-                                .requestMatchers("/image/**").permitAll()
 //                                .requestMatchers("/api/auth/**").permitAll()
 //                                .requestMatchers("/api/qrcode/**").permitAll()
 //                                .requestMatchers("/image/**").permitAll()
