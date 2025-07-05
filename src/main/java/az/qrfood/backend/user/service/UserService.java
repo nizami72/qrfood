@@ -183,13 +183,19 @@ public class UserService {
         return registerUser(request, eateryId, false);
     }
 
-    private ResponseEntity<RegisterResponse> registerUser(RegisterRequest request, Long eateryId, boolean isAdmin) {
+    private ResponseEntity<RegisterResponse> registerUser(RegisterRequest request, Long eateryId, boolean isEateryAdmin) {
         validateUserDoesNotExist(request.getUser().getEmail());
+
+        if(isEateryAdmin) {
+            Set<Role> roles = new HashSet<>();
+            roles.add(Role.EATERY_ADMIN);
+            request.getUser().setRoles(roles);
+        }
 
         User user = createUserEntity(request.getUser().getEmail(), request.getUser().getPassword(), request.getUser().getRoles());
         UserProfile userProfile = userProfileService.createUserProfile(user, request.getUserProfileRequest());
 
-        if (isAdmin && request.getRestaurant() != null) {
+        if (isEateryAdmin && request.getRestaurant() != null) {
             eateryId = createAndLinkEatery(userProfile, request.getRestaurant());
         } else if (eateryId != null) {
             userProfileService.addRestaurantToProfile(userProfile, eateryId);
