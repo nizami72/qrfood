@@ -33,7 +33,7 @@ import java.util.Set;
 @Log4j2
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CreateAllFakeData {
+public class CreateAllFakeDataTest {
 
     private static PrintStream fileLog;
     @Value("${base.url}")

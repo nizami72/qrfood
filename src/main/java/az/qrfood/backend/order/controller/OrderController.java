@@ -6,6 +6,7 @@ import az.qrfood.backend.order.dto.OrderStatusUpdateDTO;
 import az.qrfood.backend.order.entity.Order;
 import az.qrfood.backend.order.mapper.OrderMapper;
 import az.qrfood.backend.order.service.OrderService;
+import az.qrfood.backend.service.WebSocketService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -39,6 +40,7 @@ public class OrderController {
     private final OrderService orderService;
     private final OrderMapper orderMapper;
     private final ClientDeviceService clientDeviceService;
+    private final WebSocketService webSocketService;
 
     /**
      * Constructs the OrderController with necessary service and mapper dependencies.
@@ -46,11 +48,14 @@ public class OrderController {
      * @param orderService      The service for handling order business logic.
      * @param orderMapper       The mapper for converting between Order entities and DTOs.
      * @param clientDeviceService The service for managing client devices and cookies.
+     * @param webSocketService  The service for sending WebSocket notifications.
      */
-    public OrderController(OrderService orderService, OrderMapper orderMapper, ClientDeviceService clientDeviceService) {
+    public OrderController(OrderService orderService, OrderMapper orderMapper, ClientDeviceService clientDeviceService,
+                           WebSocketService webSocketService) {
         this.orderService = orderService;
         this.orderMapper = orderMapper;
         this.clientDeviceService = clientDeviceService;
+        this.webSocketService = webSocketService;
     }
 
     /**
@@ -137,6 +142,10 @@ public class OrderController {
         Order order = orderService.createOrder(orderDto);
         Cookie cookie = clientDeviceService.createCookieUuid(order);
         response.addCookie(cookie);
+
+        // Send WebSocket notification about the new order
+        webSocketService.notifyNewOrder(String.valueOf(eateryId));
+
         return ResponseEntity.ok(orderMapper.toDto(order));
     }
 
