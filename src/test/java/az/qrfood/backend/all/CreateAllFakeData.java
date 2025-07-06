@@ -54,7 +54,7 @@ public class CreateAllFakeData {
 
     @BeforeAll
     void setupLoggingAndCreateFakes() throws Exception {
-        fileLog = new PrintStream(new FileOutputStream("logsTest/all.log", false));
+        fileLog = new PrintStream(new FileOutputStream("logs/test/all.log", false));
         RestAssured.filters(
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)

@@ -39,7 +39,7 @@ public class TableApiTest {
 
     @BeforeAll
     void setupLogging() throws Exception {
-        fileLog = new PrintStream(new FileOutputStream("logsTest/table.log", false));
+        fileLog = new PrintStream(new FileOutputStream("logs/test/table.log", false));
         RestAssured.filters(
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)

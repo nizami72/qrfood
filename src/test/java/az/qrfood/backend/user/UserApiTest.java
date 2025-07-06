@@ -93,7 +93,7 @@ public class UserApiTest {
 
     @BeforeAll
     void setupLogging() throws Exception {
-        fileLog = new PrintStream(new FileOutputStream("logsTest/test-user-controller.log", false));
+        fileLog = new PrintStream(new FileOutputStream("logs/test/test-user-controller.log", false));
         RestAssured.filters(
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)

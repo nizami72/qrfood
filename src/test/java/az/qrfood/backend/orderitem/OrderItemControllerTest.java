@@ -247,7 +247,7 @@ public class OrderItemControllerTest {
 
     @BeforeAll
     void setupLogging() throws Exception {
-        fileLog = new PrintStream(new FileOutputStream("logsTest/orderitem.log", false));
+        fileLog = new PrintStream(new FileOutputStream("logs/test/orderitem.log", false));
         RestAssured.filters(
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)

@@ -53,7 +53,7 @@ class OrderControllerTest {
 
     @BeforeAll
     void setupLogging() throws Exception {
-        fileLog = new PrintStream(new FileOutputStream("logsTest/order.log", false));
+        fileLog = new PrintStream(new FileOutputStream("logs/test/order.log", false));
         RestAssured.filters(
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)

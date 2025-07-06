@@ -58,7 +58,7 @@ public class JohnKimberEateryTest {
     @BeforeAll
     void setupLoggingAndLoadData() throws Exception {
         // Setup logging
-        fileLog = new PrintStream(new FileOutputStream("logsTest/johnKimberEatery.log", false));
+        fileLog = new PrintStream(new FileOutputStream("logs/test/johnKimberEatery.log", false));
         RestAssured.filters(
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)
