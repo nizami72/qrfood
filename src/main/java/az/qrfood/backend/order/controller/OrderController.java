@@ -1,7 +1,10 @@
 package az.qrfood.backend.order.controller;
 
+import static az.qrfood.backend.client.controller.ClientDeviceController.DEVICE;
+
 import az.qrfood.backend.client.controller.ClientDeviceController;
 import az.qrfood.backend.client.service.ClientDeviceService;
+import az.qrfood.backend.order.OrderStatus;
 import az.qrfood.backend.order.dto.OrderDto;
 import az.qrfood.backend.order.dto.OrderStatusUpdateDTO;
 import az.qrfood.backend.order.entity.Order;
@@ -74,7 +77,9 @@ public class OrderController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("${order.status}")
-    public ResponseEntity<List<OrderDto>> getAllOrders(@PathVariable("status") String status) {
+    public ResponseEntity<List<OrderDto>> getAllOrders(@PathVariable("status") String status,
+                                                       @CookieValue(value = DEVICE, defaultValue = "") String cookie
+                                                       ) {
         log.debug("GET all order by status [{}]", status);
         return ResponseEntity.ok(orderService.getAllOrdersByStatus(status));
     }
@@ -140,7 +145,7 @@ public class OrderController {
     public ResponseEntity<OrderDto> postOrder(HttpServletResponse response, 
                                               @PathVariable Long eateryId,
                                               @RequestBody OrderDto orderDto,
-                                              @CookieValue(value = ClientDeviceController.DEVICE, required = false) String deviceUuid
+                                              @CookieValue(value = DEVICE, required = false) String deviceUuid
     ) {
         log.debug("REST request to create Order for table ID: {}", eateryId);
 
@@ -228,5 +233,42 @@ public class OrderController {
     public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
         orderService.deleteOrder(orderId);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Checks if there are any orders with status "CREATED" for a specific eatery and device.
+     * <p>
+     * This endpoint is used by the client application to determine whether to show
+     * the order decision page or the menu page when a user scans a QR code.
+     * </p>
+     *
+     * @param eateryId   The ID of the eatery to check orders for.
+     * @param deviceUuid The UUID of the client device from the cookie.
+     * @return A {@link ResponseEntity} containing a list of {@link OrderDto} objects
+     *         with status "CREATED" for the specified eatery and device.
+     */
+    @Operation(summary = "Check for created orders", description = "Checks if there are any orders with status 'CREATED' for a specific eatery and device", tags={"Order Management"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved list of orders"),
+            @ApiResponse(responseCode = "404", description = "Eatery not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping("${api.eatery.order.status.created}")
+    public ResponseEntity<List<OrderDto>> getOrdersByEateryIdAndStatusCreated(
+            @PathVariable Long eateryId,
+            @CookieValue(value = DEVICE, required = false) String deviceUuid
+    ) {
+        log.debug("REST request to check for created orders for eatery ID: {} and device UUID: {}", eateryId, deviceUuid);
+
+        // If no device UUID is provided, return an empty list
+        if (deviceUuid == null || deviceUuid.isEmpty()) {
+            return ResponseEntity.ok(List.of());
+        }
+
+        // Get orders with status "CREATED" for the specified eatery and device
+        List<OrderDto> orders = orderService.getOrdersByEateryIdAndStatusAndDeviceUuid(
+                eateryId, OrderStatus.CREATED, deviceUuid);
+
+        return ResponseEntity.ok(orders);
     }
 }

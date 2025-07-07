@@ -1,5 +1,7 @@
 package az.qrfood.backend.order.service;
 
+import az.qrfood.backend.client.entity.ClientDevice;
+import az.qrfood.backend.client.repository.ClientDeviceRepository;
 import az.qrfood.backend.common.exception.OrderNotFoundException;
 import az.qrfood.backend.order.dto.OrderDto;
 import az.qrfood.backend.order.dto.OrderItemDTO;
@@ -39,6 +41,7 @@ public class OrderService {
     private final DishRepository dishRepository;
     private final TableRepository tableRepository;
     private final OrderMapper orderMapper;
+    private final ClientDeviceRepository clientDeviceRepository;
 
     /**
      * Constructs an OrderService with necessary dependencies.
@@ -53,12 +56,14 @@ public class OrderService {
                         OrderItemRepository orderItemRepository,
                         DishRepository dishRepository,
                         TableRepository tableRepository,
-                        OrderMapper orderMapper) {
+                        OrderMapper orderMapper,
+                        ClientDeviceRepository clientDeviceRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.dishRepository = dishRepository;
         this.tableRepository = tableRepository;
         this.orderMapper = orderMapper;
+        this.clientDeviceRepository = clientDeviceRepository;
     }
 
     /**
@@ -250,5 +255,40 @@ public class OrderService {
         log.debug("Request to get Orders by status : {}", status);
         List<Order> orders = orderRepository.findByStatus(status);
         return orderMapper.toDtoList(orders);
+    }
+
+    /**
+     * Retrieves orders filtered by eatery ID, status, and device UUID.
+     * <p>
+     * This method is used to check if a specific device has any orders with a given status
+     * at a specific eatery. It's primarily used to determine whether to show the order
+     * decision page or the menu page when a user scans a QR code.
+     * </p>
+     *
+     * @param eateryId   The ID of the eatery to filter orders by.
+     * @param status     The {@link OrderStatus} to filter orders by.
+     * @param deviceUuid The UUID of the client device to filter orders by.
+     * @return A list of {@link OrderDto} representing orders that match all criteria.
+     */
+    public List<OrderDto> getOrdersByEateryIdAndStatusAndDeviceUuid(Long eateryId, OrderStatus status, String deviceUuid) {
+        log.debug("Request to get Orders by eateryId: {}, status: {}, and deviceUuid: {}", eateryId, status, deviceUuid);
+
+        // Find the client device by UUID
+        return clientDeviceRepository.findByUuid(deviceUuid)
+                .map(clientDevice -> {
+                    // Get all orders from the client device
+                    List<Order> allOrders = clientDevice.getOrders();
+
+                    // Filter orders by eatery ID and status
+                    List<Order> filteredOrders = allOrders.stream()
+                            .filter(order -> order.getStatus() == status && 
+                                    order.getTable() != null && 
+                                    order.getTable().getEatery() != null &&
+                                    eateryId.equals(order.getTable().getEatery().getId()))
+                            .toList();
+
+                    return orderMapper.toDtoList(filteredOrders);
+                })
+                .orElse(List.of()); // Return empty list if client device not found
     }
 }

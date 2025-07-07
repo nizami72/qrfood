@@ -64,8 +64,7 @@ public class ClientDeviceController {
     @GetMapping("${api.client.eatery.table}")
     public ResponseEntity<List<CategoryDto>> eateryCategories(
             @PathVariable(value = "eateryId") Long eateryId,
-            @PathVariable(value = "tableId") Long tableId,
-            @CookieValue(value = DEVICE, defaultValue = "") String myCookieValue) {
+            @PathVariable(value = "tableId") Long tableId) {
 
         log.debug("Request for menu(categories) for eatery [{}] and table [{}]", eateryId, tableId);
         // check if table exists
@@ -73,24 +72,7 @@ public class ClientDeviceController {
             log.debug("The table doesnt exists [{}]", tableId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        // NAV Cookie read
-        if (!myCookieValue.isEmpty()) {
-            // if cookie found check non completed orders and if any, send him redirect to the page where he can see
-            // all that order
-            boolean hasOrders = clientDeviceService.resolveCookie(myCookieValue);
 
-            if (hasOrders) {
-                // redirect to already existing orders if any ordered from this device
-                log.debug("Already has active orders redirect to orders page [{}]", tableId);
-                return ResponseEntity
-                        .status(HttpStatus.FORBIDDEN)
-                        .header("X-Redirect-To", componentOrders)
-                        .build();
-            }
-        }
-
-        // no cookie or uncompleted menu; the eatery menu is sent back, new cookie will be
-        // installed when the user confirms a new order
         List<CategoryDto> id = categoryService.findAllCategoryForEatery(eateryId);
         return ResponseEntity.ok(id);
     }
