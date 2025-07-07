@@ -76,7 +76,7 @@ public class ClientDeviceController {
         // NAV Cookie read
         if (!myCookieValue.isEmpty()) {
             // if cookie found check non completed orders and if any, send him redirect to the page where he can see
-            // all that orders
+            // all that order
             boolean hasOrders = clientDeviceService.resolveCookie(myCookieValue);
 
             if (hasOrders) {
@@ -90,7 +90,7 @@ public class ClientDeviceController {
         }
 
         // no cookie or uncompleted menu; the eatery menu is sent back, new cookie will be
-        // installed when the user confirms new order
+        // installed when the user confirms a new order
         List<CategoryDto> id = categoryService.findAllCategoryForEatery(eateryId);
         return ResponseEntity.ok(id);
     }
