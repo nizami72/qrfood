@@ -152,4 +152,34 @@ public class ClientDeviceService {
         return orders.stream()
                 .anyMatch(o -> o.getStatus().equals(OrderStatus.NEW));
     }
+
+    /**
+     * Adds an order to an existing client device identified by its UUID.
+     * <p>
+     * This method finds a {@link ClientDevice} by its UUID, adds the provided order
+     * to its list of orders, and saves the updated entity.
+     * </p>
+     *
+     * @param uuid  The UUID string identifying the client device.
+     * @param order The {@link Order} to add to the client device.
+     * @return A {@link Cookie} object containing the UUID (for consistency with createCookieUuid).
+     * @throws EntityNotFoundException if no client device with the given UUID is found.
+     */
+    public Cookie addOrderToExistingDevice(String uuid, Order order) {
+        ClientDevice device = clientDeviceRepository.findByUuid(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("ClientDevice not found for UUID: " + uuid));
+
+        device.getOrders().add(order);
+        clientDeviceRepository.save(device);
+        log.debug("Added order [{}] to existing device [{}]", order.getId(), uuid);
+
+        // Return the existing cookie for consistency with createCookieUuid
+        Cookie cookie = new Cookie(DEVICE, uuid);
+        cookie.setPath("/");
+        cookie.setMaxAge(3600);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+
+        return cookie;
+    }
 }

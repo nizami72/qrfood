@@ -1,5 +1,6 @@
 package az.qrfood.backend.order.controller;
 
+import az.qrfood.backend.client.controller.ClientDeviceController;
 import az.qrfood.backend.client.service.ClientDeviceService;
 import az.qrfood.backend.order.dto.OrderDto;
 import az.qrfood.backend.order.dto.OrderStatusUpdateDTO;
@@ -15,6 +16,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -135,12 +137,27 @@ public class OrderController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping("${order}")
-    public ResponseEntity<OrderDto> postOrder(HttpServletResponse response, @PathVariable Long eateryId,
-                                              @RequestBody OrderDto orderDto
+    public ResponseEntity<OrderDto> postOrder(HttpServletResponse response, 
+                                              @PathVariable Long eateryId,
+                                              @RequestBody OrderDto orderDto,
+                                              @CookieValue(value = ClientDeviceController.DEVICE, required = false) String deviceUuid
     ) {
         log.debug("REST request to create Order for table ID: {}", eateryId);
+
         Order order = orderService.createOrder(orderDto);
-        Cookie cookie = clientDeviceService.createCookieUuid(order);
+        Cookie cookie;
+
+        // Check if cookie is present
+        if (deviceUuid != null && !deviceUuid.isEmpty()) {
+            log.debug("Existing cookie found: {}, adding order to existing device", deviceUuid);
+            // Add order to existing client device
+            cookie = clientDeviceService.addOrderToExistingDevice(deviceUuid, order);
+        } else {
+            log.debug("No cookie found, creating new client device");
+            // Create new client device and cookie
+            cookie = clientDeviceService.createCookieUuid(order);
+        }
+
         response.addCookie(cookie);
 
         // Send WebSocket notification about the new order
