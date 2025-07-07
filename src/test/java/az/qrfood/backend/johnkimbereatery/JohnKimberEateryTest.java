@@ -16,6 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -45,15 +46,20 @@ public class JohnKimberEateryTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // API endpoints
-    private String baseUrl = "http://localhost:8081";
-    private String fullAdminEatery = "/api/admin/eatery";
-    private String urlPostDish = "/api/eatery/{eateryId}/category/{categoryId}/dish";
-    private String segmentEateries = "/api/eatery";
-    private String componentCategories = "/category";
+    @Value("${localhost}")
+    private String baseUrl;
+    @Value("${full.admin.eatery}")
+    private String fullAdminEatery;
+    @Value("${eatery.id.category.id.dish}")
+    private String urlPostDish;
+    @Value("${eatery}")
+    private String segmentEateries;
+    @Value("${category}")
+    private String componentCategories;
 
     private String jwtToken;
     private Long userId;
-    private CatAndDishes catAndDishes;
+    private CatAndDishes kimberCredsAndEatery;
 
     @BeforeAll
     void setupLoggingAndLoadData() throws Exception {
@@ -63,6 +69,10 @@ public class JohnKimberEateryTest {
                 new RequestLoggingFilter(fileLog),
                 new ResponseLoggingFilter(fileLog)
         );
+    }
+
+    @BeforeAll
+    void loadTestDate() throws Exception{
 
         // Load JSON data from file
         InputStream inputStream = getClass().getClassLoader()
@@ -70,16 +80,16 @@ public class JohnKimberEateryTest {
         if (inputStream == null) {
             throw new IllegalArgumentException("Resource not found: fakeData/JohnKimberEateryTest/CatAndDishes.json");
         }
-        catAndDishes = objectMapper.readValue(inputStream, CatAndDishes.class);
-        log.debug("Loaded JSON data: {}", catAndDishes);
+        kimberCredsAndEatery = objectMapper.readValue(inputStream, CatAndDishes.class);
+        log.debug("Loaded JSON data: {}", kimberCredsAndEatery);
     }
 
     @Test
     void createUserEateryCategoriesAndDishes() {
         fileLog.println("\n========== 📤 Starting John Kimber Eatery data creation ==========");
 
-        // Step 1: Create user
-        RegisterRequest registerRequest = createRegisterRequest(catAndDishes.getUser());
+        // Step 1: Create a user
+        RegisterRequest registerRequest = createRegisterRequest(kimberCredsAndEatery.getUser());
         Response registerResponse = given()
                 .baseUri(baseUrl)
                 .contentType("application/json")
@@ -92,13 +102,13 @@ public class JohnKimberEateryTest {
                 .response();
 
         Long eateryId = ((Integer) registerResponse.as(Map.class).get("eateryId")).longValue();
-        log.debug("Registered user [{}] with eateryId [{}]", catAndDishes.getUser().getEmail(), eateryId);
+        log.debug("Registered user [{}] with eateryId [{}]", kimberCredsAndEatery.getUser().getEmail(), eateryId);
 
         // Step 2: Login user
-        login(catAndDishes.getUser().getEmail(), catAndDishes.getUser().getPassword(), eateryId);
+        login(kimberCredsAndEatery.getUser().getEmail(), kimberCredsAndEatery.getUser().getPassword(), eateryId);
 
         // Process each eatery from the JSON
-        catAndDishes.getEateries().forEach(eateryData -> {
+        kimberCredsAndEatery.getEateries().forEach(eateryData -> {
             // Step 3: Create Eatery
             Map<String, Object> eateryRequestBody = Map.of(
                     "name", eateryData.getName(),
@@ -126,7 +136,7 @@ public class JohnKimberEateryTest {
             log.debug("Created eatery [{}] with ID [{}]", eateryData.getName(), createdEateryId);
 
             // Refresh token to change the eatery context
-            login(catAndDishes.getUser().getEmail(), catAndDishes.getUser().getPassword(), createdEateryId);
+            login(kimberCredsAndEatery.getUser().getEmail(), kimberCredsAndEatery.getUser().getPassword(), createdEateryId);
 
             // Step 4: Create categories and dishes
             eateryData.getCategories().forEach(categoryData -> {

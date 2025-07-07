@@ -151,7 +151,7 @@ public class FakeData {
      * @return First Last name
      */
     public static String user(int arg) {
-        return fakeUsers.get(getRandomInt(0,arg)) + getRandomInt(11111, 99999);
+        return fakeUsers.get(getRandomInt(0,arg));
     }
 
     public static String mail(String arg) {

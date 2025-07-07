@@ -1,4 +1,4 @@
-package az.qrfood.backend.ui;
+package az.qrfood.backend.selenium;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

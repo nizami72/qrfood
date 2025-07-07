@@ -1,4 +1,4 @@
-package az.qrfood.backend.ui;
+package az.qrfood.backend.selenium;
 import az.qrfood.backend.util.FakeData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +11,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Value;
 import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,7 +26,9 @@ public class CategoryFlowTest {
     private WebDriverWait wait;
 
     // Test data
+    @Value("${}")
     private String testEmail;
+    @Value("${}")
     private String testPassword;
     private int pause = 2000;
 

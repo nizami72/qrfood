@@ -1,18 +1,21 @@
 @startuml
-title Order Creation Flow
+title New Order Creation Flow
 
 actor "Client" as client
 participant "OrderController" as controller
 participant "OrderService" as service
-participant "TableRepository" as tableRepo
-participant "DishRepository" as dishRepo
-participant "OrderRepository" as orderRepo
-participant "OrderItemRepository" as orderItemRepo
 participant "ClientDeviceService" as clientDeviceService
+participant "WebSocketService" as webSocketService
 database "Database" as db
 
+box "Repositories" #LightGray
+    participant "TableRepository" as tableRepo
+    participant "DishRepository" as dishRepo
+    participant "OrderRepository" as orderRepo
+end box
+
 == Request Processing ==
-client -> controller: POST /api/orders with OrderDto
+client -> controller: POST /api/orders with OrderDto and optional deviceUuid cookie
 note right of client
   OrderDto contains:
   - tableId
@@ -48,7 +51,7 @@ loop for each OrderItemDTO in orderDto.getItems()
   dishRepo -> db: SELECT * FROM dish WHERE id = ?
   db --> dishRepo: DishEntity
   dishRepo --> service: DishEntity
-  
+
   service -> service: Create new OrderItem
   note right of service
     OrderItem object with:
@@ -58,7 +61,7 @@ loop for each OrderItemDTO in orderDto.getItems()
     - note (from OrderItemDTO)
     - priceAtOrder (dish.getPrice() * quantity)
   end note
-  
+
   service -> service: Add OrderItem to Order.items
 end
 
@@ -70,8 +73,15 @@ orderRepo --> service: Refreshed Order
 service --> controller: Order
 
 == Response Processing ==
-controller -> clientDeviceService: createCookieUuid(order)
-clientDeviceService --> controller: Cookie
+alt deviceUuid cookie exists
+    controller -> clientDeviceService: addOrderToExistingDevice(deviceUuid, order)
+    clientDeviceService --> controller: Cookie
+else no deviceUuid cookie
+    controller -> clientDeviceService: createCookieUuid(order)
+    clientDeviceService --> controller: Cookie
+end
+
+controller -> webSocketService: notifyNewOrder(eateryId)
 
 controller -> controller: orderMapper.toDto(order)
 note right of controller
