@@ -33,7 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 // NAV - Client flow
-@RequestMapping("${segment.api.client}")
+@RequestMapping()
 public class ClientDeviceController {
 
     private final ClientDeviceService service;
@@ -61,7 +61,7 @@ public class ClientDeviceController {
      * @return A {@link ResponseEntity} containing a list of {@link CategoryDto} representing the menu,
      *         or a redirect header if active orders exist, or {@code HttpStatus.NOT_FOUND} if the table does not exist.
      */
-    @GetMapping("${eatery}/{eateryId}/table/{tableId}")
+    @GetMapping("${api.client.eatery.table}")
     public ResponseEntity<List<CategoryDto>> eateryCategories(
             @PathVariable(value = "eateryId") Long eateryId,
             @PathVariable(value = "tableId") Long tableId,
@@ -102,7 +102,7 @@ public class ClientDeviceController {
      * @param eateryId The ID of the eatery.
      * @return A {@link ResponseEntity} containing a list of {@link CategoryDto} representing the menu.
      */
-    @GetMapping("${eatery}/{eateryId}")
+    @GetMapping("${api.client.eatery}")
     public ResponseEntity<List<CategoryDto>> eateryCategories(@PathVariable(value = "eateryId") Long eateryId){
         log.debug("Find all categories for eatery when table and eatery already known in the device");
         List<CategoryDto> id = categoryService.findAllCategoryForEatery(eateryId);
@@ -118,7 +118,7 @@ public class ClientDeviceController {
      * @return A {@link ResponseEntity} containing the {@link ClientDeviceResponseDto} of the newly created device
      *         with {@code HttpStatus.CREATED}.
      */
-    @PostMapping
+    @PostMapping("${api.client}")
     public ResponseEntity<ClientDeviceResponseDto> create(@RequestBody ClientDeviceRequestDto dto) {
         return new ResponseEntity<>(service.create(dto), HttpStatus.CREATED);
     }
@@ -129,7 +129,7 @@ public class ClientDeviceController {
      * @param id The ID of the client device to retrieve.
      * @return A {@link ResponseEntity} containing the {@link ClientDeviceResponseDto} of the found device.
      */
-    @GetMapping("/{id}")
+    @GetMapping("${api.client.id}")
     public ResponseEntity<ClientDeviceResponseDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.getById(id));
     }
@@ -139,7 +139,7 @@ public class ClientDeviceController {
      *
      * @return A {@link ResponseEntity} containing a list of {@link ClientDeviceResponseDto} objects.
      */
-    @GetMapping
+    @GetMapping("${api.client}")
     public ResponseEntity<List<ClientDeviceResponseDto>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
@@ -151,7 +151,7 @@ public class ClientDeviceController {
      * @param dto The {@link ClientDeviceRequestDto} containing the updated details.
      * @return A {@link ResponseEntity} containing the {@link ClientDeviceResponseDto} of the updated device.
      */
-    @PutMapping("/{id}")
+    @PutMapping("${api.client.id}")
     public ResponseEntity<ClientDeviceResponseDto> update(@PathVariable Long id,
                                                           @RequestBody ClientDeviceRequestDto dto) {
         return ResponseEntity.ok(service.update(id, dto));
@@ -163,7 +163,7 @@ public class ClientDeviceController {
      * @param id The ID of the client device to delete.
      * @return A {@link ResponseEntity} with no content and {@code HttpStatus.NO_CONTENT}.
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("${api.client.id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();

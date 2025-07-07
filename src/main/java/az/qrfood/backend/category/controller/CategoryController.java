@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,8 +45,8 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("${eatery.id.category}")
-    public ResponseEntity<List<CategoryDto>> eateryCategories(@PathVariable(value = "eateryId") Long eateryId) {
-        log.debug("Find all categories for eatery {}", eateryId);
+    public ResponseEntity<List<CategoryDto>> getEateryCategories(@PathVariable(value = "eateryId") Long eateryId) {
+        log.debug("Find all categories for eatery [{}]", eateryId);
         List<CategoryDto> id = categoryService.findAllCategoryForEatery(eateryId);
         return ResponseEntity.ok(id);
     }
@@ -65,7 +64,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping(value = "${eatery.id.category.id}")
-    public ResponseEntity<CategoryDto> categoryById(@PathVariable(value = "categoryId") Long categoryId) {
+    public ResponseEntity<CategoryDto> getCategoryById(@PathVariable(value = "categoryId") Long categoryId) {
         log.debug("Find the category by ID {}", categoryId);
         CategoryDto category = categoryService.findCategoryById(categoryId);
         return ResponseEntity.ok(category);
