@@ -82,7 +82,7 @@ public class AuthController {
      */
     @PostMapping("${auth.login}")
     @Operation(summary = "Logins a user", description = "Logins user, use email as login and password")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         log.debug("Login request: {}", loginRequest);
         try {
             log.debug("Attempting to authenticate user using AuthenticationManager");
