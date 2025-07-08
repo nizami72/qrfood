@@ -1,13 +1,17 @@
 package az.qrfood.backend.category.controller;
 
 import az.qrfood.backend.category.dto.CategoryDto;
+import az.qrfood.backend.category.dto.CategoryPredefined;
 import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.category.service.CategoryService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +23,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
@@ -27,6 +34,13 @@ import java.util.List;
 public class CategoryController {
 
     private final CategoryService categoryService;
+
+    @Value("${app.home.folder}")
+    private String appHomeFolder;
+
+    private static final String COMMON_CATEGORIES_FILE = "CommonCategories.json";
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
@@ -96,6 +110,33 @@ public class CategoryController {
         return ResponseEntity.ok(cid.getId());
     }
 
+
+    /**
+     * POST a new category for the eatery specified.
+     *
+     * @param eateryId        eatery ID the category is created for
+     * @param dishCategoryDto category data
+     * @return id of created category
+     */
+    @Operation(summary = "Create a new category", description = "Creates a new food category for the specified eatery")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Category created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "Eatery not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PostMapping(value = "${eatery.id.category.predefined}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    public ResponseEntity<Long> createDishCategoryNoImage(@PathVariable Long eateryId,
+                                                   @RequestPart("data") CategoryDto dishCategoryDto)
+    {
+        dishCategoryDto.setEateryId(eateryId);
+        log.debug("Create predefined category item: {}", dishCategoryDto);
+        Category cid = categoryService.createCategory(dishCategoryDto, null);
+
+        return ResponseEntity.ok(cid.getId());
+    }
+
     /**
      * DELETE the category by its ID
      *
@@ -138,5 +179,39 @@ public class CategoryController {
         Category updatedCategory = categoryService.updateCategory(dishCategoryDto, file);
 
         return ResponseEntity.ok(updatedCategory.getId());
+    }
+
+    /**
+     * GET predefined categories from CommonCategories.json file.
+     *
+     * @return List of predefined CategoryDto objects
+     */
+    @Operation(summary = "Get predefined categories", description = "Retrieves a list of predefined categories from CommonCategories.json file")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved list of predefined categories"),
+            @ApiResponse(responseCode = "500", description = "Internal server error or file not found")
+    })
+    @GetMapping("/api/category/common")
+    public ResponseEntity<List<CategoryPredefined>> getCommonCategories() {
+        log.debug("Fetching common categories from {}", appHomeFolder + File.separator + COMMON_CATEGORIES_FILE);
+
+        try {
+            File commonCategoriesFile = new File(appHomeFolder + File.separator + COMMON_CATEGORIES_FILE);
+
+            if (!commonCategoriesFile.exists()) {
+                log.error("CommonCategories.json file not found at {}", commonCategoriesFile.getAbsolutePath());
+                return ResponseEntity.ok(new ArrayList<>());
+            }
+
+            List<CategoryPredefined> categories = objectMapper.readValue(
+                commonCategoriesFile, 
+                new TypeReference<List<CategoryPredefined>>() {}
+            );
+
+            return ResponseEntity.ok(categories);
+        } catch (IOException e) {
+            log.error("Error reading CommonCategories.json file", e);
+            return ResponseEntity.ok(new ArrayList<>());
+        }
     }
 }

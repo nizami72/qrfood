@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
@@ -153,6 +154,34 @@ public class Util {
         } catch (IOException e) {
             throw new RuntimeException("Could not store the file. Error: " + e.getMessage(), e);
         }
+    }
+
+
+    public static String saveFile(String destination, String source, String filename) {
+
+        try {
+
+            Path directory = Paths.get(destination).toAbsolutePath().normalize();
+            Files.createDirectories(directory);
+
+            // Absolute destination to the source file
+            Path sourceFile = Paths.get(source);
+
+            // Destination folder (must exist)
+            Path targetFolder = Paths.get(destination);
+
+            // Resolve the target destination: /home/user/backup/file.txt
+            Path targetFile = targetFolder.resolve(filename);
+
+            Files.copy(sourceFile, targetFile, StandardCopyOption.REPLACE_EXISTING);
+            log.debug("File copied to folder [{}]", targetFile);
+
+
+        } catch (IOException e) {
+            throw new RuntimeException("Could not store the file. Error: " + e.getMessage(), e);
+        }
+
+        return source;
     }
 
     /**

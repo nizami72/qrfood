@@ -78,6 +78,17 @@ public class StorageService {
         Util.saveFile(folder, file, rename);
     }
 
+
+    /**
+     * Saves a {@link MultipartFile} to the specified folder, optionally renaming the file.
+     *
+     * @param folder The destination folder path.
+     * @param filePath   The {@link MultipartFile} to save.
+     */
+    public void saveFile(String folder, String filePath, String fileName) {
+        Util.saveFile(folder, filePath, fileName);
+    }
+
     public void deleteAllAndSaveFile(String folder, MultipartFile file, String rename) {
         Util.deleteFiles(folder);
         Util.saveFile(folder, file, rename);

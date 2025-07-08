@@ -12,6 +12,7 @@ import az.qrfood.backend.lang.Language;
 import az.qrfood.backend.dish.service.DishService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,6 +35,10 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final EateryRepository eateryRepository;
     private final StorageService storageService;
+
+    @Value("${folder.predefined.category.images}")
+    private String appHomeFolder;
+
 
     /**
      * Constructs a CategoryService with necessary dependencies.
@@ -88,7 +93,7 @@ public class CategoryService {
         category.setTranslations(categoryTranslations);
         category.setHash(category.hashCode());
         Optional<Category> mayExistCategory = categoryRepository.findByHash(category.hashCode());
-        if(mayExistCategory.isPresent()) {
+        if (mayExistCategory.isPresent()) {
             Category c = mayExistCategory.get();
             log.debug("The category with the same eatery ID and translation already exists, id [{}]", c.getId());
             return c;
@@ -98,11 +103,17 @@ public class CategoryService {
 
         String folderPath = storageService.createCategoryFolder(category.getId());
         String fileName = category.getCategoryImageFileName();
-        if(folderPath != null) {
+        String sourceFile = null;
+        if (folderPath != null && multipartFile != null) {
             storageService.saveFile(folderPath, multipartFile, fileName);
             log.info("Dish file [{}] created at dir [{}]", fileName, folderPath);
+        } else if (!dishCategoryDto.getImage().isEmpty()) {
+            String imageName = dishCategoryDto.getImage();
+            sourceFile = appHomeFolder + imageName;
+            storageService.saveFile(folderPath, sourceFile, fileName);
+            log.debug("Assign predefined image file [{}]", sourceFile);
         } else {
-            log.error("Dish file [{}] was not created", fileName);
+            log.error("Dish file [{}] was not created", sourceFile);
         }
 
         return category;// what to return id,id, dto or entity
