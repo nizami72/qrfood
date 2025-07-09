@@ -71,7 +71,7 @@ public class CategoryService {
 
         Long eateryId = dishCategoryDto.getEateryId();
 
-        // check if eatery exists
+        // check if an eatery exists
         Optional<Eatery> eateryOp = eateryRepository.findById(eateryId);
         if (eateryOp.isEmpty()) {
             throw new EntityNotFoundException(String.format(

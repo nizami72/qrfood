@@ -34,6 +34,10 @@ public class ImageController {
     private String categoryImagePath;
     @Value("${folder.root.images.dishes}")
     private String dishImagePath;
+    @Value("${folder.predefined.category.images}")
+    private String predefinedCatFolder;
+
+
     @Value("${fall.back.photo}")
     private String fallBackPhoto;
 
@@ -81,6 +85,14 @@ public class ImageController {
                                                  @PathVariable("fileName") String photo, HttpServletResponse response) {
         log.debug("Requested category image [{}]", photo);
         String path = categoryImagePath + "/" + dir + "/" + photo;
+        return getImage(path, response);
+    }
+
+    @RequestMapping(value = {"/predefined-category/{fileName}"})
+    public ResponseEntity<byte[]> getPredefinedImage(@PathVariable("fileName") String fileName,
+                                                     HttpServletResponse response) {
+        log.debug("Requested predefined category image [{}]", fileName);
+        String path = predefinedCatFolder + fileName;
         return getImage(path, response);
     }
 
