@@ -9,7 +9,7 @@
             <level>INFO</level>
         </filter>
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>%d{HH:mm:ss:SSS} %highlight(%-5level) [%.20t] %logger{24}.%M ${prefix} %msg%n</Pattern>
+            <Pattern>%d{HH:mm:ss:SSS} %-5level [%.20t] %logger{24}.%M ${prefix} %msg%n</Pattern>
         </layout>
     </appender>
 
@@ -21,7 +21,7 @@
             <onMismatch>DENY</onMismatch>
         </filter>
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>%d{HH:mm:ss:SSS} %highlight(%-5level) [%.20t] %logger{24}.%M ${prefix} %msg%n</Pattern>
+            <Pattern>%d{HH:mm:ss:SSS} %-5level [%.20t] %logger{24}.%M ${prefix} %msg%n</Pattern>
         </layout>
     </appender>
 

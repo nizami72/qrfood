@@ -36,8 +36,10 @@ public class FrontendPathConfig {
     private String imagesCategoriesUri;
     @Value("${full.path.fe.dish.image}")
     private String imagesDishesUri;
-    @Value("${full.path.fe.predefined.category.image}")
+    @Value("${url.fe.predefined.category.image}")
     private String imagesPredefinedCategoryUri;
+    @Value("${url.fe.predefined.dish.image}")
+    private String imagesPredefinedDishUri;
 
     // API URLs for specific actions
     @Value("${full.path.fe.api.tables.image}")
@@ -147,7 +149,8 @@ public class FrontendPathConfig {
         paths.put("userGeneral", userGeneral);
         paths.put("usr", usr);
         paths.put("apiAdminEatery", apiAdminEatery);
-        paths.put("predefined", imagesPredefinedCategoryUri);
+        paths.put("predefinedCat", imagesPredefinedCategoryUri);
+        paths.put("predefinedDish", imagesPredefinedDishUri);
 //        paths.put("", );
         //.
 

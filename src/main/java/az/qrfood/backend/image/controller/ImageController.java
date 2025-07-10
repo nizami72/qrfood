@@ -36,23 +36,12 @@ public class ImageController {
     private String dishImagePath;
     @Value("${folder.predefined.category.images}")
     private String predefinedCatFolder;
+    @Value("${folder.predefined.dish.images}")
+    private String predefinedDishFolder;
 
 
     @Value("${fall.back.photo}")
     private String fallBackPhoto;
-
-    /**
-     * Retrieves a map of base image paths configured for different entities.
-     *
-     * @return A {@link Map} containing the base paths for eatery, category, and dish images.
-     */
-    public Map<String, String> getImagePaths() {
-        Map<String, String> paths = new HashMap<>();
-        paths.put("eatery", eateryImagePath);
-        paths.put("categories", categoryImagePath);
-        paths.put("dishes", dishImagePath);
-        return paths;
-    }
 
     /**
      * Retrieves an image for a specific eatery.
@@ -82,17 +71,27 @@ public class ImageController {
      */
     @RequestMapping(value = {"/category/{id}/{fileName}"})
     public ResponseEntity<byte[]> getCategoryImage(@PathVariable("id") String dir,
-                                                 @PathVariable("fileName") String photo, HttpServletResponse response) {
+                                                   @PathVariable("fileName") String photo, HttpServletResponse response) {
         log.debug("Requested category image [{}]", photo);
         String path = categoryImagePath + "/" + dir + "/" + photo;
         return getImage(path, response);
     }
 
-    @RequestMapping(value = {"/predefined-category/{fileName}"})
-    public ResponseEntity<byte[]> getPredefinedImage(@PathVariable("fileName") String fileName,
-                                                     HttpServletResponse response) {
+    @RequestMapping(value = {"/predefined/category/{fileName}"})
+    public ResponseEntity<byte[]> getPredefinedCatImage(@PathVariable("fileName") String fileName,
+                                                        HttpServletResponse response) {
+
         log.debug("Requested predefined category image [{}]", fileName);
         String path = predefinedCatFolder + fileName;
+        return getImage(path, response);
+    }
+
+    @RequestMapping(value = {"/predefined/dish/{fileName}"})
+    public ResponseEntity<byte[]> getPredefinedDishImage(@PathVariable("fileName") String fileName,
+                                                         HttpServletResponse response) {
+
+        log.debug("Requested predefined dish image [{}]", fileName);
+        String path = predefinedDishFolder + fileName;
         return getImage(path, response);
     }
 
@@ -107,7 +106,7 @@ public class ImageController {
      */
     @RequestMapping(value = {"/dish/{id}/{fileName}"})
     public ResponseEntity<byte[]> getDishImage(@PathVariable("id") String dir,
-                                                 @PathVariable("fileName") String photo, HttpServletResponse response) {
+                                               @PathVariable("fileName") String photo, HttpServletResponse response) {
         log.debug("Requested dish image [{}]", photo);
         String path = dishImagePath + "/" + dir + "/" + photo;
         return getImage(path, response);
