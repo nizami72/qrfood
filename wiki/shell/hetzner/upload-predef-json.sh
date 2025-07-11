@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # uploading predefined json
+ip=157.180.16.28
 APP_ROOT_FOLDER_LOCAL="/home/nizami/projects_resources/qr_food"
 APP_ROOT_FOLDER_REMOTE="/home/qrfood"
 PRDEF_JSON_FILE="CommonCategories.json"

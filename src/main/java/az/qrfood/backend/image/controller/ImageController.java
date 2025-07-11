@@ -121,6 +121,7 @@ public class ImageController {
      * @return A {@link ResponseEntity} containing the image data.
      */
     private ResponseEntity<byte[]> getImage(String imgPath, HttpServletResponse response) {
+        log.debug("Requested image [{}]", imgPath);
         byte[] data;
         try {
             data = Files.readAllBytes(Paths.get(imgPath));
