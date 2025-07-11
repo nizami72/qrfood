@@ -37,7 +37,7 @@ public class CategoryService {
     private final StorageService storageService;
 
     @Value("${folder.predefined.category.images}")
-    private String appHomeFolder;
+    private String appHomeFolderImage;
 
 
     /**
@@ -109,7 +109,7 @@ public class CategoryService {
             log.info("Dish file [{}] created at dir [{}]", fileName, folderPath);
         } else if (!dishCategoryDto.getImage().isEmpty()) {
             String imageName = dishCategoryDto.getImage();
-            sourceFile = appHomeFolder + imageName;
+            sourceFile = appHomeFolderImage + imageName;
             storageService.saveFile(folderPath, sourceFile, fileName);
             log.debug("Assign predefined image file [{}]", sourceFile);
         } else {

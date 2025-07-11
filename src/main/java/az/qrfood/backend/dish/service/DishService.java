@@ -12,6 +12,7 @@ import az.qrfood.backend.dish.entity.DishEntityTranslation;
 import az.qrfood.backend.dish.repository.DishRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Service class for managing {@link DishEntity} entities.
@@ -35,6 +35,9 @@ public class DishService {
     private final DishRepository dishRepository;
     private final CategoryRepository categoryRepository;
     private final StorageService storageService;
+
+    @Value("${folder.predefined.dish.images}")
+    private String appHomeFolderImage;
 
     /**
      * Constructs a DishService with necessary dependencies.
@@ -247,11 +250,15 @@ public class DishService {
 
     // Update image if provided
     private void saveImage(MultipartFile multipartFile, DishEntity dishEntity) {
+        String folder = storageService.createDishesFolder(dishEntity.getId());
         if (multipartFile != null && !multipartFile.isEmpty()) {
-            String folder = storageService.createDishesFolder(dishEntity.getId());
             String fileName = multipartFile.getOriginalFilename();
             storageService.deleteAllAndSaveFile(folder, multipartFile, fileName);
             dishEntity.setImage(fileName);
+        } else {
+            String fileName = dishEntity.getImage();
+            String sourceFile = appHomeFolderImage + fileName;
+            storageService.saveFile(folder, sourceFile, fileName);
         }
     }
 
