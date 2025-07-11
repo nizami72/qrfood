@@ -31,6 +31,11 @@ FRONTEND_REMOTE_PATH="/var/www/qrfood.az/dist"
 echo "Uploading frontend files from $FRONTEND_LOCAL_PATH to root@$ip:$FRONTEND_REMOTE_PATH ..."
 scp -i /home/nizami/.ssh/key2 -r $FRONTEND_LOCAL_PATH/* root@$ip:$FRONTEND_REMOTE_PATH/
 
+
+
+
+
+
 # restart service
 echo "Restarting service ... "
 ssh -i /home/nizami/.ssh/key2 root@$ip 'sudo systemctl restart qrfood.service'
