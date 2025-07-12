@@ -101,19 +101,19 @@ public class CategoryService {
         categoryRepository.save(category);
         log.debug("Dish category created [{}]", category);
 
-        String folderPath = storageService.createCategoryFolder(category.getId());
+        String destinationFolder = storageService.createCategoryFolder(category.getId());
         String fileName = category.getCategoryImageFileName();
         String sourceFile = null;
-        if (folderPath != null && multipartFile != null) {
-            storageService.saveFile(folderPath, multipartFile, fileName);
-            log.info("Dish file [{}] created at dir [{}]", fileName, folderPath);
+        if (destinationFolder != null && multipartFile != null) {
+            storageService.saveFile(destinationFolder, multipartFile, fileName);
+            log.info("Dish file [{}] created at dir [{}]", fileName, destinationFolder);
         } else if (!dishCategoryDto.getImage().isEmpty()) {
             String imageName = dishCategoryDto.getImage();
             sourceFile = appHomeFolderImage + imageName;
-            storageService.saveFile(folderPath, sourceFile, fileName);
+            storageService.saveFile(destinationFolder, sourceFile, fileName);
             log.debug("Assign predefined image file [{}]", sourceFile);
         } else {
-            log.error("Dish file [{}] was not created", sourceFile);
+            log.error("Image was not created nether copied");
         }
 
         return category;// what to return id,id, dto or entity

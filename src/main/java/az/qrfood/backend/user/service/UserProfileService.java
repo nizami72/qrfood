@@ -62,7 +62,9 @@ public class UserProfileService {
 
         UserProfile profile = new UserProfile();
         profile.setUser(user);
-        profile.setName(userProfileRequest.getName());
+        if (userProfileRequest != null && StringUtils.hasText(userProfileRequest.getName())) {
+            profile.setName(userProfileRequest.getName());
+        }
         profile.setPhones(phones);
         profile.setIsActive(true);
         profile.setCreated(LocalDateTime.now());

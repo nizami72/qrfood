@@ -95,7 +95,7 @@ public class EateryIdCheckFilter extends OncePerRequestFilter implements Ordered
                 String jwt = authorizationHeader.substring(7);
 
                 // Extract eateryId from JWT token
-                Long tokenEateryId = null;
+                Long tokenEateryId;
                 try {
                     tokenEateryId = jwtUtil.extractClaim(jwt, claims -> claims.get("eateryId", Long.class));
                 } catch (Exception e) {
