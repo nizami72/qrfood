@@ -59,7 +59,7 @@ public class CommonDishController {
     @GetMapping("/api/dish/common/{categoryName}")
     public ResponseEntity<List<CommonDishDto>> getCommonDishesForCategory(
             @PathVariable String categoryName,
-            @CookieValue(value = "lang", defaultValue = "en") String lang) {
+            @CookieValue(value = "language", defaultValue = "en") String lang) {
 
         log.debug("Fetching common dishes for category {} from {}", categoryName, appHomeFolder + File.separator + COMMON_DISHES_FILE);
 
