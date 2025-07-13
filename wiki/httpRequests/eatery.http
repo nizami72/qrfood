@@ -3,11 +3,11 @@
 
 
 ### LOGIN REQUEST
-POST http://localhost:8080/api/auth/login
+POST {{url}}/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "nizami.budagov1@gmail.com",
+  "email": "nizami.budagov@gmail.com",
   "password": "qqqq1111"
 }
 
