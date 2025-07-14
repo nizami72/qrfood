@@ -1,0 +1,35 @@
+@startuml
+title Impersonation Flow on Frontend
+
+actor SuperAdmin
+participant ImpersonationPage as "Impersonation.jsx"
+participant Browser as "Browser"
+participant Api as "Backend API"
+
+SuperAdmin -> ImpersonationPage: Navigates to /admin/impersonate
+activate ImpersonationPage
+
+ImpersonationPage -> Api: GET /api/users (fetch users)
+activate Api
+Api --> ImpersonationPage: List of users
+deactivate Api
+
+ImpersonationPage -> ImpersonationPage: Filter for EATERY_ADMIN role
+ImpersonationPage --> SuperAdmin: Renders list of eatery admins
+
+SuperAdmin -> ImpersonationPage: Clicks "Impersonate" for a user
+activate ImpersonationPage
+
+ImpersonationPage -> Api: POST /api/admin/impersonate/{userId}
+activate Api
+Api --> ImpersonationPage: New JWT token, userId, eateryId
+deactivate Api
+
+ImpersonationPage -> Browser: localStorage.setItem("jwtToken", ...)
+ImpersonationPage -> Browser: localStorage.setItem("userId", ...)
+ImpersonationPage -> Browser: window.dispatchEvent("login-success")
+ImpersonationPage -> Browser: window.location.href = "/admin/users"
+
+deactivate ImpersonationPage
+
+@enduml

@@ -1,0 +1,23 @@
+
+
+### LOGIN REQUEST
+POST {{url}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "nizami.budagov@gmail.com",
+  "password": "qqqq1111"
+}
+
+> {%
+    client.test("Request successful", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.jwt, "JWT token is missing in the response");
+        client.global.set("accessToken", response.body.jwt);
+        client.log("JWT Token saved: " + response.body.jwt);
+    });
+%}
+
+
+#### GET all users
+GET {{url}}/api/users

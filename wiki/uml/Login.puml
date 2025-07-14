@@ -1,0 +1,76 @@
+@startuml
+!theme vibrant
+title Frontend Login Process
+
+actor User
+
+participant "Login.jsx" as Login
+participant "Browser" as Browser
+participant "React Router" as Router
+participant "LanguageContext" as Lang
+participant "logger.js" as Logger
+participant "API Server" as API
+
+User -> Login: Enters email and password
+User -> Login: Clicks "Login" button
+activate Login
+
+Login -> API: POST /api/auth/login with credentials
+activate API
+
+alt Successful Login
+
+    API --> Login: 200 OK with { jwt, userId }
+    deactivate API
+
+    Login -> Browser: localStorage.setItem('jwtToken', jwt)
+    Login -> Browser: localStorage.setItem('userId', userId)
+
+    Login -> Browser: window.dispatchEvent('login-success')
+
+    Login -> Router: navigate('/admin/restaurants')
+    activate Router
+    Router -> User: Renders Admin/Restaurants page
+    deactivate Router
+
+else API Error (e.g., invalid credentials)
+
+    API --> Login: 4xx/5xx Error with { message }
+    deactivate API
+
+    Login -> Lang: t('admin.login.loginError')
+    activate Lang
+    Lang --> Login: Returns translated error string
+    deactivate Lang
+
+    Login -> Logger: logError(errorMessage, ...)
+    activate Logger
+    Logger -> API: POST /api/logs/frontend
+    Logger --> Login
+    deactivate Logger
+
+    Login -> User: Displays error message
+
+else Network/Fetch Error
+
+    API --x Login: Fetch fails
+    deactivate API
+
+    Login -> Lang: t('admin.login.serverError')
+    activate Lang
+    Lang --> Login: Returns translated error string
+    deactivate Lang
+
+    Login -> Logger: logError(errorMessage, ...)
+    activate Logger
+    Logger -> API: POST /api/logs/frontend
+    Logger --> Login
+    deactivate Logger
+
+    Login -> User: Displays error message
+
+end
+
+deactivate Login
+
+@enduml

@@ -143,6 +143,9 @@ public class UserService {
 
         // Only update roles if they're provided
         if (request.getRoles() != null) {
+            if(!user.getRoles().contains(Role.SUPER_ADMIN)) {
+                request.getRoles().remove(Role.SUPER_ADMIN);
+            }
             user.setRoles(request.getRoles());
         }
 
