@@ -96,6 +96,8 @@ public class FrontendPathConfig {
     String usr;
     @Value("${full.admin.eatery}")
     String apiAdminEatery;
+    @Value("${api.user}")
+    String apiUser;
 
 
 
@@ -151,6 +153,7 @@ public class FrontendPathConfig {
         paths.put("apiAdminEatery", apiAdminEatery);
         paths.put("predefinedCat", imagesPredefinedCategoryUri);
         paths.put("predefinedDish", imagesPredefinedDishUri);
+        paths.put("apiUser", apiUser);
 //        paths.put("", );
         //.
 

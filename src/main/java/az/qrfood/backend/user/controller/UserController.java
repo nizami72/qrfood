@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,23 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    /**
+     * Get all users from all eateries.
+     *
+     * @return list of user responses
+     */
+    @Operation(summary = "Get all users from all eateries", description = "Retrieves a list of all users across all eateries")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved list of users"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping("${api.user}")
+    @PreAuthorize("@authz.hasAnyRole(authentication)")
+    public ResponseEntity<List<UserResponse>> getAllUsersFromAllEateries() {
+        List<UserResponse> responses = userService.getAllUsers();
+        return ResponseEntity.ok(responses);
     }
 
     /**

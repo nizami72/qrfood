@@ -127,7 +127,7 @@ public class AuthController {
         }
 
         log.debug("Generating JWT Token with eateryId: {}", eateryId);
-        final String jwt = eateryId != null ? jwtUtil.generateToken(userDetails, eateryId) : jwtUtil.generateToken(userDetails);
+        final String jwt = jwtUtil.generateToken(userDetails, eateryId);
 
         log.debug("Return token, user ID, and eatery ID");
         LoginResponse response = new LoginResponse(jwt, userId, eateryId);
@@ -253,7 +253,7 @@ public class AuthController {
 
         // Generate a new JWT token with the eatery ID
         log.debug("Generating new JWT Token with eateryId: {}", eateryId);
-        final String jwt = eateryId != null ? jwtUtil.generateToken(userDetails, eateryId) : jwtUtil.generateToken(userDetails);
+        final String jwt = jwtUtil.generateToken(userDetails, eateryId);
 
         // Return the new token
         log.debug("Return new token with eatery ID");
