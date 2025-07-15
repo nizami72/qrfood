@@ -31,7 +31,7 @@ public class AliveController {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
         String out = "I am still alive:-)";
-        return new Alive(applicationName, dtf.format(now), out, version);
+        return new Alive(applicationName, version, out, dtf.format(now));
     }
 
 }
