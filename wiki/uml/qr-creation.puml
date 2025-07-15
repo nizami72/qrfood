@@ -1,0 +1,40 @@
+@startuml
+
+title QR Code Creation and Retrieval Flow
+
+actor User as user
+
+
+
+user --> tableController : Request to create new table
+tableController --> tableService : createTable(tableDto)
+
+tableService --> qrService : createQrCodeEntity(eateryId, tableId)
+activate qrService
+qrService --> qrCodeGenerator : generateQRCode(qrContent, width, height)
+activate qrCodeGenerator
+qrCodeGenerator --> qrService : Returns QR Code Image (byte[])
+deactivate qrCodeGenerator
+
+qrService --> qrCodeEntity : Creates new QrCode entity
+qrCodeEntity --> db : Saves QrCode entity
+qrService --> tableService : Returns QrCode entity
+deactivate qrService
+
+tableService --> tableEntity : Associates QrCode with TableInEatery
+tableEntity --> db : Saves TableInEatery entity
+tableService --> tableController : Returns TableDto
+tableController --> user : Table created with QR code
+
+user --> qrController : Request QR Code Image (eateryId, tableNumber)
+activate qrController
+qrController --> qrService : getQrImage(eateryId, tableNumber)
+activate qrService
+qrService --> db : Retrieves TableInEatery and QrCode
+db --> qrService : Returns TableInEatery and QrCode
+qrService --> qrController : Returns QR Code Image (byte[])
+deactivate qrService
+qrController --> user : Returns QR Code Image
+deactivate qrController
+
+@enduml

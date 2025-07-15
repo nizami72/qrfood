@@ -61,6 +61,7 @@ public class QrService {
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate QR code", e);
         }
+        code.setContent(qrContent);
         String s = qrContent.replace("192.168.1.76:8081", "127.0.0.1:5173");
         Util.saveLinkToFile(s);
         log.debug("Menu link [{}]", s);

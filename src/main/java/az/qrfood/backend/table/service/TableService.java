@@ -189,7 +189,8 @@ public class TableService {
                     qrCode.getId(),
                     qrCode.getQrCodeAsBytes(),
                     qrCode.getValidFrom(),
-                    qrCode.getValidTo()
+                    qrCode.getValidTo(),
+                    qrCode.getContent()
             );
         }
 

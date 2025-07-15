@@ -51,6 +51,8 @@ public class QrCode {
      */
     private LocalDateTime validTo;
 
+    private String content;
+
     /**
      * Default constructor. Initializes {@code validFrom} to the current time.
      */

@@ -5,5 +5,6 @@ import java.time.LocalDateTime;
 public record QrCodeDto(Long id,
                         byte[] qrCodeAsBytes,
                         LocalDateTime validFrom,
-                        LocalDateTime validTo) {
+                        LocalDateTime validTo,
+                        String content) {
 }
