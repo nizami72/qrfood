@@ -1,0 +1,40 @@
+@startuml
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam defaultTextAlignment center
+
+title Navigation Flow of ClientApp
+
+[ClientApp] as App
+
+rectangle "Client Pages" as CP #LightBlue {
+  [Menu Page] as MenuPage
+  [Cart Page] as CartPage
+  [Order Confirmation Page] as OrderConfirmationPage
+  [Orders Page] as OrdersPage
+  [Order Decision Page] as OrderDecisionPage
+  [Not Found Page] as NotFoundPage
+}
+
+' --- Main Routes from App ---
+App --> MenuPage #pink : routes to\n/menu
+App --> CartPage #pink : routes to\n/cart
+App --> OrderConfirmationPage #pink : routes to\n/order-confirmation/:orderId
+App --> OrdersPage #pink : routes to\n/orders
+App --> OrderDecisionPage #pink : routes to\n/order-decision/:orderId
+App --> NotFoundPage #pink : fallback
+
+' --- In-App Navigation ---
+MenuPage --> CartPage : navigate\n'/client/cart'
+CartPage --> MenuPage : navigate\n(-1)
+CartPage --> OrderConfirmationPage : navigate\n'/client/order-confirmation/:orderId'
+
+OrderConfirmationPage --> MenuPage : navigate\n'/client/eatery/.../menu'
+OrderConfirmationPage --> OrdersPage : navigate\n'/client/orders'
+
+OrdersPage --> OrderConfirmationPage : navigate\n'/client/order-confirmation/:orderId'
+OrdersPage --> MenuPage : navigate\n(-1)
+
+OrderDecisionPage --> MenuPage : navigate\n'/client/eatery/.../menu'
+OrderDecisionPage --> OrdersPage : navigate\n'/client/orders'
+@enduml

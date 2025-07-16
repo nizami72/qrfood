@@ -12,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +31,8 @@ import java.util.stream.Collectors;
 @Log4j2
 public class ClientDeviceService {
 
+    @Value("${client.cookie.expiration}")
+    int cookieExpiraionTime;
     private final ClientDeviceMapper mapper;
     private final ClientDeviceRepository clientDeviceRepository;
 
@@ -47,7 +50,7 @@ public class ClientDeviceService {
         // NAV Cookie install
         Cookie cookie = new Cookie(DEVICE, String.valueOf(UUID.randomUUID()));
         cookie.setPath("/");
-        cookie.setMaxAge(3600);
+        cookie.setMaxAge(cookieExpiraionTime);
         cookie.setHttpOnly(true);
         cookie.setSecure(false);
         // cookie.setDomain("example.com");
@@ -176,7 +179,7 @@ public class ClientDeviceService {
         // Return the existing cookie for consistency with createCookieUuid
         Cookie cookie = new Cookie(DEVICE, uuid);
         cookie.setPath("/");
-        cookie.setMaxAge(3600);
+        cookie.setMaxAge(cookieExpiraionTime);
         cookie.setHttpOnly(true);
         cookie.setSecure(false);
 

@@ -242,6 +242,11 @@ public class OrderService {
     @Transactional
     public void deleteOrder(Long id) {
         log.debug("Request to delete Order : {}", id);
+        Order order = orderRepository.findById(id).orElseThrow();
+        List<ClientDevice> clientDevices = clientDeviceRepository.findByOrdersId(id);
+        for (ClientDevice device : clientDevices ) {
+            device.getOrders().remove(order);        }
+        clientDeviceRepository.saveAll(clientDevices);
         orderRepository.deleteById(id);
     }
 

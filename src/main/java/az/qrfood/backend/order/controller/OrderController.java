@@ -152,14 +152,14 @@ public class OrderController {
         Order order = orderService.createOrder(orderDto);
         Cookie cookie;
 
-        // Check if cookie is present
+        // Check if a cookie is present
         if (deviceUuid != null && !deviceUuid.isEmpty()) {
             log.debug("Existing cookie found: {}, adding order to existing device", deviceUuid);
-            // Add order to existing client device
+            // If yes, adds order to an existing client device
             cookie = clientDeviceService.addOrderToExistingDevice(deviceUuid, order);
         } else {
             log.debug("No cookie found, creating new client device");
-            // Create new client device and cookie
+            // if not, create a new client device and cookie
             cookie = clientDeviceService.createCookieUuid(order);
         }
 
@@ -262,6 +262,7 @@ public class OrderController {
 
         // If no device UUID is provided, return an empty list
         if (deviceUuid == null || deviceUuid.isEmpty()) {
+            log.debug("Device UUID is null");
             return ResponseEntity.ok(List.of());
         }
 

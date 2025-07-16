@@ -3,6 +3,10 @@ package az.qrfood.backend.client.repository;
 
 import az.qrfood.backend.client.entity.ClientDevice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -22,4 +26,5 @@ public interface ClientDeviceRepository extends JpaRepository<ClientDevice, Long
      */
     Optional<ClientDevice> findByUuid(String uuid);
 
+    List<ClientDevice> findByOrdersId(Long id);
 }
