@@ -112,8 +112,7 @@ public class AuthController {
                 UserProfile userProfile = userProfileOptional.get();
                 userId = userProfile.getId();
 
-                // If eateryId is not provided in the request, but the user has restaurants,
-                // use the first one as the default
+                // If eateryId is not provided in the request, but a user has restaurants, use the first one as default
                 if (eateryId == null && userProfile.getRestaurantIds() != null && !userProfile.getRestaurantIds().isEmpty()) {
                     eateryId = userProfile.getRestaurantIds().getFirst();
                 }
