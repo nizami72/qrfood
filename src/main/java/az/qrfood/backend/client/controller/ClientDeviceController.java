@@ -4,7 +4,10 @@ import az.qrfood.backend.category.dto.CategoryDto;
 import az.qrfood.backend.category.service.CategoryService;
 import az.qrfood.backend.client.dto.ClientDeviceRequestDto;
 import az.qrfood.backend.client.dto.ClientDeviceResponseDto;
+import az.qrfood.backend.client.dto.Menu;
 import az.qrfood.backend.client.service.ClientDeviceService;
+import az.qrfood.backend.eatery.service.EateryService;
+import az.qrfood.backend.table.dto.TableDto;
 import az.qrfood.backend.table.service.TableService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * REST controller for managing client device-related operations and client-facing menu requests.
@@ -40,6 +44,7 @@ public class ClientDeviceController {
     private final CategoryService categoryService;
     private final ClientDeviceService clientDeviceService;
     private final TableService tableService;
+    private final EateryService eateryService;
 
     @Value("${segment.client.orders}")
     private String componentOrders;
@@ -57,24 +62,25 @@ public class ClientDeviceController {
      *
      * @param eateryId      The ID of the eatery.
      * @param tableId       The ID of the table where the client is seated.
-     * @param myCookieValue The value of the client's device UUID cookie (if present).
      * @return A {@link ResponseEntity} containing a list of {@link CategoryDto} representing the menu,
      *         or a redirect header if active orders exist, or {@code HttpStatus.NOT_FOUND} if the table does not exist.
      */
     @GetMapping("${api.client.eatery.table}")
-    public ResponseEntity<List<CategoryDto>> eateryCategories(
+    public ResponseEntity<Menu> eateryCategories(
             @PathVariable(value = "eateryId") Long eateryId,
             @PathVariable(value = "tableId") Long tableId) {
 
         log.debug("Request for menu(categories) for eatery [{}] and table [{}]", eateryId, tableId);
         // check if table exists
-        if(tableService.findById(tableId).isEmpty()) {
+        Optional<TableDto> table = tableService.findById(tableId);
+        if(table.isEmpty()) {
             log.debug("The table doesnt exists [{}]", tableId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-
         List<CategoryDto> id = categoryService.findAllCategoryForEatery(eateryId);
-        return ResponseEntity.ok(id);
+        String eateryName = eateryService.getEateryById(eateryId).getName();
+        Menu menu = new Menu(eateryId, tableId, eateryName, table.get().number(), id);
+        return ResponseEntity.ok(menu);
     }
 
     /**
