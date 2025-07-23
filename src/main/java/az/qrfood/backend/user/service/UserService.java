@@ -2,6 +2,7 @@ package az.qrfood.backend.user.service;
 
 import az.qrfood.backend.eatery.dto.EateryDto;
 import az.qrfood.backend.eatery.service.EateryService;
+import az.qrfood.backend.user.dto.GeneralResponse;
 import az.qrfood.backend.user.dto.RegisterRequest;
 import az.qrfood.backend.user.dto.RegisterResponse;
 import az.qrfood.backend.user.dto.UserRequest;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -174,6 +176,37 @@ public class UserService {
             throw new EntityNotFoundException("User not found with id: " + id);
         }
         userRepository.deleteById(id);
+    }
+
+    /**
+     * Deletes a user by their username.
+     *
+     * @param username The username of the user to delete.
+     * @throws EntityNotFoundException if the user with the given username is not found.
+     */
+    @Transactional
+    public GeneralResponse deleteUser(String username) {
+        if (userRepository.findByUsername(username).isEmpty()) {
+            log.debug("User with user name [{}] not found", username);
+            return GeneralResponse.builder()
+                    .message("User not found with username: " + username)
+                    .success(false)
+                    .build();
+        }
+        Optional<User> opUser = userRepository.deleteUserByUsername(username);
+        if(opUser.isPresent()) {
+            log.debug("User with user name [{}] deleted", username);
+            return GeneralResponse.builder()
+                    .message("User deleted successfully")
+                    .success(true)
+                    .build();
+        } else {
+            log.debug("Optional with user name [{}] is empty", username);
+            return GeneralResponse.builder()
+                    .message("User not found with username: " + username)
+                    .success(false)
+                    .build();
+        }
     }
 
     @Transactional

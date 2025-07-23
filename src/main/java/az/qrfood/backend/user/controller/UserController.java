@@ -1,5 +1,6 @@
 package az.qrfood.backend.user.controller;
 
+import az.qrfood.backend.user.dto.GeneralResponse;
 import az.qrfood.backend.user.dto.RegisterRequest;
 import az.qrfood.backend.user.dto.UserRequest;
 import az.qrfood.backend.user.dto.UserResponse;
@@ -10,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -153,6 +153,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @DeleteMapping("${user.id}")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
@@ -174,6 +175,26 @@ public class UserController {
     @PostMapping("${user.general}")
     public ResponseEntity<?> registerEateryStaff(@RequestBody RegisterRequest registerRequest, @PathVariable Long eateryId) {
         return userService.registerEateryStaff(registerRequest, eateryId);
+    }
+
+    /**
+     * POST to delete a user by ID.
+     *
+     * @param id the user ID to delete
+     * @return no content response
+     */
+    @Operation(summary = "Delete a user by ID using POST", description = "Deletes a user with the specified ID using POST method")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PostMapping("${usr.delete}")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'SUPER_ADMIN')")
+    public ResponseEntity<GeneralResponse> deleteUserByName(@PathVariable String id) {
+        GeneralResponse g = userService.deleteUser(id);
+        log.debug("Deleted user with id [{}]", id);
+        return ResponseEntity.ok(g);
     }
 
 
