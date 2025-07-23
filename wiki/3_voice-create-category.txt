@@ -1,0 +1,16 @@
+This page is for organizing your menu into categories, such as "Appetizers," "Main Courses," and "Desserts." You can create new categories, edit existing ones, and manage the dishes within them.
+
+Here's how to create a new menu category:
+
+1.  **Click the "+ Add Category" button** to open the category creation form.
+2.  You have two options: **"Manual Entry"** or **"Predefined List."**
+    *   **For Manual Entry:**
+        1.  **Enter the category name** in at least one language (Azerbaijani, English, or Russian).
+        2.  **(Optional) Upload an image** for the category by clicking the "Choose File" button. This image will be displayed on the menu.
+        3.  **Click "Add"** to save the new category.
+    *   **For Predefined List:**
+        1.  **Select one or more categories** from the list of common options by checking the boxes next to their names.
+        2.  **Click "Create Selected"** to add them to your menu.
+3.  **To cancel,** click the "Cancel" button to close the form without saving.
+
+Once created, the new category will appear in the list, and you can start adding dishes to it. You can also rearrange the order of categories by dragging and dropping them.

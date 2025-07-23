@@ -1,0 +1,19 @@
+This page is for managing user accounts associated with your restaurant. You can add new users, assign them roles, and edit or delete existing accounts.
+
+**Purpose:**
+
+This page allows you to control who has access to your restaurant's administrative panel and what level of permissions they have. This is essential for delegating tasks and maintaining the security of your restaurant's data.
+
+**Functionality:**
+
+*   **View Users:** See a list of all users associated with the selected restaurant.
+*   **Add New Users:** Create new user accounts by providing a username, password, and assigning one or more roles.
+*   **Edit Users:** Modify the details of existing users, including their roles.
+*   **Delete Users:** Remove user accounts that are no longer needed.
+*   **Search:** Quickly find a specific user by searching for their username.
+*   **Role-Based Access Control:** Assign different roles to users to control their permissions. The available roles are:
+    *   **Super Admin:**  Has full control over the entire system.
+    *   **Eatery Admin:** Has full control over a specific restaurant.
+    *   **Kitchen Admin:** Can manage the menu and orders.
+    *   **Waiter:** Can take and manage orders.
+    *   **Cashier:** Can process payments.

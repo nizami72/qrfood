@@ -1,0 +1,25 @@
+This page is for managing the tables in your restaurant. You can add new tables, edit their details, and generate QR codes for each table to allow customers to access the menu and place orders directly from their smartphones.
+
+Here's how to create a new table:
+
+1.  **First, select a restaurant** from the dropdown menu at the top of the page.
+2.  **Click the "Add Table" button** to open the table creation form.
+3.  **Enter the table number** or a name for the table (e.g., "Patio 1").
+4.  **Specify the number of seats** at the table.
+5.  **(Optional) Add a note** about the table, such as "By the window" or "Wheelchair accessible."
+6.  **Set the status** of the table (e.g., Active, Inactive).
+7.  **Click "Add"** to save the new table.
+
+Once a table is created, a unique QR code is automatically generated for it.
+
+**What is the QR code for?**
+
+The QR code is a special barcode that your customers can scan with their phone's camera. When they scan it, they will be taken directly to your restaurant's online menu, where they can browse dishes and place an order without needing a physical menu or waiting for a server.
+
+**How to use the QR code:**
+
+1.  **Click the "Print" button** next to the QR code for the desired table.
+2.  A new window will open with a printable version of the QR code, including the table number and a prompt to scan it.
+3.  **Print the QR code** and place it on the corresponding table in your restaurant.
+
+By doing this, you provide a modern, convenient, and contactless ordering experience for your customers.

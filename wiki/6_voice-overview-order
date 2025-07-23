@@ -1,0 +1,17 @@
+This page serves as a real-time dashboard for restaurant staff to manage customer orders.
+
+**Purpose:**
+
+The main goal of this page is to provide a centralized and live view of all orders within the restaurant. It allows staff to track the entire lifecycle of an order, from the moment it's placed until it's paid for, ensuring efficient kitchen and service workflow.
+
+**Functionality:**
+
+*   **Live View:** The page automatically updates in real-time, with new orders appearing instantly, highlighted with a fire icon (🔥) for immediate attention.
+*   **Create Orders:** Staff can manually create new orders and assign them to a specific table.
+*   **Filtering:** Orders can be filtered by their current status (e.g., Created, Preparing, Ready, Paid) and by date (Today, Yesterday, Last 7 Days, or a custom range).
+*   **Order Management:**
+    *   **View Details:** Users can open any order to see a detailed breakdown of the items, total price, and any notes.
+    *   **Update Status:** The status of an order can be changed with the click of a button (e.g., mark as "Preparing," then "Ready").
+    *   **Modify Orders:** Staff can add new dishes to an existing order, edit items, or remove them.
+    *   **Delete Orders:** Orders can be deleted entirely.
+*   **Visual Status Indicators:** Each order card has a color-coded border corresponding to its status, allowing for a quick visual assessment of the current workload.

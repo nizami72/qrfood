@@ -1,0 +1,20 @@
+This page is for managing the individual dishes on your menu. You can add new dishes to a category, edit their details, and set their availability.
+
+Here's how to create a new dish:
+
+1.  **First, select a restaurant and a category** from the dropdown menus at the top of the page.
+2.  **Click the "Add Dish" button** to open the dish creation form.
+3.  You have two options: **"Manual Entry"** or **"Predefined List."**
+    *   **For Manual Entry:**
+        1.  **(Optional) Upload an image** for the dish.
+        2.  **Enter the dish name** in one or more languages.
+        3.  **Write a description** for the dish in the corresponding languages.
+        4.  **Set the price** for the dish.
+        5.  **Check the "Available" box** if the dish is currently being served.
+        6.  **Click "Add"** to save the new dish.
+    *   **For Predefined List:**
+        1.  **Select one or more dishes** from the list of common options.
+        2.  **Click "Add Selected Dishes"** to add them to your menu.
+4.  **To cancel,** click the "Cancel" button to close the form without saving.
+
+Once created, the new dish will appear in the list for the selected category. You can then edit or delete it as needed, and rearrange the order by dragging and dropping.

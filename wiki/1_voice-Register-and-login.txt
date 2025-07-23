@@ -1,0 +1,44 @@
+This page allows a new restaurant owner or administrator to create an account for the system.
+
+Here is a step-by-step guide to the registration process:
+
+0. Open the page at https://qrfood.az/admin/register
+1.  **Start by entering your full name** in the 'Name' field. This will be used for your user profile.
+2.  **Next, provide your email address.** This will be your username for logging into the system.
+3.  **Create a secure password.** It must be at least 8 characters long and contain both letters and numbers.
+4.  **Confirm your password** by entering it again in the next field to ensure there are no typos.
+5.  **Enter the name of your restaurant.** This will create a new restaurant profile in the system under your account.
+6.  Once all fields are filled correctly, the **'Register' button will become active.** Click it to create your account.
+7.  If you already have an account, you can click the **'Login' link** at the bottom to go to the login page.
+
+After successful registration, you will be taken to the login page where you can sign in with your new credentials.
+
+---
+
+This page is for existing users to log in to their accounts.
+
+Here's how to log in:
+
+1.  **Enter the email address** you used to register.
+2.  **Enter your password** in the password field.
+3.  **Click the 'Login' button** to access your account.
+4.  If you don't have an account yet, you can click the **'Register' link** to go to the registration page.
+
+Upon successful login, you will be redirected to the restaurants page.
+
+---
+
+This page is for managing your restaurant profiles. You can add new restaurants, edit existing ones, and view a list of all your establishments.
+
+Here's how to add or edit restaurant details:
+
+1.  **To add a new restaurant, click the "Add New" button.** This will open a form to enter the restaurant's information.
+2.  **Enter the restaurant's name** in the 'Name' field.
+3.  **Provide the full address** of the restaurant.
+4.  **Add one or more phone numbers.** You can add multiple phone fields by clicking the "+" button.
+5.  **(Optional) Enter the geographic coordinates** (latitude and longitude) for mapping purposes.
+6.  **Click "Save"** to add the new restaurant or update an existing one.
+7.  **To edit an existing restaurant,** click the "Modify" button next to it in the list. This will populate the form with its current details for you to change.
+8.  You can **delete a restaurant** by clicking the "Delete" button.
+
+After saving, the restaurant list will be updated with the new information. You can click on a restaurant's name to go to its detailed view.

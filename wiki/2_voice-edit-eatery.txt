@@ -1,0 +1,12 @@
+This page is for managing your restaurant profiles. You can add new restaurants, edit existing ones, and view a list of all your establishments.
+
+Here's how to edit the details for one of your restaurants:
+
+1.  **Find the restaurant** you want to update in the list on the page.
+2.  **Click the "Modify" button** next to its name. The form will appear, pre-filled with the restaurant's current information.
+3.  **Update the restaurant's name** in the 'Name' field if necessary.
+4.  **Change the address** in the 'Address' field.
+5.  **Manage phone :numbers: ** You can edit the existing numbers, add a new one by clicking the "+" button, or remove a number by clicking the "-" button next to it.
+6.  **Adjust the location** by updating the 'Latitude' and 'Longitude' fields for more accurate mapping, this data if exist will be used in a Google map to locate your eatery
+7.  **Click the "Save" button** to apply your changes. The restaurant's information will be updated in the list.
+8.  If you decide not to save your changes, you can **click the "Cancel" button** to go back to the restaurant list.
