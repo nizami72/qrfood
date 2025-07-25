@@ -9,6 +9,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -210,12 +212,22 @@ public class CreateEateryTest {
 
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
-        // options.addArguments("--headless");
         options.addArguments("--disable-gpu");
-        options.addArguments("--window-size=1920,1080");
-        options.addArguments("--window-position=" + 1920 + "," + 20);
+        options.addArguments("start-maximized"); // Launch maximized first
+
+        // Disable the "Chrome is being controlled..." message
+        options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+        options.setExperimentalOption("useAutomationExtension", false);
+
         driver = new ChromeDriver(options);
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+
+        // Now move and resize using JavaScript or Robot
+        driver.manage().window().setPosition(new Point(1900, -10));
+        // Optional: Get your monitor's real resolution if scaling is enabled
+        driver.manage().window().setSize(new Dimension(1960, 1380));
+
 
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(200));
     }
@@ -236,7 +248,7 @@ public class CreateEateryTest {
             long now = System.currentTimeMillis();
             long passed = now - t;
             t = now;
-            log.debug("Flow [{}] duration [{}] second", phase, passed/1000);
+            log.debug("Flow [{}] duration [{}] second", phase, passed / 1000);
         }
     }
 

@@ -63,7 +63,7 @@ public class DishController {
             @ApiResponse(responseCode = "200", description = "Dish found and returned successfully"),
             @ApiResponse(responseCode = "404", description = "Dish or category not found")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'WAITER')")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER')")
     @GetMapping("${eatery.id.category.id.dish.id}")
     public DishDto getDish(@PathVariable Long categoryId, @PathVariable Long dishId) {
         log.debug("Requested dish [{}] form category [{}]", dishId, categoryId);
@@ -81,6 +81,7 @@ public class DishController {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Restaurant was not found")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
     @GetMapping("${eatery.id.category.id.dish}")
     public ResponseEntity<List<DishDto>> getDishes(@PathVariable Long categoryId) {
         log.debug("Retrieve the category dish by ID");
@@ -101,6 +102,7 @@ public class DishController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "404", description = "Category not found")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @PostMapping(value = "${eatery.id.category.id.dish}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> createDish(@PathVariable("categoryId") Long categoryId,
                                            @RequestPart("data") DishDto dishDto,
@@ -124,6 +126,7 @@ public class DishController {
             @ApiResponse(responseCode = "404", description = "Dish or category not found")
     })
     @Transactional
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @DeleteMapping("${eatery.id.category.id.dish.id}")
     public ResponseEntity<String> deleteDishItemById(@PathVariable Long categoryId, @PathVariable Long dishId) {
         log.debug("Requested to delete dish [{}] from category [{}]", dishId, categoryId);
@@ -145,6 +148,7 @@ public class DishController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "404", description = "Dish or category not found")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @PutMapping(value = "${eatery.id.category.id.dish.id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> putDish(@PathVariable("categoryId") Long categoryId,
                                         @PathVariable("dishId") Long dishId,

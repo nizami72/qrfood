@@ -82,6 +82,7 @@ public class AuthController {
      */
     @PostMapping("${auth.login}")
     @Operation(summary = "Logins a user", description = "Logins user, use email as login and password")
+    // [[login]]
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         log.debug("Login request: {}", loginRequest);
         try {
@@ -271,6 +272,7 @@ public class AuthController {
      * @return A {@link ResponseEntity} with a success message confirming the logout action.
      */
     @PostMapping("${auth.logout}")
+    //[[logout]]
     public ResponseEntity<?> logout() {
         // Get the current authentication from the security context
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

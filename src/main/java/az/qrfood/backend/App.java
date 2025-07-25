@@ -67,7 +67,7 @@ public class App {
                                 .user(RegisterRequest.UserDto.builder()
                                         .email(u)
                                         .password("qqqq1111")
-                                        .roles(Set.of(Role.fromString("SUPER_ADMIN")))
+                                        .roles(Set.of(Role.SUPER_ADMIN))
                                         .build())
                                 .userProfileRequest(RegisterRequest.UserProfileRequest.builder()
                                         .name("Nizami Budagov")

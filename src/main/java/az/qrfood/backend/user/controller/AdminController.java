@@ -58,6 +58,8 @@ public class AdminController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping()
+    @PreAuthorize("@authz.hasAnyRole(authentication)")
+    // [[postAdmin]]
     public ResponseEntity<UserResponse> postAdmin(@Valid @RequestBody UserRequest request) {
         UserResponse response = userService.createUser(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);

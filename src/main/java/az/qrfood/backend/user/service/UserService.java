@@ -259,7 +259,7 @@ public class UserService {
     private Long createAndLinkEatery(UserProfile profile, RegisterRequest.RestaurantDto restaurantDto) {
         EateryDto eateryDto = new EateryDto();
         eateryDto.setName(restaurantDto.getName());
-        eateryDto.setNumberOfTables(1);
+        eateryDto.setNumberOfTables(0);
         eateryDto.setOwnerProfileId(profile.getId());
         Long eateryId = eateryService.createEatery(eateryDto);
         userProfileService.addRestaurantToProfile(profile, eateryId);

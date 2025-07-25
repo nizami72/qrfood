@@ -2,7 +2,7 @@ package az.qrfood.backend.order.controller;
 
 import static az.qrfood.backend.client.controller.ClientDeviceController.DEVICE;
 
-import az.qrfood.backend.client.controller.ClientDeviceController;
+import org.springframework.security.access.prepost.PreAuthorize;
 import az.qrfood.backend.client.service.ClientDeviceService;
 import az.qrfood.backend.order.OrderStatus;
 import az.qrfood.backend.order.dto.OrderDto;
@@ -76,6 +76,7 @@ public class OrderController {
             @ApiResponse(responseCode = "400", description = "Invalid status value"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
     @GetMapping("${order.status}")
     public ResponseEntity<List<OrderDto>> getAllOrders(@PathVariable("status") String status,
                                                        @CookieValue(value = DEVICE, defaultValue = "") String cookie
@@ -97,6 +98,7 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
     @GetMapping("${order}")
     public ResponseEntity<List<OrderDto>> getOrdersByEateryId(@PathVariable Long eateryId) {
         log.debug("REST request to get Orders for eatery ID: {}", eateryId);
@@ -185,6 +187,7 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "Order not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @PutMapping("${order.id}")
     public ResponseEntity<OrderDto> updateOrder(
             @PathVariable Long orderId,
@@ -208,6 +211,7 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "Order not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER')")
 //    @PutMapping("${order.id}") // This mapping is commented out in the original code
     public ResponseEntity<OrderDto> updateOrderStatus(
             @PathVariable Long id,
@@ -229,6 +233,7 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "Order not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @DeleteMapping("${order.id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
         orderService.deleteOrder(orderId);
@@ -236,7 +241,7 @@ public class OrderController {
     }
 
     /**
-     * Checks if there are any orders with status "CREATED" for a specific eatery and device.
+     * Retrieves the list of order with status "CREATED" for a specific eatery and device.
      * <p>
      * This endpoint is used by the client application to determine whether to show
      * the order decision page or the menu page when a user scans a QR code.

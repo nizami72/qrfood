@@ -58,6 +58,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
     @GetMapping("${eatery.id.category}")
     public ResponseEntity<List<CategoryDto>> getEateryCategories(@PathVariable(value = "eateryId") Long eateryId) {
         log.debug("Find all categories for eatery [{}]", eateryId);
@@ -77,6 +78,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER', 'SUPER_ADMIN')")
     @GetMapping(value = "${eatery.id.category.id}")
     public ResponseEntity<CategoryDto> getCategoryById(@PathVariable(value = "categoryId") Long categoryId) {
         log.debug("Find the category by ID {}", categoryId);
@@ -149,6 +151,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @DeleteMapping(value = "${eatery.id.category.id}")
     public ResponseEntity<String> deleteCategory(@PathVariable(value = "categoryId") Long categoryId) {
         log.debug("Delete category: {}", categoryId);
@@ -170,6 +173,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @PutMapping(value = "${eatery.id.category.id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> updateCategory(@PathVariable(value = "categoryId") Long categoryId,
                                                @RequestPart("data") CategoryDto dishCategoryDto,
@@ -191,6 +195,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved list of predefined categories"),
             @ApiResponse(responseCode = "500", description = "Internal server error or file not found")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @GetMapping("/api/category/common")
     public ResponseEntity<List<CategoryPredefined>> getCommonCategories() {
         log.debug("Fetching common categories from {}", appHomeFolder + File.separator + COMMON_CATEGORIES_FILE);

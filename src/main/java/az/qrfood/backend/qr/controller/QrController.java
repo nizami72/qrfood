@@ -1,6 +1,7 @@
 package az.qrfood.backend.qr.controller;
 
 import az.qrfood.backend.qr.service.QrService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -53,6 +54,7 @@ public class QrController {
             @ApiResponse(responseCode = "404", description = "Eatery or table not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @GetMapping(value = "${eatery}/{eatery}/table/{table}")
     public ResponseEntity<byte[]> getQrImage(@PathVariable("eatery") Long eateryId,
                                              @PathVariable("table") Integer tableNumber) {

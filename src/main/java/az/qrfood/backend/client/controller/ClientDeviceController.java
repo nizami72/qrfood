@@ -9,6 +9,7 @@ import az.qrfood.backend.client.service.ClientDeviceService;
 import az.qrfood.backend.eatery.service.EateryService;
 import az.qrfood.backend.table.dto.TableDto;
 import az.qrfood.backend.table.service.TableService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +38,7 @@ import java.util.Optional;
 @Log4j2
 // NAV - Client flow
 @RequestMapping()
+@Tag(name = "Client Device Management", description = "API endpoints for managing client devices and their interactions.")
 public class ClientDeviceController {
 
     private final ClientDeviceService service;
@@ -65,6 +67,7 @@ public class ClientDeviceController {
      *         or a redirect header if active orders exist, or {@code HttpStatus.NOT_FOUND} if the table does not exist.
      */
     @GetMapping("${api.client.eatery.table}")
+    // [[eateryCategories]]
     public ResponseEntity<Menu> eateryCategories(
             @PathVariable(value = "eateryId") Long eateryId,
             @PathVariable(value = "tableId") Long tableId) {

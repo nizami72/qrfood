@@ -25,12 +25,11 @@ public class CategoryFlowTest {
     private WebDriver driver;
     private WebDriverWait wait;
 
-    // Test data
     @Value("${}")
     private String testEmail;
     @Value("${}")
     private String testPassword;
-    private int pause = 2000;
+    private int pause = 200;
 
     @BeforeEach
     public void setUp() {
@@ -89,7 +88,7 @@ public class CategoryFlowTest {
             Thread.sleep(pause);
             System.out.println("Successfully switched language to EN");
         } catch (Exception e) {
-            // If language selector is not found, log and continue with the test
+            // If a language selector is not found, log and continue with the test
             System.out.println("Language selector not found or not accessible. Continuing with test.");
         }
 
@@ -147,7 +146,7 @@ public class CategoryFlowTest {
 
         Thread.sleep(pause);
 
-        // 10. Click Add Category button to submit the form
+        // 10. Click the Add Category button to submit the form
         // Using ID-based selector
         WebElement submitButton = driver.findElement(By.id("category-form-submit"));
         submitButton.click();

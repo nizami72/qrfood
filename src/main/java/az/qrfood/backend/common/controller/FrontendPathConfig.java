@@ -3,6 +3,10 @@ package az.qrfood.backend.common.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -27,6 +31,7 @@ import java.util.Map;
 @RestController
 @Log4j2
 @RequestMapping("/api/config")
+@Tag(name = "Frontend Configuration", description = "API endpoints for retrieving frontend path configurations")
 public class FrontendPathConfig {
 
     // Image paths
@@ -110,6 +115,11 @@ public class FrontendPathConfig {
      *
      * @return A {@link Map} where keys are descriptive names and values are the corresponding URI paths.
      */
+    @Operation(summary = "Get frontend path configurations", description = "Retrieves a map of image and API paths used by the frontend application.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved path configurations"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping("/image-paths")
     public Map<String, String> getImagePaths() {
         Map<String, String> paths = new LinkedHashMap<>();

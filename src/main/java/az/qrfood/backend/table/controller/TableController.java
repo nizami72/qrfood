@@ -35,7 +35,7 @@ public class TableController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("${table}")
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'WAITER')")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     public ResponseEntity<List<TableDto>> getTables(@PathVariable Long eateryId) {
         return ResponseEntity.ok(tableService.listTablesForEatery(eateryId));
     }
@@ -49,6 +49,7 @@ public class TableController {
             @ApiResponse(responseCode = "404", description = "Table not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @GetMapping("${table.id}")
     public ResponseEntity<TableDto> getTable(@PathVariable Long eateryId) {
         return tableService.findById(eateryId)
@@ -65,6 +66,7 @@ public class TableController {
             @ApiResponse(responseCode = "400", description = "Invalid input data or eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @PostMapping("${table}")
     public ResponseEntity<TableDto> createTable(@RequestBody TableDto tableDto) {
         try {
@@ -86,6 +88,7 @@ public class TableController {
             @ApiResponse(responseCode = "404", description = "Table not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @PutMapping("${table.id}")
     public ResponseEntity<TableDto> updateTable(@PathVariable Long tableId, @RequestBody TableDto tableDto) {
         try {
@@ -105,6 +108,7 @@ public class TableController {
             @ApiResponse(responseCode = "404", description = "Table not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @DeleteMapping("${table.id}")
     public ResponseEntity<Void> deleteTable(@PathVariable Long tableId) {
         try {

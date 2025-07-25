@@ -2,6 +2,10 @@ package az.qrfood.backend.orderitem.controller;
 
 import az.qrfood.backend.order.dto.OrderItemDTO;
 import az.qrfood.backend.orderitem.service.OrderItemService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,15 +14,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * REST controller for managing order items.
  */
 @Log4j2
 @RestController
+@Tag(name = "Order Item Management", description = "API endpoints for managing individual items within orders")
 public class OrderItemController {
 
     private final OrderItemService orderItemService;
@@ -32,6 +37,12 @@ public class OrderItemController {
      *
      * @return list of order items
      */
+    @Operation(summary = "Get all order items", description = "Retrieves a list of all order items.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved list of order items"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @GetMapping("${order.item}")
     public ResponseEntity<List<OrderItemDTO>> getAllOrderItems() {
         log.debug("REST request to get all OrderItems");
@@ -44,6 +55,13 @@ public class OrderItemController {
      * @param orderId the ID of the order
      * @return list of order items for the specified order
      */
+    @Operation(summary = "Get order items by order ID", description = "Retrieves a list of order items for a specific order.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved list of order items"),
+            @ApiResponse(responseCode = "404", description = "Order not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
     @GetMapping("${order.item.order.id}")
     public ResponseEntity<List<OrderItemDTO>> getOrderItemsByOrderId(@PathVariable Long orderId) {
         log.debug("REST request to get OrderItems for order ID: {}", orderId);
@@ -56,6 +74,13 @@ public class OrderItemController {
      * @param orderItemId the ID of the order item to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the order item, or with status 404 (Not Found)
      */
+    @Operation(summary = "Get order item by ID", description = "Retrieves a specific order item by its ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the order item"),
+            @ApiResponse(responseCode = "404", description = "Order item not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
     @GetMapping("${order.item.id}")
     public ResponseEntity<OrderItemDTO> getOrderItemById(@PathVariable Long orderItemId) {
         log.debug("REST request to get OrderItem : {}", orderItemId);
@@ -68,6 +93,13 @@ public class OrderItemController {
      * @param orderItemDTO the order item to create
      * @return the ResponseEntity with status 201 (Created) and with body the new order item
      */
+    @Operation(summary = "Create a new order item", description = "Creates a new order item.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Order item created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @PostMapping("${order.item.order.id}")
     public ResponseEntity<OrderItemDTO> postOrderItem(@RequestBody OrderItemDTO orderItemDTO) {
         log.debug("REST request to create OrderItem : {}", orderItemDTO);
@@ -82,6 +114,14 @@ public class OrderItemController {
      * @param orderItemDTO the order item to update
      * @return the ResponseEntity with status 200 (OK) and with body the updated order item
      */
+    @Operation(summary = "Update an existing order item", description = "Updates an existing order item by its ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Order item updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "Order item not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @PutMapping("${order.item.id}")
     public ResponseEntity<OrderItemDTO> putOrderItem(
             @PathVariable Long orderItemId,
@@ -96,6 +136,13 @@ public class OrderItemController {
      * @param orderItemId the ID of the order item to delete
      * @return the ResponseEntity with status 200 (OK)
      */
+    @Operation(summary = "Delete an order item", description = "Deletes an order item by its ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Order item deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Order item not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @DeleteMapping("${order.item.id}")
     public ResponseEntity<Void> deleteOrderItem(@PathVariable Long orderItemId) {
         log.debug("REST request to delete OrderItem : {}", orderItemId);

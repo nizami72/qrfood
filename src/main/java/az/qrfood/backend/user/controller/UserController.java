@@ -57,6 +57,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved list of users"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication)")
     @GetMapping("${users}")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<UserResponse> responses = userService.getAllUsers();
@@ -75,6 +76,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @GetMapping("${usr}")
     public ResponseEntity<List<UserResponse>> getAllEateryUsers(@PathVariable Long eateryId) {
         List<UserResponse> responses = userService.getAllUsers(eateryId);
@@ -93,6 +95,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @GetMapping("${user.id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long userId) {
         UserResponse response = userService.getUserById(userId);
@@ -111,6 +114,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @GetMapping("${user.n}")
     public ResponseEntity<UserResponse> getUserByUsername(@PathVariable String userName) {
         UserResponse response = userService.getUserByUsername(userName);
@@ -172,6 +176,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @PostMapping("${user.general}")
     public ResponseEntity<?> registerEateryStaff(@RequestBody RegisterRequest registerRequest, @PathVariable Long eateryId) {
         return userService.registerEateryStaff(registerRequest, eateryId);

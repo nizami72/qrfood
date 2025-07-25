@@ -2,6 +2,10 @@ package az.qrfood.backend.log.controller;
 
 import az.qrfood.backend.log.dto.FrontendLogDTO;
 import az.qrfood.backend.log.service.FrontendLogService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +25,7 @@ import java.time.LocalDateTime;
 @RequestMapping("/api/logs")
 @Log4j2
 @RequiredArgsConstructor
+@Tag(name = "Frontend Log Management", description = "API endpoints for receiving frontend logs")
 public class FrontendLogController {
 
     private final FrontendLogService frontendLogService;
@@ -32,6 +37,12 @@ public class FrontendLogController {
      * @param request The HTTP request
      * @return A response entity indicating success
      */
+    @Operation(summary = "Receive frontend log message", description = "Receives log messages from the frontend application.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Log message received successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid log data"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping("/frontend")
     public ResponseEntity<Void> logFrontendMessage(
             @RequestBody FrontendLogDTO logDTO,

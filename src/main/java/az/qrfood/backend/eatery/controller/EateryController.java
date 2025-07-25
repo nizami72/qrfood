@@ -59,7 +59,7 @@ public class EateryController {
 
     /**
      * Retrieves a list of all registered eateries.
-     * This endpoint requires 'EATERY_ADMIN' role.
+     * This endpoint requires the 'EATERY_ADMIN' role.
      *
      * @return A {@link ResponseEntity} containing a list of {@link EateryDto} objects.
      */
@@ -76,7 +76,7 @@ public class EateryController {
 
     /**
      * Retrieves all eateries owned by a specific user profile.
-     * This endpoint requires 'EATERY_ADMIN' role.
+     * This endpoint requires the 'EATERY_ADMIN' role.
      *
      * @param userProfileId The ID of the user profile whose eateries are to be retrieved.
      * @return A {@link ResponseEntity} containing a list of {@link EateryDto} objects
@@ -108,7 +108,7 @@ public class EateryController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-//    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')") // Commented out as per original code
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @GetMapping("${eatery.id}")
     public ResponseEntity<EateryDto> getEateryById(@PathVariable("eateryId") Long id) {
         log.debug("Request to get Eatery : {}", id);
@@ -117,7 +117,7 @@ public class EateryController {
 
     /**
      * Creates a new eatery with the provided data.
-     * This endpoint requires 'EATERY_ADMIN' role.
+     * This endpoint requires the 'EATERY_ADMIN' role.
      *
      * @param eateryDto   The {@link EateryDto} containing the data for the new eatery.
      * @param userDetails The authenticated user's details, used to associate the eatery with the user profile.

@@ -26,6 +26,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @Log4j2
 @RestController
@@ -56,6 +57,7 @@ public class CommonDishController {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved list of predefined dishes"),
             @ApiResponse(responseCode = "500", description = "Internal server error or file not found")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @GetMapping("/api/dish/common/{categoryName}")
     public ResponseEntity<List<CommonDishDto>> getCommonDishesForCategory(
             @PathVariable String categoryName,
@@ -113,6 +115,7 @@ public class CommonDishController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @PostMapping("/api/dish/common/{categoryId}")
     public ResponseEntity<List<Long>> createDishesFromTemplates(
             @PathVariable Long categoryId,
