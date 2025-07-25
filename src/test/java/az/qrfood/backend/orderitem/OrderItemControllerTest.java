@@ -23,7 +23,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 @SpringBootTest
-@TestPropertySource(locations = "classpath:application-test.properties")
+@TestPropertySource(locations = "classpath:create-eatery-test.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class OrderItemControllerTest {

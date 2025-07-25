@@ -9,10 +9,13 @@ When a customer scans the QR code and places an order, it appears instantly on y
 5 Quick Order Control
 Managing your workflow is effortless. With a single click, you can update an order's status from 'Preparing' to 'Ready,' ensuring a smooth and efficient service from kitchen to table. Take control of your orders with ease.
 
-0-25.7 Register and login
-1 Başlamaq çox asandır. Hesab yaratmaq üçün ad, e-poçt ünvanı, şifrə və restoran adından ibarət qeydiyyat formasını doldurun. Uğurla tamamladıqdan sonra giriş formasına yönləndiriləcəksiniz. Giriş etdikdən sonra sizi "Restoran" səhifəsi qarşılayacaq. Burada "Restoranı redaktə et" düyməsinə klikləyərək əlavə məlumatlar əlavə edə bilərsiniz. Məlumatları doldurun və yadda saxlayın. Artıq restoranınız aktivdir.
+0-9.640 Register and login
+1 Başlamaq çox asandır. Hesab yaratmaq üçün ad, e-poçt ünvanı, şifrə və restoran adından ibarət qeydiyyat formasını doldurun. Uğurla tamamladıqdan sonra
 
-25.7-42.2 Create menu
+11.9 - 25.68 = 13.78
+2. giriş formasına yönləndiriləcəksiniz. Giriş etdikdən sonra sizi "Restoran" səhifəsi qarşılayacaq. Burada "Restoranı redaktə et" düyməsinə klikləyərək əlavə məlumatlar əlavə edə bilərsiniz. Məlumatları doldurun və yadda saxlayın. Artıq restoranınız aktivdir.
+
+25.68-42.2 Create menu
 2 İndi isə menyunuzu yaradın. Kateqoriyaları tez bir şəkildə əlavə edin — istəsəniz əl ilə və ya əvvəlcədən təyin olunmuş siyahımızdan seçin. Daha sonra bu kateqoriyalara yeməklərinizi əlavə edin: istəyə görə ingilis və rus dillərində adlar, təsvirlər və qiymətlərlə birlikdə.
 
 42.2 - 48.1 Create table

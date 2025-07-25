@@ -10,18 +10,16 @@ if [ $# -lt 3 ]; then
 fi
 
 # Assign arguments to variables
-LOGIN=$1
-PASSWORD=$2
-USER_NAME=$3
-
-# Base URL for the API
-BASE_URL="http://localhost:5173"
+SUPER_ADMIN_LOGIN=$1
+SUPER_ADMIN_PASSWORD=$2
+USER_NAME_TO_DELETE=$3
+BASE_URL=$4
 
 # Login and get JWT token
-echo "Logging in with email: $LOGIN"
+echo "Logging in with email: $SUPER_ADMIN_LOGIN"
 JWT_RESPONSE=$(curl -s -X POST "$BASE_URL/api/auth/login" \
     -H "Content-Type: application/json" \
-    -d "{\"email\": \"$LOGIN\", \"password\": \"$PASSWORD\"}")
+    -d "{\"email\": \"$SUPER_ADMIN_LOGIN\", \"password\": \"$SUPER_ADMIN_PASSWORD\"}")
 
 # Extract JWT token from response
 JWT_TOKEN=$(echo $JWT_RESPONSE | grep -o '"jwt":"[^"]*"' | cut -d'"' -f4)
@@ -34,8 +32,8 @@ fi
 echo "Successfully obtained JWT token"
 
 # Delete user using POST method with the JWT token
-echo "Deleting user with username: $USER_NAME using POST method"
-DELETE_RESPONSE=$(curl -s -X POST "$BASE_URL/api/user/$USER_NAME" \
+echo "Deleting user with username: $USER_NAME_TO_DELETE using POST method"
+DELETE_RESPONSE=$(curl -s -X POST "$BASE_URL/api/user/$USER_NAME_TO_DELETE" \
     -H "Authorization: Bearer $JWT_TOKEN" \
     -w "%{http_code}")
 
