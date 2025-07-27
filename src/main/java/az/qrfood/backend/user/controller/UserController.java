@@ -42,6 +42,7 @@ public class UserController {
     })
     @GetMapping("${api.user}")
     @PreAuthorize("@authz.hasAnyRole(authentication)")
+    // [[getAllUsersFromAllEateries]]
     public ResponseEntity<List<UserResponse>> getAllUsersFromAllEateries() {
         List<UserResponse> responses = userService.getAllUsers();
         return ResponseEntity.ok(responses);
@@ -59,6 +60,7 @@ public class UserController {
     })
     @PreAuthorize("@authz.hasAnyRole(authentication)")
     @GetMapping("${users}")
+    // [[getAllUsers]]
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<UserResponse> responses = userService.getAllUsers();
         return ResponseEntity.ok(responses);

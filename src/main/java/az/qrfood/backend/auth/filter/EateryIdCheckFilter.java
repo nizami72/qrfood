@@ -100,7 +100,7 @@ public class EateryIdCheckFilter extends OncePerRequestFilter implements Ordered
                     tokenEateryId = jwtUtil.extractClaim(jwt, claims -> claims.get("eateryId", Long.class));
                 } catch (Exception e) {
                     log.error("Error extracting eateryId from JWT token", e);
-                    // If token is invalid or eateryId cannot be extracted, treat as mismatch
+                    // If a token is invalid or eateryId cannot be extracted, treat as mismatch
                     response.setStatus(HttpStatus.PRECONDITION_FAILED.value());
                     response.getWriter().write("Invalid or malformed JWT token.");
                     return;

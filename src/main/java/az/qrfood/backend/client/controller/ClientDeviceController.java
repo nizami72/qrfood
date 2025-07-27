@@ -9,6 +9,10 @@ import az.qrfood.backend.client.service.ClientDeviceService;
 import az.qrfood.backend.eatery.service.EateryService;
 import az.qrfood.backend.table.dto.TableDto;
 import az.qrfood.backend.table.service.TableService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -66,11 +70,18 @@ public class ClientDeviceController {
      * @return A {@link ResponseEntity} containing a list of {@link CategoryDto} representing the menu,
      *         or a redirect header if active orders exist, or {@code HttpStatus.NOT_FOUND} if the table does not exist.
      */
+    @Operation(summary = "Get menu for eatery and table", 
+               description = "Retrieves the menu (categories) for a specific eatery and table. Used when a client scans a QR code at a table.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the menu"),
+            @ApiResponse(responseCode = "404", description = "Table not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping("${api.client.eatery.table}")
     // [[eateryCategories]]
     public ResponseEntity<Menu> eateryCategories(
-            @PathVariable(value = "eateryId") Long eateryId,
-            @PathVariable(value = "tableId") Long tableId) {
+            @Parameter(description = "ID of the eatery") @PathVariable(value = "eateryId") Long eateryId,
+            @Parameter(description = "ID of the table") @PathVariable(value = "tableId") Long tableId) {
 
         log.debug("Request for menu(categories) for eatery [{}] and table [{}]", eateryId, tableId);
         // check if table exists
@@ -92,8 +103,15 @@ public class ClientDeviceController {
      * @param eateryId The ID of the eatery.
      * @return A {@link ResponseEntity} containing a list of {@link CategoryDto} representing the menu.
      */
+    @Operation(summary = "Get menu for eatery", 
+               description = "Retrieves the menu (categories) for a specific eatery when the table and eatery are already known by the client device.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the menu"),
+            @ApiResponse(responseCode = "404", description = "Eatery not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping("${api.client.eatery}")
-    public ResponseEntity<List<CategoryDto>> eateryCategories(@PathVariable(value = "eateryId") Long eateryId){
+    public ResponseEntity<List<CategoryDto>> eateryCategories(@Parameter(description = "ID of the eatery") @PathVariable(value = "eateryId") Long eateryId){
         log.debug("Find all categories for eatery when table and eatery already known in the device");
         List<CategoryDto> id = categoryService.findAllCategoryForEatery(eateryId);
         return ResponseEntity.ok(id);
@@ -108,8 +126,15 @@ public class ClientDeviceController {
      * @return A {@link ResponseEntity} containing the {@link ClientDeviceResponseDto} of the newly created device
      *         with {@code HttpStatus.CREATED}.
      */
+    @Operation(summary = "Create a new client device", 
+               description = "Creates a new client device record with the provided details.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Client device created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping("${api.client}")
-    public ResponseEntity<ClientDeviceResponseDto> create(@RequestBody ClientDeviceRequestDto dto) {
+    public ResponseEntity<ClientDeviceResponseDto> create(@Parameter(description = "Client device details") @RequestBody ClientDeviceRequestDto dto) {
         return new ResponseEntity<>(service.create(dto), HttpStatus.CREATED);
     }
 
@@ -119,8 +144,15 @@ public class ClientDeviceController {
      * @param id The ID of the client device to retrieve.
      * @return A {@link ResponseEntity} containing the {@link ClientDeviceResponseDto} of the found device.
      */
+    @Operation(summary = "Get client device by ID", 
+               description = "Retrieves a specific client device by its ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the client device"),
+            @ApiResponse(responseCode = "404", description = "Client device not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping("${api.client.id}")
-    public ResponseEntity<ClientDeviceResponseDto> getById(@PathVariable Long id) {
+    public ResponseEntity<ClientDeviceResponseDto> getById(@Parameter(description = "ID of the client device") @PathVariable Long id) {
         return ResponseEntity.ok(service.getById(id));
     }
 
@@ -129,6 +161,12 @@ public class ClientDeviceController {
      *
      * @return A {@link ResponseEntity} containing a list of {@link ClientDeviceResponseDto} objects.
      */
+    @Operation(summary = "Get all client devices", 
+               description = "Retrieves a list of all client device records.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved list of client devices"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping("${api.client}")
     public ResponseEntity<List<ClientDeviceResponseDto>> getAll() {
         return ResponseEntity.ok(service.getAll());
@@ -141,9 +179,18 @@ public class ClientDeviceController {
      * @param dto The {@link ClientDeviceRequestDto} containing the updated details.
      * @return A {@link ResponseEntity} containing the {@link ClientDeviceResponseDto} of the updated device.
      */
+    @Operation(summary = "Update a client device", 
+               description = "Updates an existing client device record with the provided details.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Client device updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "Client device not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PutMapping("${api.client.id}")
-    public ResponseEntity<ClientDeviceResponseDto> update(@PathVariable Long id,
-                                                          @RequestBody ClientDeviceRequestDto dto) {
+    public ResponseEntity<ClientDeviceResponseDto> update(
+            @Parameter(description = "ID of the client device") @PathVariable Long id,
+            @Parameter(description = "Updated client device details") @RequestBody ClientDeviceRequestDto dto) {
         return ResponseEntity.ok(service.update(id, dto));
     }
 
@@ -153,8 +200,15 @@ public class ClientDeviceController {
      * @param id The ID of the client device to delete.
      * @return A {@link ResponseEntity} with no content and {@code HttpStatus.NO_CONTENT}.
      */
+    @Operation(summary = "Delete a client device", 
+               description = "Deletes a client device record with the specified ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Client device deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Client device not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @DeleteMapping("${api.client.id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@Parameter(description = "ID of the client device") @PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
