@@ -111,7 +111,7 @@ public class CreateEateryTest {
     }
 
 
-    @Test
+//    @Test
     public void allFlow() {
         openPage("login", 500);
         if (login(FAST)) {
@@ -138,15 +138,16 @@ public class CreateEateryTest {
         createTables(NORM);
         pause(2000);
 
-
     }
 
-    //    @Test
+    @Test
     public void loginAndShowOrder() {
         openPage("login", 100);
         login(NORM);
-        navigate("nav005", "/admin/orders", NORM);
+        navigate("nav004", "/admin/tables", NORM);
         Util.pause(4000);
+        navigate("nav005", "/admin/orders", NORM);
+        Util.pause(40000);
     }
 
     private void createTables(String norm) {
