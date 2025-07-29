@@ -35,7 +35,7 @@ public class TableController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("${table}")
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'WAITER', 'KITCHEN_ADMIN', 'CASHIER')")
     public ResponseEntity<List<TableDto>> getTables(@PathVariable Long eateryId) {
         return ResponseEntity.ok(tableService.listTablesForEatery(eateryId));
     }
@@ -49,7 +49,7 @@ public class TableController {
             @ApiResponse(responseCode = "404", description = "Table not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'WAITER', 'KITCHEN_ADMIN', 'CASHIER')")
     @GetMapping("${table.id}")
     public ResponseEntity<TableDto> getTable(@PathVariable Long eateryId) {
         return tableService.findById(eateryId)

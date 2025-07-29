@@ -204,6 +204,7 @@ public class AuthController {
      *         if the user does not have access to the specified eatery.
      */
     @PostMapping("${auth.refresh}")
+//    [[refreshToken]]
     public ResponseEntity<?> refreshToken(@RequestBody Map<String, Long> requestBody) {
         Long eateryId = requestBody.get("eateryId");
         log.debug("Refresh token request with eateryId: {}", eateryId);

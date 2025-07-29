@@ -153,7 +153,7 @@ public class ClientDeviceService {
      */
     private boolean hasActive(List<Order> orders) {
         return orders.stream()
-                .anyMatch(o -> o.getStatus().equals(OrderStatus.NEW));
+                .anyMatch(o -> o.getStatus().equals(OrderStatus.CREATED));
     }
 
     /**

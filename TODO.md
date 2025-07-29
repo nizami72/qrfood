@@ -8,4 +8,5 @@
 ## To secure public API methods from scam and overloading
 ## Status order
 ## The table status should be busy if an order is assigned to the table
-
+## Create a new email for qrfood.
+## Check is a user allowed to perform operations on resources?

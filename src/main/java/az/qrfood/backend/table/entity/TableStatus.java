@@ -21,10 +21,6 @@ public enum TableStatus {
      */
     BUSY,
     /**
-     * The table is empty and ready for new customers.
-     */
-    EMPTY,
-    /**
      * The table has been reserved for future use.
      */
     RESERVED,

@@ -61,7 +61,7 @@ public class Order {
      * Stored as a string in the database, mapped from the {@link OrderStatus} enum.
      */
     @Enumerated(EnumType.STRING)
-    private OrderStatus status = OrderStatus.NEW;
+    private OrderStatus status = OrderStatus.CREATED;
 
     /**
      * Any additional notes or special requests for the order.

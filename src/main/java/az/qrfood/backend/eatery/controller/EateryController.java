@@ -88,7 +88,7 @@ public class EateryController {
             @ApiResponse(responseCode = "404", description = "Owner not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN','WAITER','KITCHEN_ADMIN','CASHIER')")
     @GetMapping("${eatery.owner}")
     public ResponseEntity<List<EateryDto>> getEateriesByOwnerId(@PathVariable("ownerId") Long userProfileId) {
         log.debug("Request to get all eateries of owner with profile ID [{}]", userProfileId);

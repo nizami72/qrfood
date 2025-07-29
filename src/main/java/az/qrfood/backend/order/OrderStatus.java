@@ -29,17 +29,8 @@ public enum OrderStatus {
     PAID,
 
     /**
-     * The order creation process has started but is not yet complete.
-     */
-    IN_PROGRESS,
-
-    /**
      * The order has been cancelled.
      */
     CANCELLED;
 
-    /**
-     * Alias for {@link #CREATED} for backward compatibility.
-     */
-    public static final OrderStatus NEW = CREATED;
 }
