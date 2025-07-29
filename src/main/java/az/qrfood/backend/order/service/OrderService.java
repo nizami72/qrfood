@@ -3,19 +3,20 @@ package az.qrfood.backend.order.service;
 import az.qrfood.backend.client.entity.ClientDevice;
 import az.qrfood.backend.client.repository.ClientDeviceRepository;
 import az.qrfood.backend.common.exception.OrderNotFoundException;
+import az.qrfood.backend.common.exception.UnauthorizedStatusChangeException;
+import az.qrfood.backend.dish.entity.DishEntity;
+import az.qrfood.backend.dish.repository.DishRepository;
+import az.qrfood.backend.order.OrderStatus;
 import az.qrfood.backend.order.dto.OrderDto;
 import az.qrfood.backend.order.dto.OrderItemDTO;
-import az.qrfood.backend.dish.entity.DishEntity;
 import az.qrfood.backend.order.entity.Order;
 import az.qrfood.backend.order.entity.OrderItem;
-import az.qrfood.backend.order.OrderStatus;
 import az.qrfood.backend.order.mapper.OrderMapper;
 import az.qrfood.backend.order.repository.CustomerOrderRepository;
-import az.qrfood.backend.dish.repository.DishRepository;
 import az.qrfood.backend.order.repository.OrderItemRepository;
 import az.qrfood.backend.table.entity.TableInEatery;
-import az.qrfood.backend.table.entity.TableStatus;
 import az.qrfood.backend.table.repository.TableRepository;
+import az.qrfood.backend.user.entity.Role;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Service for managing orders.
@@ -147,7 +149,7 @@ public class OrderService {
         order = orderRepository.save(order);
 
         List<OrderItemDTO> orderDtoItems = orderDto.getItems();
-        if(orderDtoItems != null && !orderDtoItems.isEmpty()) {
+        if (orderDtoItems != null && !orderDtoItems.isEmpty()) {
             for (OrderItemDTO dto : orderDto.getItems()) {
                 DishEntity dish = dishRepository.findById(dto.getDishId())
                         .orElseThrow(() -> new RuntimeException("Dish not found with id " + dto.getDishId()));
@@ -183,7 +185,7 @@ public class OrderService {
      * @throws RuntimeException if the order with the given ID is not found.
      */
     @Transactional
-    public OrderDto updateOrder(Long id, OrderDto orderDTO) {
+    public OrderDto updateOrder(Long id, OrderDto orderDTO, Set<Role> auth) {
         log.debug("Request to update Order : {}", id);
 
         Order order = orderRepository.findById(id)
@@ -191,9 +193,14 @@ public class OrderService {
 
         // Update only allowed fields
         if (orderDTO.getStatus() != null) {
+            // todo consider update order status depending on role
             try {
                 OrderStatus status = orderDTO.getStatus();
-                order.setStatus(status);
+                if(canUpdateStatus(auth, status)){
+                    order.setStatus(status);
+                } else {
+                    throw new UnauthorizedStatusChangeException();
+                }
             } catch (IllegalArgumentException e) {
                 log.warn("Invalid status: {}", orderDTO.getStatus());
             }
@@ -244,8 +251,9 @@ public class OrderService {
         log.debug("Request to delete Order : {}", id);
         Order order = orderRepository.findById(id).orElseThrow();
         List<ClientDevice> clientDevices = clientDeviceRepository.findByOrdersId(id);
-        for (ClientDevice device : clientDevices ) {
-            device.getOrders().remove(order);        }
+        for (ClientDevice device : clientDevices) {
+            device.getOrders().remove(order);
+        }
         clientDeviceRepository.saveAll(clientDevices);
         orderRepository.deleteById(id);
     }
@@ -286,14 +294,33 @@ public class OrderService {
 
                     // Filter orders by eatery ID and status
                     List<Order> filteredOrders = allOrders.stream()
-                            .filter(order -> order.getStatus() == status && 
-                                    order.getTable() != null && 
+                            .filter(order -> order.getStatus() == status &&
+                                    order.getTable() != null &&
                                     order.getTable().getEatery() != null &&
                                     eateryId.equals(order.getTable().getEatery().getId()))
                             .toList();
 
                     return orderMapper.toDtoList(filteredOrders);
                 })
-                .orElse(List.of()); // Return empty list if client device not found
+                .orElse(List.of());
     }
+
+    // NAV allowance to update order status
+    private boolean canUpdateStatus(Set<Role> roles, OrderStatus status) {
+
+        if (roles == null || status == null) {
+            return false;
+        }
+
+        if(roles.contains(Role.SUPER_ADMIN) || roles.contains(Role.EATERY_ADMIN)) return true;
+
+        return switch (status) {
+            case CREATED -> roles.contains(Role.WAITER);
+            case PREPARING -> roles.contains(Role.KITCHEN_ADMIN);
+            case READY -> roles.contains(Role.KITCHEN_ADMIN);
+            case PAID -> roles.contains(Role.CASHIER);
+            case CANCELLED -> roles.contains(Role.WAITER) || roles.contains(Role.CASHIER);
+        };
+    }
+
 }

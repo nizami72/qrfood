@@ -1,5 +1,9 @@
 package az.qrfood.backend.user.service;
 
+import az.qrfood.backend.category.dto.CategoryDto;
+import az.qrfood.backend.category.repo.CategoryRepository;
+import az.qrfood.backend.category.service.CategoryService;
+import az.qrfood.backend.dish.service.DishService;
 import az.qrfood.backend.eatery.dto.EateryDto;
 import az.qrfood.backend.eatery.service.EateryService;
 import az.qrfood.backend.user.dto.GeneralResponse;
@@ -45,6 +49,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserProfileService userProfileService;
     private final EateryService eateryService;
+    private final CategoryService categoryService;
+    private final DishService dishService;
+    private final CategoryRepository categoryRepository;
 
     /**
      * Creates a new user based on the provided request.
@@ -165,17 +172,79 @@ public class UserService {
     }
 
     /**
-     * Deletes a user by their ID.
+     * Deletes a user by their ID along with all associated resources.
+     * This includes:
+     * - All eateries owned by the user
+     * - All categories in those eateries
+     * - All dishes in those categories
+     * - The user profile
      *
      * @param id The ID of the user to delete.
      * @throws EntityNotFoundException if the user with the given ID is not found.
      */
     @Transactional
     public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new EntityNotFoundException("User not found with id: " + id);
+        // Find the user
+        User user = findUserById(id);
+        log.info("Deleting user with ID: {} and username: {}", id, user.getUsername());
+
+        // Find the user profile
+        Optional<UserProfile> userProfileOpt = userProfileRepository.findByUser(user);
+        if (userProfileOpt.isPresent()) {
+            UserProfile userProfile = userProfileOpt.get();
+            log.info("Found user profile with ID: {}", userProfile.getId());
+
+            // Get all eateries associated with the profile
+            List<Long> eateryIds = userProfile.getRestaurantIds();
+            log.info("User has {} eateries to delete", eateryIds.size());
+
+            // For each eatery
+            for (Long eateryId : eateryIds) {
+                try {
+                    // Find all categories for this eatery
+                    List<CategoryDto> categories = categoryService.findAllCategoryForEatery(eateryId);
+                    log.info("Eatery ID: {} has {} categories to delete", eateryId, categories.size());
+
+                    // For each category, delete all dishes
+                    for (CategoryDto category : categories) {
+                        try {
+                            // Delete all dishes in this category
+                            log.info("Deleting dishes for category ID: {}", category.getCategoryId());
+                            dishService.getAllDishesInCategory(category.getCategoryId()).forEach(dish -> {
+                                try {
+                                    dishService.deleteDishItemById(category.getCategoryId(), dish.getDishId());
+                                    log.debug("Deleted dish ID: {} from category ID: {}", dish.getDishId(), category.getCategoryId());
+                                } catch (Exception e) {
+                                    log.error("Error deleting dish ID: {} from category ID: {}", dish.getDishId(), category.getCategoryId(), e);
+                                }
+                            });
+
+                            // Delete the category
+                            categoryService.deleteCategory(category.getCategoryId());
+                            log.debug("Deleted category ID: {}", category.getCategoryId());
+                        } catch (Exception e) {
+                            log.error("Error deleting category ID: {}", category.getCategoryId(), e);
+                        }
+                    }
+
+                    // Delete the eatery
+                    eateryService.deleteEatery(eateryId);
+                    log.info("Deleted eatery ID: {}", eateryId);
+                } catch (Exception e) {
+                    log.error("Error deleting eatery ID: {}", eateryId, e);
+                }
+            }
+
+            // Delete the user profile
+            userProfileRepository.delete(userProfile);
+            log.info("Deleted user profile ID: {}", userProfile.getId());
+        } else {
+            log.warn("No user profile found for user ID: {}", id);
         }
-        userRepository.deleteById(id);
+
+        // Delete the user
+        userRepository.delete(user);
+        log.info("Deleted user ID: {}", id);
     }
 
     /**

@@ -1,7 +1,5 @@
 package az.qrfood.backend.table.service;
 
-import az.qrfood.backend.common.QrCodeGenerator;
-import az.qrfood.backend.common.Util;
 import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.eatery.repository.EateryRepository;
 import az.qrfood.backend.qr.dto.QrCodeDto;
@@ -15,7 +13,6 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -139,6 +136,19 @@ public class TableService {
 
         TableInEatery updatedTable = tableRepository.save(table);
         return convertToDto(updatedTable);
+    }
+
+    /**
+     * Updates the status of a table.
+     *
+     * @param id             The ID of the table to update.
+     * @param tableNewStatus The new status for the table.
+     * @throws EntityNotFoundException if the table is not found.
+     */
+    public void updateTableStatus(Long id, TableStatus tableNewStatus) {
+        TableInEatery table = tableRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Table not found with id: " + id));
+        table.setStatus(tableNewStatus);
     }
 
     /**
