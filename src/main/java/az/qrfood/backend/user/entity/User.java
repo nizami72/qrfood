@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class User implements UserDetails {
 
     /**
@@ -130,5 +129,16 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true; // In a real application, there might be account enable/disable logic
+    }
+
+
+    @Override
+    public String toString() {
+        return "{\"User\":\n{"
+                + "        \"roles\":" + getRoles()
+                + ",         \"password\":\"" + getPassword() + "\""
+                + ",         \"username\":\"" + getUsername() + "\""
+                + ",         \"id\":\"" + getId() + "\""
+                + "\n}\n}";
     }
 }

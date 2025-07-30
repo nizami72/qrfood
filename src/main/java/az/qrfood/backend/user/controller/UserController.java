@@ -4,6 +4,7 @@ import az.qrfood.backend.user.dto.GeneralResponse;
 import az.qrfood.backend.user.dto.RegisterRequest;
 import az.qrfood.backend.user.dto.UserRequest;
 import az.qrfood.backend.user.dto.UserResponse;
+import az.qrfood.backend.user.entity.Role;
 import az.qrfood.backend.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -182,6 +184,23 @@ public class UserController {
     @PostMapping("${user.general}")
     public ResponseEntity<?> registerEateryStaff(@RequestBody RegisterRequest registerRequest, @PathVariable Long eateryId) {
         return userService.registerEateryStaff(registerRequest, eateryId);
+    }
+
+    /**
+     * POST for registering a new user with a restaurant.
+     *
+     * @param registerRequest RegisterRequest object containing user and restaurant data.
+     * @return ResponseEntity with a success or error message.
+     */
+    @Operation(summary = "Register a new user with a restaurant", description = "Registers a new user with the provided restaurant data")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User registered successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PostMapping("/api/admin/eatery")
+    public ResponseEntity<?> postEateryAdminUser(@RequestBody RegisterRequest registerRequest) {
+        return userService.registerAdminAndEatery(registerRequest);
     }
 
     /**

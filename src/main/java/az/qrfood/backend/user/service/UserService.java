@@ -1,11 +1,11 @@
 package az.qrfood.backend.user.service;
 
 import az.qrfood.backend.category.dto.CategoryDto;
-import az.qrfood.backend.category.repo.CategoryRepository;
 import az.qrfood.backend.category.service.CategoryService;
 import az.qrfood.backend.dish.service.DishService;
 import az.qrfood.backend.eatery.dto.EateryDto;
 import az.qrfood.backend.eatery.service.EateryService;
+import az.qrfood.backend.user.UserUtils;
 import az.qrfood.backend.user.dto.GeneralResponse;
 import az.qrfood.backend.user.dto.RegisterRequest;
 import az.qrfood.backend.user.dto.RegisterResponse;
@@ -51,7 +51,6 @@ public class UserService {
     private final EateryService eateryService;
     private final CategoryService categoryService;
     private final DishService dishService;
-    private final CategoryRepository categoryRepository;
 
     /**
      * Creates a new user based on the provided request.
@@ -107,7 +106,21 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public UserResponse getUserById(Long id) {
-        User user = findUserById(id);
+        User user = findUserByUserId(id);
+        return mapToResponse(user);
+    }
+
+
+    /**
+     * Retrieves a user by their unique ID.
+     *
+     * @param id The ID of the user to retrieve.
+     * @return A {@link UserResponse} representing the found user.
+     * @throws EntityNotFoundException if the user with the given ID is not found.
+     */
+    @Transactional(readOnly = true)
+    public UserResponse getUserById(Long eateryId, Long id) {
+        User user = findUserByEateryIdAndUserId(eateryId, id);
         return mapToResponse(user);
     }
 
@@ -124,50 +137,70 @@ public class UserService {
         return mapToResponse(user);
     }
 
-    /**
-     * Updates an existing user.
-     * <p>
-     * This method allows updating the username, password (if provided), roles, and user profile name.
-     * </p>
-     *
-     * @param id      The ID of the user to update.
-     * @param request The {@link UserRequest} containing the updated user data.
-     * @return A {@link UserResponse} representing the updated user.
-     * @throws EntityNotFoundException if the user with the given ID is not found.
-     * @throws IllegalStateException   if the new username already exists.
-     */
+
+    @Transactional
+    public UserResponse updateUser(Long eateryId, Long id, UserRequest request) {
+        User user = findUserByEateryIdAndUserId(eateryId, id);
+        return updateUserI(user, request);
+    }
+
     @Transactional
     public UserResponse updateUser(Long id, UserRequest request) {
-        User user = findUserById(id);
+        User user = findUserByUserId(id);
+        return updateUserI(user, request);
+    }
 
-        if (!user.getUsername().equals(request.getUsername())) {
-            validateUserDoesNotExist(request.getUsername());
-            user.setUsername(request.getUsername());
+    /**
+     * Updates an existing userUnderChange.
+     * <p>
+     * This method allows updating the username, password (if provided), roles, and userUnderChange profile name.
+     * </p>
+     *
+     * @param userNewData The {@link UserRequest} containing the updated userUnderChange data.
+     * @return A {@link UserResponse} representing the updated userUnderChange.
+     * @throws EntityNotFoundException if the userUnderChange with the given ID is not found.
+     * @throws IllegalStateException   if the new username already exists.
+     */
+    protected UserResponse updateUserI(User userUnderChange, UserRequest userNewData) {
+
+        if (!userUnderChange.getUsername().equals(userNewData.getUsername())) {
+            validateUserDoesNotExist(userNewData.getUsername());
+            userUnderChange.setUsername(userNewData.getUsername());
         }
 
         // Only update password if it's provided
-        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        if (userNewData.getPassword() != null && !userNewData.getPassword().isEmpty()) {
+            userUnderChange.setPassword(passwordEncoder.encode(userNewData.getPassword()));
         }
 
         // Only update roles if they're provided
-        if (request.getRoles() != null) {
-            if(!user.getRoles().contains(Role.SUPER_ADMIN)) {
-                request.getRoles().remove(Role.SUPER_ADMIN);
+        if (userNewData.getRoles() != null) {
+
+            int i = UserUtils.compareRoles(userUnderChange.getRoles());
+            log.debug(" i [{}]", i);
+            // if 1 decline
+            if(i < 1) {
+                userUnderChange.setRoles(userNewData.getRoles());
+            } else {
+                log.debug("The current role is elidible to change higher userUnderChange role [{}]", "todo userUnderChange");
+
             }
-            user.setRoles(request.getRoles());
+
+            if(!userUnderChange.getRoles().contains(Role.SUPER_ADMIN)) {
+                userNewData.getRoles().remove(Role.SUPER_ADMIN);
+            }
         }
 
         // Only update name if it provided
-        if (request.getName() != null) {
-            UserProfile userProfile = userProfileRepository.findByUser(user)
-                    .orElseThrow(() -> new EntityNotFoundException("User profile not found for user: " + user.getUsername()));
-            userProfile.setName(request.getName());
+        if (userNewData.getName() != null) {
+            UserProfile userProfile = userProfileRepository.findByUser(userUnderChange)
+                    .orElseThrow(() -> new EntityNotFoundException("User profile not found for userUnderChange: " + userUnderChange.getUsername()));
+            userProfile.setName(userNewData.getName());
             userProfileRepository.save(userProfile);
-            log.debug("Updated name of the user [{}]", user.getUsername());
+            log.debug("Updated name of the userUnderChange [{}]", userUnderChange.getUsername());
         }
 
-        User updatedUser = userRepository.save(user);
+        User updatedUser = userRepository.save(userUnderChange);
         return mapToResponse(updatedUser);
     }
 
@@ -185,7 +218,7 @@ public class UserService {
     @Transactional
     public void deleteUser(Long id) {
         // Find the user
-        User user = findUserById(id);
+        User user = findUserByUserId(id);
         log.info("Deleting user with ID: {} and username: {}", id, user.getUsername());
 
         // Find the user profile
@@ -335,9 +368,14 @@ public class UserService {
         return eateryId;
     }
 
-    private User findUserById(Long id) {
+    private User findUserByUserId(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+    }
+
+    private User findUserByEateryIdAndUserId(Long eateryId, Long userId) {
+        return userRepository.findByEateryIdAndUserId(eateryId, userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
     }
 
     private User findUserByUsername(String username) {

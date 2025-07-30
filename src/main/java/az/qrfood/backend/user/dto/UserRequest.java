@@ -40,4 +40,6 @@ public class UserRequest {
      * The roles assigned to the user.
      */
     private Set<Role> roles;
+
+    private Set<String> phones;
 }

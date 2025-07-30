@@ -38,13 +38,16 @@ import java.util.Set;
 @Service
 public class OrderService {
 
+    //<editor-fold desc="Fields">
     private final CustomerOrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final DishRepository dishRepository;
     private final TableRepository tableRepository;
     private final OrderMapper orderMapper;
     private final ClientDeviceRepository clientDeviceRepository;
+    //</editor-fold>
 
+    //<editor-fold desc="Constructor">
     /**
      * Constructs an OrderService with necessary dependencies.
      *
@@ -67,6 +70,7 @@ public class OrderService {
         this.orderMapper = orderMapper;
         this.clientDeviceRepository = clientDeviceRepository;
     }
+    //</editor-fold>
 
     /**
      * Retrieves all orders in the system.
@@ -78,7 +82,6 @@ public class OrderService {
         List<Order> orders = orderRepository.findAll();
         return orderMapper.toDtoList(orders);
     }
-
 
     /**
      * Retrieves all orders filtered by their status.

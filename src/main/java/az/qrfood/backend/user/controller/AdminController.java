@@ -2,7 +2,6 @@ package az.qrfood.backend.user.controller;
 
 import az.qrfood.backend.auth.service.CustomUserDetailsService;
 import az.qrfood.backend.auth.util.JwtUtil;
-import az.qrfood.backend.user.dto.RegisterRequest;
 import az.qrfood.backend.user.dto.UserRequest;
 import az.qrfood.backend.user.dto.UserResponse;
 import az.qrfood.backend.user.service.UserService;
@@ -63,24 +62,6 @@ public class AdminController {
     public ResponseEntity<UserResponse> postAdmin(@Valid @RequestBody UserRequest request) {
         UserResponse response = userService.createUser(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
-
-    /**
-     * POST for registering a new user with a restaurant.
-     *
-     * @param registerRequest RegisterRequest object containing user and restaurant data.
-     * @return ResponseEntity with a success or error message.
-     */
-    @Operation(summary = "Register a new user with a restaurant", description = "Registers a new user with the provided restaurant data")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User registered successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @PostMapping("${admin.eatery}")
-    public ResponseEntity<?> postEateryAdminUser(@RequestBody RegisterRequest registerRequest) {
-        return userService.registerAdminAndEatery(registerRequest);
     }
 
     /**

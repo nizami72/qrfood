@@ -1,0 +1,348 @@
+@startuml UserController Sequence Diagram
+
+actor Client
+participant UserController
+participant UserService
+participant UserRepository
+participant UserProfileRepository
+participant EateryService
+participant CategoryService
+participant DishService
+
+' Method 1: getAllUsersFromAllEateries
+group getAllUsersFromAllEateries
+    Client -> UserController: GET request
+    activate UserController
+    UserController -> UserService: getAllUsers()
+    activate UserService
+    UserService -> UserRepository: findAll()
+    activate UserRepository
+    UserRepository --> UserService: List<User>
+    deactivate UserRepository
+    
+    loop for each user
+        UserService -> UserService: mapToResponse(user)
+        activate UserService #DarkSalmon
+        UserService -> UserProfileRepository: findByUser(user)
+        activate UserProfileRepository
+        UserProfileRepository --> UserService: UserProfile
+        deactivate UserProfileRepository
+        UserService --> UserService: UserResponse
+        deactivate UserService #DarkSalmon
+    end
+    
+    UserService --> UserController: List<UserResponse>
+    deactivate UserService
+    UserController --> Client: ResponseEntity<List<UserResponse>>
+    deactivate UserController
+end
+
+' Method 2: getAllUsers
+group getAllUsers
+    Client -> UserController: GET request
+    activate UserController
+    UserController -> UserService: getAllUsers()
+    activate UserService
+    UserService -> UserRepository: findAll()
+    activate UserRepository
+    UserRepository --> UserService: List<User>
+    deactivate UserRepository
+    
+    loop for each user
+        UserService -> UserService: mapToResponse(user)
+        activate UserService #DarkSalmon
+        UserService -> UserProfileRepository: findByUser(user)
+        activate UserProfileRepository
+        UserProfileRepository --> UserService: UserProfile
+        deactivate UserProfileRepository
+        UserService --> UserService: UserResponse
+        deactivate UserService #DarkSalmon
+    end
+    
+    UserService --> UserController: List<UserResponse>
+    deactivate UserService
+    UserController --> Client: ResponseEntity<List<UserResponse>>
+    deactivate UserController
+end
+
+' Method 3: getAllEateryUsers
+group getAllEateryUsers
+    Client -> UserController: GET request with eateryId
+    activate UserController
+    UserController -> UserService: getAllUsers(eateryId)
+    activate UserService
+    UserService -> UserProfileRepository: findByRestaurantId(eateryId)
+    activate UserProfileRepository
+    UserProfileRepository --> UserService: List<UserProfile>
+    deactivate UserProfileRepository
+    
+    loop for each profile
+        UserService -> UserService: mapToResponse(profile.getUser())
+        activate UserService #DarkSalmon
+        UserService -> UserProfileRepository: findByUser(user)
+        activate UserProfileRepository
+        UserProfileRepository --> UserService: UserProfile
+        deactivate UserProfileRepository
+        UserService --> UserService: UserResponse
+        deactivate UserService #DarkSalmon
+    end
+    
+    UserService --> UserController: List<UserResponse>
+    deactivate UserService
+    UserController --> Client: ResponseEntity<List<UserResponse>>
+    deactivate UserController
+end
+
+' Method 4: getUserById
+group getUserById
+    Client -> UserController: GET request with eateryId and userId
+    activate UserController
+    UserController -> UserService: getUserById(eateryId, userId)
+    activate UserService
+    UserService -> UserRepository: findByEateryIdAndUserId(eateryId, userId)
+    activate UserRepository
+    UserRepository --> UserService: User
+    deactivate UserRepository
+    
+    UserService -> UserService: mapToResponse(user)
+    activate UserService #DarkSalmon
+    UserService -> UserProfileRepository: findByUser(user)
+    activate UserProfileRepository
+    UserProfileRepository --> UserService: UserProfile
+    deactivate UserProfileRepository
+    UserService --> UserService: UserResponse
+    deactivate UserService #DarkSalmon
+    
+    UserService --> UserController: UserResponse
+    deactivate UserService
+    UserController --> Client: ResponseEntity<UserResponse>
+    deactivate UserController
+end
+
+' Method 5: getUserByUsername
+group getUserByUsername
+    Client -> UserController: GET request with userName
+    activate UserController
+    UserController -> UserService: getUserByUsername(userName)
+    activate UserService
+    UserService -> UserRepository: findByUsername(userName)
+    activate UserRepository
+    UserRepository --> UserService: User
+    deactivate UserRepository
+    
+    UserService -> UserService: mapToResponse(user)
+    activate UserService #DarkSalmon
+    UserService -> UserProfileRepository: findByUser(user)
+    activate UserProfileRepository
+    UserProfileRepository --> UserService: UserProfile
+    deactivate UserProfileRepository
+    UserService --> UserService: UserResponse
+    deactivate UserService #DarkSalmon
+    
+    UserService --> UserController: UserResponse
+    deactivate UserService
+    UserController --> Client: ResponseEntity<UserResponse>
+    deactivate UserController
+end
+
+' Method 6: putUser
+group putUser
+    Client -> UserController: PUT request with eateryId, userId, and UserRequest
+    activate UserController
+    UserController -> UserService: updateUser(eateryId, userId, request)
+    activate UserService
+    UserService -> UserRepository: findByEateryIdAndUserId(eateryId, userId)
+    activate UserRepository
+    UserRepository --> UserService: User
+    deactivate UserRepository
+    
+    UserService -> UserService: updateUserI(user, request)
+    activate UserService #DarkSalmon
+    
+    alt if username changed
+        UserService -> UserRepository: findByUsername(request.getUsername())
+        activate UserRepository
+        UserRepository --> UserService: Optional<User>
+        deactivate UserRepository
+        UserService -> User: setUsername(request.getUsername())
+    end
+    
+    alt if password provided
+        UserService -> User: setPassword(encodedPassword)
+    end
+    
+    alt if roles provided
+        UserService -> User: setRoles(request.getRoles())
+    end
+    
+    alt if name provided
+        UserService -> UserProfileRepository: findByUser(user)
+        activate UserProfileRepository
+        UserProfileRepository --> UserService: UserProfile
+        deactivate UserProfileRepository
+        UserService -> UserProfile: setName(request.getName())
+        UserService -> UserProfileRepository: save(userProfile)
+        activate UserProfileRepository
+        UserProfileRepository --> UserService: UserProfile
+        deactivate UserProfileRepository
+    end
+    
+    UserService -> UserRepository: save(user)
+    activate UserRepository
+    UserRepository --> UserService: User
+    deactivate UserRepository
+    
+    UserService -> UserService: mapToResponse(user)
+    activate UserService #LightBlue
+    UserService -> UserProfileRepository: findByUser(user)
+    activate UserProfileRepository
+    UserProfileRepository --> UserService: UserProfile
+    deactivate UserProfileRepository
+    UserService --> UserService: UserResponse
+    deactivate UserService #LightBlue
+    
+    UserService --> UserService: UserResponse
+    deactivate UserService #DarkSalmon
+    
+    UserService --> UserController: UserResponse
+    deactivate UserService
+    UserController --> Client: ResponseEntity<UserResponse>
+    deactivate UserController
+end
+
+' Method 7: deleteUser
+group deleteUser
+    Client -> UserController: DELETE request with userId
+    activate UserController
+    UserController -> UserService: deleteUser(userId)
+    activate UserService
+    UserService -> UserRepository: findById(userId)
+    activate UserRepository
+    UserRepository --> UserService: User
+    deactivate UserRepository
+    
+    UserService -> UserProfileRepository: findByUser(user)
+    activate UserProfileRepository
+    UserProfileRepository --> UserService: Optional<UserProfile>
+    deactivate UserProfileRepository
+    
+    alt if userProfile exists
+        loop for each eateryId in userProfile.getRestaurantIds()
+            UserService -> CategoryService: findAllCategoryForEatery(eateryId)
+            activate CategoryService
+            CategoryService --> UserService: List<CategoryDto>
+            deactivate CategoryService
+            
+            loop for each category
+                UserService -> DishService: getAllDishesInCategory(categoryId)
+                activate DishService
+                DishService --> UserService: List<DishDto>
+                deactivate DishService
+                
+                loop for each dish
+                    UserService -> DishService: deleteDishItemById(categoryId, dishId)
+                    activate DishService
+                    DishService --> UserService: void
+                    deactivate DishService
+                end
+                
+                UserService -> CategoryService: deleteCategory(categoryId)
+                activate CategoryService
+                CategoryService --> UserService: void
+                deactivate CategoryService
+            end
+            
+            UserService -> EateryService: deleteEatery(eateryId)
+            activate EateryService
+            EateryService --> UserService: void
+            deactivate EateryService
+        end
+        
+        UserService -> UserProfileRepository: delete(userProfile)
+        activate UserProfileRepository
+        UserProfileRepository --> UserService: void
+        deactivate UserProfileRepository
+    end
+    
+    UserService -> UserRepository: delete(user)
+    activate UserRepository
+    UserRepository --> UserService: void
+    deactivate UserRepository
+    
+    UserService --> UserController: void
+    deactivate UserService
+    UserController --> Client: ResponseEntity<Void>
+    deactivate UserController
+end
+
+' Method 8: registerEateryStaff
+group registerEateryStaff
+    Client -> UserController: POST request with RegisterRequest and eateryId
+    activate UserController
+    UserController -> UserService: registerEateryStaff(registerRequest, eateryId)
+    activate UserService
+    
+    UserService -> UserService: registerUser(request, eateryId, false)
+    activate UserService #DarkSalmon
+    
+    UserService -> UserRepository: findByUsername(request.getUser().getEmail())
+    activate UserRepository
+    UserRepository --> UserService: Optional<User>
+    deactivate UserRepository
+    
+    UserService -> UserService: createUserEntity(username, password, roles)
+    activate UserService #LightBlue
+    UserService -> UserRepository: save(user)
+    activate UserRepository
+    UserRepository --> UserService: User
+    deactivate UserRepository
+    UserService --> UserService: User
+    deactivate UserService #LightBlue
+    
+    UserService -> UserProfileService: createUserProfile(user, request.getUserProfileRequest())
+    activate UserProfileService
+    UserProfileService --> UserService: UserProfile
+    deactivate UserProfileService
+    
+    alt if eateryId provided
+        UserService -> UserProfileService: addRestaurantToProfile(userProfile, eateryId)
+        activate UserProfileService
+        UserProfileService --> UserService: void
+        deactivate UserProfileService
+    end
+    
+    UserService --> UserService: ResponseEntity<RegisterResponse>
+    deactivate UserService #DarkSalmon
+    
+    UserService --> UserController: ResponseEntity<RegisterResponse>
+    deactivate UserService
+    UserController --> Client: ResponseEntity<?>
+    deactivate UserController
+end
+
+' Method 9: deleteUserByName
+group deleteUserByName
+    Client -> UserController: POST request with id
+    activate UserController
+    UserController -> UserService: deleteUser(id)
+    activate UserService
+    
+    UserService -> UserRepository: findByUsername(username)
+    activate UserRepository
+    UserRepository --> UserService: Optional<User>
+    deactivate UserRepository
+    
+    alt if user exists
+        UserService -> UserRepository: deleteUserByUsername(username)
+        activate UserRepository
+        UserRepository --> UserService: Optional<User>
+        deactivate UserRepository
+    end
+    
+    UserService --> UserController: GeneralResponse
+    deactivate UserService
+    UserController --> Client: ResponseEntity<GeneralResponse>
+    deactivate UserController
+end
+
+@enduml

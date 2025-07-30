@@ -44,6 +44,7 @@ public class OrderItemController {
     })
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @GetMapping("${order.item}")
+    // [[getAllOrderItems]]
     public ResponseEntity<List<OrderItemDTO>> getAllOrderItems() {
         log.debug("REST request to get all OrderItems");
         return ResponseEntity.ok(orderItemService.getAllOrderItems());
@@ -145,7 +146,7 @@ public class OrderItemController {
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @DeleteMapping("${order.item.id}")
     public ResponseEntity<Void> deleteOrderItem(@PathVariable Long orderItemId) {
-        log.debug("REST request to delete OrderItem : {}", orderItemId);
+        log.debug("Deleting OrderItem [{}]", orderItemId);
         orderItemService.deleteOrderItem(orderItemId);
         return ResponseEntity.ok().build();
     }

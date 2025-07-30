@@ -1,6 +1,7 @@
 package az.qrfood.backend.table.repository;
 
 import az.qrfood.backend.table.entity.TableInEatery;
+import com.google.common.io.Files;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
