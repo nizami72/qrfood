@@ -197,10 +197,14 @@ public class UserService {
      * @throws EntityNotFoundException if the user with the given ID is not found.
      */
     @Transactional
-    public void deleteUser(Long id) {
+    public void deleteEateryAdminWithResources(Long id) {
         // Find the user
         User user = findUserByUserId(id);
-        log.info("Deleting user with ID: {} and username: {}", id, user.getUsername());
+        if(!user.getRoles().contains(Role.EATERY_ADMIN)) {
+            deleteUser(user);
+            return;
+        }
+        log.info("Deleting eatery admin ID: [{}], username: [{}] and all its resources", id, user.getUsername());
 
         // Find the user profile
         Optional<UserProfile> userProfileOpt = userProfileRepository.findByUser(user);
@@ -261,6 +265,14 @@ public class UserService {
         log.info("Deleted user ID: {}", id);
     }
 
+    public void deleteUser(User user) {
+        Optional<UserProfile> userProfileOpt = userProfileRepository.findByUser(user);
+        userProfileOpt.ifPresent(userProfileRepository::delete);
+        userRepository.delete(user);
+        log.info("Deleted user ID: {}", user.getId());
+    }
+
+
     /**
      * Deletes a user by their username.
      *
@@ -268,7 +280,7 @@ public class UserService {
      * @throws EntityNotFoundException if the user with the given username is not found.
      */
     @Transactional
-    public GeneralResponse deleteUser(String username) {
+    public GeneralResponse deleteEateryAdminWithResources(String username) {
         if (userRepository.findByUsername(username).isEmpty()) {
             log.debug("User with user name [{}] not found", username);
             return GeneralResponse.builder()

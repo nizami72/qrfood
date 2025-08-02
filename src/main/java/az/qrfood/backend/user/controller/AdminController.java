@@ -2,16 +2,12 @@ package az.qrfood.backend.user.controller;
 
 import az.qrfood.backend.auth.service.CustomUserDetailsService;
 import az.qrfood.backend.auth.util.JwtUtil;
-import az.qrfood.backend.user.dto.UserRequest;
-import az.qrfood.backend.user.dto.UserResponse;
 import az.qrfood.backend.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -19,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
@@ -42,25 +37,6 @@ public class AdminController {
         this.userService = userService;
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
-    }
-
-    /**
-     * Deletion of the superuser is allowed to another superuser only.
-     *
-     * @param userId the user ID
-     * @return no content response
-     */
-    @Operation(summary = "Delete a superuser", description = "Deletes a superuser with the specified ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "User deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "User not found"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @DeleteMapping("${user.id}")
-    @PreAuthorize("@authz.hasAnyRole(authentication)")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
-        return ResponseEntity.noContent().build();
     }
 
     /**

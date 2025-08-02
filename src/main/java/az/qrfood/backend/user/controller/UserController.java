@@ -4,7 +4,6 @@ import az.qrfood.backend.user.dto.GeneralResponse;
 import az.qrfood.backend.user.dto.RegisterRequest;
 import az.qrfood.backend.user.dto.UserRequest;
 import az.qrfood.backend.user.dto.UserResponse;
-import az.qrfood.backend.user.entity.Role;
 import az.qrfood.backend.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,7 +13,6 @@ import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -163,7 +161,7 @@ public class UserController {
     @DeleteMapping("${user.id}")
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
+        userService.deleteEateryAdminWithResources(userId);
         return ResponseEntity.noContent().build();
     }
 
@@ -218,7 +216,7 @@ public class UserController {
     @PostMapping("${usr.delete}")
     @PreAuthorize("@authz.hasAnyRole(authentication, 'SUPER_ADMIN')")
     public ResponseEntity<GeneralResponse> deleteUserByName(@PathVariable String id) {
-        GeneralResponse g = userService.deleteUser(id);
+        GeneralResponse g = userService.deleteEateryAdminWithResources(id);
         log.debug("Deleted user with id [{}]", id);
         return ResponseEntity.ok(g);
     }

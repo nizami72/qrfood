@@ -1,5 +1,4 @@
 ### End Points
-* /api/admin/api/eatery/{eateryId}/user/{userId}
 * /api/admin/eatery
 * /api/admin/impersonate/{userId}
 * /api/auth/login
