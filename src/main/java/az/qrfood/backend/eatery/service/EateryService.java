@@ -253,11 +253,7 @@ public class EateryService {
         UserProfile userProfile = userProfileRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User profile with id not found: " + id));
 
-        List<Long> restaurantIds = userProfile.getRestaurantIds();
-
-        return restaurantIds.stream()
-                .map(restaurantId -> eateryRepository.findById(restaurantId)
-                        .orElseThrow(() -> new EntityNotFoundException("Eatery with id not found: " + restaurantId)))
+        return userProfile.getEateries().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }

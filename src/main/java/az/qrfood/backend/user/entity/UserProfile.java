@@ -1,5 +1,6 @@
 package az.qrfood.backend.user.entity;
 
+import az.qrfood.backend.eatery.entity.Eatery;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -80,13 +81,17 @@ public class UserProfile {
     private LocalDateTime lastLogin;
 
     /**
-     * A list of IDs of restaurants (eateries) owned by this user.
-     * Stored as a collection of elements in a separate join table.
+     * A list of restaurants (eateries) associated with this user.
+     * This is a many-to-many relationship, where each user profile can be associated with multiple eateries,
+     * and each eatery can be associated with multiple user profiles.
      */
-    @ElementCollection
-    @CollectionTable(name = "user_profile_restaurants", joinColumns = @JoinColumn(name = "profile_id"))
-    @Column(name = "restaurant_id")
-    private List<Long> restaurantIds = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_profile_restaurants",
+        joinColumns = @JoinColumn(name = "profile_id"),
+        inverseJoinColumns = @JoinColumn(name = "restaurant_id")
+    )
+    private List<Eatery> eateries = new ArrayList<>();
 
     /**
      * Pre-persist hook to set the {@code created} and {@code updated} timestamps

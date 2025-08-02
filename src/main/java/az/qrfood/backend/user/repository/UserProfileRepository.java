@@ -37,15 +37,15 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
     boolean existsByUser(User user);
 
     /**
-     * Retrieves all user profiles that have the specified restaurant ID in their {@code restaurantIds} list.
+     * Retrieves all user profiles that are associated with the specified restaurant ID.
      * <p>
-     * This method uses a custom JPQL query to search within the collection of restaurant IDs
-     * associated with each user profile.
+     * This method uses a custom JPQL query to search for user profiles that have a relationship
+     * with the eatery identified by the given ID.
      * </p>
      *
      * @param restaurantId The ID of the restaurant to search for within user profiles.
      * @return A {@link List} of {@link UserProfile} entities associated with the given restaurant ID.
      */
-    @Query("SELECT up FROM UserProfile up JOIN up.restaurantIds rid WHERE rid = :restaurantId")
+    @Query("SELECT up FROM UserProfile up JOIN up.eateries e WHERE e.id = :restaurantId")
     List<UserProfile> findByRestaurantId(@Param("restaurantId") Long restaurantId);
 }

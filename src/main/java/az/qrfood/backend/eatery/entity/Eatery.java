@@ -2,11 +2,14 @@ package az.qrfood.backend.eatery.entity;
 
 import az.qrfood.backend.table.entity.TableInEatery;
 import az.qrfood.backend.category.entity.Category;
+import az.qrfood.backend.user.entity.UserProfile;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -91,12 +94,20 @@ public class Eatery {
     private Double geoLng;
 
     /**
-     * Default constructor. Initializes the lists for phones, tables, and categories.
+     * A list of user profiles associated with this eatery.
+     * This is the inverse side of the many-to-many relationship defined in UserProfile.
+     */
+    @ManyToMany(mappedBy = "eateries", fetch = FetchType.LAZY)
+    private List<UserProfile> userProfiles = new ArrayList<>();
+
+    /**
+     * Default constructor. Initializes the lists for phones, tables, categories, and userProfiles.
      */
     public Eatery() {
         this.phones = new ArrayList<>();
         this.tables = new ArrayList<>();
         this.categories = new ArrayList<>();
+        this.userProfiles = new ArrayList<>();
     }
 
     @Override

@@ -1,9 +1,9 @@
 package az.qrfood.backend.user.service;
 
-import az.qrfood.backend.category.dto.CategoryDto;
 import az.qrfood.backend.category.service.CategoryService;
 import az.qrfood.backend.dish.service.DishService;
 import az.qrfood.backend.eatery.dto.EateryDto;
+import az.qrfood.backend.eatery.repository.EateryRepository;
 import az.qrfood.backend.eatery.service.EateryService;
 import az.qrfood.backend.user.UserUtils;
 import az.qrfood.backend.user.dto.GeneralResponse;
@@ -49,8 +49,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserProfileService userProfileService;
     private final EateryService eateryService;
-    private final CategoryService categoryService;
-    private final DishService dishService;
 
     /**
      * Retrieves a list of all users in the system.
@@ -160,14 +158,14 @@ public class UserService {
             int i = UserUtils.compareRoles(userUnderChange.getRoles());
             log.debug(" i [{}]", i);
             // if 1 decline
-            if(i < 1) {
+            if (i < 1) {
                 userUnderChange.setRoles(userNewData.getRoles());
             } else {
                 log.debug("The current role is elidible to change higher userUnderChange role [{}]", "todo userUnderChange");
 
             }
 
-            if(!userUnderChange.getRoles().contains(Role.SUPER_ADMIN)) {
+            if (!userUnderChange.getRoles().contains(Role.SUPER_ADMIN)) {
                 userNewData.getRoles().remove(Role.SUPER_ADMIN);
             }
         }
@@ -197,75 +195,13 @@ public class UserService {
      * @throws EntityNotFoundException if the user with the given ID is not found.
      */
     @Transactional
-    public void deleteEateryAdminWithResources(Long id) {
-        // Find the user
-        User user = findUserByUserId(id);
-        if(!user.getRoles().contains(Role.EATERY_ADMIN)) {
-            deleteUser(user);
+    public void deleteUser(Long id) {
+        Optional<User> userOp = userRepository.findById(id);
+        if (userOp.isEmpty()) {
+            log.debug("User with ID [{}] not found", id);
             return;
         }
-        log.info("Deleting eatery admin ID: [{}], username: [{}] and all its resources", id, user.getUsername());
-
-        // Find the user profile
-        Optional<UserProfile> userProfileOpt = userProfileRepository.findByUser(user);
-        if (userProfileOpt.isPresent()) {
-            UserProfile userProfile = userProfileOpt.get();
-            log.info("Found user profile with ID: {}", userProfile.getId());
-
-            // Get all eateries associated with the profile
-            List<Long> eateryIds = userProfile.getRestaurantIds();
-            log.info("User has {} eateries to delete", eateryIds.size());
-
-            // For each eatery
-            for (Long eateryId : eateryIds) {
-                try {
-                    // Find all categories for this eatery
-                    List<CategoryDto> categories = categoryService.findAllCategoryForEatery(eateryId);
-                    log.info("Eatery ID: {} has {} categories to delete", eateryId, categories.size());
-
-                    // For each category, delete all dishes
-                    for (CategoryDto category : categories) {
-                        try {
-                            // Delete all dishes in this category
-                            log.info("Deleting dishes for category ID: {}", category.getCategoryId());
-                            dishService.getAllDishesInCategory(category.getCategoryId()).forEach(dish -> {
-                                try {
-                                    dishService.deleteDishItemById(category.getCategoryId(), dish.getDishId());
-                                    log.debug("Deleted dish ID: {} from category ID: {}", dish.getDishId(), category.getCategoryId());
-                                } catch (Exception e) {
-                                    log.error("Error deleting dish ID: {} from category ID: {}", dish.getDishId(), category.getCategoryId(), e);
-                                }
-                            });
-
-                            // Delete the category
-                            categoryService.deleteCategory(category.getCategoryId());
-                            log.debug("Deleted category ID: {}", category.getCategoryId());
-                        } catch (Exception e) {
-                            log.error("Error deleting category ID: {}", category.getCategoryId(), e);
-                        }
-                    }
-
-                    // Delete the eatery
-                    eateryService.deleteEatery(eateryId);
-                    log.info("Deleted eatery ID: {}", eateryId);
-                } catch (Exception e) {
-                    log.error("Error deleting eatery ID: {}", eateryId, e);
-                }
-            }
-
-            // Delete the user profile
-            userProfileRepository.delete(userProfile);
-            log.info("Deleted user profile ID: {}", userProfile.getId());
-        } else {
-            log.warn("No user profile found for user ID: {}", id);
-        }
-
-        // Delete the user
-        userRepository.delete(user);
-        log.info("Deleted user ID: {}", id);
-    }
-
-    public void deleteUser(User user) {
+        User user = userOp.get();
         Optional<UserProfile> userProfileOpt = userProfileRepository.findByUser(user);
         userProfileOpt.ifPresent(userProfileRepository::delete);
         userRepository.delete(user);
@@ -289,7 +225,7 @@ public class UserService {
                     .build();
         }
         Optional<User> opUser = userRepository.deleteUserByUsername(username);
-        if(opUser.isPresent()) {
+        if (opUser.isPresent()) {
             log.debug("User with user name [{}] deleted", username);
             return GeneralResponse.builder()
                     .message("User deleted successfully")
@@ -317,7 +253,7 @@ public class UserService {
     private ResponseEntity<RegisterResponse> registerUser(RegisterRequest request, Long eateryId, boolean isEateryAdmin) {
         validateUserDoesNotExist(request.getUser().getEmail());
 
-        if(isEateryAdmin) {
+        if (isEateryAdmin) {
             Set<Role> roles = new HashSet<>();
             roles.add(Role.EATERY_ADMIN);
             request.getUser().setRoles(roles);

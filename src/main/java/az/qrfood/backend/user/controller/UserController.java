@@ -160,8 +160,8 @@ public class UserController {
     })
     @DeleteMapping("${user.id}")
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-        userService.deleteEateryAdminWithResources(userId);
+    public ResponseEntity<Void> deleteUser(@PathVariable Long eateryId, @PathVariable Long userId) {
+        userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
 

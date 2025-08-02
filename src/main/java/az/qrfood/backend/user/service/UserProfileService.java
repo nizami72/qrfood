@@ -1,5 +1,7 @@
 package az.qrfood.backend.user.service;
 
+import az.qrfood.backend.eatery.entity.Eatery;
+import az.qrfood.backend.eatery.repository.EateryRepository;
 import az.qrfood.backend.user.dto.RegisterRequest;
 import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.entity.UserProfile;
@@ -29,16 +31,19 @@ public class UserProfileService {
 
     private final UserProfileRepository userProfileRepository;
     private final UserRepository userRepository;
+    private final EateryRepository eateryRepository;
 
     /**
      * Constructs a UserProfileService with necessary repository dependencies.
      *
      * @param userProfileRepository The repository for UserProfile entities.
      * @param userRepository        The repository for User entities.
+     * @param eateryRepository      The repository for Eatery entities.
      */
-    public UserProfileService(UserProfileRepository userProfileRepository, UserRepository userRepository) {
+    public UserProfileService(UserProfileRepository userProfileRepository, UserRepository userRepository, EateryRepository eateryRepository) {
         this.userProfileRepository = userProfileRepository;
         this.userRepository = userRepository;
+        this.eateryRepository = eateryRepository;
     }
 
     /**
@@ -69,30 +74,35 @@ public class UserProfileService {
         profile.setIsActive(true);
         profile.setCreated(LocalDateTime.now());
         profile.setUpdated(LocalDateTime.now());
-        
+
         return userProfileRepository.save(profile);
     }
 
     /**
-     * Adds a restaurant ID to the user profile's list of owned restaurants.
+     * Adds a restaurant to the user profile's list of associated restaurants.
      *
-     * @param profile      The {@link UserProfile} to which the restaurant ID will be added.
+     * @param profile      The {@link UserProfile} to which the restaurant will be added.
      * @param restaurantId The ID of the restaurant to add.
+     * @throws EntityNotFoundException if the restaurant with the given ID is not found.
      */
     @Transactional
     public void addRestaurantToProfile(UserProfile profile, Long restaurantId) {
-        if (!profile.getRestaurantIds().contains(restaurantId)) {
-            profile.getRestaurantIds().add(restaurantId);
+        Eatery eatery = eateryRepository.findById(restaurantId)
+                .orElseThrow(() -> new EntityNotFoundException("Restaurant not found with id: " + restaurantId));
+
+        if (!profile.getEateries().contains(eatery)) {
+            profile.getEateries().add(eatery);
+            userProfileRepository.save(profile);
         }
     }
 
     /**
-     * Adds a restaurant ID to the user profile associated with the given {@link UserDetails}.
-     * This method retrieves the user and their profile before adding the restaurant ID.
+     * Adds a restaurant to the user profile associated with the given {@link UserDetails}.
+     * This method retrieves the user and their profile before adding the restaurant.
      *
      * @param userDetails The {@link UserDetails} of the user.
      * @param eateryId    The ID of the eatery to add to the user's profile.
-     * @throws EntityNotFoundException if the user or user profile is not found.
+     * @throws EntityNotFoundException if the user, user profile, or eatery is not found.
      */
     @Transactional
     public void addRestaurantToProfile(UserDetails userDetails, Long eateryId) {

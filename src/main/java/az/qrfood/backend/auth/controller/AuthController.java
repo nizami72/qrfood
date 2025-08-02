@@ -4,6 +4,7 @@ import az.qrfood.backend.auth.dto.LoginRequest;
 import az.qrfood.backend.auth.dto.LoginResponse;
 import az.qrfood.backend.auth.service.CustomUserDetailsService;
 import az.qrfood.backend.auth.util.JwtUtil;
+import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.entity.UserProfile;
 import az.qrfood.backend.user.repository.UserRepository;
@@ -24,8 +25,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * REST controller for handling user authentication and registration.
@@ -114,14 +117,19 @@ public class AuthController {
                 userId = userProfile.getId();
 
                 // If eateryId is not provided in the request, but a user has restaurants, use the first one as default
-                if (eateryId == null && userProfile.getRestaurantIds() != null && !userProfile.getRestaurantIds().isEmpty()) {
-                    eateryId = userProfile.getRestaurantIds().getFirst();
+                if (eateryId == null && userProfile.getEateries() != null && !userProfile.getEateries().isEmpty()) {
+                    eateryId = userProfile.getEateries().getFirst().getId();
                 }
 
                 // Verify that the user has access to the specified eatery
-                if (eateryId != null && (userProfile.getRestaurantIds() == null || !userProfile.getRestaurantIds().contains(eateryId))) {
-                    log.debug("User does not have access to the specified eatery: {}", eateryId);
-                    eateryId = null; // Reset eateryId if the user doesn't have access
+                if (eateryId != null) {
+                    final Long finalEateryId = eateryId;
+                    boolean hasAccess = userProfile.getEateries().stream()
+                            .anyMatch(eatery -> eatery.getId().equals(finalEateryId));
+                    if (!hasAccess) {
+                        log.debug("User does not have access to the specified eatery: {}", eateryId);
+                        eateryId = null; // Reset eateryId if the user doesn't have access
+                    }
                 }
             }
         }
@@ -178,7 +186,11 @@ public class AuthController {
                     userInfo.put("phones", userProfile.getPhones());
                     userInfo.put("isActive", userProfile.getIsActive());
                     userInfo.put("lastLogin", userProfile.getLastLogin());
-                    userInfo.put("restaurantIds", userProfile.getRestaurantIds());
+                    // Extract eatery IDs from the eateries list
+                    List<Long> restaurantIds = userProfile.getEateries().stream()
+                            .map(Eatery::getId)
+                            .collect(Collectors.toList());
+                    userInfo.put("restaurantIds", restaurantIds);
 
                     return ResponseEntity.ok(userInfo);
                 }
@@ -243,10 +255,15 @@ public class AuthController {
         Long userId = userProfile.getId();
 
         // Verify that the user has access to the specified eatery
-        if (eateryId != null && (userProfile.getRestaurantIds() == null || !userProfile.getRestaurantIds().contains(eateryId))) {
-            log.debug("User does not have access to the specified eatery: {}", eateryId);
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("message", "User does not have access to the specified eatery"));
+        if (eateryId != null) {
+            final Long finalEateryId = eateryId;
+            boolean hasAccess = userProfile.getEateries().stream()
+                    .anyMatch(eatery -> eatery.getId().equals(finalEateryId));
+            if (!hasAccess) {
+                log.debug("User does not have access to the specified eatery: {}", eateryId);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("message", "User does not have access to the specified eatery"));
+            }
         }
 
         // Load user details
