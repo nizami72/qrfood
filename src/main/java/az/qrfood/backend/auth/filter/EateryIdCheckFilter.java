@@ -1,6 +1,9 @@
 package az.qrfood.backend.auth.filter;
 
 import az.qrfood.backend.auth.util.JwtUtil;
+import az.qrfood.backend.common.Util;
+import az.qrfood.backend.common.response.ApiResponse;
+import az.qrfood.backend.common.response.ResponseCodes;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,9 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,7 +29,6 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 public class EateryIdCheckFilter extends OncePerRequestFilter implements Ordered {
-
 
     private final JwtUtil jwtUtil;
     // Pattern to match URLs with eateryId in the path
@@ -102,21 +102,22 @@ public class EateryIdCheckFilter extends OncePerRequestFilter implements Ordered
                     log.error("Error extracting eateryId from JWT token", e);
                     // If a token is invalid or eateryId cannot be extracted, treat as mismatch
                     response.setStatus(HttpStatus.PRECONDITION_FAILED.value());
-                    response.getWriter().write("Invalid or malformed JWT token.");
+                    response.getWriter().write(Util.toJsonString(new ApiResponse<Void>(ResponseCodes.INVALID_JWT, null)));
                     return;
                 }
 
                 // If eateryId is in the token and doesn't match the path's eateryId
                 if (tokenEateryId != null && !tokenEateryId.equals(pathEateryId)) {
-                    log.error("EateryId mismatch: token eateryId {} does not match path eateryId {}", 
-                              tokenEateryId, pathEateryId);
+                    log.error("EateryId mismatch: token eateryId {} does not match path eateryId {}",
+                            tokenEateryId, pathEateryId);
 
                     // In a stateless JWT system, clearing security context or redirecting
                     // is typically handled on the client side by invalidating the token.
                     // Here, we simply reject the request.
                     SecurityContextHolder.clearContext(); // Clear context for this request
                     response.setStatus(HttpStatus.PRECONDITION_FAILED.value());
-                    response.getWriter().write("EateryId mismatch: Access denied for the requested eatery.");
+                    response.setContentType("application/json");
+                    response.getWriter().write(Util.toJsonString(new ApiResponse<Void>(ResponseCodes.EATERY_MISMATCH, null)));
                     return;
                 }
             }

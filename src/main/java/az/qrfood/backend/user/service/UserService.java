@@ -53,23 +53,6 @@ public class UserService {
     private final DishService dishService;
 
     /**
-     * Creates a new user based on the provided request.
-     * <p>
-     * This method checks for existing usernames and encrypts the password before saving.
-     * </p>
-     *
-     * @param request The {@link UserRequest} containing user details.
-     * @return A {@link UserResponse} representing the newly created user.
-     * @throws IllegalStateException if a user with the same username already exists.
-     */
-    @Transactional
-    public UserResponse createUser(UserRequest request) {
-        validateUserDoesNotExist(request.getUsername());
-        User savedUser = createUserEntity(request.getUsername(), request.getPassword(), request.getRoles());
-        return mapToResponse(savedUser);
-    }
-
-    /**
      * Retrieves a list of all users in the system.
      *
      * @return A list of {@link UserResponse} representing all users.
@@ -80,7 +63,6 @@ public class UserService {
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
-
 
     /**
      * Retrieves a list of all users that belong to a specific eatery.
@@ -109,7 +91,6 @@ public class UserService {
         User user = findUserByUserId(id);
         return mapToResponse(user);
     }
-
 
     /**
      * Retrieves a user by their unique ID.

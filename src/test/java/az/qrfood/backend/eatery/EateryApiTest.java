@@ -1,8 +1,10 @@
 package az.qrfood.backend.eatery;
 
 import az.qrfood.backend.auth.dto.LoginRequest;
+import az.qrfood.backend.dish.dto.DishDto;
 import az.qrfood.backend.dto.Eatery;
 import az.qrfood.backend.util.FakeData;
+import az.qrfood.backend.util.TestDataLoader;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
@@ -18,6 +20,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -257,9 +261,22 @@ public class EateryApiTest {
         // Use the userId extracted from the login response
         fileLog.println("\n===== 🟢 GET EATERIES BY OWNER ID: " + userId + " =====");
 
+        String json1 = TestDataLoader.serializeToJsonString(
+                DishDto.builder()
+                        .nameAz("Test Dish")
+                        .nameEn("Updated Dish Name En")
+                        .nameRu("Updated Dish Name Ru")
+                        .price(BigDecimal.valueOf(15.0))
+                        .descriptionAz("Updated Dish Description Az")
+                        .descriptionEn("Updated Dish Description En")
+                        .descriptionRu("Updated Dish Description Ru")
+                        .isAvailable(true)
+                        .build());
+
         given()
                 .log().all() // лог всего ответа
                 .baseUri(baseUrl)
+                .multiPart("data", "data.json", json1.getBytes(StandardCharsets.UTF_8), "application/json")
                 .header("Authorization", "Bearer " + jwtToken) // ✅ Токен
                 .when()
                 .get(uriEateryOwner, userId)

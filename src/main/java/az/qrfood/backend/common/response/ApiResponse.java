@@ -61,6 +61,38 @@ public class ApiResponse<T> {
         this.timestamp = Instant.now();
     }
 
+    public ApiResponse(boolean success, String message, T data, int code, Instant timestamp) {
+        this.success = success;
+        this.message = message;
+        this.data = data;
+        this.code = code;
+        this.timestamp = timestamp;
+    }
+
+
+    public ApiResponse(ResponseCodes codes, T data, Instant timestamp) {
+        this.success = codes.isSuccess();
+        this.message = codes.getMessage();
+        this.data = data;
+        this.code = codes.getHttpStatus().value();
+        this.timestamp = timestamp;
+    }
+
+    public ApiResponse(ResponseCodes codes, Instant timestamp) {
+        this.success = codes.isSuccess();
+        this.message = codes.getMessage();
+        this.code = codes.getHttpStatus().value();
+        this.timestamp = timestamp;
+    }
+
+    public ApiResponse(ResponseCodes codes) {
+        this.success = codes.isSuccess();
+        this.message = codes.getMessage();
+        this.data = null;
+        this.code = codes.getHttpStatus().value();
+        this.timestamp = Instant.now();
+    }
+
     /**
      * Creates a successful API response with a message and data.
      * The status code is automatically set to 200 (OK).

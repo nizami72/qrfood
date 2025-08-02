@@ -5,6 +5,7 @@ import az.qrfood.backend.user.entity.Role;
 import az.qrfood.backend.user.repository.UserRepository;
 import az.qrfood.backend.user.service.UserService;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,6 +26,15 @@ import java.util.Set;
 public class App {
 
     private final UserService userService;
+
+    @Value("${app.user.mail}")
+    private String mail;
+    @Value("${app.user.password}")
+    private String password;
+    @Value("${app.user.name}")
+    private String name;
+    @Value("${app.user.phone}")
+    private String phone;
 
     /**
      * Constructs the App with a UserService dependency.
@@ -58,20 +68,19 @@ public class App {
      */
     @Bean
     public CommandLineRunner demoData(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        String u = "nizami.budagov@gmail.com";
         return args -> {
-            if (userRepository.findByUsername(u).isEmpty()) {
+            if (userRepository.findByUsername(mail).isEmpty()) {
                 userService.registerAdminAndEatery(
                         RegisterRequest.builder()
                                 .restaurant(null)
                                 .user(RegisterRequest.UserDto.builder()
-                                        .email(u)
-                                        .password("qqqq1111")
+                                        .email(mail)
+                                        .password(password)
                                         .roles(Set.of(Role.SUPER_ADMIN))
                                         .build())
                                 .userProfileRequest(RegisterRequest.UserProfileRequest.builder()
-                                        .name("Nizami Budagov")
-                                        .phone("994 50 4679933")
+                                        .name(name)
+                                        .phone(phone)
                                         .build())
                                 .build());
                 log.debug("Super admin role created");

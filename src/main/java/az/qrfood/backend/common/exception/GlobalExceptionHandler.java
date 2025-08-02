@@ -1,6 +1,8 @@
 package az.qrfood.backend.common.exception;
 
 import az.qrfood.backend.common.response.ApiResponse;
+import az.qrfood.backend.common.response.ResponseCodes;
+import az.qrfood.backend.dish.interceptor.NotYourResourceException;
 import az.qrfood.backend.user.exception.UserExceptionHandler;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -111,6 +113,14 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+
+    @ExceptionHandler(NotYourResourceException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNo(NotYourResourceException ex) {
+        log.error(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ApiResponse<Void>(ResponseCodes.RESOURCE_MISMATCH_OR_NOT_FOUND));
     }
 
     /**

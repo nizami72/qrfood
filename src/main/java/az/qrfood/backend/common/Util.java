@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import javax.imageio.ImageIO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
@@ -29,6 +31,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class Util {
 
     private static final String LINKS_FILE_PATH = "links.md";
+
+    static ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * Copies properties from a source object to a new instance of a destination class.
@@ -233,6 +237,30 @@ public class Util {
                     }
                 }
             }
+        }
+    }
+
+
+
+    /**
+     * Serializes a given object to a JSON file.
+     *
+     * @param object The object to serialize.
+     * @param <T> The type of the object.
+     * @throws RuntimeException if an error occurs during serialization or file writing.
+     */
+    public static <T> String toJsonString(T object) {
+        if (object == null) {
+            return null; // Or throw IllegalArgumentException, depending on desired behavior
+        }
+        try {
+            return objectMapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            // Обертываем JsonProcessingException в RuntimeException,
+            // чтобы вызывающий код мог обработать его или позволить ему распространиться.
+            // В реальном приложении здесь лучше использовать специализированное исключение
+            // или логировать ошибку более подробно.
+            throw new RuntimeException("Error serializing object to JSON: " + e.getMessage(), e);
         }
     }
 }

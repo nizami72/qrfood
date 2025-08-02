@@ -1,5 +1,6 @@
 package az.qrfood.backend.common;
 
+import lombok.extern.log4j.Log4j2;
 import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -9,7 +10,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.security.RolesAllowed;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Component
+@Log4j2
 public class RoleDocumentationGenerator implements ApplicationRunner {
 
     private final Environment environment;
@@ -34,6 +35,7 @@ public class RoleDocumentationGenerator implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
+        Set<String> urls = new TreeSet<>();
         try (PrintWriter writer = new PrintWriter(new FileWriter("END_POINTS_AND_ROLES.md"))) {
 
             Reflections reflections = new Reflections("az.qrfood.backend");
@@ -80,6 +82,7 @@ public class RoleDocumentationGenerator implements ApplicationRunner {
                     if(mdLink.contains("UNSPECIFIED")) continue;
                     String s = String.format("| %s | `%s` | `%s` |\n", mdLink, info.roles, info.path);
                     out.add(s);
+                    urls.add(info.path);
                 }
 
                 Collections.sort(out);
@@ -94,6 +97,19 @@ public class RoleDocumentationGenerator implements ApplicationRunner {
         } catch (IOException e) {
             throw new RuntimeException("Failed to generate documentation", e);
         }
+
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter("END_POINTS.md"))) {
+
+            writer.println("### End Points");
+            for (String mdLink : urls) {
+                writer.println("* " + mdLink);
+            }
+
+        }catch (IOException e) {
+            throw new RuntimeException("Failed to generate documentation", e);
+        }
+
     }
 
     private String resolvePath(String rawPath) {

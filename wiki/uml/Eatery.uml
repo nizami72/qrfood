@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>az.qrfood.backend.eatery.entity.Eatery</OriginalElement>
+  <nodes>
+    <node x="-84.64400820110211" y="291.1592285313524">az.qrfood.backend.eatery.entity.Eatery</node>
+    <node x="650.0384407585365" y="442.50935152659235">az.qrfood.backend.dish.entity.DishEntity</node>
+    <node x="-228.85671602935605" y="-20.0">az.qrfood.backend.table.entity.TableInEatery</node>
+    <node x="255.81280621215978" y="383.45299986884163">az.qrfood.backend.category.entity.Category</node>
+    <node x="-247.0" y="600.7135518143789">az.qrfood.backend.eatery.entity.EateryPhone</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="az.qrfood.backend.eatery.entity.Eatery" target="az.qrfood.backend.category.entity.Category" relationship="TO_MANY">
+      <point x="0.0" y="-5.053871930975992" />
+      <point x="0.0" y="-5.05387193097598" />
+    </edge>
+    <edge source="az.qrfood.backend.table.entity.TableInEatery" target="az.qrfood.backend.eatery.entity.Eatery" relationship="TO_ONE">
+      <point x="5.7147018971859325" y="0.0" />
+      <point x="5.71470189718595" y="0.0" />
+    </edge>
+    <edge source="az.qrfood.backend.eatery.entity.Eatery" target="az.qrfood.backend.eatery.entity.EateryPhone" relationship="TO_MANY">
+      <point x="0.0" y="8.244222508078836" />
+      <point x="6.288559266337842" y="0.0" />
+    </edge>
+    <edge source="az.qrfood.backend.category.entity.Category" target="az.qrfood.backend.eatery.entity.Eatery" relationship="TO_ONE">
+      <point x="0.0" y="5.053871930975994" />
+      <point x="0.0" y="5.053871930976" />
+    </edge>
+    <edge source="az.qrfood.backend.eatery.entity.EateryPhone" target="az.qrfood.backend.eatery.entity.Eatery" relationship="TO_ONE">
+      <point x="-6.288559266337785" y="0.0" />
+      <point x="0.0" y="-8.244222508078817" />
+    </edge>
+    <edge source="az.qrfood.backend.eatery.entity.Eatery" target="az.qrfood.backend.table.entity.TableInEatery" relationship="TO_MANY">
+      <point x="-5.714701897185941" y="-0.0" />
+      <point x="-5.714701897185961" y="0.0" />
+    </edge>
+    <edge source="az.qrfood.backend.category.entity.Category" target="az.qrfood.backend.dish.entity.DishEntity" relationship="TO_MANY">
+      <point x="0.0" y="-5.053871930975987" />
+      <point x="0.0" y="-5.053871930975987" />
+    </edge>
+    <edge source="az.qrfood.backend.dish.entity.DishEntity" target="az.qrfood.backend.category.entity.Category" relationship="TO_ONE">
+      <point x="0.0" y="5.053871930975987" />
+      <point x="0.0" y="5.053871930976001" />
+    </edge>
+  </edges>
+  <settings layout="Balloons" zoom="0.7797872340425532" showDependencies="true" x="415.21282401091406" y="368.8990450204638" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

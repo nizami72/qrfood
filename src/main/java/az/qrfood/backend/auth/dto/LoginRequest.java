@@ -32,4 +32,8 @@ public class LoginRequest {
      * This is optional and can be used to scope the user's session to a specific restaurant.
      */
     private Long eateryId;
+
+    public LoginRequest(Long eateryId) {
+        this.eateryId = eateryId;
+    }
 }

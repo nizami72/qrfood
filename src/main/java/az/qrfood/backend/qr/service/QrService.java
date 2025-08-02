@@ -1,7 +1,6 @@
 package az.qrfood.backend.qr.service;
 
 import az.qrfood.backend.common.QrCodeGenerator;
-import az.qrfood.backend.common.Util;
 import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.eatery.repository.EateryRepository;
 import az.qrfood.backend.qr.entity.QrCode;
@@ -62,9 +61,9 @@ public class QrService {
             throw new RuntimeException("Failed to generate QR code", e);
         }
         code.setContent(qrContent);
-        String s = qrContent.replace("192.168.1.76:8081", "127.0.0.1:5173");
-        Util.saveLinkToFile(s);
-        log.debug("Menu link [{}]", s);
+//        String s = qrContent.replace("192.168.1.76:8081", "127.0.0.1:5173");
+//        Util.saveLinkToFile(s);
+//        log.debug("Menu link [{}]", s);
 
         return code;
     }

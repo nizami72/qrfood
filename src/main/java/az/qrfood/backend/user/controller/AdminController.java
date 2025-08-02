@@ -45,26 +45,6 @@ public class AdminController {
     }
 
     /**
-     * Create a new superuser, no eatery created and assigned here.
-     *
-     * @param request the user request
-     * @return the created user response
-     */
-    @Operation(summary = "Create a new user", description = "Creates a new user with the provided data")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @PostMapping()
-    @PreAuthorize("@authz.hasAnyRole(authentication)")
-    // [[postAdmin]]
-    public ResponseEntity<UserResponse> postAdmin(@Valid @RequestBody UserRequest request) {
-        UserResponse response = userService.createUser(request);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
-    /**
      * Deletion of the superuser is allowed to another superuser only.
      *
      * @param userId the user ID

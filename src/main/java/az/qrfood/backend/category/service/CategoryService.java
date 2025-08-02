@@ -15,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
@@ -130,6 +131,16 @@ public class CategoryService {
         Optional<Category> category = categoryRepository.findById(id);
         if(category.isEmpty()) {throw new EntityNotFoundException(
                 String.format("The category with id [%s] not fount", id));}
+        return convertDishCategoryToDto(category.get());
+    }
+
+    @Transactional
+    public CategoryDto findCategoryByEateryIdAndId(Long eateryId, Long id) {
+        Optional<Category> category = categoryRepository.findByEateryIdAndId(eateryId, id);
+
+        if(category.isEmpty()) {throw new EntityNotFoundException(
+                String.format("The category with id [%s] not fount", id));}
+        log.debug("Items [{}] in category [{}]", category.get().getItems().size(), id);
         return convertDishCategoryToDto(category.get());
     }
 
