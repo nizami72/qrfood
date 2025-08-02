@@ -3,6 +3,7 @@ package az.qrfood.backend.common.exception;
 import az.qrfood.backend.common.response.ApiResponse;
 import az.qrfood.backend.common.response.ResponseCodes;
 import az.qrfood.backend.dish.interceptor.NotYourResourceException;
+import az.qrfood.backend.user.exception.UserAlreadyExistsException;
 import az.qrfood.backend.user.exception.UserExceptionHandler;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -119,8 +120,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotYourResourceException.class)
     public ResponseEntity<ApiResponse<Void>> handleNo(NotYourResourceException ex) {
         log.error(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        return ResponseEntity.status(ResponseCodes.RESOURCE_MISMATCH_OR_NOT_FOUND.getHttpStatus())
                 .body(new ApiResponse<Void>(ResponseCodes.RESOURCE_MISMATCH_OR_NOT_FOUND));
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleException(UserAlreadyExistsException ex) {
+        log.error(ex.getMessage());
+         return ResponseEntity
+            .status(ResponseCodes.USER_ALREADY_EXISTS.getHttpStatus())
+            .header("X-Error-Code", ResponseCodes.USER_ALREADY_EXISTS.getMessage())
+            .body(new ApiResponse<Void>(ResponseCodes.USER_ALREADY_EXISTS));
     }
 
     /**

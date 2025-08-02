@@ -35,7 +35,7 @@ import java.util.Properties;
  * Selenium test class for testing the admin registration page functionality.
  */
 @Log4j2
-public class CreateEateryTest {
+public class AllFlowTest {
 
     private WebDriver driver;
     private WebDriverWait wait;
@@ -111,7 +111,7 @@ public class CreateEateryTest {
     }
 
 
-//    @Test
+    @Test
     public void allFlow() {
         openPage("login", 500);
         if (login(FAST)) {
@@ -134,13 +134,17 @@ public class CreateEateryTest {
 
         createDishes(NORM);
         pause(1000);
-//5
+
+        createUser(NORM);
+        pause(2000);
+//6
         createTables(NORM);
         pause(2000);
 
+
     }
 
-    @Test
+//    @Test
     public void loginAndShowOrder() {
         openPage("login", 100);
         login(NORM);
@@ -149,6 +153,15 @@ public class CreateEateryTest {
         navigate("nav005", "/admin/orders", NORM);
         Util.pause(40000);
     }
+
+//    @Test
+    public void loginAndAddUser() {
+        openPage("login", 100);
+        login(NORM);
+        createUser(NORM);
+    }
+
+
 
     private void createTables(String norm) {
         navigate("nav004", "/admin/tables", norm);
@@ -299,6 +312,16 @@ public class CreateEateryTest {
         Util.findButtonByTextAndClick(driver, "Add Selected Dishes (", NORM);
         Util.selectOptionByBySelectText(driver, 2, "Kateqoriya seçin", temp);
         markTime(PHASE_CREATE_DISHES);
+    }
+
+    private void createUser(String temp) {
+        navigate("nav006", "users", temp);
+        Util.findButtonByTextAndClick(driver, "İstifadəçi əlavə et", NORM);
+        Util.typeIntoInputById(driver, "Olivia Scott User", "user-name", NORM);
+        Util.typeIntoInputById(driver, "OliviaScottUser@qaz.az", "user-username", NORM);
+        Util.typeIntoInputById(driver, "qqqq1111", "user-password", NORM);
+        Util.findButtonByTextAndClick(driver, "İstifadəçi əlavə et", NORM);
+
     }
 
     @BeforeEach
