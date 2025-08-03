@@ -18,7 +18,7 @@ mysql -u"$DB_USER" -p"$DB_PASS" -e "DROP DATABASE IF EXISTS \`$DB_NAME\`;"
 if [ $? -eq 0 ]; then
   echo "Database '$DB_NAME' dropped."
 else
-  echo "Errore while database deleting '$DB_NAME'."
+  echo "Error while database deleting '$DB_NAME'."
 fi
 
 mysql -u"$DB_USER" -p"$DB_PASS" -e "CREATE DATABASE \`$DB_NAME\`;"

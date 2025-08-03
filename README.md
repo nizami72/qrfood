@@ -59,7 +59,9 @@ Contributions are welcome! Please feel free to submit a pull request.
 ## License
 This project is licensed under the MIT License.
 
-## See Logs Quickly
+## Hetzner Remote Command etc
+
+### See Logs Quickly
 
 SSH
 ``` 
@@ -69,4 +71,13 @@ ssh -i /home/nizami/.ssh/key2 root@157.180.16.28
 Expose Logs
 ```
 tail -f -n 500 /home/qrfood/logs/info.log
+```
+
+
+### Drop and Recreate Database
+
+#### To drop and resriate the database there is shell script installed in `/home/qrfood/wiki/shell` directory. Start the script via ssh as descibed below
+
+```
+    ssh -i /home/nizami/.ssh/key2 root@157.180.16.28 'bash -s' < /home/nizami/Dropbox/projects/Java/qrfood/wiki/shell/drop_qrfood.sh
 ```

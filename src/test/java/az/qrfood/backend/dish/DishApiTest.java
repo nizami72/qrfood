@@ -27,7 +27,6 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -39,16 +38,10 @@ public class DishApiTest {
 
     @Value("${base.url}")
     String baseUrl;
-    @Value("${segment.api.category}")
-    String segmentApiCategory;
-    @Value("${segment.api.dish}")
-    String segmentApiDish;
     @Value("${eatery.id.category.id.dish}")
     String eateryIdCategoryIdDish;
     @Value("${eatery.id.category.id.dish.id}")
     String eateryIdCategoryIdDishId;
-    @Value("${auth.refresh}")
-    String uriRefreshToken;
 
     List<Category> dishes;
     String jwtToken;
@@ -125,7 +118,7 @@ public class DishApiTest {
     void shouldCreateCategory() {
         fileLog.println("\n========== 📤 Creating a category ==========");
 
-        Category category = dishes.get(0);
+        Category category = dishes.getFirst();
         String json = TestDataLoader.serializeToJsonString(
                 new CategoryDto(category.nameAz(), category.nameEn(), category.nameRu(), category.image()));
 
@@ -153,7 +146,7 @@ public class DishApiTest {
     void shouldCreateDish() {
         fileLog.println("\n========== 📤 Creating a dish ==========");
 
-        Dish dish = dishes.get(0).dishes().get(0);
+        Dish dish = dishes.getFirst().dishes().getFirst();
         String json = TestDataLoader.serializeToJsonString(dish);
 
         Response response = given()
@@ -273,13 +266,13 @@ public class DishApiTest {
         fileLog.println("\n========== 📤 Testing interceptor validation ==========");
 
         // Try to access a dish with incorrect eateryId (should be rejected by interceptor)
-        Long incorrectEateryId = eateryId + 100;
+        long incorrectEateryId = eateryId + 100;
 
         given()
                 .baseUri(baseUrl)
                 .header("Authorization", "Bearer " + jwtToken)
                 .when()
-                .get(eateryIdCategoryIdDishId.replace("{eateryId}", incorrectEateryId.toString())
+                .get(eateryIdCategoryIdDishId.replace("{eateryId}", Long.toString(incorrectEateryId))
                                            .replace("{categoryId}", categoryId.toString())
                                            .replace("{dishId}", dishId.toString()))
                 .then()
