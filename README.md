@@ -76,8 +76,7 @@ tail -f -n 500 /home/qrfood/logs/info.log
 
 ### Drop and Recreate Database
 
-#### To drop and resriate the database there is shell script installed in `/home/qrfood/wiki/shell` directory. Start the script via ssh as descibed below
-
+To drop and recreate the database on Hetzner run the command below, it runs the local script on a remote machine
 ```
-    ssh -i /home/nizami/.ssh/key2 root@157.180.16.28 'bash -s' < /home/nizami/Dropbox/projects/Java/qrfood/wiki/shell/drop_qrfood.sh
+ssh -i /home/nizami/.ssh/key2 root@157.180.16.28 'bash -s' < /home/nizami/Dropbox/projects/Java/qrfood/wiki/shell/drop_qrfood.sh
 ```
