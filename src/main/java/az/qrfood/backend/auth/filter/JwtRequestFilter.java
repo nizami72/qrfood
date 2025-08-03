@@ -8,14 +8,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.Ordered;
+import org.springframework.http.server.PathContainer;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.pattern.PathPattern;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Filter for processing JWT tokens in each request.
@@ -30,6 +34,25 @@ public class JwtRequestFilter extends OncePerRequestFilter implements Ordered {
 
     private final CustomUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
+    private final List<PathPattern> excluded = Stream.of(
+                    "/api/auth/**",
+                    "/api/image/**",
+                    "/api/client/**",
+                    "/api/logs/frontend",
+                    "/api/config/image-paths",
+                    "/ui/alive",
+                    "/api/eatery/{eateryId}/order/{orderId}",
+                    "/api/eatery/{eateryId}/order/status/created",
+                    "/api/eatery/{eateryId}/order"
+            )
+            .map(pattern -> new PathPatternParser().parse(pattern))
+            .toList();
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return excluded.stream().anyMatch(pattern -> pattern.matches(PathContainer.parsePath(path)));
+    }
 
     @Override
     public int getOrder() {
@@ -66,11 +89,13 @@ public class JwtRequestFilter extends OncePerRequestFilter implements Ordered {
 
         String path = request.getRequestURI(); // e.g., /api/client/whatever
 
-        // Skip filter logic if path starts with /api/client/
-        if (path.startsWith("/api/client/")) {
-            filterChain.doFilter(request, response); // continue without filter logic
-            return;
-        }
+//        // Skip filter logic if the path starts with unneeded
+//        for (String pathExcluded : excludedPaths) {
+//            if(path.startsWith(pathExcluded)) {
+//                filterChain.doFilter(request, response); // continue without filter logic
+//                return;
+//            }
+//        }
 
         log.debug("JwtRequestFilter.doFilterInternal");
         final String authorizationHeader = request.getHeader("Authorization");
