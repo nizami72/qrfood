@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -47,12 +46,8 @@ public class ClientDeviceController {
 
     private final ClientDeviceService service;
     private final CategoryService categoryService;
-    private final ClientDeviceService clientDeviceService;
     private final TableService tableService;
     private final EateryService eateryService;
-
-    @Value("${segment.client.orders}")
-    private String componentOrders;
     public static final String DEVICE = "Device_UUID";
 
     /**

@@ -6,6 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.core.Ordered;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +25,7 @@ import java.io.IOException;
  * Spring SecurityContext if the token is valid.
  * </p>
  */
+@Log4j2
 public class JwtRequestFilter extends OncePerRequestFilter implements Ordered {
 
     private final CustomUserDetailsService userDetailsService;
@@ -62,6 +64,15 @@ public class JwtRequestFilter extends OncePerRequestFilter implements Ordered {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        String path = request.getRequestURI(); // e.g., /api/client/whatever
+
+        // Skip filter logic if path starts with /api/client/
+        if (path.startsWith("/api/client/")) {
+            filterChain.doFilter(request, response); // continue without filter logic
+            return;
+        }
+
+        log.debug("JwtRequestFilter.doFilterInternal");
         final String authorizationHeader = request.getHeader("Authorization");
 
         String username = null;
