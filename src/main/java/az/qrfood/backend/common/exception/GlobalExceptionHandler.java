@@ -80,12 +80,10 @@ public class GlobalExceptionHandler {
      * Handles {@link OrderNotFoundException} and returns a 404 Not Found response.
      *
      * @param ex      The caught {@link OrderNotFoundException}.
-     * @param request The current {@link HttpServletRequest}.
      * @return A {@link ResponseEntity} with an {@link ApiResponse} indicating the order was not found.
      */
     @ExceptionHandler(OrderNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleOrderNotFound(OrderNotFoundException ex,
-                                                                 HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<Void>> handleOrderNotFound(OrderNotFoundException ex) {
 
         log.error(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -98,12 +96,10 @@ public class GlobalExceptionHandler {
      * a resource they do not have permission for.
      *
      * @param request The current {@link HttpServletRequest}.
-     * @param ex      The caught {@link AccessDeniedException}.
      * @return A {@link ResponseEntity} with an {@link UserExceptionHandler.ErrorResponse} indicating access denied.
      */
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<UserExceptionHandler.ErrorResponse> handleAccessDeniedExceptions(HttpServletRequest request,
-                                                                                           AccessDeniedException ex) {
+    public ResponseEntity<UserExceptionHandler.ErrorResponse> handleAccessDeniedExceptions(HttpServletRequest request) {
 
         String requestUri = request.getRequestURI();
         log.error("Access to [{}] denied", requestUri);
@@ -121,7 +117,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleNo(NotYourResourceException ex) {
         log.error(ex.getMessage());
         return ResponseEntity.status(ResponseCodes.RESOURCE_MISMATCH_OR_NOT_FOUND.getHttpStatus())
-                .body(new ApiResponse<Void>(ResponseCodes.RESOURCE_MISMATCH_OR_NOT_FOUND));
+                .body(new ApiResponse<>(ResponseCodes.RESOURCE_MISMATCH_OR_NOT_FOUND));
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
@@ -130,7 +126,7 @@ public class GlobalExceptionHandler {
          return ResponseEntity
             .status(ResponseCodes.USER_ALREADY_EXISTS.getHttpStatus())
             .header("X-Error-Code", ResponseCodes.USER_ALREADY_EXISTS.getMessage())
-            .body(new ApiResponse<Void>(ResponseCodes.USER_ALREADY_EXISTS));
+            .body(new ApiResponse<>(ResponseCodes.USER_ALREADY_EXISTS));
     }
 
     /**

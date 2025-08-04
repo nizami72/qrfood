@@ -152,7 +152,7 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "Table not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping("${order}")
+    @PostMapping("${order.post}")
     // [[postOrder]]
     public ResponseEntity<OrderDto> postOrder(HttpServletResponse response,
                                               @PathVariable Long eateryId,

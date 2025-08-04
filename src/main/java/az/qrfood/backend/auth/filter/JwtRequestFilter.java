@@ -52,7 +52,7 @@ public class JwtRequestFilter extends OncePerRequestFilter implements Ordered {
                     "/ui/alive",
                     "/api/eatery/{eateryId}/order/{orderId}",
                     "/api/eatery/{eateryId}/order/status/created",
-                    "/api/eatery/{eateryId}/order"
+                    "/api/eatery/{eateryId}/order/post"
             )
             .map(pattern -> new PathPatternParser().parse(pattern))
             .toList();
