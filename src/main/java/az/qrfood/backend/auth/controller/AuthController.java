@@ -2,6 +2,7 @@ package az.qrfood.backend.auth.controller;
 
 import az.qrfood.backend.auth.dto.LoginRequest;
 import az.qrfood.backend.auth.dto.LoginResponse;
+import az.qrfood.backend.auth.dto.RefreshTokenRequest;
 import az.qrfood.backend.auth.service.CustomUserDetailsService;
 import az.qrfood.backend.auth.util.JwtUtil;
 import az.qrfood.backend.eatery.entity.Eatery;
@@ -11,6 +12,7 @@ import az.qrfood.backend.user.repository.UserRepository;
 import az.qrfood.backend.user.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -86,7 +88,7 @@ public class AuthController {
     @PostMapping("${auth.login}")
     @Operation(summary = "Logins a user", description = "Logins user, use email as login and password")
     // [[login]]
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
         log.debug("Login request: {}", loginRequest);
         try {
             log.debug("Attempting to authenticate user using AuthenticationManager");
@@ -209,7 +211,7 @@ public class AuthController {
      * requiring a new token that reflects access to the new eatery.
      * </p>
      *
-     * @param requestBody A {@link Map} containing the "eateryId" key with the ID of the newly selected eatery.
+     * @param request A {@link RefreshTokenRequest} containing the ID of the newly selected eatery.
      * @return A {@link ResponseEntity} containing a {@link LoginResponse} with the new JWT token,
      *         user ID, and the updated eatery ID. Returns {@code HttpStatus.UNAUTHORIZED} if not authenticated,
      *         {@code HttpStatus.NOT_FOUND} if user or profile not found, or {@code HttpStatus.FORBIDDEN}
@@ -217,8 +219,8 @@ public class AuthController {
      */
     @PostMapping("${auth.refresh}")
 //    [[refreshToken]]
-    public ResponseEntity<?> refreshToken(@RequestBody Map<String, Long> requestBody) {
-        Long eateryId = requestBody.get("eateryId");
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        Long eateryId = request.getEateryId();
         log.debug("Refresh token request with eateryId: {}", eateryId);
 
         // Get the current authentication from the security context
@@ -289,7 +291,7 @@ public class AuthController {
      *
      * @return A {@link ResponseEntity} with a success message confirming the logout action.
      */
-    @PostMapping("${auth.logout}")
+    @GetMapping("${auth.logout}")
     //[[logout]]
     public ResponseEntity<?> logout() {
         // Get the current authentication from the security context

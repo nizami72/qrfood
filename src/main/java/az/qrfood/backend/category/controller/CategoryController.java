@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -103,7 +104,7 @@ public class CategoryController {
     @PostMapping(value = "${eatery.id.category}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     public ResponseEntity<Long> createDishCategory(@PathVariable Long eateryId,
-                                                   @RequestPart("data") CategoryDto dishCategoryDto,
+                                                   @Valid @RequestPart("data") CategoryDto dishCategoryDto,
                                                    @RequestPart("image") MultipartFile file) {
         dishCategoryDto.setEateryId(eateryId);
         log.debug("Create category item: {}", dishCategoryDto);
@@ -130,7 +131,7 @@ public class CategoryController {
     @PostMapping(value = "${eatery.id.category.predefined}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     public ResponseEntity<Long> createDishCategoryNoImage(@PathVariable Long eateryId,
-                                                   @RequestPart("data") CategoryDto dishCategoryDto)
+                                                   @Valid @RequestPart("data") CategoryDto dishCategoryDto)
     {
         dishCategoryDto.setEateryId(eateryId);
         log.debug("Create predefined category item: {}", dishCategoryDto);
@@ -176,7 +177,7 @@ public class CategoryController {
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @PutMapping(value = "${eatery.id.category.id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> updateCategory(@PathVariable(value = "categoryId") Long categoryId,
-                                               @RequestPart("data") CategoryDto dishCategoryDto,
+                                               @Valid @RequestPart("data") CategoryDto dishCategoryDto,
                                                @RequestPart(value = "image", required = false) MultipartFile file) {
         log.debug("Update category: {}", categoryId);
         dishCategoryDto.setCategoryId(categoryId);
@@ -209,8 +210,9 @@ public class CategoryController {
             }
 
             List<CategoryPredefined> categories = objectMapper.readValue(
-                commonCategoriesFile, 
-                new TypeReference<List<CategoryPredefined>>() {}
+                commonCategoriesFile,
+                    new TypeReference<>() {
+                    }
             );
 
             return ResponseEntity.ok(categories);

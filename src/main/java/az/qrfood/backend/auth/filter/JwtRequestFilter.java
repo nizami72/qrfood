@@ -44,7 +44,7 @@ public class JwtRequestFilter extends OncePerRequestFilter implements Ordered {
     private final CustomUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
     private final List<PathPattern> excluded = Stream.of(
-                    "/api/auth/**",
+                    "/api/auth/login",
                     "/api/image/**",
                     "/api/client/**",
                     "/api/logs/frontend",
