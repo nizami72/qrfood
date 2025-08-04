@@ -112,27 +112,6 @@ public class ClientDeviceController {
         return ResponseEntity.ok(id);
     }
 
-
-
-    /**
-     * Creates a new client device record.
-     *
-     * @param dto The {@link ClientDeviceRequestDto} containing the details for the new device.
-     * @return A {@link ResponseEntity} containing the {@link ClientDeviceResponseDto} of the newly created device
-     *         with {@code HttpStatus.CREATED}.
-     */
-    @Operation(summary = "Create a new client device", 
-               description = "Creates a new client device record with the provided details.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Client device created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @PostMapping("${api.client}")
-    public ResponseEntity<ClientDeviceResponseDto> create(@Parameter(description = "Client device details") @RequestBody ClientDeviceRequestDto dto) {
-        return new ResponseEntity<>(service.create(dto), HttpStatus.CREATED);
-    }
-
     /**
      * Retrieves a specific client device by its ID.
      *

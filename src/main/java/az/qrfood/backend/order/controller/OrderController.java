@@ -163,19 +163,8 @@ public class OrderController {
 
         Order order = orderService.createOrder(orderDto);
         tableService.updateTableStatus(orderDto.getTableId(), TableStatus.BUSY);
-        Cookie cookie;
 
-        // Check if a cookie is present
-        if (deviceUuid != null && !deviceUuid.isEmpty()) {
-            log.debug("Existing cookie found: {}, adding order to existing device", deviceUuid);
-            // If yes, adds order to an existing client device
-            cookie = clientDeviceService.addOrderToExistingDevice(deviceUuid, order);
-        } else {
-            log.debug("No cookie found, creating new client device");
-            // if not, create a new client device and cookie
-            cookie = clientDeviceService.createCookieUuid(order);
-        }
-
+        Cookie cookie = clientDeviceService.resolveCookieUuid(deviceUuid, order);
         response.addCookie(cookie);
 
         // Send WebSocket notification about the new order

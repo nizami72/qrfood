@@ -111,24 +111,6 @@ public class SecurityConfig {
                                 .requestMatchers("/swagger-ui/index.html").permitAll()
                                 .requestMatchers("/v3/api-docs/**").permitAll()
                                 .requestMatchers("/v3/api-docs").permitAll()
-//                                .requestMatchers("/api/auth/**").permitAll()
-//                                .requestMatchers("/api/qrcode/**").permitAll()
-//                                .requestMatchers("/image/**").permitAll()
-//                                .requestMatchers("/api/config/image-paths").permitAll()
-//                                .requestMatchers("/api/orders/*").permitAll()
-//                                .requestMatchers("/api/orders/status/*").permitAll()
-//                                .requestMatchers("/api/client/eatery/**").permitAll()
-//                                .requestMatchers(GET, "/api/eatery/*").permitAll()
-//                                .requestMatchers("/api/admin/**").permitAll()
-//                                .requestMatchers("/redoc.html").permitAll()
-//                                .requestMatchers("/index.html").permitAll()
-//                                .requestMatchers("/favicon.ico").permitAll()
-//                                .requestMatchers("/alive").permitAll()
-//                                .requestMatchers("/assets/**").permitAll()
-//                                .requestMatchers("/logo*.*").permitAll()
-//                                .requestMatchers("/index.html").permitAll()
-//                                .requestMatchers(apiUserRegister).permitAll()
-//                                .requestMatchers("/api/eatery/**").permitAll()
                                 // ============================================================================    ADMIN SECTION
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 // ===================================================================    USER AND ADMIN SECTION
@@ -149,16 +131,6 @@ public class SecurityConfig {
         http
                 .addFilterBefore(new JwtRequestFilter(userDetailsService, jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(new EateryIdCheckFilter(jwtUtil), JwtRequestFilter.class);
-
-        // Add our JWT filter before the standard UsernamePasswordAuthenticationFilter
-        // This ensures that the JWT is validated before Spring Security makes authorization decisions.
-//        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
-        // Add the eateryIdCheckFilter after the JwtRequestFilter
-        // This ensures that the eateryId check is performed after user authentication
-//        http.addFilterAfter(eateryIdCheckFilter, JwtRequestFilter.class);
-//        http.addFilterBefore(eateryIdCheckFilter, JwtRequestFilter.class);
-
         return http.build();
     }
 

@@ -120,14 +120,6 @@ public class JwtRequestFilter extends OncePerRequestFilter implements Ordered {
 
         String path = request.getRequestURI(); // e.g., /api/client/whatever
 
-//        // Skip filter logic if the path starts with unneeded
-//        for (String pathExcluded : excludedPaths) {
-//            if(path.startsWith(pathExcluded)) {
-//                filterChain.doFilter(request, response); // continue without filter logic
-//                return;
-//            }
-//        }
-
         log.debug("JwtRequestFilter.doFilterInternal");
         final String authorizationHeader = request.getHeader("Authorization");
 

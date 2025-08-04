@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -163,14 +164,20 @@ public class ClientDeviceService {
      * to its list of orders, and saves the updated entity.
      * </p>
      *
-     * @param uuid  The UUID string identifying the client device.
+     * @param deviceUuid  The UUID string identifying the client device.
      * @param order The {@link Order} to add to the client device.
      * @return A {@link Cookie} object containing the UUID (for consistency with createCookieUuid).
      * @throws EntityNotFoundException if no client device with the given UUID is found.
      */
-    public Cookie addOrderToExistingDevice(String uuid, Order order) {
-        ClientDevice device = clientDeviceRepository.findByUuid(uuid)
-                .orElseThrow(() -> new EntityNotFoundException("ClientDevice not found for UUID: " + uuid));
+    public Cookie resolveCookieUuid(String deviceUuid, Order order) {
+        if (StringUtils.hasText(deviceUuid)) {
+            return resolveExistingOrCreateNewCookie(deviceUuid, order);
+        }
+        log.debug("No device cookie found, creating new client device");
+        return createCookieUuid(order);
+    }
+
+    private Cookie addOrderToExistingDevice(ClientDevice device, String uuid, Order order) {
 
         device.getOrders().add(order);
         clientDeviceRepository.save(device);
@@ -184,5 +191,17 @@ public class ClientDeviceService {
         cookie.setSecure(false);
 
         return cookie;
+    }
+
+    private Cookie resolveExistingOrCreateNewCookie(String deviceUuid, Order order) {
+        return clientDeviceRepository.findByUuid(deviceUuid)
+                .map(device -> {
+                    log.debug("Existing cookie found in request and database: {}, adding order to existing device", deviceUuid);
+                    return addOrderToExistingDevice(device, deviceUuid, order);
+                })
+                .orElseGet(() -> {
+                    log.debug("No cookie found in DB for deviceUuid={}, creating new client device", deviceUuid);
+                    return createCookieUuid(order);
+                });
     }
 }
