@@ -246,7 +246,10 @@ public class UserService {
 
     private ResponseEntity<RegisterResponse> registerUser(RegisterRequest request, Long eateryId, boolean isEateryAdmin) {
         validateUserDoesNotExist(request.getUser().getEmail());
-        request.getUser().getRoles().remove(Role.SUPER_ADMIN);
+        Set<Role> userRoles = request.getUser().getRoles();
+        if(userRoles != null) {
+                userRoles.remove(Role.SUPER_ADMIN);
+        }
         if (isEateryAdmin) {
             Set<Role> roles = new HashSet<>();
             roles.add(Role.EATERY_ADMIN);

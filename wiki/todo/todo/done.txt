@@ -3,3 +3,4 @@ x 2025-08-05 Interceptor for DishController
 x 2025-08-05 password should be empty when put without password change
 x 2025-08-05 Interceptor for AdminController
 x 2025-08-05 Interceptor for AuthController
+x 2025-08-05 Interceptor for CategoryController
