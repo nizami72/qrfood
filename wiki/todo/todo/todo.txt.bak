@@ -7,7 +7,6 @@ To secure public API methods from scam and overloading
 Status order
 The table status should be busy if an order is assigned to the table
 Create a new email for qrfood.
-Interceptors to check eligibility to access by a certain user
 Interceptor for ClientDeviceController
 Interceptor for CommonDishController
 Interceptor for EateryController
@@ -21,7 +20,6 @@ Interceptor for TableController
 Interceptor for UserController
 Interceptor for /api/admin/api/eatery/{eateryId}/user/{userId}
 Interceptor for /api/client/eatery/{eateryId}/table/{tableId}
-Interceptor for /api/eatery/{eateryId}/category/{categoryId}
 Interceptor for /api/eatery/{eateryId}/order-item/order/{orderId}
 Interceptor for /api/eatery/{eateryId}/order-item/{orderItemId}
 Interceptor for /api/eatery/{eateryId}/order/{orderId}

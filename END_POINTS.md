@@ -1,5 +1,7 @@
 ### End Points
 * /api/admin/eatery
+* /api/admin/eatery/{eateryId}/details
+* /api/admin/eatery/{eateryId}/resources
 * /api/admin/impersonate/{userId}
 * /api/auth/login
 * /api/auth/logout
@@ -29,6 +31,8 @@
 * /api/eatery/{eateryId}/order/status/created
 * /api/eatery/{eateryId}/order/status/{status}
 * /api/eatery/{eateryId}/order/{orderId}
+* /api/eatery/{eateryId}/order/{orderId}/delete
+* /api/eatery/{eateryId}/order/{orderId}/put
 * /api/eatery/{eateryId}/table
 * /api/eatery/{eateryId}/table/{tableId}
 * /api/eatery/{eateryId}/user

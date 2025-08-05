@@ -188,7 +188,7 @@ public class OrderController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'CASHIER')")
-    @PutMapping("${order.id}")
+    @PutMapping("${order.id.put}")
     public ResponseEntity<OrderDto> updateOrder(
             @PathVariable Long orderId,
             @RequestBody OrderDto orderDTO
@@ -242,7 +242,7 @@ public class OrderController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @DeleteMapping("${order.id}")
+    @DeleteMapping("${order.id.delete}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
         orderService.deleteOrder(orderId);
         return ResponseEntity.ok().build();

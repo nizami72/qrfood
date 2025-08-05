@@ -79,6 +79,10 @@ public class FrontendPathConfig {
     String orderStatus;
     @Value("${order.id}")
     String orderId;
+    @Value("${order.id.delete}")
+    String orderIdDelete;
+    @Value("${order.id.put}")
+    String orderIdPut;
     @Value("${order.table.id}")
     String orderTableId;
     @Value("${order}")
@@ -150,6 +154,8 @@ public class FrontendPathConfig {
         paths.put("ORDERS", "--------------------");
         paths.put("orderStatus", orderStatus);
         paths.put("orderId", orderId);
+        paths.put("orderIdDelete", orderIdDelete);
+        paths.put("orderIdPut", orderIdPut);
         paths.put("orderTableId", orderTableId);
         paths.put("order", order);
         paths.put("orderPost", orderPost);

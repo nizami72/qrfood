@@ -131,7 +131,7 @@ public class CategoryService {
         Optional<Category> category = categoryRepository.findById(id);
         if(category.isEmpty()) {throw new EntityNotFoundException(
                 String.format("The category with id [%s] not fount", id));}
-        return convertDishCategoryToDto(category.get());
+        return convertCategoryToDto(category.get());
     }
 
     @Transactional
@@ -141,7 +141,7 @@ public class CategoryService {
         if(category.isEmpty()) {throw new EntityNotFoundException(
                 String.format("The category with id [%s] not fount", id));}
         log.debug("Items [{}] in category [{}]", category.get().getItems().size(), id);
-        return convertDishCategoryToDto(category.get());
+        return convertCategoryToDto(category.get());
     }
 
     /**
@@ -162,7 +162,7 @@ public class CategoryService {
             log.warn(error);
             return List.of();
         }
-        return convertDishCategoryToDto(categories);
+        return convertCategoryToDto(categories);
     }
 
     /**
@@ -171,10 +171,10 @@ public class CategoryService {
      * @param categories The list of Category entities to convert.
      * @return A list of converted Category DTOs.
      */
-    private List<CategoryDto> convertDishCategoryToDto(List<Category> categories) {
+    private List<CategoryDto> convertCategoryToDto(List<Category> categories) {
         List<CategoryDto> categoryDtoList = new ArrayList<>();
         for (Category category : categories) {
-            categoryDtoList.add(convertDishCategoryToDto(category));
+            categoryDtoList.add(convertCategoryToDto(category));
         }
         return categoryDtoList;
     }
@@ -189,7 +189,7 @@ public class CategoryService {
      * @param category The Category entity to convert.
      * @return The converted Category DTO.
      */
-    private CategoryDto convertDishCategoryToDto(Category category) {
+    private CategoryDto convertCategoryToDto(Category category) {
 
             CategoryDto dto = new CategoryDto();
             dto.setEateryId(category.getEatery().getId());

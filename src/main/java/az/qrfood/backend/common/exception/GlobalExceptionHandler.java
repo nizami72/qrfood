@@ -102,7 +102,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<UserExceptionHandler.ErrorResponse> handleAccessDeniedExceptions(HttpServletRequest request) {
 
         String requestUri = request.getRequestURI();
-        log.error("Access to [{}] denied", requestUri);
+        String method = request.getMethod();
+        log.error("Access to[{}:{}] denied", method, requestUri);
 
         UserExceptionHandler.ErrorResponse errorResponse = new UserExceptionHandler.ErrorResponse(
                 HttpStatus.FORBIDDEN.value(),
