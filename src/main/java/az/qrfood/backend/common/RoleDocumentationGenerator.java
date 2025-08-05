@@ -9,7 +9,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.security.RolesAllowed;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,7 +23,15 @@ import java.io.PrintWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -41,7 +55,7 @@ public class RoleDocumentationGenerator implements ApplicationRunner {
             Reflections reflections = new Reflections("az.qrfood.backend");
             Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(RestController.class);
 
-            Map<Class<?>, List<EndpointInfo>> grouped = new HashMap<>();
+            Map<String, List<EndpointInfo>> grouped = new TreeMap<>();
 
             for (Class<?> controller : controllers) {
                 String basePath = Optional.ofNullable(controller.getAnnotation(RequestMapping.class))
@@ -66,12 +80,14 @@ public class RoleDocumentationGenerator implements ApplicationRunner {
                             sourceFile
                     );
 
-                    grouped.computeIfAbsent(controller, k -> new ArrayList<>()).add(info);
+                    grouped.computeIfAbsent(
+                            controller.getSimpleName(),
+                            k -> new ArrayList<>()).add(info);
                 }
             }
 
-            for (Map.Entry<Class<?>, List<EndpointInfo>> entry : grouped.entrySet()) {
-                writer.println("### " + entry.getKey().getSimpleName());
+            for (Map.Entry<String, List<EndpointInfo>> entry : grouped.entrySet()) {
+                writer.println("### " + entry.getKey());
                 writer.println();
                 writer.println("| Method | Role(s) | URL Path |");
                 writer.println("|--------|---------|----------|");
@@ -79,7 +95,7 @@ public class RoleDocumentationGenerator implements ApplicationRunner {
                 List<String> out = new ArrayList<>();
                 for (EndpointInfo info : entry.getValue()) {
                     String mdLink = String.format("[%s %s](%s)", info.httpMethod, info.methodName, info.sourceFileLink);
-                    if(mdLink.contains("UNSPECIFIED")) continue;
+                    if (mdLink.contains("UNSPECIFIED")) continue;
                     String s = String.format("| %s | `%s` | `%s` |\n", mdLink, info.roles, info.path);
                     out.add(s);
                     urls.add(info.path);
@@ -106,7 +122,7 @@ public class RoleDocumentationGenerator implements ApplicationRunner {
                 writer.println("* " + mdLink);
             }
 
-        }catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException("Failed to generate documentation", e);
         }
 

@@ -116,15 +116,9 @@ public class UserService {
         return mapToResponse(user);
     }
 
-
-    @Transactional
-    public UserResponse updateUser(Long eateryId, Long id, UserRequest request) {
-        User user = findUserByEateryIdAndUserId(eateryId, id);
-        return updateUserI(user, request);
-    }
-
     @Transactional
     public UserResponse updateUser(Long id, UserRequest request) {
+        request.getRoles().remove(Role.SUPER_ADMIN);
         User user = findUserByUserId(id);
         return updateUserI(user, request);
     }
@@ -252,7 +246,7 @@ public class UserService {
 
     private ResponseEntity<RegisterResponse> registerUser(RegisterRequest request, Long eateryId, boolean isEateryAdmin) {
         validateUserDoesNotExist(request.getUser().getEmail());
-
+        request.getUser().getRoles().remove(Role.SUPER_ADMIN);
         if (isEateryAdmin) {
             Set<Role> roles = new HashSet<>();
             roles.add(Role.EATERY_ADMIN);

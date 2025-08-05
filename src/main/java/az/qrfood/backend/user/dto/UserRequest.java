@@ -33,7 +33,7 @@ public class UserRequest {
      * The password of the user.
      */
     @NotBlank(message = "Password is required")
-    @Size(min = 6, max = 100, message = "Password must be between 6 and 100 characters")
+    @Size(min = 6, max = 100, message = "Password must be between 6 and 100 characters", groups = OnCreate.class)
     private String password;
 
     /**

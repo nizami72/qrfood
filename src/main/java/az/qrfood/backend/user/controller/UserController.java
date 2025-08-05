@@ -1,6 +1,7 @@
 package az.qrfood.backend.user.controller;
 
 import az.qrfood.backend.user.dto.GeneralResponse;
+import az.qrfood.backend.user.dto.OnUpdate;
 import az.qrfood.backend.user.dto.RegisterRequest;
 import az.qrfood.backend.user.dto.UserRequest;
 import az.qrfood.backend.user.dto.UserResponse;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -141,7 +143,7 @@ public class UserController {
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     public ResponseEntity<UserResponse> putUser(
             @PathVariable Long userId,
-            @Valid @RequestBody UserRequest request) {
+            @Validated(OnUpdate.class) @RequestBody UserRequest request) {
         UserResponse response = userService.updateUser(userId, request);
         return ResponseEntity.ok(response);
     }
