@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,12 +28,10 @@ import java.util.Map;
 @Tag(name = "Admin Management", description = "API endpoints for managing admin users")
 public class AdminController {
 
-    private final UserService userService;
     private final CustomUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
 
-    public AdminController(UserService userService, CustomUserDetailsService userDetailsService, JwtUtil jwtUtil) {
-        this.userService = userService;
+    public AdminController(CustomUserDetailsService userDetailsService, JwtUtil jwtUtil) {
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
     }

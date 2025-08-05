@@ -7,11 +7,8 @@
  Status order
  The table status should be busy if an order is assigned to the table
  Create a new email for qrfood.
-
  Interceptors to check eligibility to access by a certain user
-Interceptor for AdminController
-Interceptor for AuthController
-Interceptor for CategoryController
+(A) Interceptor for CategoryController
 Interceptor for ClientDeviceController
 Interceptor for CommonDishController
 Interceptor for EateryController
