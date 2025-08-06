@@ -124,7 +124,7 @@
 | [GET getAllOrders(String, String)](src/main/java/az/qrfood/backend/order/controller/OrderController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER, CASHIER` | `/api/eatery/{eateryId}/order/status/{status}` |
 | [GET getOrderById(Long)](src/main/java/az/qrfood/backend/order/controller/OrderController.java) | `public` | `/api/eatery/{eateryId}/order/{orderId}` |
 | [GET getOrdersByEateryId(Long)](src/main/java/az/qrfood/backend/order/controller/OrderController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER, CASHIER` | `/api/eatery/{eateryId}/order` |
-| [GET getOrdersByEateryIdAndStatusCreated(Long, String)](src/main/java/az/qrfood/backend/order/controller/OrderController.java) | `public` | `/api/eatery/{eateryId}/order/status/created` |
+| [GET getOrdersByEateryIdAndTableId(Long, String)](src/main/java/az/qrfood/backend/order/controller/OrderController.java) | `public` | `/api/eatery/{eateryId}/order/status/created` |
 | [POST postOrder(HttpServletResponse, Long, OrderDto, String)](src/main/java/az/qrfood/backend/order/controller/OrderController.java) | `public` | `/api/eatery/{eateryId}/order/post` |
 | [PUT updateOrder(Long, OrderDto)](src/main/java/az/qrfood/backend/order/controller/OrderController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, CASHIER` | `/api/eatery/{eateryId}/order/{orderId}/put` |
 

@@ -296,14 +296,14 @@ public class OrderService {
                     List<Order> allOrders = clientDevice.getOrders();
 
                     // Filter orders by eatery ID and status
-                    List<Order> filteredOrders = allOrders.stream()
-                            .filter(order -> order.getStatus() == status &&
-                                    order.getTable() != null &&
-                                    order.getTable().getEatery() != null &&
-                                    eateryId.equals(order.getTable().getEatery().getId()))
-                            .toList();
+//                    List<Order> filteredOrders = allOrders.stream()
+//                            .filter(order -> order.getStatus() == status &&
+//                                    order.getTable() != null &&
+//                                    order.getTable().getEatery() != null &&
+//                                    eateryId.equals(order.getTable().getEatery().getId()))
+//                            .toList();
 
-                    return orderMapper.toDtoList(filteredOrders);
+                    return orderMapper.toDtoList(allOrders);
                 })
                 .orElse(List.of());
     }

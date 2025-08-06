@@ -1,5 +1,5 @@
 PROMPT
-A delicious, fresh cheese_burger served in a ceramic plate, placed on a wooden table in a cozy restaurant setting. Natural lighting, slight steam rising from the food, elegant cutlery on the side, rustic background, shallow depth of field, photorealistic in webp format with size 800:600 px
+A delicious, fresh [] served in a ceramic plate, placed on a wooden table in a cozy restaurant setting. Natural lighting, slight steam rising from the food, elegant cutlery on the side, rustic background, shallow depth of field, photorealistic in webp format with size 800:600 px
 
 
 Burgers.webp
@@ -13,73 +13,73 @@ Burgers.webp
  Soups.webp
  Vegetarian.webp
  alcoholic_drinks.webp
- ayran.webp
+
  bbq_chicken_pizza.webp
- beef_basturma_kebab.webp
+
  beer.webp
 
 
 
 
 
- cheese_sticks.webp
- cheesecake.webp
- chicken_burger.webp
- chicken_kebab.webp
- chicken_nuggets.webp
- chicken_soup.webp
- chicken_tabaka.webp
+
+
+
+
+
+
+
  chocolate_souffle.webp
  cocktail.webp
  coke.webp
- cream_soup.webp
- double_burger.webp
- dushbara.webp
+
+
+
  fanta.webp
- french_fries.webp
+
  fresh_orange_juice.webp
  fruit_juice.webp
  fruit_salad.webp
- grilled_vegetables.webp
+
  honey_cake.webp
  hummus_plate.webp
- iskender_kebab.webp
+
  kids_menu.webp
- lamb_goulash.webp
+
  lavash_roll.webp
  lentil_soup.webp
- lula_kebab.webp
+
  mac_and_cheese.webp
  main_courses.webp
- mangal_salad.webp
- margherita_pizza.webp
+
+
  mashed_potatoes.webp
  meat_guvech.webp
  mimosa_salad.webp
- mini_burger.webp
+
  mixed_pizza.webp
  mushroom_risotto.webp
  mushroom_salad.webp
  mussels_on_saj.webp
- nuggets.webp
+
  onion_rings.webp
  pepperoni_pizza.webp
  red_wine.webp
- rice.webp
- saj_ichi.webp
+
+
  salmon_stroganoff.webp
  seafood_paella.webp
  seafood_pizza.webp
  shrimp_tempura.webp
- spinach_cutlets.webp
+
  sweet_crepes.webp
- tike_kebab.webp
+
  tiramisu.webp
  tom_yum_soup.webp
  vegetable_fajita.webp
- vegetable_kebab.webp
+
  vegetable_lasagna.webp
  vegetarian_burger.webp
  water.webp
  whiskey.webp
- w
+ white-wine.webp

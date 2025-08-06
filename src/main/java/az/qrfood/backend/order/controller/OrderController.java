@@ -267,7 +267,7 @@ public class OrderController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("${api.eatery.order.status.created}")
-    public ResponseEntity<List<OrderDto>> getOrdersByEateryIdAndStatusCreated(
+    public ResponseEntity<List<OrderDto>> getOrdersByEateryIdAndTableId(
             @PathVariable Long eateryId,
             @CookieValue(value = DEVICE, required = false) String deviceUuid
     ) {

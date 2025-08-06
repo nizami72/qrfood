@@ -33,3 +33,4 @@ Implement post put data validation
 📞 WhatsApp Busines
 📢 Telegram (канал)
 📸 Instagram
+Paid Order shown as Accepted on client device
