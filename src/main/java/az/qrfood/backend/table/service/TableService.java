@@ -162,6 +162,19 @@ public class TableService {
     }
 
     /**
+     * Checks if a table belongs to a specific eatery.
+     *
+     * @param tableId  The ID of the table to check.
+     * @param eateryId The ID of the eatery to check against.
+     * @return true if the table belongs to the eatery, false otherwise.
+     */
+    public boolean isTableBelongsToEatery(Long tableId, Long eateryId) {
+        return tableRepository.findById(tableId)
+                .map(table -> table.getEatery().getId().equals(eateryId))
+                .orElse(false);
+    }
+
+    /**
      * Creates a table within an eatery. This method is specifically used by {@link az.qrfood.backend.eatery.service.EateryService}.
      * <p>
      * It generates a QR code for the new table and associates it.

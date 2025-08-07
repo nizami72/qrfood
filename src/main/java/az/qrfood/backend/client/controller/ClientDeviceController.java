@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -106,6 +107,7 @@ public class ClientDeviceController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("${api.client.eatery}")
+    @PreAuthorize("@authz.hasAnyRole(authentication)")
     public ResponseEntity<List<CategoryDto>> eateryCategories(@Parameter(description = "ID of the eatery") @PathVariable(value = "eateryId") Long eateryId){
         log.debug("Find all categories for eatery when table and eatery already known in the device");
         List<CategoryDto> id = categoryService.findAllCategoryForEatery(eateryId);
@@ -126,6 +128,7 @@ public class ClientDeviceController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("${api.client.id}")
+    @PreAuthorize("@authz.hasAnyRole(authentication)")
     public ResponseEntity<ClientDeviceResponseDto> getById(@Parameter(description = "ID of the client device") @PathVariable Long id) {
         return ResponseEntity.ok(service.getById(id));
     }
@@ -142,6 +145,7 @@ public class ClientDeviceController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("${api.client}")
+    @PreAuthorize("@authz.hasAnyRole(authentication)")
     public ResponseEntity<List<ClientDeviceResponseDto>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
@@ -161,6 +165,7 @@ public class ClientDeviceController {
             @ApiResponse(responseCode = "404", description = "Client device not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication)")
     @PutMapping("${api.client.id}")
     public ResponseEntity<ClientDeviceResponseDto> update(
             @Parameter(description = "ID of the client device") @PathVariable Long id,
@@ -181,6 +186,7 @@ public class ClientDeviceController {
             @ApiResponse(responseCode = "404", description = "Client device not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
+    @PreAuthorize("@authz.hasAnyRole(authentication)")
     @DeleteMapping("${api.client.id}")
     public ResponseEntity<Void> delete(@Parameter(description = "ID of the client device") @PathVariable Long id) {
         service.delete(id);

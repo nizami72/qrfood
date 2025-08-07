@@ -5,8 +5,8 @@ import az.qrfood.backend.auth.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.security.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +23,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPatternParser;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +45,7 @@ public class JwtRequestFilter extends OncePerRequestFilter implements Ordered {
     private final List<PathPattern> excluded = Stream.of(
                     "/api/auth/login",
                     "/api/image/**",
-                    "/api/client/**",
+                    "/api/client/eatery/{eateryId}/table/{tableId}",
                     "/api/logs/frontend",
                     "/api/config/image-paths",
                     "/ui/alive",
@@ -97,8 +96,8 @@ public class JwtRequestFilter extends OncePerRequestFilter implements Ordered {
      * Sends an error response to the client.
      *
      * @param response The HTTP response.
-     * @param status The HTTP status code.
-     * @param message The error message.
+     * @param status   The HTTP status code.
+     * @param message  The error message.
      * @throws IOException If an I/O error occurs.
      */
     private void sendErrorResponse(HttpServletResponse response, HttpStatus status, String message) throws IOException {
@@ -118,7 +117,7 @@ public class JwtRequestFilter extends OncePerRequestFilter implements Ordered {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String path = request.getRequestURI(); // e.g., /api/client/whatever
+        String path = request.getRequestURI();
 
         log.debug("JwtRequestFilter works");
         final String authorizationHeader = request.getHeader("Authorization");

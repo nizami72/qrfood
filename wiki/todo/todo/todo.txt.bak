@@ -11,7 +11,7 @@ Interceptor for ClientDeviceController
 Interceptor for CommonDishController
 Interceptor for EateryController
 Interceptor for FrontendLogController
-Interceptor for FrontendPathConfig
+
 Interceptor for ImageController
 Interceptor for OrderController
 Interceptor for OrderItemController
@@ -29,3 +29,9 @@ Interceptor for /api/eatery/{eateryId}/user/{userId}
 Interceptor for /api/qrcode/api/eatery/{eatery}/table/{table}
 we can do all things for you, send your menu, then change the password
 often asked questions
+Implement post put data validation
+📞 WhatsApp Busines
+📢 Telegram (канал)
+📸 Instagram
+Paid Order shown as Accepted on client device
+(B) Task description +project @context due:2025-10-10
