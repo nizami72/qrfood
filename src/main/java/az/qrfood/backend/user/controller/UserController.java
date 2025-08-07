@@ -200,7 +200,7 @@ public class UserController {
     })
     @PostMapping("/api/admin/eatery")
     public ResponseEntity<?> postEateryAdminUser(@RequestBody RegisterRequest registerRequest) {
-        return userService.registerAdminAndEatery(registerRequest);
+        return userService.registerAdminAndEatery(registerRequest, false);
     }
 
     /**

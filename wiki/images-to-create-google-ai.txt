@@ -1,6 +1,9 @@
 PROMPT
 A delicious, fresh [] served in a ceramic plate, placed on a wooden table in a cozy restaurant setting. Natural lighting, slight steam rising from the food, elegant cutlery on the side, rustic background, shallow depth of field, photorealistic in webp format with size 800:600 px
 
+A refreshing, vibrant [] served in a clear glass with condensation, placed on a wooden table in a cozy café setting. Natural lighting, a few ice cubes visible, subtle droplets on the glass, elegant coaster underneath, rustic background, shallow depth of field, photorealistic in webp format with size 800:600 px.
+
+A delicious, freshly baked stack of cookies served on a ceramic plate, placed on a wooden table in a cozy café setting. Natural warm lighting, slight steam rising from the cookies, elegant dessert fork and napkin on the side, rustic background with a soft focus, shallow depth of field, photorealistic, in webp format, size 800:600 px.
 
 Burgers.webp
  Desserts.webp

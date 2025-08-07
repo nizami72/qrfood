@@ -8,10 +8,8 @@ Status order
 The table status should be busy if an order is assigned to the table
 Create a new email for qrfood.
 (C) Interceptor for /api/admin/api/eatery/{eateryId}/user/{userId}
-Interceptor for /api/client/eatery/{eateryId}/table/{tableId}
-Interceptor for /api/eatery/{eateryId}/order-item/order/{orderId}
-Interceptor for /api/eatery/{eateryId}/order-item/{orderItemId}
-Interceptor for /api/eatery/{eateryId}/order/{orderId}
+(A) Interceptor for /api/eatery/{eateryId}/order-item/order/{orderId}
+(A) Interceptor for /api/eatery/{eateryId}/order-item/{orderItemId}
 Interceptor for /api/eatery/{eateryId}/table/{tableId}
 Interceptor for /api/eatery/{eateryId}/user/name/{userName}
 Interceptor for /api/eatery/{eateryId}/user/{userId}
@@ -27,3 +25,4 @@ Paid Order shown as Accepted on client device
 Sneakers +buy
 Ear Phones +buy
 Keyboard +bue
+(E) Teken and refresh token feature

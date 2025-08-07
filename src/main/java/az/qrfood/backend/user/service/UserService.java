@@ -235,20 +235,20 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<RegisterResponse> registerAdminAndEatery(RegisterRequest request) {
-        return registerUser(request, null, true);
+    public ResponseEntity<RegisterResponse> registerAdminAndEatery(RegisterRequest request, boolean isSuperAdmin) {
+        return registerUser(request, null, true, isSuperAdmin);
     }
 
     @Transactional
     public ResponseEntity<RegisterResponse> registerEateryStaff(RegisterRequest request, Long eateryId) {
-        return registerUser(request, eateryId, false);
+        return registerUser(request, eateryId, false, false);
     }
 
-    private ResponseEntity<RegisterResponse> registerUser(RegisterRequest request, Long eateryId, boolean isEateryAdmin) {
+    private ResponseEntity<RegisterResponse> registerUser(RegisterRequest request, Long eateryId, boolean isEateryAdmin, boolean isSuperAdmin) {
         validateUserDoesNotExist(request.getUser().getEmail());
         Set<Role> userRoles = request.getUser().getRoles();
-        if(userRoles != null) {
-                userRoles.remove(Role.SUPER_ADMIN);
+        if (userRoles != null && !isSuperAdmin) {
+            userRoles.remove(Role.SUPER_ADMIN);
         }
         if (isEateryAdmin) {
             Set<Role> roles = new HashSet<>();

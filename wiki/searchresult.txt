@@ -1,9 +1,0 @@
-x order/controller/OrderController.java:202		        @PutMapping("${order.id}"
-? order/controller/OrderController.java:234://          @PutMapping("${order.id}") // This mapping is commented out in the original code
-x category/controller/CategoryController.java:177		@PutMapping(value = "${eatery.id.category.id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-x dish/controller/DishController.java:152				@PutMapping(value = "${eatery.id.category.id.dish.id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-x user/controller/UserController.java:140				@PutMapping("${user.id}")
-x table/controller/TableController.java:92			    @PutMapping("${table.id}")
-x eatery/controller/EateryController.java:178			@PutMapping(value = "${eatery.id}", consumes = "application/json")
-  orderitem/controller/OrderItemController.java:125	    @PutMapping("${order.item.id}")
-x client/controller/ClientDeviceController.java:190	    @PutMapping("${api.client.id}")

@@ -82,7 +82,7 @@ public class App {
                                         .name(name)
                                         .phone(phone)
                                         .build())
-                                .build());
+                                .build(), true);
                 log.debug("Super admin role created");
             }
         };

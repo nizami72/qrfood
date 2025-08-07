@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
@@ -87,8 +88,8 @@ public class OrderController {
     })
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
     @GetMapping("${order.status}")
-    public ResponseEntity<List<OrderDto>> getAllOrders(@PathVariable("status") String status,
-                                                       @CookieValue(value = DEVICE, defaultValue = "") String cookie
+    public ResponseEntity<List<OrderDto>> getAllEateryOrdersByStatus(@PathVariable("status") String status,
+                                                                     @CookieValue(value = DEVICE, defaultValue = "") String cookie
     ) {
         log.debug("GET all order by status [{}]", status);
         return ResponseEntity.ok(orderService.getAllOrdersByStatus(status));
@@ -273,13 +274,15 @@ public class OrderController {
     ) {
         log.debug("REST request to check for created orders for eatery ID: {} and device UUID: {}", eateryId, deviceUuid);
 
-        // If no device UUID is provided, return an empty list
+        // If no device UUID is provided
         if (deviceUuid == null || deviceUuid.isEmpty()) {
-            log.debug("Device UUID is null");
-            return ResponseEntity.ok(List.of());
+            String error = String.format("Device UUID for eatery [%s] is null, unable to provide orders for" +
+                    " unknown device", eateryId);
+            log.debug(error);
+            throw new EntityNotFoundException(error);
         }
 
-        // Get orders with status "CREATED" for the specified eatery and device
+        // Get orders with the status "CREATED" for the specified eatery and device
         List<OrderDto> orders = orderService.getOrdersByEateryIdAndStatusAndDeviceUuid(
                 eateryId, OrderStatus.CREATED, deviceUuid);
 
