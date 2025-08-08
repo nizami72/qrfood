@@ -210,7 +210,7 @@ public class UserService {
      * @throws EntityNotFoundException if the user with the given username is not found.
      */
     @Transactional
-    public GeneralResponse deleteEateryAdminWithResources(String username) {
+    public GeneralResponse<?> deleteEateryAdminWithResources(String username) {
         if (userRepository.findByUsername(username).isEmpty()) {
             log.debug("User with user name [{}] not found", username);
             return GeneralResponse.builder()

@@ -38,7 +38,7 @@ public class CreateAllFakeDataTest {
     private static PrintStream fileLog;
     @Value("${base.url}")
     String baseUrl;
-    @Value("${full.admin.eatery}")
+    @Value("${admin.api.eatery}")
     String fullAdminEatery;
     @Value("${eatery.id.category.id.dish}")
     String urlPostDish;

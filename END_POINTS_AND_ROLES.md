@@ -1,3 +1,21 @@
+## Navigation
+
+- [AdminController](#admincontroller)
+- [Alive](#alive)
+- [AuthController](#authcontroller)
+- [CategoryController](#categorycontroller)
+- [ClientDeviceController](#clientdevicecontroller)
+- [CommonDishController](#commondishcontroller)
+- [DishController](#dishcontroller)
+- [EateryController](#eaterycontroller)
+- [FrontendLogController](#frontendlogcontroller)
+- [FrontendPathConfig](#frontendpathconfig)
+- [ImageController](#imagecontroller)
+- [OrderController](#ordercontroller)
+- [OrderItemController](#orderitemcontroller)
+- [QrController](#qrcontroller)
+- [TableController](#tablecontroller)
+- [UserController](#usercontroller)
 ### AdminController
 
 | Method | Role(s) | URL Path |
@@ -6,6 +24,8 @@
 | [GET getEateryResources(Long)](src/main/java/az/qrfood/backend/user/controller/AdminController.java) | `public` | `/api/admin/eatery/{eateryId}/resources` |
 | [POST impersonateUser(Long, Authentication)](src/main/java/az/qrfood/backend/user/controller/AdminController.java) | `public` | `/api/admin/impersonate/{userId}` |
 
+###### [🔝](#navigation)
+
 ---
 
 ### Alive
@@ -13,6 +33,8 @@
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
 | [GET alive()](src/main/java/az/qrfood/backend/common/controller/Alive.java) | `public` | `/ui/alive` |
+
+###### [🔝](#navigation)
 
 ---
 
@@ -24,6 +46,8 @@
 | [GET status()](src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/status` |
 | [POST login(LoginRequest)](src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/login` |
 | [POST refreshToken(RefreshTokenRequest)](src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/refresh-token` |
+
+###### [🔝](#navigation)
 
 ---
 
@@ -39,6 +63,8 @@
 | [POST createDishCategoryNoImage(Long, CategoryDto)](src/main/java/az/qrfood/backend/category/controller/CategoryController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/category/predefined` |
 | [PUT updateCategory(Long, CategoryDto, MultipartFile)](src/main/java/az/qrfood/backend/category/controller/CategoryController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/category/{categoryId}` |
 
+###### [🔝](#navigation)
+
 ---
 
 ### ClientDeviceController
@@ -52,6 +78,8 @@
 | [GET getById(Long)](src/main/java/az/qrfood/backend/client/controller/ClientDeviceController.java) | `public` | `/api/client/{id}` |
 | [PUT update(Long, ClientDeviceRequestDto)](src/main/java/az/qrfood/backend/client/controller/ClientDeviceController.java) | `public` | `/api/client/{id}` |
 
+###### [🔝](#navigation)
+
 ---
 
 ### CommonDishController
@@ -60,6 +88,8 @@
 |--------|---------|----------|
 | [GET getCommonDishesForCategory(String, String)](src/main/java/az/qrfood/backend/dish/controller/CommonDishController.java) | `EATERY_ADMIN` | `/api/dish/common/{categoryName}` |
 | [POST createDishesFromTemplates(Long, List)](src/main/java/az/qrfood/backend/dish/controller/CommonDishController.java) | `EATERY_ADMIN` | `/api/dish/common/{categoryId}` |
+
+###### [🔝](#navigation)
 
 ---
 
@@ -72,6 +102,8 @@
 | [GET getDishes(Long)](src/main/java/az/qrfood/backend/dish/controller/DishController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER, CASHIER` | `/api/eatery/{eateryId}/category/{categoryId}/dish` |
 | [POST createDish(Long, DishDto, MultipartFile)](src/main/java/az/qrfood/backend/dish/controller/DishController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/category/{categoryId}/dish` |
 | [PUT putDish(Long, Long, DishDto, MultipartFile)](src/main/java/az/qrfood/backend/dish/controller/DishController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/category/{categoryId}/dish/{dishId}` |
+
+###### [🔝](#navigation)
 
 ---
 
@@ -86,6 +118,8 @@
 | [POST createRestaurant(EateryDto, UserDetails)](src/main/java/az/qrfood/backend/eatery/controller/EateryController.java) | `EATERY_ADMIN` | `/api/eatery` |
 | [PUT updateEatery(Long, EateryDto)](src/main/java/az/qrfood/backend/eatery/controller/EateryController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}` |
 
+###### [🔝](#navigation)
+
 ---
 
 ### FrontendLogController
@@ -94,6 +128,8 @@
 |--------|---------|----------|
 | [POST logFrontendMessage(FrontendLogDTO, HttpServletRequest)](src/main/java/az/qrfood/backend/log/controller/FrontendLogController.java) | `public` | `/api/logs/frontend` |
 
+###### [🔝](#navigation)
+
 ---
 
 ### FrontendPathConfig
@@ -101,6 +137,8 @@
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
 | [GET getImagePaths()](src/main/java/az/qrfood/backend/common/controller/FrontendPathConfig.java) | `public` | `/api/config/image-paths` |
+
+###### [🔝](#navigation)
 
 ---
 
@@ -113,6 +151,8 @@
 | [GET getEateryImage(String, String, HttpServletResponse)](src/main/java/az/qrfood/backend/image/controller/ImageController.java) | `public` | `/api/image/api/eatery/{id}/{fileName}` |
 | [GET getPredefinedCatImage(String, HttpServletResponse)](src/main/java/az/qrfood/backend/image/controller/ImageController.java) | `public` | `/api/image/predefined/category/{fileName}` |
 | [GET getPredefinedDishImage(String, HttpServletResponse)](src/main/java/az/qrfood/backend/image/controller/ImageController.java) | `public` | `/api/image/predefined/dish/{fileName}` |
+
+###### [🔝](#navigation)
 
 ---
 
@@ -128,6 +168,8 @@
 | [POST postOrder(HttpServletResponse, Long, OrderDto, String)](src/main/java/az/qrfood/backend/order/controller/OrderController.java) | `public` | `/api/eatery/{eateryId}/order/post` |
 | [PUT updateOrder(Long, OrderDto)](src/main/java/az/qrfood/backend/order/controller/OrderController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, CASHIER` | `/api/eatery/{eateryId}/order/{orderId}/put` |
 
+###### [🔝](#navigation)
+
 ---
 
 ### OrderItemController
@@ -141,6 +183,8 @@
 | [POST postOrderItem(OrderItemDTO)](src/main/java/az/qrfood/backend/orderitem/controller/OrderItemController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/order-item/order/{orderId}` |
 | [PUT putOrderItem(Long, OrderItemDTO)](src/main/java/az/qrfood/backend/orderitem/controller/OrderItemController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/order-item/{orderItemId}` |
 
+###### [🔝](#navigation)
+
 ---
 
 ### QrController
@@ -148,6 +192,8 @@
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
 | [GET getQrImage(Long, Integer)](src/main/java/az/qrfood/backend/qr/controller/QrController.java) | `EATERY_ADMIN` | `/api/qrcode/api/eatery/{eatery}/table/{table}` |
+
+###### [🔝](#navigation)
 
 ---
 
@@ -161,6 +207,8 @@
 | [POST createTable(TableDto)](src/main/java/az/qrfood/backend/table/controller/TableController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/table` |
 | [PUT updateTable(Long, TableDto)](src/main/java/az/qrfood/backend/table/controller/TableController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/table/{tableId}` |
 
+###### [🔝](#navigation)
+
 ---
 
 ### UserController
@@ -173,10 +221,12 @@
 | [GET getAllUsersFromAllEateries()](src/main/java/az/qrfood/backend/user/controller/UserController.java) | `public` | `/api/user` |
 | [GET getUserById(Long)](src/main/java/az/qrfood/backend/user/controller/UserController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/user/{userId}` |
 | [GET getUserByUsername(String)](src/main/java/az/qrfood/backend/user/controller/UserController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/user/name/{userName}` |
-| [POST deleteUserByName(String)](src/main/java/az/qrfood/backend/user/controller/UserController.java) | `SUPER_ADMIN` | `/api/user/{id}` |
+| [POST deleteUserByName(String)](src/main/java/az/qrfood/backend/user/controller/UserController.java) | `public` | `/api/user/{id}` |
 | [POST postEateryAdminUser(RegisterRequest)](src/main/java/az/qrfood/backend/user/controller/UserController.java) | `public` | `/api/admin/eatery` |
 | [POST registerEateryStaff(RegisterRequest, Long)](src/main/java/az/qrfood/backend/user/controller/UserController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/user/register/general` |
 | [PUT putUser(Long, UserRequest)](src/main/java/az/qrfood/backend/user/controller/UserController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/user/{userId}` |
+
+###### [🔝](#navigation)
 
 ---
 

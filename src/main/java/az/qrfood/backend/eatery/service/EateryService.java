@@ -9,6 +9,7 @@ import az.qrfood.backend.eatery.entity.EateryPhone;
 import az.qrfood.backend.eatery.repository.EateryRepository;
 import az.qrfood.backend.table.entity.TableInEatery;
 import az.qrfood.backend.table.service.TableService;
+import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.entity.UserProfile;
 import az.qrfood.backend.user.repository.UserProfileRepository;
 import az.qrfood.backend.user.repository.UserRepository;
@@ -155,6 +156,17 @@ public class EateryService {
                 dto.getCategoryIds().add(category.getId());
             });
         }
+        dto.setOwnerMail(
+                eatery.getUserProfiles().stream()
+                        .map(UserProfile :: getUser)
+                        .map(User:: getUsername)
+                        .findFirst()
+                        .orElse("Mail Not Found")
+
+        );
+
+
+
         return dto;
     }
 

@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -198,13 +197,13 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping("/api/admin/eatery")
+    @PostMapping("${admin.api.eatery}")
     public ResponseEntity<?> postEateryAdminUser(@RequestBody RegisterRequest registerRequest) {
         return userService.registerAdminAndEatery(registerRequest, false);
     }
 
     /**
-     * POST to delete a user by ID.
+     * POST to delete a user and its resources by username.
      *
      * @param id the user ID to delete
      * @return no content response
@@ -216,9 +215,9 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping("${usr.delete}")
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'SUPER_ADMIN')")
-    public ResponseEntity<GeneralResponse> deleteUserByName(@PathVariable String id) {
-        GeneralResponse g = userService.deleteEateryAdminWithResources(id);
+    @PreAuthorize("@authz.hasAnyRole(authentication)")
+    public ResponseEntity<GeneralResponse<?>> deleteUserByName(@PathVariable String id) {
+        GeneralResponse<?> g = userService.deleteEateryAdminWithResources(id);
         log.debug("Deleted user with id [{}]", id);
         return ResponseEntity.ok(g);
     }

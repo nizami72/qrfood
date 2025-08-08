@@ -48,7 +48,7 @@ public class JohnKimberEateryTest {
     // API endpoints
     @Value("${localhost}")
     private String baseUrl;
-    @Value("${full.admin.eatery}")
+    @Value("${admin.api.eatery}")
     private String fullAdminEatery;
     @Value("${eatery.id.category.id.dish}")
     private String urlPostDish;

@@ -8,6 +8,8 @@ import az.qrfood.backend.dish.dto.DishDto;
 import az.qrfood.backend.dish.service.DishService;
 import az.qrfood.backend.eatery.dto.EateryDto;
 import az.qrfood.backend.eatery.service.EateryService;
+import az.qrfood.backend.order.dto.OrderDto;
+import az.qrfood.backend.order.service.OrderService;
 import az.qrfood.backend.table.dto.TableDto;
 import az.qrfood.backend.table.service.TableService;
 import az.qrfood.backend.user.dto.UserResponse;
@@ -24,10 +26,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,11 +38,11 @@ import java.util.stream.Collectors;
  * REST controller for managing Admin users.
  */
 @RestController
-@RequestMapping("${admin}")
 @Log4j2
 @Tag(name = "Admin Management", description = "API endpoints for managing admin users")
 public class AdminController {
 
+    //<editor-fold desc="Fields">
     private final CustomUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
     private final CategoryService categoryService;
@@ -48,10 +50,14 @@ public class AdminController {
     private final UserService userService;
     private final EateryService eateryService;
     private final TableService tableService;
+    private final OrderService orderService;
+    //</editor-fold>
 
+    //<editor-fold desc="Constructor">
     public AdminController(CustomUserDetailsService userDetailsService, JwtUtil jwtUtil,
                            CategoryService categoryService, DishService dishService,
-                           UserService userService, EateryService eateryService, TableService tableService) {
+                           UserService userService, EateryService eateryService, TableService tableService,
+                           OrderService orderService) {
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
         this.categoryService = categoryService;
@@ -59,7 +65,9 @@ public class AdminController {
         this.userService = userService;
         this.eateryService = eateryService;
         this.tableService = tableService;
+        this.orderService = orderService;
     }
+    //</editor-fold>
 
     /**
      * Impersonate a user by generating a new JWT token with their rights.
@@ -69,7 +77,7 @@ public class AdminController {
      * "impersonatedBy" claim to track who initiated the impersonation.
      * </p>
      *
-     * @param userId        The ID of the user to impersonate.
+     * @param userId         The ID of the user to impersonate.
      * @param authentication The current user's authentication.
      * @return ResponseEntity with a JSON containing the new token and user ID.
      */
@@ -80,7 +88,7 @@ public class AdminController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Not authorized to impersonate"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping("/impersonate/{userId}")
+    @PostMapping("${admin.impersonate}")
     @PreAuthorize("@authz.hasAnyRole(authentication)")
     public ResponseEntity<?> impersonateUser(@PathVariable Long userId, Authentication authentication) {
         // Load the user to impersonate by ID
@@ -120,7 +128,7 @@ public class AdminController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Not authorized to access this eatery"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("/eatery/{eateryId}/resources")
+    @GetMapping("${admin.resources}")
     @PreAuthorize("@authz.hasAnyRole(authentication)")
     public ResponseEntity<?> getEateryResources(@PathVariable Long eateryId) {
         log.info("Retrieving all resources for eatery with ID: {}", eateryId);
@@ -183,26 +191,40 @@ public class AdminController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Not authorized to access this eatery"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("/eatery/{eateryId}/details")
+    @GetMapping("${admin.eatery.details}")
     @PreAuthorize("@authz.hasAnyRole(authentication)")
     public ResponseEntity<?> getEateryDetails(@PathVariable Long eateryId) {
         log.info("Retrieving detailed information for eatery with ID: {}", eateryId);
 
         // Get the eatery details
         EateryDto eatery = eateryService.getEateryById(eateryId);
+        List<Map<String, Object>> categoryList = fetchCategories(eateryId);
 
         // Create the response map
-        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> response = new LinkedHashMap<>();
         response.put("id", eatery.getId());
+        response.put("ownerMailid", eatery.getOwnerMail());
+        response.put("categories", categoryList);
+        response.put("tableIds", eatery.getTableIds());
+        response.put("orders", orderService.getOrdersByEateryId(eateryId).stream()
+                .map(OrderDto::getId)
+                .collect(Collectors.toCollection(ArrayList::new)));
+        response.put("users", userService.getAllUsers(eateryId).stream()
+                .map(UserResponse::getId)
+                .collect(Collectors.toCollection(ArrayList::new))
+        );
         response.put("name", eatery.getName());
         response.put("address", eatery.getAddress());
         response.put("phones", eatery.getPhones());
-        response.put("tableIds", eatery.getTableIds());
         response.put("numberOfTables", eatery.getNumberOfTables());
         response.put("geoLat", eatery.getGeoLat());
         response.put("geoLng", eatery.getGeoLng());
         response.put("ownerProfileId", eatery.getOwnerProfileId());
 
+        return ResponseEntity.ok(response);
+    }
+
+    private List<Map<String, Object>> fetchCategories(Long eateryId) {
         // Get all categories for the eatery
         List<CategoryDto> categories = categoryService.findAllCategoryForEatery(eateryId);
 
@@ -211,7 +233,7 @@ public class AdminController {
 
         // For each category, get all dishes and add them to the category
         for (CategoryDto category : categories) {
-            Map<String, Object> categoryMap = new HashMap<>();
+            Map<String, Object> categoryMap = new LinkedHashMap<>();
             categoryMap.put("categoryId", category.getCategoryId());
 
             // Get all dishes for this category
@@ -225,11 +247,7 @@ public class AdminController {
             categoryMap.put("dishId", dishIds);
             categoryList.add(categoryMap);
         }
-
-        // Add the categories with their dishes to the response
-        response.put("categories", categoryList);
-
-        return ResponseEntity.ok(response);
+        return categoryList;
     }
 
 }

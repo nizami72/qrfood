@@ -105,7 +105,7 @@ public class FrontendPathConfig {
     String userGeneral;
     @Value("${usr}")
     String usr;
-    @Value("${full.admin.eatery}")
+    @Value("${admin.api.eatery}")
     String apiAdminEatery;
     @Value("${api.user}")
     String apiUser;

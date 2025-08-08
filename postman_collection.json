@@ -167,7 +167,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/admin/eatery",
+              "raw": "{{baseUrl}}/api/todo",
               "host": ["{{baseUrl}}"],
               "path": ["api", "admin", "eatery"]
             },

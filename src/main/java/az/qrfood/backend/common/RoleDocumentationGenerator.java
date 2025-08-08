@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -86,6 +87,14 @@ public class RoleDocumentationGenerator implements ApplicationRunner {
                 }
             }
 
+            String pattern = "- [%s](#%s)";
+            String backLink = System.lineSeparator() + "###### [🔝](#navigation)";
+            Set<String> classNames = grouped.keySet();
+            writer.println("## Navigation" + System.lineSeparator());
+            for (String controllerName : classNames) {
+                writer.println(String.format(pattern, controllerName, controllerName.toLowerCase(Locale.ROOT)));
+            }
+
             for (Map.Entry<String, List<EndpointInfo>> entry : grouped.entrySet()) {
                 writer.println("### " + entry.getKey());
                 writer.println();
@@ -106,7 +115,7 @@ public class RoleDocumentationGenerator implements ApplicationRunner {
                     writer.printf(mdLink);
                 }
 
-
+                writer.println(backLink);
                 writer.println("\n---\n");
             }
 

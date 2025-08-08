@@ -74,6 +74,8 @@ public class EateryDto {
      */
     private Long ownerProfileId;
 
+    private String ownerMail;
+
     /**
      * Default constructor. Initializes lists to prevent NullPointerExceptions.
      */
