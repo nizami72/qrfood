@@ -1,88 +1,34 @@
 PROMPT
-A delicious, fresh [] served in a ceramic plate, placed on a wooden table in a cozy restaurant setting. Natural lighting, slight steam rising from the food, elegant cutlery on the side, rustic background, shallow depth of field, photorealistic in webp format with size 800:600 px
+A delicious, fresh [chocolate_souffle.webp] served in a ceramic plate, placed on a wooden table in a cozy restaurant setting. Natural lighting, slight steam rising from the food, elegant cutlery on the side, rustic background, shallow depth of field, photorealistic in webp format with size 800:600 px
 
-A refreshing, vibrant [] served in a clear glass with condensation, placed on a wooden table in a cozy café setting. Natural lighting, a few ice cubes visible, subtle droplets on the glass, elegant coaster underneath, rustic background, shallow depth of field, photorealistic in webp format with size 800:600 px.
+A refreshing, vibrant [beer] served in a clear glass with condensation, placed on a wooden table in a cozy café setting. Natural lighting, a few ice cubes visible, subtle droplets on the glass, elegant coaster underneath, rustic background, shallow depth of field, photorealistic in webp format with size 800:600 px.
 
-A delicious, freshly baked stack of cookies served on a ceramic plate, placed on a wooden table in a cozy café setting. Natural warm lighting, slight steam rising from the cookies, elegant dessert fork and napkin on the side, rustic background with a soft focus, shallow depth of field, photorealistic, in webp format, size 800:600 px.
+A delicious, freshly baked stack of [vegetable_lasagna.webp] served on a ceramic plate, placed on a wooden table in a cozy café setting. Natural warm lighting, slight steam rising from the cookies, elegant dessert fork and napkin on the side, rustic background with a soft focus, shallow depth of field, photorealistic, in webp format, size 800:600 px.
 
 Burgers.webp
- Desserts.webp
- Drinks.webp
- Kebabs.webp
- Pizza.webp
- Salads.webp
- Seafood.webp
- Snacks.webp
- Soups.webp
- Vegetarian.webp
- alcoholic_drinks.webp
+Desserts.webp
+Drinks.webp
+Kebabs.webp
+Pizza.webp
+Salads.webp
+Seafood.webp
+Snacks.webp
+Soups.webp
+Vegetarian.webp
+Alcoholic_drinks.webp
 
- bbq_chicken_pizza.webp
+mussels_on_saj.webp
+onion_rings.webp
+salmon_stroganoff.webp
+seafood_paella.webp
+seafood_pizza.webp
+shrimp_tempura.webp
+sweet_crepes.webp
+tiramisu.webp
+tom_yum_soup.webp
+vegetable_fajita.webp
 
- beer.webp
-
-
-
-
-
-
-
-
-
-
-
-
- chocolate_souffle.webp
- cocktail.webp
- coke.webp
-
-
-
- fanta.webp
-
- fresh_orange_juice.webp
- fruit_juice.webp
- fruit_salad.webp
-
- honey_cake.webp
- hummus_plate.webp
-
- kids_menu.webp
-
- lavash_roll.webp
- lentil_soup.webp
-
- mac_and_cheese.webp
- main_courses.webp
-
-
- mashed_potatoes.webp
- meat_guvech.webp
- mimosa_salad.webp
-
- mixed_pizza.webp
- mushroom_risotto.webp
- mushroom_salad.webp
- mussels_on_saj.webp
-
- onion_rings.webp
- pepperoni_pizza.webp
- red_wine.webp
-
-
- salmon_stroganoff.webp
- seafood_paella.webp
- seafood_pizza.webp
- shrimp_tempura.webp
-
- sweet_crepes.webp
-
- tiramisu.webp
- tom_yum_soup.webp
- vegetable_fajita.webp
-
- vegetable_lasagna.webp
- vegetarian_burger.webp
- water.webp
- whiskey.webp
- white-wine.webp
+fruit_salad.webp
+hummus_plate.webp
+mimosa_salad.webp
+mushroom_salad.webp

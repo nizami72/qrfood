@@ -3,14 +3,19 @@ package az.qrfood.backend.user.controller;
 import az.qrfood.backend.auth.service.CustomUserDetailsService;
 import az.qrfood.backend.auth.util.JwtUtil;
 import az.qrfood.backend.category.dto.CategoryDto;
+import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.category.service.CategoryService;
 import az.qrfood.backend.dish.dto.DishDto;
 import az.qrfood.backend.dish.service.DishService;
 import az.qrfood.backend.eatery.dto.EateryDto;
+import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.eatery.service.EateryService;
 import az.qrfood.backend.order.dto.OrderDto;
+import az.qrfood.backend.order.entity.Order;
+import az.qrfood.backend.order.mapper.OrderMapper;
 import az.qrfood.backend.order.service.OrderService;
 import az.qrfood.backend.table.dto.TableDto;
+import az.qrfood.backend.table.entity.TableInEatery;
 import az.qrfood.backend.table.service.TableService;
 import az.qrfood.backend.user.dto.UserResponse;
 import az.qrfood.backend.user.service.UserService;
@@ -32,6 +37,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -51,13 +57,14 @@ public class AdminController {
     private final EateryService eateryService;
     private final TableService tableService;
     private final OrderService orderService;
+    private final OrderMapper orderMapper;
     //</editor-fold>
 
     //<editor-fold desc="Constructor">
     public AdminController(CustomUserDetailsService userDetailsService, JwtUtil jwtUtil,
                            CategoryService categoryService, DishService dishService,
                            UserService userService, EateryService eateryService, TableService tableService,
-                           OrderService orderService) {
+                           OrderService orderService, OrderMapper orderMapper) {
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
         this.categoryService = categoryService;
@@ -66,6 +73,7 @@ public class AdminController {
         this.eateryService = eateryService;
         this.tableService = tableService;
         this.orderService = orderService;
+        this.orderMapper = orderMapper;
     }
     //</editor-fold>
 
@@ -206,9 +214,7 @@ public class AdminController {
         response.put("ownerMailid", eatery.getOwnerMail());
         response.put("categories", categoryList);
         response.put("tableIds", eatery.getTableIds());
-        response.put("orders", orderService.getOrdersByEateryId(eateryId).stream()
-                .map(OrderDto::getId)
-                .collect(Collectors.toCollection(ArrayList::new)));
+        response.put("orders", fetchOrderWithOrderItems(eateryId));
         response.put("users", userService.getAllUsers(eateryId).stream()
                 .map(UserResponse::getId)
                 .collect(Collectors.toCollection(ArrayList::new))
@@ -248,6 +254,10 @@ public class AdminController {
             categoryList.add(categoryMap);
         }
         return categoryList;
+    }
+
+    private List<OrderDto> fetchOrderWithOrderItems(Long eateryId) {
+        return orderService.getOrdersByEateryId(eateryId);
     }
 
 }
