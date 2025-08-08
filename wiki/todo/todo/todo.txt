@@ -1,29 +1,29 @@
-Modify orhan removal regarding orders and devices entities
-While creating a new user; it is created a new eatery, notified when run Kimber test
-User phone box is not shown if there was no number specified while new user creation
+(A) Interceptor for /api/eatery/{eateryId}/table/{tableId}
+(B) Interceptor for /api/eatery/{eateryId}/user/name/{userName}
+(C) Interceptor for /api/admin/api/eatery/{eateryId}/user/{userId}
+(D) Interceptor for /api/qrcode/api/eatery/{eatery}/table/{table}
+(E) Interceptor for /api/eatery/{eateryId}/user/{userId}
+(F) Teken and refresh token feature
+(X) Task description +project @context due:2025-10-10
+(Z) Create a new email for qrfood.
 Cloudflare Turnstile
 Delete all user-related data when a user is deleted if the user has the role eatery-admin
-To secure public API methods from scam and overloading
+Description +qrfood @inter
+Description +qrfood @inter
+Ear Phones +buy
+For the request /api/eatery/2/order-item/order/4 what is dishItemId
+Implement post put data validation
+Keyboard +bue
+Modify orhan removal regarding orders and devices entities
+Paid Order shown as Accepted on client device
+Sneakers +buy
 Status order
 The table status should be busy if an order is assigned to the table
-Create a new email for qrfood.
-(C) Interceptor for /api/admin/api/eatery/{eateryId}/user/{userId}
-(A) Interceptor for /api/eatery/{eateryId}/order-item/order/{orderId}
-(A) Interceptor for /api/eatery/{eateryId}/order-item/{orderItemId}
-Interceptor for /api/eatery/{eateryId}/table/{tableId}
-Interceptor for /api/eatery/{eateryId}/user/name/{userName}
-Interceptor for /api/eatery/{eateryId}/user/{userId}
-Interceptor for /api/qrcode/api/eatery/{eatery}/table/{table}
-we can do all things for you, send your menu, then change the password
+To secure public API methods from scam and overloading
+User phone box is not shown if there was no number specified while new user creation
+While creating a new user; it is created a new eatery, notified when run Kimber test
 often asked questions
-Implement post put data validation
+we can do all things for you, send your menu, then change the password
 📞 WhatsApp Busines
 📢 Telegram (канал)
 📸 Instagram
-Paid Order shown as Accepted on client device
-(B) Task description +project @context due:2025-10-10
-Sneakers +buy
-Ear Phones +buy
-Keyboard +bue
-(E) Teken and refresh token feature
-For the request /api/eatery/2/order-item/order/4 what is dishItemId

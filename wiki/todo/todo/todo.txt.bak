@@ -6,14 +6,12 @@ Delete all user-related data when a user is deleted if the user has the role eat
 To secure public API methods from scam and overloading
 Status order
 The table status should be busy if an order is assigned to the table
-Create a new email for qrfood.
+(Z) Create a new email for qrfood.
 (C) Interceptor for /api/admin/api/eatery/{eateryId}/user/{userId}
-(A) Interceptor for /api/eatery/{eateryId}/order-item/order/{orderId}
-Interceptor for /api/eatery/{eateryId}/order-item/{orderItemId}
-Interceptor for /api/eatery/{eateryId}/table/{tableId}
-Interceptor for /api/eatery/{eateryId}/user/name/{userName}
-Interceptor for /api/eatery/{eateryId}/user/{userId}
-Interceptor for /api/qrcode/api/eatery/{eatery}/table/{table}
+(A) Interceptor for /api/eatery/{eateryId}/table/{tableId}
+(B) Interceptor for /api/eatery/{eateryId}/user/name/{userName}
+(C) Interceptor for /api/eatery/{eateryId}/user/{userId}
+(D) Interceptor for /api/qrcode/api/eatery/{eatery}/table/{table}
 we can do all things for you, send your menu, then change the password
 often asked questions
 Implement post put data validation
@@ -21,8 +19,9 @@ Implement post put data validation
 📢 Telegram (канал)
 📸 Instagram
 Paid Order shown as Accepted on client device
-(B) Task description +project @context due:2025-10-10
+(X) Task description +project @context due:2025-10-10
 Sneakers +buy
 Ear Phones +buy
 Keyboard +bue
-(E) Teken and refresh token feature
+(F) Teken and refresh token feature
+For the request /api/eatery/2/order-item/order/4 what is dishItemId

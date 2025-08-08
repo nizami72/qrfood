@@ -7,3 +7,5 @@ x 2025-08-05 Interceptor for CategoryController
 x 2025-08-05 Interceptor for /api/eatery/{eateryId}/category/{categoryId}
 x 2025-08-07 Interceptor for /api/client/eatery/{eateryId}/table/{tableId}
 x 2025-08-07 Interceptor for /api/eatery/{eateryId}/order/{orderId}
+x 2025-08-08 Interceptor for /api/eatery/{eateryId}/order-item/order/{orderId}
+x 2025-08-08 Interceptor for /api/eatery/{eateryId}/order-item/{orderItemId}
