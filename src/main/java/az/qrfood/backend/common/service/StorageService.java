@@ -91,7 +91,7 @@ public class StorageService {
 
     public void deleteAllAndSaveFile(String folder, MultipartFile file, String rename) {
         Util.deleteFiles(folder);
-        Util.saveFile(folder, file, rename);
+        saveFile(folder, file, rename);
     }
 
 }

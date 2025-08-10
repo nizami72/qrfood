@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -252,7 +253,10 @@ public class DishService {
     private void saveImage(MultipartFile multipartFile, DishEntity dishEntity) {
         String folder = storageService.createDishesFolder(dishEntity.getId());
         if (multipartFile != null && !multipartFile.isEmpty()) {
-            String fileName = multipartFile.getOriginalFilename();
+            String fileName = Util.generateFileName() + Objects.requireNonNull(
+                    multipartFile.getOriginalFilename()).substring(multipartFile.getOriginalFilename()
+                    .lastIndexOf('.'));
+
             storageService.deleteAllAndSaveFile(folder, multipartFile, fileName);
             dishEntity.setImage(fileName);
         } else {
