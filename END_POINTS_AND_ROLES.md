@@ -45,7 +45,7 @@
 | [GET logout()](src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/logout` |
 | [GET status()](src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/status` |
 | [POST login(LoginRequest)](src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/login` |
-| [POST refreshToken(RefreshTokenRequest)](src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/refresh-token` |
+| [POST recreateTokenOnEateryChange(RecreateTokenOnEateryChangeRequest)](src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/receate-token-oan-eatery-change` |
 
 ###### [🔝](#navigation)
 

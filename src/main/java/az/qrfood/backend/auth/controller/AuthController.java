@@ -2,7 +2,7 @@ package az.qrfood.backend.auth.controller;
 
 import az.qrfood.backend.auth.dto.LoginRequest;
 import az.qrfood.backend.auth.dto.LoginResponse;
-import az.qrfood.backend.auth.dto.RefreshTokenRequest;
+import az.qrfood.backend.auth.dto.RecreateTokenOnEateryChangeRequest;
 import az.qrfood.backend.auth.service.CustomUserDetailsService;
 import az.qrfood.backend.auth.util.JwtUtil;
 import az.qrfood.backend.eatery.entity.Eatery;
@@ -211,15 +211,15 @@ public class AuthController {
      * requiring a new token that reflects access to the new eatery.
      * </p>
      *
-     * @param request A {@link RefreshTokenRequest} containing the ID of the newly selected eatery.
+     * @param request A {@link RecreateTokenOnEateryChangeRequest} containing the ID of the newly selected eatery.
      * @return A {@link ResponseEntity} containing a {@link LoginResponse} with the new JWT token,
      *         user ID, and the updated eatery ID. Returns {@code HttpStatus.UNAUTHORIZED} if not authenticated,
      *         {@code HttpStatus.NOT_FOUND} if user or profile not found, or {@code HttpStatus.FORBIDDEN}
      *         if the user does not have access to the specified eatery.
      */
     @PostMapping("${auth.refresh}")
-//    [[refreshToken]]
-    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+//    [[recreateTokenOnEateryChange]]
+    public ResponseEntity<?> recreateTokenOnEateryChange(@Valid @RequestBody RecreateTokenOnEateryChangeRequest request) {
         Long eateryId = request.getEateryId();
         log.debug("Refresh token request with eateryId: {}", eateryId);
 

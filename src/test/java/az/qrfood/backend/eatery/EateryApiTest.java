@@ -42,7 +42,7 @@ public class EateryApiTest {
     @Value("${eatery.owner}")
     String uriEateryOwner;
     @Value("${auth.refresh}")
-    String uriRefreshToken;
+    String uriRecreateTokenOnEateryChange;
 
     List<Eatery> eateryList;
     String jwtToken;
@@ -128,7 +128,7 @@ public class EateryApiTest {
                 .contentType("application/json")
                 .body(new LoginRequest(name, pass, eateryId))
                 .when()
-                .post(uriRefreshToken)
+                .post(uriRecreateTokenOnEateryChange)
                 .then()
                 .log().all() // лог всего ответа
                 .statusCode(200)

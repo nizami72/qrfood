@@ -92,24 +92,6 @@ public class DishApiTest {
 
         log.debug("Authenticated as user ID: {}", userId);
 
-        // Refresh token with eateryId context if needed
-//        Response refreshResponse = given()
-//                .baseUri(baseUrl)
-//                .contentType("application/json")
-//                .body(new LoginRequest(eateryId))
-//                .when()
-//                .post(uriRefreshToken)
-//                .then()
-//                .statusCode(200)
-//                .extract()
-//                .response();
-
-        // Update token with the refreshed one that includes eatery context
-//        String refreshedToken = refreshResponse.jsonPath().getString("jwt");
-//        if (refreshedToken != null && !refreshedToken.isEmpty()) {
-//            jwtToken = refreshedToken;
-//            log.debug("Token refreshed with eatery context: {}", eateryId);
-//        }
     }
 
 

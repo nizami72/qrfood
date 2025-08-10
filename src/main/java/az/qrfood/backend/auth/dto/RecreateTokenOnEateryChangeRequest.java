@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RefreshTokenRequest {
+public class RecreateTokenOnEateryChangeRequest {
 
     /**
      * The ID of the eatery that the user wishes to switch to.

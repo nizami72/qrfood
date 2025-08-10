@@ -34,6 +34,7 @@ import java.util.Map;
 @Tag(name = "Frontend Configuration", description = "API endpoints for retrieving frontend path configurations")
 public class FrontendPathConfig {
 
+    //<editor-fold desc="Fields">
     // Image paths
     @Value("${full.path.fe.eatery.image}")
     private String imagesEateryUri;
@@ -109,8 +110,9 @@ public class FrontendPathConfig {
     String apiAdminEatery;
     @Value("${api.user}")
     String apiUser;
-
-
+    @Value("${auth.refresh}")
+    String reCreateTokenOnEateryChangeUrl;
+    //</editor-fold>
 
     /**
      * Retrieves a map of image and API paths used by the frontend.
@@ -173,6 +175,7 @@ public class FrontendPathConfig {
         paths.put("predefinedCat", imagesPredefinedCategoryUri);
         paths.put("predefinedDish", imagesPredefinedDishUri);
         paths.put("apiUser", apiUser);
+        paths.put("reCreateTokenOnEateryChangeUrl", reCreateTokenOnEateryChangeUrl);
 //        paths.put("", );
         //.
 
