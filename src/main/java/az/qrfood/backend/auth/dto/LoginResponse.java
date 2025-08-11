@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 /**
  * Data Transfer Object (DTO) for a successful authentication response.
  * <p>
- * This DTO carries the JWT token, the authenticated user's ID, and the ID
+ * This DTO carries the JWT access token, refresh token, the authenticated user's ID, and the ID
  * of the currently active eatery. The client will use this information for
  * subsequent authenticated requests and to manage the user's session context.
  * </p>
@@ -21,6 +21,11 @@ public class LoginResponse {
      * This token must be included in subsequent requests for authentication.
      */
     private String jwt;
+
+    /**
+     * The refresh token used to obtain new access tokens without re-authentication.
+     */
+    private String refreshToken;
 
     /**
      * The unique identifier of the authenticated user.
@@ -51,5 +56,18 @@ public class LoginResponse {
     public LoginResponse(String jwt, Long userId) {
         this.jwt = jwt;
         this.userId = userId;
+    }
+
+    /**
+     * Constructor for backward compatibility, initializing the JWT, user ID, and eatery ID.
+     *
+     * @param jwt      The JSON Web Token.
+     * @param userId   The unique identifier of the authenticated user.
+     * @param eateryId The ID of the eatery that the user is currently associated with.
+     */
+    public LoginResponse(String jwt, Long userId, Long eateryId) {
+        this.jwt = jwt;
+        this.userId = userId;
+        this.eateryId = eateryId;
     }
 }

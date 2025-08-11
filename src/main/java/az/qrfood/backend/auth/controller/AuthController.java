@@ -3,8 +3,16 @@ package az.qrfood.backend.auth.controller;
 import az.qrfood.backend.auth.dto.LoginRequest;
 import az.qrfood.backend.auth.dto.LoginResponse;
 import az.qrfood.backend.auth.dto.RecreateTokenOnEateryChangeRequest;
+import az.qrfood.backend.auth.dto.TokenRefreshRequest;
+import az.qrfood.backend.auth.dto.TokenRefreshResponse;
+import az.qrfood.backend.auth.entity.RefreshToken;
+import az.qrfood.backend.auth.exception.TokenRefreshException;
 import az.qrfood.backend.auth.service.CustomUserDetailsService;
+import az.qrfood.backend.auth.service.RefreshTokenService;
 import az.qrfood.backend.auth.util.JwtUtil;
+import az.qrfood.backend.common.Util;
+import az.qrfood.backend.common.response.ApiResponse;
+import az.qrfood.backend.common.response.ResponseCodes;
 import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.entity.UserProfile;
@@ -12,6 +20,7 @@ import az.qrfood.backend.user.repository.UserRepository;
 import az.qrfood.backend.user.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -50,6 +59,7 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final UserProfileService userProfileService;
+    private final RefreshTokenService refreshTokenService;
 
     /**
      * Constructs the AuthController with necessary dependencies.
@@ -59,17 +69,20 @@ public class AuthController {
      * @param jwtUtil               The utility for generating and validating JWT tokens.
      * @param userRepository        The repository for accessing user data.
      * @param userProfileService    The service for managing user profiles.
+     * @param refreshTokenService   The service for managing refresh tokens.
      */
     public AuthController(AuthenticationManager authenticationManager,
                           CustomUserDetailsService userDetailsService,
                           JwtUtil jwtUtil,
                           UserRepository userRepository,
-                          UserProfileService userProfileService) {
+                          UserProfileService userProfileService,
+                          RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
         this.userProfileService = userProfileService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     /**
@@ -139,8 +152,12 @@ public class AuthController {
         log.debug("Generating JWT Token with eateryId: {}", eateryId);
         final String jwt = jwtUtil.generateToken(userDetails, eateryId);
 
-        log.debug("Return token, user ID, and eatery ID");
-        LoginResponse response = new LoginResponse(jwt, userId, eateryId);
+        // Generate refresh token
+        log.debug("Generating refresh token for user");
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userOptional.get());
+
+        log.debug("Return token, refresh token, user ID, and eatery ID");
+        LoginResponse response = new LoginResponse(jwt, refreshToken.getToken(), userId, eateryId);
         return ResponseEntity.ok(response);
     }
 
@@ -282,6 +299,54 @@ public class AuthController {
     }
 
     /**
+     * Endpoint for refreshing an access token using a refresh token.
+     * <p>
+     * This endpoint accepts a refresh token and, if valid, generates a new access token.
+     * </p>
+     *
+     * @param request A {@link TokenRefreshRequest} containing the refresh token.
+     * @return A {@link ResponseEntity} containing a {@link TokenRefreshResponse} with the new access token
+     *         and the refresh token. Returns {@code HttpStatus.FORBIDDEN} if the refresh token is invalid or expired.
+     */
+    @PostMapping("${auth.token.refresh}")
+    public ResponseEntity<?> refreshToken(HttpServletRequest request1, @Valid @RequestBody TokenRefreshRequest request) {
+
+        Long eateryId = null;
+
+        String authorizationHeader = request1.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String jwt = authorizationHeader.substring(7);
+
+            // Extract eateryId from JWT token
+            try {
+                eateryId = jwtUtil.extractClaim(jwt, claims -> claims.get("eateryId", Long.class));
+            } catch (Exception e) {
+                log.error("Error extracting eateryId from JWT token", e);
+                throw new TokenRefreshException(jwt, "Invalid JWT token");
+            }
+        }
+
+        String requestRefreshToken = request.getRefreshToken();
+
+        Long finalEateryId = eateryId;
+        return refreshTokenService.findByToken(requestRefreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(refreshToken -> {
+                    User user = refreshToken.getUser();
+
+                    // Load user details
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+
+                    // Generate a new access token
+                    String token = jwtUtil.generateToken(userDetails, finalEateryId);
+
+                    return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken, finalEateryId));
+                })
+                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+                        "Refresh token is not in database!"));
+    }
+
+    /**
      * Endpoint for user logout.
      * <p>
      * In a JWT-based authentication system, the server typically doesn't maintain session state.
@@ -297,10 +362,15 @@ public class AuthController {
         // Get the current authentication from the security context
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        // Log the logout attempt
+        // Log the logout attempt and delete refresh token
         if (authentication != null && authentication.isAuthenticated() && 
             !authentication.getPrincipal().equals("anonymousUser")) {
-            log.debug("User logged out: {}", authentication.getName());
+            String username = authentication.getName();
+            log.debug("User logged out: {}", username);
+
+            // Get the user entity from the repository and delete their refresh token
+            Optional<User> userOptional = userRepository.findByUsername(username);
+            userOptional.ifPresent(refreshTokenService::deleteByUser);
         }
 
         // Clear the security context
