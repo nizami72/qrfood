@@ -286,8 +286,7 @@ public class OrderService {
      * @param deviceUuid The UUID of the client device to filter orders by.
      * @return A list of {@link OrderDto} representing orders that match all criteria.
      */
-    public List<OrderDto> getOrdersByEateryIdAndStatusAndDeviceUuid(Long eateryId, OrderStatus status, String deviceUuid) {
-        log.debug("Request to get Orders by eateryId: {}, status: {}, and deviceUuid: {}", eateryId, status, deviceUuid);
+    public List<OrderDto> getAllOrdersByEateryIdAndDeviceUuid(Long eateryId, OrderStatus status, String deviceUuid) {
 
         // Find the client device by UUID
         return clientDeviceRepository.findByUuid(deviceUuid)
@@ -296,14 +295,16 @@ public class OrderService {
                     List<Order> allOrders = clientDevice.getOrders();
 
                     // Filter orders by eatery ID and status
-//                    List<Order> filteredOrders = allOrders.stream()
-//                            .filter(order -> order.getStatus() == status &&
-//                                    order.getTable() != null &&
-//                                    order.getTable().getEatery() != null &&
-//                                    eateryId.equals(order.getTable().getEatery().getId()))
-//                            .toList();
+                    List<Order> filteredOrders = allOrders.stream()
+                            .filter(
+                                    order ->
+//                                            order.getStatus() == status &&
+                                    order.getTable() != null &&
+                                    order.getTable().getEatery() != null &&
+                                    eateryId.equals(order.getTable().getEatery().getId()))
+                            .toList();
 
-                    return orderMapper.toDtoList(allOrders);
+                    return orderMapper.toDtoList(filteredOrders);
                 })
                 .orElse(List.of());
     }

@@ -283,7 +283,7 @@ public class OrderController {
         }
 
         // Get orders with the status "CREATED" for the specified eatery and device
-        List<OrderDto> orders = orderService.getOrdersByEateryIdAndStatusAndDeviceUuid(
+        List<OrderDto> orders = orderService.getAllOrdersByEateryIdAndDeviceUuid(
                 eateryId, OrderStatus.CREATED, deviceUuid);
 
         return ResponseEntity.ok(orders);

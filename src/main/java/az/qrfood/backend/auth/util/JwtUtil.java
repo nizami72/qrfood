@@ -38,7 +38,7 @@ public class JwtUtil {
     /**
      * The expiration time for JWT tokens in milliseconds (e.g., 10 hours).
      */
-    @Value("${jwt.expiration:36000000}")
+    @Value("${jwt.expiration}")
     private long expiration; // 10 hours
 
     /**
