@@ -127,6 +127,19 @@ public class OrderService {
     }
 
     /**
+     * Retrieves a single order entity by its ID.
+     *
+     * @param id The ID of the order to retrieve.
+     * @return The {@link Order} entity.
+     * @throws OrderNotFoundException if the order with the given ID is not found.
+     */
+    public Order getOrderEntityById(Long id) {
+        log.debug("Request to get Order entity : {}", id);
+        return orderRepository.findById(id)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found with id " + id));
+    }
+
+    /**
      * Creates a new order based on the provided DTO.
      * <p>
      * This method handles the creation of the order entity, its associated order items,

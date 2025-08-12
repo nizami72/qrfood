@@ -59,4 +59,12 @@ public interface OrderItemService {
      * @param id The ID of the order item to delete.
      */
     void deleteOrderItem(Long id);
+
+    /**
+     * Retrieves a single order item entity by its unique identifier.
+     *
+     * @param id The ID of the order item to retrieve.
+     * @return The {@link OrderItem} entity.
+     */
+    OrderItem getOrderItemEntityById(Long id);
 }

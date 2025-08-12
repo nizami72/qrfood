@@ -1,7 +1,9 @@
 package az.qrfood.backend.orderitem.controller;
 
 import az.qrfood.backend.order.dto.OrderItemDTO;
+import az.qrfood.backend.order.entity.OrderItem;
 import az.qrfood.backend.orderitem.service.OrderItemService;
+import az.qrfood.backend.service.WebSocketService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -27,9 +29,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public class OrderItemController {
 
     private final OrderItemService orderItemService;
+    private final WebSocketService webSocketService;
 
-    public OrderItemController(OrderItemService orderItemService) {
+    public OrderItemController(OrderItemService orderItemService, WebSocketService webSocketService) {
         this.orderItemService = orderItemService;
+        this.webSocketService = webSocketService;
     }
 
     /**
@@ -105,6 +109,15 @@ public class OrderItemController {
     public ResponseEntity<OrderItemDTO> postOrderItem(@RequestBody OrderItemDTO orderItemDTO) {
         log.debug("REST request to create OrderItem : {}", orderItemDTO);
         OrderItemDTO result = orderItemService.createOrderItem(orderItemDTO);
+
+        // Get the order item entity to extract the eatery ID
+        OrderItem orderItem = orderItemService.getOrderItemEntityById(result.getId());
+        Long orderId = orderItem.getOrder().getId();
+        Long eateryId = orderItem.getOrder().getTable().getEatery().getId();
+
+        // Send WebSocket notification about the updated order
+        webSocketService.notifyOrderUpdate(String.valueOf(eateryId), orderId, null);
+
         return ResponseEntity.ok(result);
     }
 
@@ -128,7 +141,19 @@ public class OrderItemController {
             @PathVariable Long orderItemId,
             @RequestBody OrderItemDTO orderItemDTO) {
         log.debug("REST request to update OrderItem : {}", orderItemId);
-        return ResponseEntity.ok(orderItemService.updateOrderItem(orderItemId, orderItemDTO));
+
+        // Get the order item entity before update to extract the eatery ID and order ID
+        OrderItem orderItem = orderItemService.getOrderItemEntityById(orderItemId);
+        Long orderId = orderItem.getOrder().getId();
+        Long eateryId = orderItem.getOrder().getTable().getEatery().getId();
+
+        // Update the order item
+        OrderItemDTO result = orderItemService.updateOrderItem(orderItemId, orderItemDTO);
+
+        // Send WebSocket notification about the updated order
+        webSocketService.notifyOrderUpdate(String.valueOf(eateryId), orderId, null);
+
+        return ResponseEntity.ok(result);
     }
 
     /**
@@ -147,7 +172,18 @@ public class OrderItemController {
     @DeleteMapping("${order.item.id}")
     public ResponseEntity<Void> deleteOrderItem(@PathVariable Long orderItemId) {
         log.debug("Deleting OrderItem [{}]", orderItemId);
+
+        // Get the order item entity before deletion to extract the eatery ID and order ID
+        OrderItem orderItem = orderItemService.getOrderItemEntityById(orderItemId);
+        Long orderId = orderItem.getOrder().getId();
+        Long eateryId = orderItem.getOrder().getTable().getEatery().getId();
+
+        // Delete the order item
         orderItemService.deleteOrderItem(orderItemId);
+
+        // Send WebSocket notification about the updated order
+        webSocketService.notifyOrderUpdate(String.valueOf(eateryId), orderId, null);
+
         return ResponseEntity.ok().build();
     }
 }

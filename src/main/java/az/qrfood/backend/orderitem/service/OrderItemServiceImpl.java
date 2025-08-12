@@ -146,4 +146,14 @@ public class OrderItemServiceImpl implements OrderItemService {
         orderItemRepository.delete(orderItem);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public OrderItem getOrderItemEntityById(Long id) {
+        log.debug("Request to get OrderItem entity : {}", id);
+        return orderItemRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("OrderItem not found with id " + id));
+    }
+
 }

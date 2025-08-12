@@ -21,6 +21,21 @@ public class WebSocketService {
             new OrderNotification("NEW_ORDER", "A new order has been created"));
     }
 
+    /**
+     * Send a notification that an order has been updated for a specific restaurant
+     * @param restaurantId the ID of the restaurant
+     * @param orderId the ID of the updated order
+     * @param status the new status of the order (optional)
+     */
+    public void notifyOrderUpdate(String restaurantId, Long orderId, String status) {
+        String message = "Order #" + orderId + " has been updated";
+        if (status != null && !status.isEmpty()) {
+            message += " to status: " + status;
+        }
+        messagingTemplate.convertAndSend("/topic/orders/" + restaurantId, 
+            new OrderNotification("ORDER_UPDATED", message));
+    }
+
     // Simple notification class
     public static class OrderNotification {
         private String type;

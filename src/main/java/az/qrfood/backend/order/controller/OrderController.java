@@ -195,6 +195,7 @@ public class OrderController {
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'CASHIER')")
     @PutMapping("${order.id.put}")
     public ResponseEntity<OrderDto> updateOrder(
+            @PathVariable Long eateryId,
             @PathVariable Long orderId,
             @RequestBody OrderDto orderDTO
     ) {
@@ -206,8 +207,14 @@ public class OrderController {
                 .map(roleStr -> Role.valueOf(roleStr.replace("ROLE_", "")))
                 .collect(Collectors.toSet());
 
+        // Get the updated order
+        OrderDto updatedOrder = orderService.updateOrder(orderId, orderDTO, authorities);
 
-        return ResponseEntity.ok(orderService.updateOrder(orderId, orderDTO, authorities));
+        // Send WebSocket notification about the updated order
+        webSocketService.notifyOrderUpdate(String.valueOf(eateryId), orderId, 
+            orderDTO.getStatus() != null ? orderDTO.getStatus().toString() : null);
+
+        return ResponseEntity.ok(updatedOrder);
     }
 
     /**
@@ -231,7 +238,18 @@ public class OrderController {
             @RequestBody OrderStatusUpdateDTO statusDTO
     ) {
         log.debug("REST request to update Order status : {}", id);
-        return ResponseEntity.ok(orderService.updateOrderStatus(id, statusDTO.getStatus()));
+
+        // Get the updated order
+        OrderDto updatedOrder = orderService.updateOrderStatus(id, statusDTO.getStatus());
+
+        // Get the order entity to extract the eatery ID
+        Order order = orderService.getOrderEntityById(id);
+        Long eateryId = order.getTable().getEatery().getId();
+
+        // Send WebSocket notification about the updated order status
+        webSocketService.notifyOrderUpdate(String.valueOf(eateryId), id, statusDTO.getStatus());
+
+        return ResponseEntity.ok(updatedOrder);
     }
 
     /**
