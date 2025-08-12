@@ -50,12 +50,15 @@ import java.util.stream.Collectors;
 @Tag(name = "Order Management", description = "API endpoints for managing orders in eateries")
 public class OrderController {
 
+    //<editor-fold desc="Fields">
     private final OrderService orderService;
     private final OrderMapper orderMapper;
     private final ClientDeviceService clientDeviceService;
     private final WebSocketService webSocketService;
     private final TableService tableService;
+    //</editor-fold>
 
+    //<editor-fold desc="Constructor">
     /**
      * Constructs the OrderController with necessary service and mapper dependencies.
      *
@@ -72,6 +75,7 @@ public class OrderController {
         this.webSocketService = webSocketService;
         this.tableService = tableService;
     }
+    //</editor-fold>
 
     /**
      * Retrieves a list of all orders filtered by their status.

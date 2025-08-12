@@ -1,30 +1,32 @@
-(A) Interceptor for /api/eatery/{eateryId}/table/{tableId}
-(B) Interceptor for /api/eatery/{eateryId}/user/name/{userName}
-(C) Interceptor for /api/admin/api/eatery/{eateryId}/user/{userId}
-(D) Interceptor for /api/qrcode/api/eatery/{eatery}/table/{table}
-(E) Interceptor for /api/eatery/{eateryId}/user/{userId}
-(F) Teken and refresh token feature
+(A) Interceptor for /api/eatery/{eateryId}/table/{tableId} +qr
+(B) Interceptor for /api/eatery/{eateryId}/user/name/{userName} +qr
+(C) Interceptor for /api/admin/api/eatery/{eateryId}/user/{userId} +qr
+(D) Interceptor for /api/qrcode/api/eatery/{eatery}/table/{table} +qr
+(E) Interceptor for /api/eatery/{eateryId}/user/{userId} +qr
+(F) Teken and refresh token feature +qr
 (X) Task description +project @context due:2025-10-10
-(Z) Create a new email for qrfood.
-Cloudflare Turnstile
-Delete all user-related data when a user is deleted if the user has the role eatery-admin
-
-Description +qrfood @inter
+(Z) Create a new email for qrfood. +qr
+Cloudflare Turnstile +qr
+Delete all user-related data when a user is deleted if the user has the role eatery-admin +qr
 Ear Phones +buy
-For the request /api/eatery/2/order-item/order/4 what is dishItemId
-Implement post put data validation
-Keyboard +bue
-Modify orhan removal regarding orders and devices entities
-On orders menu set default date today
-Paid Order shown as Accepted on client device
+For the request /api/eatery/2/order-item/order/4 what is dishItemId +qr
+Implement post put data validation +qr
+Keyboard +buy
+Modify orhan removal regarding orders and devices entities +qr
+On orders menu set default date today +qr
+Paid Order shown as Accepted on client device +qr
 Sneakers +buy
-Status order
-The table status should be busy if an order is assigned to the table
-To secure public API methods from scam and overloading
-User phone box is not shown if there was no number specified while new user creation
-While creating a new user; it is created a new eatery, notified when run Kimber test
-often asked questions
-we can do all things for you, send your menu, then change the password
-📞 WhatsApp Busines
-📢 Telegram (канал)
-📸 Instagram
+Status order +qr
+The table status should be busy if an order is assigned to the table +qr
+To secure public API methods from scam and overloading +qr
+User phone box is not shown if there was no number specified while new user creation +qr
+While creating a new user; it is created a new eatery, notified when run Kimber test +qr
+often asked questions +qr
+we can do all things for you, send your menu, then change the password +qr
+📞 WhatsApp Busines +qr
+📢 Telegram (канал) +qr
+📸 Instagram +qr
+---------------------------------
+Feature: Reassign order to another table
+Write unit tests +ProjectX @office
+Second post in Instagram +qr
