@@ -44,7 +44,7 @@ public enum ResponseCodes {
 
     ACCESS_DENIED(
             false,
-            "You do not have permission to perform this action",
+            "You do not have permission to access this resource",
             HttpStatus.FORBIDDEN,
             "User attempted to access a restricted resource"
     );

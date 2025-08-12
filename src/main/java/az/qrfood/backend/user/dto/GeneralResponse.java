@@ -3,23 +3,19 @@ package az.qrfood.backend.user.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @Data
 @Builder
 @AllArgsConstructor
 public class GeneralResponse<T> {
 
-    private String timestamp = OffsetDateTime.now().toString();
+    private Instant timestamp;
     private int status;
     private String code;
     private String message;
     private T data;
     private String path;
-
-
-
     private boolean success;
 
     public GeneralResponse(int status, String code, String message, T data, String path) {

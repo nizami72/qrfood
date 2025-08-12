@@ -99,7 +99,7 @@ public class GlobalExceptionHandler {
      * @return A {@link ResponseEntity} with an {@link UserExceptionHandler.ErrorResponse} indicating access denied.
      */
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<UserExceptionHandler.ErrorResponse> handleAccessDeniedExceptions(HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedExceptions(HttpServletRequest request) {
 
         String requestUri = request.getRequestURI();
         String method = request.getMethod();
@@ -110,15 +110,21 @@ public class GlobalExceptionHandler {
                 "You are not allowed to execute this operation",
                 LocalDateTime.now()
         );
-        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .header("X-Error-Code", ResponseCodes.ACCESS_DENIED.getMessage())
+                .body(new ApiResponse<>(ResponseCodes.ACCESS_DENIED));
+
     }
 
 
     @ExceptionHandler(NotYourResourceException.class)
     public ResponseEntity<ApiResponse<Void>> handleNo(NotYourResourceException ex) {
         log.error(ex.getMessage());
-        return ResponseEntity.status(ResponseCodes.RESOURCE_MISMATCH_OR_NOT_FOUND.getHttpStatus())
-                .body(new ApiResponse<>(ResponseCodes.RESOURCE_MISMATCH_OR_NOT_FOUND));
+        return ResponseEntity
+                .status(ResponseCodes.RESOURCE_MISMATCH_OR_NOT_FOUND.getHttpStatus())
+                .header("X-Error-Code", ResponseCodes.ACCESS_DENIED.getMessage())
+                .body(new ApiResponse<>(ResponseCodes.ACCESS_DENIED));
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
