@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -105,7 +106,7 @@ public class DishController {
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     @PostMapping(value = "${eatery.id.category.id.dish}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> createDish(@PathVariable("categoryId") Long categoryId,
-                                           @RequestPart("data") DishDto dishDto,
+                                           @Valid @RequestPart("data") DishDto dishDto,
                                            @RequestPart(value = "image", required = false) MultipartFile file) {
         dishDto.setCategoryId(categoryId);
         log.debug("Request to create dish item: {}", dishDto);
@@ -152,7 +153,7 @@ public class DishController {
     @PutMapping(value = "${eatery.id.category.id.dish.id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> putDish(@PathVariable("categoryId") Long categoryId,
                                         @PathVariable("dishId") Long dishId,
-                                        @RequestPart("data") DishDto dishDto,
+                                        @Valid @RequestPart("data") DishDto dishDto,
                                         @RequestPart(value = "image", required = false) MultipartFile file) {
         dishDto.setCategoryId(categoryId);
         dishDto.setDishId(dishId);

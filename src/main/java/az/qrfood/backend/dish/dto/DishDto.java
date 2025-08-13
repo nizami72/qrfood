@@ -1,5 +1,9 @@
 package az.qrfood.backend.dish.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,15 +20,34 @@ import java.math.BigDecimal;
 public class DishDto {
 
     private Long dishId;
+
     private Long categoryId;
+
+    @NotBlank(message = "Name in Azerbaijani is required")
+    @Size(min = 2, max = 50, message = "Name in Azerbaijani must not exceed characters")
     private String nameAz;
+
+    @Size(min = 0, max = 50, message = "Name in English must not exceed 50 characters")
     private String nameEn;
+
+    @Size(min = 0, max = 50, message = "Name in Russian must not exceed 50 characters")
     private String nameRu;
+
+    @Size(max = 500, message = "Description in Azerbaijani must not exceed 500 characters")
     private String descriptionAz;
+
+    @Size(max = 500, message = "Description in English must not exceed 500 characters")
     private String descriptionEn;
+
+    @Size(max = 500, message = "Description in Russian must not exceed 500 characters")
     private String descriptionRu;
+
+    @NotNull(message = "Price is required")
+    @Positive(message = "Price must be a positive number")
     private BigDecimal price;
+
     private String image;
+
     private boolean isAvailable = true;
 
 
