@@ -17,18 +17,11 @@ Soups.webp
 Vegetarian.webp
 Alcoholic_drinks.webp
 
-mussels_on_saj.webp
-onion_rings.webp
-salmon_stroganoff.webp
 seafood_paella.webp
-seafood_pizza.webp
-shrimp_tempura.webp
-sweet_crepes.webp
-tiramisu.webp
-tom_yum_soup.webp
-vegetable_fajita.webp
 
-fruit_salad.webp
-hummus_plate.webp
-mimosa_salad.webp
-mushroom_salad.webp
+kunefe.webp
+strawberry_cheesecake.webp
+pakhlava.webp
+chocolate_fondant.webp
+
+

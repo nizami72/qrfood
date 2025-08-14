@@ -14,6 +14,7 @@
 - [OrderController](#ordercontroller)
 - [OrderItemController](#orderitemcontroller)
 - [QrController](#qrcontroller)
+- [TableAssignmentController](#tableassignmentcontroller)
 - [TableController](#tablecontroller)
 - [UserController](#usercontroller)
 ### AdminController
@@ -193,6 +194,21 @@
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
 | [GET getQrImage(Long, Integer)](src/main/java/az/qrfood/backend/qr/controller/QrController.java) | `EATERY_ADMIN` | `/api/qrcode/api/eatery/{eatery}/table/{table}` |
+
+###### [🔝](#navigation)
+
+---
+
+### TableAssignmentController
+
+| Method | Role(s) | URL Path |
+|--------|---------|----------|
+| [DELETE deleteTableAssignment(Long, Long)](src/main/java/az/qrfood/backend/tableassignment/controller/TableAssignmentController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/table-assignment/{assignmentId}` |
+| [GET getAllTableAssignments(Long)](src/main/java/az/qrfood/backend/tableassignment/controller/TableAssignmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN` | `/api/eatery/{eateryId}/table-assignment` |
+| [GET getTableAssignmentById(Long, Long)](src/main/java/az/qrfood/backend/tableassignment/controller/TableAssignmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER` | `/api/eatery/{eateryId}/table-assignment/{assignmentId}` |
+| [GET getTableAssignmentsByTableId(Long, Long)](src/main/java/az/qrfood/backend/tableassignment/controller/TableAssignmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER` | `/api/eatery/{eateryId}/table-assignment/table/{tableId}` |
+| [GET getTableAssignmentsByWaiterId(Long, Long)](src/main/java/az/qrfood/backend/tableassignment/controller/TableAssignmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER` | `/api/eatery/{eateryId}/table-assignment/waiter/{waiterId}` |
+| [POST createTableAssignment(Long, CreateTableAssignmentDto)](src/main/java/az/qrfood/backend/tableassignment/controller/TableAssignmentController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/table-assignment` |
 
 ###### [🔝](#navigation)
 

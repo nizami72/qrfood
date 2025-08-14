@@ -35,6 +35,10 @@
 * /api/eatery/{eateryId}/order/{orderId}/delete
 * /api/eatery/{eateryId}/order/{orderId}/put
 * /api/eatery/{eateryId}/table
+* /api/eatery/{eateryId}/table-assignment
+* /api/eatery/{eateryId}/table-assignment/table/{tableId}
+* /api/eatery/{eateryId}/table-assignment/waiter/{waiterId}
+* /api/eatery/{eateryId}/table-assignment/{assignmentId}
 * /api/eatery/{eateryId}/table/{tableId}
 * /api/eatery/{eateryId}/user
 * /api/eatery/{eateryId}/user/name/{userName}

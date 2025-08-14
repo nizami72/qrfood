@@ -76,6 +76,14 @@ public class FrontendPathConfig {
     String eateryIdTable;
     @Value("${table.id}")
     String eateryIdTableId;
+    @Value("${table.assignment}")
+    String tableAssignment;
+    @Value("${table.assignment.waiter}")
+    String tableAssignmentWaiter;
+    @Value("${table.assignment.table}")
+    String tableAssignmentTable;
+    @Value("${table.assignment.id}")
+    String tableAssignmentId;
     @Value("${order.status}")
     String orderStatus;
     @Value("${order.id}")
@@ -153,6 +161,10 @@ public class FrontendPathConfig {
         paths.put("eateryIdCategoryIdDishId", eateryIdCategoryIdDishId);
         paths.put("eateryIdTable", eateryIdTable);
         paths.put("eateryIdTableId", eateryIdTableId);
+        paths.put("tableAssignment", tableAssignment);
+        paths.put("tableAssignmentWaiter", tableAssignmentWaiter);
+        paths.put("tableAssignmentTable", tableAssignmentTable);
+        paths.put("tableAssignmentId", tableAssignmentId);
         paths.put("ORDERS", "--------------------");
         paths.put("orderStatus", orderStatus);
         paths.put("orderId", orderId);
