@@ -1,6 +1,10 @@
 PROMPT
 A delicious, fresh [chocolate_souffle.webp] served in a ceramic plate, placed on a wooden table in a cozy restaurant setting. Natural lighting, slight steam rising from the food, elegant cutlery on the side, rustic background, shallow depth of field, photorealistic in webp format with size 800:600 px
 
+A delicious, fresh [chocolate_souffle.webp] served in a ceramic plate, placed on a wooden table in a cozy restaurant setting. Natural lighting,  elegant cutlery on the side, rustic background, shallow depth of field, photorealistic in webp format with size 800:600 px
+
+
+
 A refreshing, vibrant [beer] served in a clear glass with condensation, placed on a wooden table in a cozy café setting. Natural lighting, a few ice cubes visible, subtle droplets on the glass, elegant coaster underneath, rustic background, shallow depth of field, photorealistic in webp format with size 800:600 px.
 
 A delicious, freshly baked stack of [vegetable_lasagna.webp] served on a ceramic plate, placed on a wooden table in a cozy café setting. Natural warm lighting, slight steam rising from the cookies, elegant dessert fork and napkin on the side, rustic background with a soft focus, shallow depth of field, photorealistic, in webp format, size 800:600 px.
@@ -20,8 +24,5 @@ Alcoholic_drinks.webp
 seafood_paella.webp
 
 kunefe.webp
-strawberry_cheesecake.webp
-pakhlava.webp
-chocolate_fondant.webp
 
 

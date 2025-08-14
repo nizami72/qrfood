@@ -26,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -165,12 +166,21 @@ public class UserService {
         }
 
         // Only update name if it provided
-        if (userNewData.getName() != null) {
+        if (userNewData.getName() != null || userNewData.getPhones() != null) {
             UserProfile userProfile = userProfileRepository.findByUser(userUnderChange)
                     .orElseThrow(() -> new EntityNotFoundException("User profile not found for userUnderChange: " + userUnderChange.getUsername()));
-            userProfile.setName(userNewData.getName());
+
+            if (userNewData.getName() != null) {
+                userProfile.setName(userNewData.getName());
+                log.debug("Updated name of the userUnderChange [{}]", userUnderChange.getUsername());
+            }
+
+            if (userNewData.getPhones() != null) {
+                userProfile.setPhones(new ArrayList<>(userNewData.getPhones()));
+                log.debug("Updated phones of the userUnderChange [{}]", userUnderChange.getUsername());
+            }
+
             userProfileRepository.save(userProfile);
-            log.debug("Updated name of the userUnderChange [{}]", userUnderChange.getUsername());
         }
 
         User updatedUser = userRepository.save(userUnderChange);
@@ -312,6 +322,12 @@ public class UserService {
     private UserResponse mapToResponse(User user) {
         UserProfile userProfile = userProfileRepository.findByUser(user)
                 .orElseThrow(() -> new EntityNotFoundException("User profile not found for user: " + user.getUsername()));
+
+        String phone = null;
+        if (userProfile.getPhones() != null && !userProfile.getPhones().isEmpty()) {
+            phone = userProfile.getPhones().get(0);
+        }
+
         return new UserResponse(
                 user.getId(),
                 user.getUsername(),
@@ -319,7 +335,8 @@ public class UserService {
                 user.getRoles().stream()
                         .map(Enum::name)
                         .collect(Collectors.toSet()),
-                user.getProfile() != null
+                user.getProfile() != null,
+                phone
         );
     }
 }

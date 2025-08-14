@@ -12,8 +12,24 @@ import java.util.Set;
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class UserResponse {
+
+    public UserResponse(Long id, String username, String name, Set<String> roles, boolean hasProfile) {
+        this.id = id;
+        this.username = username;
+        this.name = name;
+        this.roles = roles;
+        this.hasProfile = hasProfile;
+    }
+
+    public UserResponse(Long id, String username, String name, Set<String> roles, boolean hasProfile, String phone) {
+        this.id = id;
+        this.username = username;
+        this.name = name;
+        this.roles = roles;
+        this.hasProfile = hasProfile;
+        this.phone = phone;
+    }
 
     /**
      * The ID of the user.
@@ -39,4 +55,9 @@ public class UserResponse {
      * Flag indicating if the user has a profile.
      */
     private boolean hasProfile;
+
+    /**
+     * The phone number of the user.
+     */
+    private String phone;
 }

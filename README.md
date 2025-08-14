@@ -80,3 +80,19 @@ To drop and recreate the database on Hetzner run the command below, it runs the 
 ```
 ssh -i /home/nizami/.ssh/key2 root@157.180.16.28 'bash -s' < /home/nizami/Dropbox/projects/Java/qrfood/wiki/shell/drop_qrfood.sh
 ```
+
+### Open Tunnel for MySQL
+
+1. ````
+   ssh -i /home/nizami/.ssh/key2 -L 3307:127.0.0.1:3306 root@157.180.16.28 -N
+   ````
+2. ````
+   docker container stop myadmi
+   docker container rm myadmin
+   docker run --name myadmin -d \
+   --network="host" \
+   -e PMA_HOST=127.0.0.1 \
+   -e PMA_PORT=3307 \
+   phpmyadmin/phpmyadmin
+   ````
+4. Then open [PHP MyAdmin](http://localhost)
