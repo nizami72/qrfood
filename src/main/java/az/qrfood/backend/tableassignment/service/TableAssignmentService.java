@@ -31,6 +31,14 @@ public interface TableAssignmentService {
     TableAssignmentDto getTableAssignmentById(Long id);
 
     /**
+     * Retrieves all table assignments for a specific eatery.
+     *
+     * @param eateryId The ID of the eatery for which to retrieve all table assignments.
+     * @return A list of DTOs representing the retrieved table assignments.
+     */
+    List<TableAssignmentDto> getAllTableAssignments(Long eateryId);
+
+    /**
      * Retrieves all table assignments for a specific waiter.
      *
      * @param waiterId The ID of the waiter for whom to retrieve table assignments.

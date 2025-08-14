@@ -51,11 +51,11 @@ public class TableAssignmentServiceImpl implements TableAssignmentService {
         TableInEatery table = tableRepository.findById(createDto.getTableId())
                 .orElseThrow(() -> new EntityNotFoundException("Table not found with ID: " + createDto.getTableId()));
 
-        // Check if the table is already assigned to a waiter
-        tableAssignmentRepository.findByTable(table).stream()
-                .findFirst()
+        // Check if the waiter is already assigned to this table
+        tableAssignmentRepository.findByWaiterAndTable(waiter, table)
                 .ifPresent(assignment -> {
-                    throw new IllegalStateException("Table with ID: " + createDto.getTableId() + " is already assigned to a waiter");
+                    throw new IllegalStateException("Waiter with ID: " + createDto.getWaiterId() + 
+                            " is already assigned to table with ID: " + createDto.getTableId());
                 });
 
         TableAssignment tableAssignment = TableAssignment.builder()
@@ -74,6 +74,10 @@ public class TableAssignmentServiceImpl implements TableAssignmentService {
     @Override
     @Transactional(readOnly = true)
     public TableAssignmentDto getTableAssignmentById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Assignment ID must not be null");
+        }
+
         TableAssignment tableAssignment = tableAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Table assignment not found with ID: " + id));
         return mapToDto(tableAssignment);
@@ -84,7 +88,30 @@ public class TableAssignmentServiceImpl implements TableAssignmentService {
      */
     @Override
     @Transactional(readOnly = true)
+    public List<TableAssignmentDto> getAllTableAssignments(Long eateryId) {
+        if (eateryId == null) {
+            throw new IllegalArgumentException("Eatery ID must not be null");
+        }
+
+        // Get all table assignments and filter by eatery ID
+        return tableAssignmentRepository.findAll().stream()
+                .filter(assignment -> assignment.getTable() != null 
+                        && assignment.getTable().getEatery() != null 
+                        && eateryId.equals(assignment.getTable().getEatery().getId()))
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
     public List<TableAssignmentDto> getTableAssignmentsByWaiterId(Long waiterId) {
+        if (waiterId == null) {
+            throw new IllegalArgumentException("Waiter ID must not be null");
+        }
+
         User waiter = userRepository.findById(waiterId)
                 .orElseThrow(() -> new EntityNotFoundException("Waiter not found with ID: " + waiterId));
         return tableAssignmentRepository.findByWaiter(waiter).stream()
@@ -98,6 +125,10 @@ public class TableAssignmentServiceImpl implements TableAssignmentService {
     @Override
     @Transactional(readOnly = true)
     public List<TableAssignmentDto> getTableAssignmentsByTableId(Long tableId) {
+        if (tableId == null) {
+            throw new IllegalArgumentException("Table ID must not be null");
+        }
+
         TableInEatery table = tableRepository.findById(tableId)
                 .orElseThrow(() -> new EntityNotFoundException("Table not found with ID: " + tableId));
         return tableAssignmentRepository.findByTable(table).stream()
@@ -111,6 +142,10 @@ public class TableAssignmentServiceImpl implements TableAssignmentService {
     @Override
     @Transactional
     public void deleteTableAssignment(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Assignment ID must not be null");
+        }
+
         if (!tableAssignmentRepository.existsById(id)) {
             throw new EntityNotFoundException("Table assignment not found with ID: " + id);
         }

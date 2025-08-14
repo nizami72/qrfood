@@ -78,9 +78,13 @@ public class TableAssignmentController {
     @GetMapping("${table.assignment}")
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN')")
     public ResponseEntity<List<TableAssignmentDto>> getAllTableAssignments(@PathVariable Long eateryId) {
-        // In a real implementation, you would filter by eatery ID
-        // For now, we'll return all table assignments
-        return ResponseEntity.ok(tableAssignmentService.getTableAssignmentsByWaiterId(null));
+        try {
+            List<TableAssignmentDto> assignments = tableAssignmentService.getAllTableAssignments(eateryId);
+            return ResponseEntity.ok(assignments);
+        } catch (EntityNotFoundException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
