@@ -17,6 +17,8 @@ import az.qrfood.backend.user.entity.UserProfile;
 import az.qrfood.backend.user.exception.UserAlreadyExistsException;
 import az.qrfood.backend.user.repository.UserProfileRepository;
 import az.qrfood.backend.user.repository.UserRepository;
+import az.qrfood.backend.tableassignment.entity.TableAssignment;
+import az.qrfood.backend.auth.service.RefreshTokenService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -50,6 +52,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserProfileService userProfileService;
     private final EateryService eateryService;
+    private final az.qrfood.backend.tableassignment.repository.TableAssignmentRepository tableAssignmentRepository;
+    private final RefreshTokenService refreshTokenService;
 
     /**
      * Retrieves a list of all users in the system.
@@ -206,6 +210,18 @@ public class UserService {
             return;
         }
         User user = userOp.get();
+
+        // First delete all refresh tokens for the user
+        refreshTokenService.deleteByUser(user);
+        log.debug("Deleted refresh tokens for user ID: {}", id);
+
+        // Delete all table assignments for the user
+        List<TableAssignment> tableAssignments = tableAssignmentRepository.findByWaiter(user);
+        if (!tableAssignments.isEmpty()) {
+            log.debug("Deleting {} table assignments for user ID: {}", tableAssignments.size(), id);
+            tableAssignmentRepository.deleteAll(tableAssignments);
+        }
+
         Optional<UserProfile> userProfileOpt = userProfileRepository.findByUser(user);
         userProfileOpt.ifPresent(userProfileRepository::delete);
         userRepository.delete(user);
@@ -221,27 +237,28 @@ public class UserService {
      */
     @Transactional
     public GeneralResponse<?> deleteEateryAdminWithResources(String username) {
-        if (userRepository.findByUsername(username).isEmpty()) {
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        if (userOpt.isEmpty()) {
             log.debug("User with user name [{}] not found", username);
             return GeneralResponse.builder()
                     .message("User not found with username: " + username)
                     .success(false)
                     .build();
         }
-        Optional<User> opUser = userRepository.deleteUserByUsername(username);
-        if (opUser.isPresent()) {
-            log.debug("User with user name [{}] deleted", username);
-            return GeneralResponse.builder()
-                    .message("User deleted successfully")
-                    .success(true)
-                    .build();
-        } else {
-            log.debug("Optional with user name [{}] is empty", username);
-            return GeneralResponse.builder()
-                    .message("User not found with username: " + username)
-                    .success(false)
-                    .build();
-        }
+
+        User user = userOpt.get();
+
+        // First delete all refresh tokens for the user
+        refreshTokenService.deleteByUser(user);
+        log.debug("Deleted refresh tokens for user: {}", username);
+
+        // Now delete the user
+        userRepository.delete(user);
+        log.debug("User with user name [{}] deleted", username);
+        return GeneralResponse.builder()
+                .message("User deleted successfully")
+                .success(true)
+                .build();
     }
 
     @Transactional
