@@ -32,3 +32,4 @@ we can do all things for you, send your menu, then change the password +qr
 📸 Instagram +qr
 (A) Detalize what role can do what +qr
 (A) Remove unneded logout button +qr
+Fix adding again the same dish from predefind

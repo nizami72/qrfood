@@ -2,10 +2,13 @@ package az.qrfood.backend.selenium;
 
 import static az.qrfood.backend.selenium.Util.FAST;
 import static az.qrfood.backend.selenium.Util.NORM;
-import static az.qrfood.backend.selenium.Util.NORM15;
+import static az.qrfood.backend.selenium.Util.NORM_BY_2;
+import static az.qrfood.backend.selenium.Util.PHASE_CREATE_DISHES;
+import static az.qrfood.backend.selenium.Util.PHASE_CREATE_TABLES;
+import static az.qrfood.backend.selenium.Util.PHASE_DELETE_USER;
+import static az.qrfood.backend.selenium.Util.PHASE_LOGIN;
+import static az.qrfood.backend.selenium.Util.PHASE_OPEN_PAGE;
 import static az.qrfood.backend.selenium.Util.pause;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterEach;
@@ -40,6 +43,8 @@ public class AllFlowTest {
     private WebDriver driver;
     private WebDriverWait wait;
 
+    private boolean deleteUser = true;
+
     // Test data
     private String testName;
     private String testEmail;
@@ -48,18 +53,13 @@ public class AllFlowTest {
     private String host;
     Properties properties = new Properties();
     private long t = System.currentTimeMillis();
-    private static String PHASE_OPEN_PAGE = "Open page",
-            PHASE_REGISTRATION = "Registration",
-            PHASE_LOGIN = "Login",
-            PHASE_CREATE_DISHES = "Create dished",
-            PHASE_CREATE_TABLES = "Create Tables",
-            PHASE_DELETE_USER = "Delete user";
+
 
     //        @Test
 //    @Order(1)
     public void registration() {
         openPage("register", 400);
-        registration(NORM);
+        Util.registerEateryAdmin(driver, wait, testName, testPassword, testEmail, testRestaurantName, NORM);
         pause(500);
     }
 
@@ -84,7 +84,7 @@ public class AllFlowTest {
     public void editCategory() {
         openPage("login", 500);
         login(NORM);
-        createCategories(NORM15);
+        Util.createCategories(driver, wait, NORM_BY_2);
         pause(2000);
 
     }
@@ -113,38 +113,49 @@ public class AllFlowTest {
 
     @Test
     public void allFlow() {
-        openPage("login", 500);
-        if (login(FAST)) {
-            navigate("nav006", "/admin/users", NORM);
-            deleteUser(FAST);
+
+        // ================== DELETE USER ==================
+        if (deleteUser) {
+            openPage("login", 500);
+            if (login(FAST)) {
+                navigate("nav006", "/admin/users", NORM);
+                deleteUser(FAST);
+            }
         }
 
-//1
+        // ================== REGISTER USER ==================
         openPage("register", 400);
-        registration(NORM);
-
+        Util.registerEateryAdmin(driver, wait, testName, testPassword, testEmail, testRestaurantName, NORM);
         pause(500);
+
+        // ================== LOGIN USER ==================
         login(NORM);
 
+        // ================= EDIT USER ==================
         editEatery(NORM);
         pause(2000);
-//        4
-        createCategories(NORM15);
+
+        // ================== CREATE CATEGORY ==================
+        Util.createCategories(driver, wait, NORM_BY_2);
         pause(2000);
 
+        // ================== CREATE DISHES ==================
         createDishes(NORM);
         pause(1000);
 
+
+        // ================== CREATE USER ==================
         createUser(NORM);
         pause(2000);
-//6
+
+        // ================== CREATE TABLES ==================
         createTables(NORM);
         pause(2000);
 
 
     }
 
-//    @Test
+    //    @Test
     public void loginAndShowOrder() {
         openPage("login", 100);
         login(NORM);
@@ -154,13 +165,12 @@ public class AllFlowTest {
         Util.pause(40000);
     }
 
-//    @Test
+    //    @Test
     public void loginAndAddUser() {
         openPage("login", 100);
         login(NORM);
         createUser(NORM);
     }
-
 
 
     private void createTables(String norm) {
@@ -193,39 +203,6 @@ public class AllFlowTest {
         Util.pause(pause);
         // Keep the browser open for a few seconds to observe
         markTime(PHASE_OPEN_PAGE);
-    }
-
-    private void registration(String temp) {
-
-        // 2. Enter registration details
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("106")));
-        WebElement nameInput = driver.findElement(By.id("106"));
-        Util.typeIntoInput(driver, nameInput, testName, temp);
-
-        WebElement emailInput = driver.findElement(By.id("107"));
-        Util.typeIntoInput(driver, emailInput, testEmail, temp);
-
-        WebElement passwordInput = driver.findElement(By.id("108"));
-        Util.typeIntoInput(driver, passwordInput, testPassword, temp);
-
-        WebElement confirmPasswordInput = driver.findElement(By.id("109"));
-        Util.typeIntoInput(driver, confirmPasswordInput, testPassword, temp);
-
-        WebElement restaurantNameInput = driver.findElement(By.id("110"));
-        Util.typeIntoInput(driver, restaurantNameInput, testRestaurantName, temp);
-
-        // 3. Click the Register button
-        WebElement registerButton = driver.findElement(By.id("111"));
-        Util.click(driver, registerButton, temp);
-
-        // 4. Wait for and accept the alert
-        Util.alertAccept(wait, driver, NORM);
-        wait.until(ExpectedConditions.urlContains("/admin/login"));
-        // 1. Verify redirection to login page
-        assertTrue(driver.getCurrentUrl().contains("/admin/login"),
-                "URL should contain '/admin/login' after successful registration");
-        markTime(PHASE_REGISTRATION);
-
     }
 
     private boolean login(String temp) {
@@ -288,18 +265,6 @@ public class AllFlowTest {
         Util.pause(NORM);
     }
 
-    private void createCategories(String temp) {
-        navigate("nav002", "/admin/categories", temp);
-        Util.findButtonByTextAndClick(driver, "Kateqoriya əlavə et", NORM);
-        Util.findButtonByTextAndClick(driver, "Əvvəlcədən təyin edilmiş siyahı", NORM);
-        Util.checkCheckbox(driver, "ch003", temp);
-        Util.checkCheckbox(driver, "ch004", temp);
-        Util.checkCheckbox(driver, "ch005", temp);
-        Util.checkCheckbox(driver, "ch006", temp);
-        Util.checkCheckbox(driver, "ch007", temp);
-        Util.findButtonByTextAndClick(driver, "Seçilmiş kateqoriyaları yarat", NORM);
-    }
-
     private void createDishes(String temp) {
         navigate("nav003", "menu", temp);
         Util.selectOptionByBySelectText(driver, 1, "Kateqoriya seçin", temp);
@@ -310,6 +275,7 @@ public class AllFlowTest {
         Util.checkCheckbox(driver, "dsh003", temp);
         Util.checkCheckbox(driver, "dsh004", temp);
         Util.findButtonByTextAndClick(driver, "Add Selected Dishes (", NORM);
+        pause(1500);
         Util.selectOptionByBySelectText(driver, 2, "Kateqoriya seçin", temp);
         markTime(PHASE_CREATE_DISHES);
     }
@@ -379,7 +345,6 @@ public class AllFlowTest {
             driver.quit();
         }
     }
-
 
     private void markTime(String phase) {
         if (t == 0) {
