@@ -164,27 +164,19 @@ public class Util {
     public static String saveFile(String destination, String source, String filename) {
 
         try {
-
-            Path directory = Paths.get(destination).toAbsolutePath().normalize();
+            Path path = Paths.get(destination);
+            Path directory = path.toAbsolutePath().normalize();
             Files.createDirectories(directory);
-
             // Absolute destination to the source file
             Path sourceFile = Paths.get(source);
-
-            // Destination folder (must exist)
-            Path targetFolder = Paths.get(destination);
-
             // Resolve the target destination: /home/user/backup/file.txt
-            Path targetFile = targetFolder.resolve(filename);
-
+            Path targetFile = path.resolve(filename);
             Files.copy(sourceFile, targetFile, StandardCopyOption.REPLACE_EXISTING);
             log.debug("File copied to folder [{}]", targetFile);
-
 
         } catch (IOException e) {
             throw new RuntimeException("Could not store the file. Error: " + e.getMessage(), e);
         }
-
         return source;
     }
 

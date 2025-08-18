@@ -107,7 +107,7 @@ public class CategoryService {
         String sourceFile = null;
         if (destinationFolder != null && multipartFile != null) {
             storageService.saveFile(destinationFolder, multipartFile, fileName);
-            log.info("Dish file [{}] created at dir [{}]", fileName, destinationFolder);
+            log.info("Category image file [{}] created at dir [{}]", fileName, destinationFolder);
         } else if (!dishCategoryDto.getImage().isEmpty()) {
             String imageName = dishCategoryDto.getImage();
             sourceFile = appHomeFolderImage + imageName;
@@ -239,7 +239,7 @@ public class CategoryService {
     public Category updateCategory(CategoryDto categoryDto, MultipartFile multipartFile) {
         Long categoryId = categoryDto.getCategoryId();
 
-        // Check if category exists
+        // Check if a category exists
         Optional<Category> categoryOp = categoryRepository.findById(categoryId);
         if (categoryOp.isEmpty()) {
             throw new EntityNotFoundException(String.format(

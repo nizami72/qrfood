@@ -23,10 +23,10 @@ public class CategoryDto {
     @Size(min = 2, max = 50, message = "Name in Azerbaijani must be between 2 and 50 characters")
     private String nameAz;
 
-    @Size(min = 2, max = 50, message = "Name in English must be between 2 and 50 characters")
+    @Size(min = 0, max = 50, message = "Name in English must be between 2 and 50 characters")
     private String nameEn;
 
-    @Size(min = 2, max = 50, message = "Name in Russian must be between 2 and 50 characters")
+    @Size(min = 0, max = 50, message = "Name in Russian must be between 2 and 50 characters")
     private String nameRu;
 
     private String image;

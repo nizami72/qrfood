@@ -115,16 +115,7 @@ public class DishService {
         return dishRepository.save(dishEntity);
     }
 
-    private CategoryDto convertDtoToEntity(DishDto dish) {
-        return CategoryDto.builder()
-                .eateryId(dish.getCategoryId())
-                .nameEn(dish.getNameEn())
-                .nameRu(dish.getNameRu())
-                .nameAz(dish.getNameAz())
-                .build();
-    }
-
-    /**
+      /**
      * Converts a {@link DishEntity} to a {@link DishDto}.
      * <p>
      * This is a static method, allowing it to be called directly without an instance of {@code DishService}.
