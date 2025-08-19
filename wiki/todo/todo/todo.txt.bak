@@ -23,7 +23,6 @@ Sneakers +buy
 Status order +qr
 The table status should be busy if an order is assigned to the table +qr
 To secure public API methods from scam and overloading +qr
-x 2025-08-14 User phone box is not shown if there was no number specified while new user creation +qr
 While creating a new user; it is created a new eatery, notified when run Kimber test +qr
 Write unit tests +ProjectX @office
 often asked questions +qr
@@ -32,4 +31,5 @@ we can do all things for you, send your menu, then change the password +qr
 📢 Telegram (канал) +qr
 📸 Instagram +qr
 (A) Detalize what role can do what +qr
-(A) Remove unneded logout button +qr
+x 2025-08-19 Remove unneded logout button +qr
+Fix adding again the same dish from predefind

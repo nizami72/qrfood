@@ -51,8 +51,8 @@ public class TableController {
     })
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'WAITER', 'KITCHEN_ADMIN', 'CASHIER')")
     @GetMapping("${table.id}")
-    public ResponseEntity<TableDto> getTable(@PathVariable Long eateryId) {
-        return tableService.findById(eateryId)
+    public ResponseEntity<TableDto> getTable(@PathVariable Long tableId) {
+        return tableService.findById(tableId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

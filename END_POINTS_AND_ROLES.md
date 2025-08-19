@@ -193,7 +193,7 @@
 
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
-| [GET getQrImage(Long, Integer)](src/main/java/az/qrfood/backend/qr/controller/QrController.java) | `EATERY_ADMIN` | `/api/qrcode/api/eatery/{eatery}/table/{table}` |
+| [GET getQrImage(Long, Integer)](src/main/java/az/qrfood/backend/qr/controller/QrController.java) | `EATERY_ADMIN` | `/api/qrcode/eatery/{eateryId}/table/{tableId}` |
 
 ###### [🔝](#navigation)
 

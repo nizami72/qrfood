@@ -10,3 +10,4 @@ x 2025-08-07 Interceptor for /api/eatery/{eateryId}/order/{orderId}
 x 2025-08-08 Interceptor for /api/eatery/{eateryId}/order-item/order/{orderId}
 x 2025-08-08 Interceptor for /api/eatery/{eateryId}/order-item/{orderItemId}
 x 2025-08-14 User phone box is not shown if there was no number specified while new user creation +qr
+x 2025-08-19 Remove unneded logout button +qr

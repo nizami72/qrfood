@@ -51,7 +51,7 @@
 * /api/image/predefined/category/{fileName}
 * /api/image/predefined/dish/{fileName}
 * /api/logs/frontend
-* /api/qrcode/api/eatery/{eatery}/table/{table}
+* /api/qrcode/eatery/{eateryId}/table/{tableId}
 * /api/user
 * /api/user/{id}
 * /ui/alive

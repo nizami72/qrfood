@@ -22,6 +22,16 @@ public class TableWebMvcConfig implements WebMvcConfigurer {
 
     @Value("${api.client.eatery.table}")
     private String apiClientEateryTable;
+    @Value("${table.id}")
+    private String tableId;
+    @Value("${table.assignment.id}")
+    private String tableAssignmentId;
+    @Value("${order.table.id}")
+    private String orderTableId;
+    @Value("${api.qr-code}")
+    private String qrCodeId;
+
+//    @Value("${}")
 
     public TableWebMvcConfig(EateryTableRelationshipInterceptor eateryTableRelationshipInterceptor) {
         this.eateryTableRelationshipInterceptor = eateryTableRelationshipInterceptor;
@@ -30,8 +40,9 @@ public class TableWebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // Register the interceptor only for paths matching the apiClientEateryTable pattern
-        log.info("Registering EateryTableRelationshipInterceptor for path: {}", apiClientEateryTable);
+        log.info("Registering EateryTableRelationshipInterceptor for path [{}], [{}], [{}], [{}], [{}]",
+                apiClientEateryTable, tableId, tableAssignmentId, orderTableId, qrCodeId);
         registry.addInterceptor(eateryTableRelationshipInterceptor)
-                .addPathPatterns(apiClientEateryTable);
+                .addPathPatterns(apiClientEateryTable, tableId, tableAssignmentId, orderTableId, qrCodeId);
     }
 }
