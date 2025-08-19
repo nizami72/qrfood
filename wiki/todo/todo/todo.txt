@@ -1,9 +1,6 @@
-(A) Interceptor for /api/eatery/{eateryId}/table/{tableId} +qr
-(A) Second post in Instagram +qr
 (B) Interceptor for /api/eatery/{eateryId}/user/name/{userName} +qr
 (C) Interceptor for /api/admin/api/eatery/{eateryId}/user/{userId} +qr
-(D) Interceptor for /api/qrcode/api/eatery/{eatery}/table/{table} +qr
-(E) Interceptor for /api/eatery/{eateryId}/user/{userId} +qr
+(A) Interceptor for /api/eatery/{eateryId}/user/{userId} +qr
 (F) Teken and refresh token feature +qr
 (X) Task description +project @context due:2025-10-10
 (Z) Create a new email for qrfood. +qr
@@ -32,3 +29,6 @@ we can do all things for you, send your menu, then change the password +qr
 📸 Instagram +qr
 (A) Detalize what role can do what +qr
 Fix adding again the same dish from predefind
+Sort all orders in a clint device and decide when it shsould be put in deactiv state
+Sort all orders in a clint device and decide when it shsould be put in deactiv state +pr
+(A) Sort all orders in a clint device and decide when it shsould be put in deactiv state +qr

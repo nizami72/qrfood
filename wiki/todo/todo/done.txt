@@ -11,3 +11,6 @@ x 2025-08-08 Interceptor for /api/eatery/{eateryId}/order-item/order/{orderId}
 x 2025-08-08 Interceptor for /api/eatery/{eateryId}/order-item/{orderItemId}
 x 2025-08-14 User phone box is not shown if there was no number specified while new user creation +qr
 x 2025-08-19 Remove unneded logout button +qr
+x 2025-08-19 Interceptor for /api/eatery/{eateryId}/table/{tableId} +qr
+x 2025-08-19 Interceptor for /api/qrcode/api/eatery/{eatery}/table/{table} +qr
+x 2025-08-19 Second post in Instagram +qr
