@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -105,7 +106,7 @@ public class CategoryController {
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
     public ResponseEntity<Long> createDishCategory(@PathVariable Long eateryId,
                                                    @Valid @RequestPart("data") CategoryDto dishCategoryDto,
-                                                   @RequestPart("image") MultipartFile file) {
+                                                   @RequestParam(name="image",required = false) MultipartFile file) {
         dishCategoryDto.setEateryId(eateryId);
         log.debug("Create category item: {}", dishCategoryDto);
         Category cid = categoryService.createCategory(dishCategoryDto, file);

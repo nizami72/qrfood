@@ -40,6 +40,8 @@ public class CategoryService {
     @Value("${folder.predefined.category.images}")
     private String appHomeFolderImage;
 
+    @Value("${default.dish.image}")
+    private String defaultDishImage;
 
     /**
      * Constructs a CategoryService with necessary dependencies.
@@ -108,13 +110,13 @@ public class CategoryService {
         if (destinationFolder != null && multipartFile != null) {
             storageService.saveFile(destinationFolder, multipartFile, fileName);
             log.info("Category image file [{}] created at dir [{}]", fileName, destinationFolder);
-        } else if (!dishCategoryDto.getImage().isEmpty()) {
+        } else  {
+            if (dishCategoryDto.getImage() == null || dishCategoryDto.getImage().isEmpty()) dishCategoryDto.setImage(
+                    defaultDishImage);
             String imageName = dishCategoryDto.getImage();
             sourceFile = appHomeFolderImage + imageName;
             storageService.saveFile(destinationFolder, sourceFile, fileName);
             log.debug("Assign predefined image file [{}]", sourceFile);
-        } else {
-            log.error("Image was not created nether copied");
         }
 
         return category;// what to return id,id, dto or entity

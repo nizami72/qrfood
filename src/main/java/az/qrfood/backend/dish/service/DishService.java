@@ -39,6 +39,8 @@ public class DishService {
 
     @Value("${folder.predefined.dish.images}")
     private String appHomeFolderImage;
+    @Value("${default.dish.image}")
+    private String defaultDishImage;
 
     /**
      * Constructs a DishService with necessary dependencies.
@@ -252,6 +254,7 @@ public class DishService {
             storageService.deleteAllAndSaveFile(folder, multipartFile, fileName);
             dishEntity.setImage(fileName);
         } else {
+            if (dishEntity.getImage() == null) dishEntity.setImage(defaultDishImage);
             String fileName = dishEntity.getImage();
             String sourceFile = appHomeFolderImage + fileName;
             storageService.saveFile(folder, sourceFile, fileName);
