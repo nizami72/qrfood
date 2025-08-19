@@ -4,7 +4,6 @@ import az.qrfood.backend.common.Util;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.File;
 
 /**
  * Service class for managing file storage operations within the application.
@@ -16,11 +15,11 @@ import java.io.File;
 @Service
 public class StorageService {
 
-    @Value("${folder.root.images.eatery}")
+    @Value("${folder.root.uploads.eatery}")
     private String APP_IMAGES_FOLDER_EATERY;
-    @Value("${folder.root.images.categories}")
+    @Value("${folder.root.uploads.categories}")
     private String APP_IMAGES_FOLDER_CATEGORIES;
-    @Value("${folder.root.images.dishes}")
+    @Value("${folder.root.uploads.dishes}")
     private String APP_IMAGES_FOLDER_DISHES;
 
     /**
@@ -30,7 +29,7 @@ public class StorageService {
      * @param eateryId The ID of the eatery for which to create the folder.
      */
     public void createEateryFolder(Long eateryId) {
-        String folder = APP_IMAGES_FOLDER_EATERY + File.separator + eateryId;
+        String folder = String.format(APP_IMAGES_FOLDER_EATERY, eateryId);
         Util.createFolderIfNotExists(folder);
     }
 
@@ -42,8 +41,8 @@ public class StorageService {
      * @param folderName The ID of the category, used as the folder name.
      * @return The absolute path to the created folder if successful, otherwise {@code null}.
      */
-    public String createCategoryFolder(Long folderName) {
-        String folder = APP_IMAGES_FOLDER_CATEGORIES + File.separator + folderName;
+    public String createCategoryFolder(Long eateryId, Long folderName) {
+        String folder = String.format(APP_IMAGES_FOLDER_CATEGORIES, eateryId, folderName);
         if(Util.createFolderIfNotExists(folder)) {
             return folder;
         } else {
@@ -58,8 +57,8 @@ public class StorageService {
      * @param folderName The ID of the dish, used as the folder name.
      * @return The absolute path to the created folder if successful, otherwise {@code null}.
      */
-    public String createDishesFolder(Long folderName) {
-        String folder = APP_IMAGES_FOLDER_DISHES + File.separator + folderName;
+    public String createDishesFolder(Long eateryId, Long folderName) {
+        String folder = String.format(APP_IMAGES_FOLDER_DISHES, eateryId, folderName);
         if(Util.createFolderIfNotExists(folder)) {
             return folder;
         } else {

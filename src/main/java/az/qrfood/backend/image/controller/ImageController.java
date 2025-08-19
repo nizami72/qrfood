@@ -11,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.io.File;
 import java.io.IOException;
@@ -27,16 +26,16 @@ import java.nio.file.Paths;
  * </p>
  */
 @RestController
-@RequestMapping("${image}")
 @Log4j2
 @Tag(name = "Image Management", description = "API endpoints for managing images")
 public class ImageController {
 
-    @Value("${folder.root.images.eatery}")
-    private String eateryImagePath;
-    @Value("${folder.root.images.categories}")
+    //<editor-fold desc="Fields">
+    @Value("${folder.root.uploads.eatery}")
+    private String eateryUploadsPath;
+    @Value("${folder.root.uploads.categories}")
     private String categoryImagePath;
-    @Value("${folder.root.images.dishes}")
+    @Value("${folder.root.uploads.dishes}")
     private String dishImagePath;
     @Value("${folder.predefined.category.images}")
     private String predefinedCatFolder;
@@ -44,12 +43,13 @@ public class ImageController {
     private String predefinedDishFolder;
     @Value("${fall.back.photo}")
     private String fallBackPhoto;
+    //</editor-fold>
 
     /**
      * Retrieves an image for a specific eatery.
      * The image is identified by its directory (eatery ID) and file name.
      *
-     * @param dir      The directory name, typically the eatery ID.
+     * @param eateryId The directory name, typically the eatery ID.
      * @param photo    The file name of the image.
      * @param response The {@link HttpServletResponse} to set content type.
      * @return A {@link ResponseEntity} containing the image as a byte array.
@@ -60,11 +60,11 @@ public class ImageController {
             @ApiResponse(responseCode = "404", description = "Image not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = {"${eatery}/{id}/{fileName}"})
-    public ResponseEntity<byte[]> getEateryImage(@PathVariable("id") String dir,
-                                                 @PathVariable("fileName") String photo, HttpServletResponse response) {
-        log.debug("Requested eatery image [{}]", photo);
-        String path = eateryImagePath + "/" + dir + "/" + photo;
+    @GetMapping(value = {"${api.image.eatery}"})
+    public ResponseEntity<byte[]> getEateryImageN(@PathVariable("eateryId") String eateryId,
+                                                  @PathVariable("fileName") String photo, HttpServletResponse response) {
+        String path = String.format(eateryUploadsPath, eateryId) + "/" + photo;
+        log.debug("Requested eatery image [{}]", path);
         return getImage(path, response);
     }
 
@@ -72,9 +72,9 @@ public class ImageController {
      * Retrieves an image for a specific category.
      * The image is identified by its directory (category ID) and file name.
      *
-     * @param dir      The directory name, typically the category ID.
-     * @param photo    The file name of the image.
-     * @param response The {@link HttpServletResponse} to set content type.
+     * @param categoryId The directory name, typically the category ID.
+     * @param photo      The file name of the image.
+     * @param response   The {@link HttpServletResponse} to set content type.
      * @return A {@link ResponseEntity} containing the image as a byte array.
      */
     @Operation(summary = "Get category image", description = "Retrieves an image for a specific category by its ID and file name.")
@@ -83,11 +83,37 @@ public class ImageController {
             @ApiResponse(responseCode = "404", description = "Image not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = {"/category/{id}/{fileName}"})
-    public ResponseEntity<byte[]> getCategoryImage(@PathVariable("id") String dir,
-                                                   @PathVariable("fileName") String photo, HttpServletResponse response) {
-        log.debug("Requested category image [{}]", photo);
-        String path = categoryImagePath + "/" + dir + "/" + photo;
+    @GetMapping(value = {"${api.image.category}"})
+    public ResponseEntity<byte[]> getCategoryImageN(@PathVariable("eateryId") String eateryId,
+                                                    @PathVariable("categoryId") String categoryId,
+                                                    @PathVariable("fileName") String photo, HttpServletResponse response) {
+        String path = String.format(categoryImagePath, eateryId, categoryId) + "/" + photo;
+        log.debug("Requested category image [{}].", path);
+        return getImage(path, response);
+    }
+
+    /**
+     * Retrieves an image for a specific dish.
+     * The image is identified by its directory (dish ID) and file name.
+     *
+     * @param eateryId The directory name, typically the eatery ID.
+     * @param dishId   The directory name, typically the dish ID.
+     * @param photo    The file name of the image.
+     * @param response The {@link HttpServletResponse} to set content type.
+     * @return A {@link ResponseEntity} containing the image as a byte array.
+     */
+    @Operation(summary = "Get dish image", description = "Retrieves an image for a specific dish by its ID and file name.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved the dish image"),
+            @ApiResponse(responseCode = "404", description = "Image not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping(value = {"${api.image.dish}"})
+    public ResponseEntity<byte[]> getDishImageN(@PathVariable("eateryId") String eateryId,
+                                                @PathVariable("dishId") String dishId,
+                                                @PathVariable("fileName") String photo, HttpServletResponse response) {
+        String path = String.format(dishImagePath, eateryId, dishId) + "/" + photo;
+        log.debug("Requested dish image [{}].", path);
         return getImage(path, response);
     }
 
@@ -97,7 +123,7 @@ public class ImageController {
             @ApiResponse(responseCode = "404", description = "Image not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = {"/predefined/category/{fileName}"})
+    @GetMapping(value = {"${api.image.categories.p}"})
     public ResponseEntity<byte[]> getPredefinedCatImage(@PathVariable("fileName") String fileName,
                                                         HttpServletResponse response) {
 
@@ -112,35 +138,12 @@ public class ImageController {
             @ApiResponse(responseCode = "404", description = "Image not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = {"/predefined/dish/{fileName}"})
+    @GetMapping(value = {"${api.image.dishes.p}"})
     public ResponseEntity<byte[]> getPredefinedDishImage(@PathVariable("fileName") String fileName,
                                                          HttpServletResponse response) {
 
         log.debug("Requested predefined dish image [{}]", fileName);
         String path = predefinedDishFolder + fileName;
-        return getImage(path, response);
-    }
-
-    /**
-     * Retrieves an image for a specific dish.
-     * The image is identified by its directory (dish ID) and file name.
-     *
-     * @param dir      The directory name, typically the dish ID.
-     * @param photo    The file name of the image.
-     * @param response The {@link HttpServletResponse} to set content type.
-     * @return A {@link ResponseEntity} containing the image as a byte array.
-     */
-    @Operation(summary = "Get dish image", description = "Retrieves an image for a specific dish by its ID and file name.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved the dish image"),
-            @ApiResponse(responseCode = "404", description = "Image not found"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @GetMapping(value = {"/dish/{id}/{fileName}"})
-    public ResponseEntity<byte[]> getDishImage(@PathVariable("id") String dir,
-                                               @PathVariable("fileName") String photo, HttpServletResponse response) {
-        log.debug("Requested dish image [{}]", photo);
-        String path = dishImagePath + "/" + dir + "/" + photo;
         return getImage(path, response);
     }
 
@@ -189,5 +192,4 @@ public class ImageController {
         }
         return data;
     }
-
 }

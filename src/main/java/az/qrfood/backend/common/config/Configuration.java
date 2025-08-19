@@ -61,8 +61,8 @@ import java.util.Locale;
 @org.springframework.context.annotation.Configuration
 public class Configuration {
 
-    @Value("${folder.root.images.eatery}")
-    private String imagesFolder;
+    @Value("${folder.root.uploads}")
+    private String appUploads;
 
     @Value("${base.url}")
     private String baseUrl;
@@ -115,7 +115,7 @@ public class Configuration {
     @Bean
     public CommandLineRunner runAtStartup() {
         return args -> {
-            Util.createFolderIfNotExists(imagesFolder);
+            Util.createFolderIfNotExists(appUploads);
         };
     }
 

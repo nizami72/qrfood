@@ -102,7 +102,7 @@ public class CategoryService {
         categoryRepository.save(category);
         log.debug("Dish category created [{}]", category);
 
-        String destinationFolder = storageService.createCategoryFolder(category.getId());
+        String destinationFolder = storageService.createCategoryFolder(eateryId, category.getId());
         String fileName = category.getCategoryImageFileName();
         String sourceFile = null;
         if (destinationFolder != null && multipartFile != null) {
@@ -266,7 +266,7 @@ public class CategoryService {
             category.setCategoryImageFileName(newFileName);
 
             // Save the new image
-            String folderPath = storageService.createCategoryFolder(category.getId());
+            String folderPath = storageService.createCategoryFolder(category.getEatery().getId(), category.getId());
             if (folderPath != null) {
                 storageService.saveFile(folderPath, multipartFile, newFileName);
                 log.info("Updated category image [{}] saved at dir [{}]", newFileName, folderPath);

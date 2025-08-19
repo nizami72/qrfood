@@ -38,9 +38,9 @@ public class FrontendPathConfig {
     // Image paths
     @Value("${full.path.fe.eatery.image}")
     private String imagesEateryUri;
-    @Value("${full.path.fe.category.image}")
+    @Value("${api.image.category}")
     private String imagesCategoriesUri;
-    @Value("${full.path.fe.dish.image}")
+    @Value("${api.image.dish}")
     private String imagesDishesUri;
     @Value("${url.fe.predefined.category.image}")
     private String imagesPredefinedCategoryUri;

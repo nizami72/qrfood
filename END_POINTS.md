@@ -45,9 +45,9 @@
 * /api/eatery/{eateryId}/user/register/general
 * /api/eatery/{eateryId}/user/users
 * /api/eatery/{eateryId}/user/{userId}
-* /api/image/api/eatery/{id}/{fileName}
-* /api/image/category/{id}/{fileName}
-* /api/image/dish/{id}/{fileName}
+* /api/image/eatery/{eateryId}/category/{categoryId}/file/{fileName}
+* /api/image/eatery/{eateryId}/dish/{dishId}/file/{fileName}
+* /api/image/eatery/{eateryId}/file/{fileName}
 * /api/image/predefined/category/{fileName}
 * /api/image/predefined/dish/{fileName}
 * /api/logs/frontend

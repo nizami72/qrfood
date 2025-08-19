@@ -1,0 +1,83 @@
+@startuml Dish Creation Flow
+
+actor User
+participant "Frontend\n(Dishes.jsx)" as Frontend
+participant "Image Utils\n(imageUtils.js)" as ImageUtils
+participant "Backend API" as API
+participant "DishService" as Service
+participant "StorageService" as Storage
+database "Database" as DB
+
+title Dish Creation Flow
+
+== User Interaction ==
+User -> Frontend: Click "Add Dish" button
+Frontend -> Frontend: Show dish creation form
+User -> Frontend: Fill dish details (name, description, price)
+User -> Frontend: Select image file
+
+== Image Processing ==
+Frontend -> ImageUtils: handleImageChangeUtil(file)
+note right: Validate file size (max 2MB)
+alt File size > 2MB
+    ImageUtils --> Frontend: Return error
+    Frontend -> User: Display error message
+else File size <= 2MB
+    ImageUtils -> ImageUtils: Create preview URL
+    ImageUtils -> ImageUtils: convertToWebP(file)
+    note right: Convert image to WebP format
+    ImageUtils --> Frontend: Return WebP image and preview URL
+    Frontend -> Frontend: Update form state with image
+end
+
+== Form Submission ==
+User -> Frontend: Submit form
+Frontend -> Frontend: Validate form data
+note right: Check required fields, price, etc.
+alt Validation fails
+    Frontend -> User: Display error message
+else Validation passes
+    Frontend -> Frontend: Create FormData object
+    Frontend -> Frontend: Add dish data as JSON
+    Frontend -> Frontend: Add WebP image
+    Frontend -> API: POST /api/eatery/{restaurantId}/category/{categoryId}
+    note right: Send FormData with dish data and image
+end
+
+== Backend Processing ==
+API -> Service: addDish(dto, multipartFile)
+Service -> Service: Validate category exists
+alt Category not found
+    Service --> API: Throw IllegalArgumentException
+    API --> Frontend: Return error response
+    Frontend -> User: Display error message
+else Category found
+    Service -> Service: Create DishEntity from DTO
+    Service -> DB: Save dish entity (first save to get ID)
+    DB --> Service: Return saved entity with ID
+    Service -> Service: Create translations for each language
+    Service -> Service: Add translations to dish entity
+    
+    == Image Storage ==
+    Service -> Storage: saveImage(multipartFile, dishEntity)
+    Storage -> Storage: Create dishes folder
+    alt New image provided
+        Storage -> Storage: Generate unique filename
+        Storage -> Storage: Save file to disk
+        Storage --> Service: Return success
+        Service -> Service: Update dish entity with image filename
+    end
+    
+    Service -> DB: Save updated dish entity
+    DB --> Service: Return final saved entity
+    Service --> API: Return created dish
+    API --> Frontend: Return success response
+    
+    == UI Update ==
+    Frontend -> API: GET category info with dishes
+    API --> Frontend: Return updated category data
+    Frontend -> Frontend: Update UI with new dish
+    Frontend -> User: Display success message
+end
+
+@enduml

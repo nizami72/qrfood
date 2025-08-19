@@ -242,7 +242,8 @@ public class DishService {
 
     // Update image if provided
     private void saveImage(MultipartFile multipartFile, DishEntity dishEntity) {
-        String folder = storageService.createDishesFolder(dishEntity.getId());
+        String folder = storageService.createDishesFolder(dishEntity.getCategory().getEatery().getId(),
+                dishEntity.getId());
         if (multipartFile != null && !multipartFile.isEmpty()) {
             String fileName = Util.generateFileName() + Objects.requireNonNull(
                     multipartFile.getOriginalFilename()).substring(multipartFile.getOriginalFilename()

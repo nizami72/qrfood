@@ -148,9 +148,9 @@
 
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
-| [GET getCategoryImage(String, String, HttpServletResponse)](src/main/java/az/qrfood/backend/image/controller/ImageController.java) | `public` | `/api/image/category/{id}/{fileName}` |
-| [GET getDishImage(String, String, HttpServletResponse)](src/main/java/az/qrfood/backend/image/controller/ImageController.java) | `public` | `/api/image/dish/{id}/{fileName}` |
-| [GET getEateryImage(String, String, HttpServletResponse)](src/main/java/az/qrfood/backend/image/controller/ImageController.java) | `public` | `/api/image/api/eatery/{id}/{fileName}` |
+| [GET getCategoryImageN(String, String, String, HttpServletResponse)](src/main/java/az/qrfood/backend/image/controller/ImageController.java) | `public` | `/api/image/eatery/{eateryId}/category/{categoryId}/file/{fileName}` |
+| [GET getDishImageN(String, String, String, HttpServletResponse)](src/main/java/az/qrfood/backend/image/controller/ImageController.java) | `public` | `/api/image/eatery/{eateryId}/dish/{dishId}/file/{fileName}` |
+| [GET getEateryImageN(String, String, HttpServletResponse)](src/main/java/az/qrfood/backend/image/controller/ImageController.java) | `public` | `/api/image/eatery/{eateryId}/file/{fileName}` |
 | [GET getPredefinedCatImage(String, HttpServletResponse)](src/main/java/az/qrfood/backend/image/controller/ImageController.java) | `public` | `/api/image/predefined/category/{fileName}` |
 | [GET getPredefinedDishImage(String, HttpServletResponse)](src/main/java/az/qrfood/backend/image/controller/ImageController.java) | `public` | `/api/image/predefined/dish/{fileName}` |
 
