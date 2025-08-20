@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import javax.imageio.ImageIO;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -254,6 +255,27 @@ public class Util {
             // или логировать ошибку более подробно.
             throw new RuntimeException("Error serializing object to JSON: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Checks if a given LocalDateTime is not older than a specified duration from the current time.
+     *
+     * @param dateTime The LocalDateTime to check.
+     * @param period The period of time to subtract from the current time.
+     * @param unit The unit of the period (e.g., ChronoUnit.MINUTES, ChronoUnit.HOURS, ChronoUnit.DAYS).
+     * @return true if the dateTime is not older than now minus the specified period, false otherwise.
+     */
+    public static boolean isNotOlder(LocalDateTime dateTime, long period, ChronoUnit unit) {
+        if (dateTime == null || period < 0 || !isSupportedUnit(unit)) {
+            throw new IllegalArgumentException("Invalid arguments provided.");
+        }
+
+        LocalDateTime threshold = LocalDateTime.now().minus(period, unit);
+        return !dateTime.isBefore(threshold);
+    }
+
+    private static boolean isSupportedUnit(ChronoUnit unit) {
+        return unit == ChronoUnit.MINUTES || unit == ChronoUnit.HOURS || unit == ChronoUnit.DAYS;
     }
 }
 

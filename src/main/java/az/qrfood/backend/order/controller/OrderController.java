@@ -3,7 +3,6 @@ package az.qrfood.backend.order.controller;
 import static az.qrfood.backend.client.controller.ClientDeviceController.DEVICE;
 
 import az.qrfood.backend.client.service.ClientDeviceService;
-import az.qrfood.backend.order.OrderStatus;
 import az.qrfood.backend.order.dto.OrderDto;
 import az.qrfood.backend.order.dto.OrderStatusUpdateDTO;
 import az.qrfood.backend.order.entity.Order;
@@ -305,8 +304,8 @@ public class OrderController {
         }
 
         // Get orders with the status "CREATED" for the specified eatery and device
-        List<OrderDto> orders = orderService.getAllOrdersByEateryIdAndDeviceUuid(
-                eateryId, OrderStatus.CREATED, deviceUuid);
+        List<OrderDto> orders = orderService.getClientOrders(
+                eateryId, deviceUuid);
 
         return ResponseEntity.ok(orders);
     }

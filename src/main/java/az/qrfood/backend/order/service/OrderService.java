@@ -2,6 +2,7 @@ package az.qrfood.backend.order.service;
 
 import az.qrfood.backend.client.entity.ClientDevice;
 import az.qrfood.backend.client.repository.ClientDeviceRepository;
+import az.qrfood.backend.common.Util;
 import az.qrfood.backend.common.exception.OrderNotFoundException;
 import az.qrfood.backend.common.exception.UnauthorizedStatusChangeException;
 import az.qrfood.backend.dish.entity.DishEntity;
@@ -21,6 +22,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -48,6 +50,7 @@ public class OrderService {
     //</editor-fold>
 
     //<editor-fold desc="Constructor">
+
     /**
      * Constructs an OrderService with necessary dependencies.
      *
@@ -212,7 +215,7 @@ public class OrderService {
             // todo consider update order status depending on role
             try {
                 OrderStatus status = orderDTO.getStatus();
-                if(canUpdateStatus(auth, status)){
+                if (canUpdateStatus(auth, status)) {
                     order.setStatus(status);
                 } else {
                     throw new UnauthorizedStatusChangeException();
@@ -299,23 +302,18 @@ public class OrderService {
      * @param deviceUuid The UUID of the client device to filter orders by.
      * @return A list of {@link OrderDto} representing orders that match all criteria.
      */
-    public List<OrderDto> getAllOrdersByEateryIdAndDeviceUuid(Long eateryId, OrderStatus status, String deviceUuid) {
+    public List<OrderDto> getClientOrders(Long eateryId, String deviceUuid) {
 
         // Find the client device by UUID
         return clientDeviceRepository.findByUuid(deviceUuid)
                 .map(clientDevice -> {
-                    // Get all orders from the client device
-                    List<Order> allOrders = clientDevice.getOrders();
-
                     // Filter orders by eatery ID and status
-                    List<Order> filteredOrders = allOrders.stream()
-                            .filter(
-                                    order ->
-//                                            order.getStatus() == status &&
-                                    order.getTable() != null &&
-                                    order.getTable().getEatery() != null &&
-                                    eateryId.equals(order.getTable().getEatery().getId()))
-                            .toList();
+                    List<Order> filteredOrders = clientDevice.getOrders().stream()
+                            .filter(order ->
+                                    order.getTable() != null && order.getTable().getEatery() != null &&
+                                            eateryId.equals(order.getTable().getEatery().getId()))
+                            .filter(order ->
+                                    Util.isNotOlder(order.getCreatedAt(), 1, ChronoUnit.DAYS)).toList();
 
                     return orderMapper.toDtoList(filteredOrders);
                 })
@@ -329,7 +327,7 @@ public class OrderService {
             return false;
         }
 
-        if(roles.contains(Role.SUPER_ADMIN) || roles.contains(Role.EATERY_ADMIN)) return true;
+        if (roles.contains(Role.SUPER_ADMIN) || roles.contains(Role.EATERY_ADMIN)) return true;
 
         return switch (status) {
             case CREATED -> roles.contains(Role.WAITER);
