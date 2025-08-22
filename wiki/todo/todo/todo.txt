@@ -31,4 +31,4 @@ we can do all things for you, send your menu, then change the password +qr
 Fix adding again the same dish from predefind
 Sort all orders in a clint device and decide when it shsould be put in deactiv state
 Sort all orders in a clint device and decide when it shsould be put in deactiv state +pr
-(A) Sort all orders in a clint device and decide when it shsould be put in deactiv state +qr
+Install KDE connect
