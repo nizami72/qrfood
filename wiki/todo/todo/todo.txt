@@ -32,3 +32,5 @@ Fix adding again the same dish from predefind
 Sort all orders in a clint device and decide when it shsould be put in deactiv state
 Sort all orders in a clint device and decide when it shsould be put in deactiv state +pr
 Install KDE connect
+Create information enntries on eatery editing page +qr
+Add page refresh on phone orders page +qr
