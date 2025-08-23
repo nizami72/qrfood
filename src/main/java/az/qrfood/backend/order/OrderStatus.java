@@ -14,16 +14,22 @@ public enum OrderStatus {
     CREATED,
 
     /**
-     * The order is currently being prepared (e.g., in the kitchen).
+     * The order is in progress (at least one item is being prepared).
      */
-    PREPARING,
+    IN_PROGRESS,
 
     /**
-     * The order is ready for pickup or delivery.
+     * The order is ready for pickup (all items are ready).
      */
-    READY,
+    READY_FOR_PICKUP,
 
     /**
+     * The order has been served (all items have been served).
+     */
+    SERVED,
+
+    /**
+     *
      * The order has been paid for.
      */
     PAID,

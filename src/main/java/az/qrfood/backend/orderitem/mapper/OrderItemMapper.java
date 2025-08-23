@@ -46,6 +46,7 @@ public class OrderItemMapper {
                 .id(orderItem.getId())
                 .dishId(orderItem.getDishEntity().getId())
                 .orderId(orderItem.getOrder().getId())
+                .dishName(dishName)
                 .quantity(orderItem.getQuantity())
                 .note(orderItem.getNote())
                 .price(orderItem.getDishEntity().getPrice())

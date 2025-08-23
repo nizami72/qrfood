@@ -1,6 +1,5 @@
 package az.qrfood.backend.orderitem.controller;
 
-import az.qrfood.backend.order.OrderItemStatus;
 import az.qrfood.backend.order.dto.OrderItemDTO;
 import az.qrfood.backend.order.entity.OrderItem;
 import az.qrfood.backend.orderitem.service.OrderItemService;
@@ -150,41 +149,6 @@ public class OrderItemController {
 
         // Update the order item
         OrderItemDTO result = orderItemService.updateOrderItem(orderItemId, orderItemDTO);
-
-        // Send WebSocket notification about the updated order
-        webSocketService.notifyOrderUpdate(String.valueOf(eateryId), orderId, null);
-
-        return ResponseEntity.ok(result);
-    }
-
-    /**
-     * PUT to update the status of an existing order item.
-     *
-     * @param orderItemId the ID of the order item to update
-     * @param status the new status for the order item
-     * @return the ResponseEntity with status 200 (OK) and with body the updated order item
-     */
-    @Operation(summary = "Update the status of an existing order item", description = "Updates the status of an existing order item by its ID.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Order item status updated successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid status value"),
-            @ApiResponse(responseCode = "404", description = "Order item not found"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER')")
-    @PutMapping("${order.item.id}/status/{status}")
-    public ResponseEntity<OrderItemDTO> updateOrderItemStatus(
-            @PathVariable Long orderItemId,
-            @PathVariable OrderItemStatus status) {
-        log.debug("REST request to update OrderItem status : {}, {}", orderItemId, status);
-
-        // Get the order item entity before update to extract the eatery ID and order ID
-        OrderItem orderItem = orderItemService.getOrderItemEntityById(orderItemId);
-        Long orderId = orderItem.getOrder().getId();
-        Long eateryId = orderItem.getOrder().getTable().getEatery().getId();
-
-        // Update the order item status
-        OrderItemDTO result = orderItemService.updateOrderItemStatus(orderItemId, status);
 
         // Send WebSocket notification about the updated order
         webSocketService.notifyOrderUpdate(String.valueOf(eateryId), orderId, null);

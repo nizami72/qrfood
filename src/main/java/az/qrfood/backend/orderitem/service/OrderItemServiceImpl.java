@@ -131,8 +131,8 @@ public class OrderItemServiceImpl implements OrderItemService {
             orderItem.setNote(orderItemDTO.getNote());
         }
 
-        if (orderItemDTO.getStatus() != null) {
-            orderItem.setStatus(orderItemDTO.getStatus());
+        if (orderItemDTO.getStatus() != null && orderItemDTO.getStatus() != orderItem.getStatus()) {
+            updateOrderItemStatus(orderItem, orderItemDTO.getStatus());
         }
 
         OrderItem updatedOrderItem = orderItemRepository.save(orderItem);
@@ -165,14 +165,75 @@ public class OrderItemServiceImpl implements OrderItemService {
      */
     @Override
     @Transactional
-    public OrderItemDTO updateOrderItemStatus(Long id, az.qrfood.backend.order.OrderItemStatus status) {
-        log.debug("Request to update OrderItem status : {} to {}", id, status);
-
-        OrderItem orderItem = orderItemRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("OrderItem not found with id " + id));
+    public OrderItemDTO updateOrderItemStatus(OrderItem orderItem, az.qrfood.backend.order.OrderItemStatus status) {
+        log.debug("Request to update OrderItem [{}] to new status [{}]", orderItem.getId(), status);
 
         orderItem.setStatus(status);
         OrderItem updatedOrderItem = orderItemRepository.save(orderItem);
+
+        // Update the parent order's status based on the statuses of all its order items
+        updateParentOrderStatus(orderItem.getOrder());
+
         return orderItemMapper.toDto(updatedOrderItem);
+    }
+
+    /**
+     * Updates the status of an order based on the statuses of its order items.
+     * <p>
+     * The rules for determining the order status are:
+     * - If all order items are CREATED → order CREATED
+     * - If there is at least one order item PREPARING → order IN_PROGRESS
+     * - If all order items are READY → order READY_FOR_PICKUP
+     * - If all order items are SERVED → order SERVED
+     * - If the order is closed and paid → PAID
+     * - If the order is canceled → CANCELLED
+     * </p>
+     *
+     * @param order The order to update.
+     */
+    private void updateParentOrderStatus(Order order) {
+        log.debug("Updating order status for order ID: {}", order.getId());
+
+        // If the order is already PAID or CANCELLED, don't change its status
+        if (order.getStatus() == az.qrfood.backend.order.OrderStatus.PAID || 
+            order.getStatus() == az.qrfood.backend.order.OrderStatus.CANCELLED) {
+            return;
+        }
+
+        List<OrderItem> orderItems = orderItemRepository.findByOrderId(order.getId());
+
+        if (orderItems.isEmpty()) {
+            return;
+        }
+
+        // Check if there is at least one order item with PREPARING status
+        boolean hasPreparingItem = orderItems.stream()
+                .anyMatch(item -> item.getStatus() == az.qrfood.backend.order.OrderItemStatus.PREPARING);
+
+        if (hasPreparingItem) {
+            order.setStatus(az.qrfood.backend.order.OrderStatus.IN_PROGRESS);
+            orderRepository.save(order);
+            return;
+        }
+
+        // Check if all order items have the same status
+        boolean allCreated = orderItems.stream()
+                .allMatch(item -> item.getStatus() == az.qrfood.backend.order.OrderItemStatus.CREATED);
+
+        boolean allReady = orderItems.stream()
+                .allMatch(item -> item.getStatus() == az.qrfood.backend.order.OrderItemStatus.READY);
+
+        boolean allServed = orderItems.stream()
+                .allMatch(item -> item.getStatus() == az.qrfood.backend.order.OrderItemStatus.SERVED);
+
+        if (allCreated) {
+            order.setStatus(az.qrfood.backend.order.OrderStatus.CREATED);
+        } else if (allReady) {
+            order.setStatus(az.qrfood.backend.order.OrderStatus.READY_FOR_PICKUP);
+        } else if (allServed) {
+            order.setStatus(az.qrfood.backend.order.OrderStatus.SERVED);
+        }
+
+        orderRepository.save(order);
     }
 }

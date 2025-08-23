@@ -40,6 +40,10 @@ public class OrderItemDTO {
     private Long orderId;
 
     /**
+     * The name of the dish.
+     */
+    private String dishName;
+    /**
      * The quantity of the dish ordered.
      */
     private Integer quantity;

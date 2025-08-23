@@ -290,15 +290,14 @@ public class OrderService {
     }
 
     /**
-     * Retrieves orders filtered by eatery ID, status, and device UUID.
+     * Retrieves orders filtered by eatery ID and device UUID.
      * <p>
-     * This method is used to check if a specific device has any orders with a given status
+     * This method is used to check if a specific device has any orders
      * at a specific eatery. It's primarily used to determine whether to show the order
      * decision page or the menu page when a user scans a QR code.
      * </p>
      *
      * @param eateryId   The ID of the eatery to filter orders by.
-     * @param status     The {@link OrderStatus} to filter orders by.
      * @param deviceUuid The UUID of the client device to filter orders by.
      * @return A list of {@link OrderDto} representing orders that match all criteria.
      */
@@ -331,8 +330,9 @@ public class OrderService {
 
         return switch (status) {
             case CREATED -> roles.contains(Role.WAITER);
-            case PREPARING -> roles.contains(Role.KITCHEN_ADMIN);
-            case READY -> roles.contains(Role.KITCHEN_ADMIN);
+            case IN_PROGRESS -> roles.contains(Role.KITCHEN_ADMIN);
+            case READY_FOR_PICKUP -> roles.contains(Role.KITCHEN_ADMIN);
+            case SERVED -> roles.contains(Role.WAITER);
             case PAID -> roles.contains(Role.CASHIER);
             case CANCELLED -> roles.contains(Role.WAITER) || roles.contains(Role.CASHIER);
         };
