@@ -96,6 +96,8 @@ public class FrontendPathConfig {
     String orderTableId;
     @Value("${order}")
     String order;
+    @Value("${orders}")
+    String orders;
     @Value("${order.post}")
     String orderPost;
     @Value("${order.item.order.id}")
@@ -172,6 +174,7 @@ public class FrontendPathConfig {
         paths.put("orderIdPut", orderIdPut);
         paths.put("orderTableId", orderTableId);
         paths.put("order", order);
+        paths.put("orders", orders);
         paths.put("orderPost", orderPost);
         paths.put("ORDER ITEMS", "--------------------");
         paths.put("orderItem", orderItem);

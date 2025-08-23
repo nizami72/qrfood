@@ -24,7 +24,6 @@
 * /api/eatery/{eateryId}/category/{categoryId}
 * /api/eatery/{eateryId}/category/{categoryId}/dish
 * /api/eatery/{eateryId}/category/{categoryId}/dish/{dishId}
-* /api/eatery/{eateryId}/order
 * /api/eatery/{eateryId}/order-item
 * /api/eatery/{eateryId}/order-item/order/{orderId}
 * /api/eatery/{eateryId}/order-item/{orderItemId}
@@ -35,6 +34,7 @@
 * /api/eatery/{eateryId}/order/{orderId}
 * /api/eatery/{eateryId}/order/{orderId}/delete
 * /api/eatery/{eateryId}/order/{orderId}/put
+* /api/eatery/{eateryId}/orders
 * /api/eatery/{eateryId}/table
 * /api/eatery/{eateryId}/table-assignment
 * /api/eatery/{eateryId}/table-assignment/table/{tableId}

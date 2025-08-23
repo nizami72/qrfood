@@ -112,7 +112,7 @@ public class OrderController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
-    @GetMapping("${order}")
+    @GetMapping("${orders}")
     public ResponseEntity<List<OrderDto>> getOrdersByEateryId(@PathVariable Long eateryId) {
         log.debug("REST request to get Orders for eatery ID: {}", eateryId);
         return ResponseEntity.ok(orderService.getOrdersByEateryId(eateryId));
