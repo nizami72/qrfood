@@ -1,7 +1,10 @@
 package az.qrfood.backend.order.entity;
 
 import az.qrfood.backend.dish.entity.DishEntity;
+import az.qrfood.backend.order.OrderItemStatus;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -65,4 +68,11 @@ public class OrderItem {
      * This ensures that the price is fixed even if the dish's price changes later.
      */
     private BigDecimal priceAtOrder;
+
+    /**
+     * The current status of this order item.
+     * Default status is CREATED when a new order item is created.
+     */
+    @Enumerated(EnumType.STRING)
+    private OrderItemStatus status = OrderItemStatus.CREATED;
 }

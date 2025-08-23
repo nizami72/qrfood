@@ -93,8 +93,8 @@ public class OrderItemServiceImpl implements OrderItemService {
         log.debug("Request to create OrderItem : {}", orderItemDTO);
 
         // Validate order exists
-        Order order = orderRepository.findById(orderItemDTO.getOrderItemId())
-                .orElseThrow(() -> new EntityNotFoundException("Order not found with id " + orderItemDTO.getOrderItemId()));
+        Order order = orderRepository.findById(orderItemDTO.getOrderId())
+                .orElseThrow(() -> new EntityNotFoundException("Order not found with id " + orderItemDTO.getOrderId()));
 
         // Validate dish exists
         DishEntity dish = dishRepository.findById(orderItemDTO.getDishId())
@@ -131,6 +131,10 @@ public class OrderItemServiceImpl implements OrderItemService {
             orderItem.setNote(orderItemDTO.getNote());
         }
 
+        if (orderItemDTO.getStatus() != null) {
+            orderItem.setStatus(orderItemDTO.getStatus());
+        }
+
         OrderItem updatedOrderItem = orderItemRepository.save(orderItem);
         return orderItemMapper.toDto(updatedOrderItem);
     }
@@ -156,4 +160,19 @@ public class OrderItemServiceImpl implements OrderItemService {
                 .orElseThrow(() -> new EntityNotFoundException("OrderItem not found with id " + id));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public OrderItemDTO updateOrderItemStatus(Long id, az.qrfood.backend.order.OrderItemStatus status) {
+        log.debug("Request to update OrderItem status : {} to {}", id, status);
+
+        OrderItem orderItem = orderItemRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("OrderItem not found with id " + id));
+
+        orderItem.setStatus(status);
+        OrderItem updatedOrderItem = orderItemRepository.save(orderItem);
+        return orderItemMapper.toDto(updatedOrderItem);
+    }
 }

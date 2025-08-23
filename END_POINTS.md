@@ -28,6 +28,7 @@
 * /api/eatery/{eateryId}/order-item
 * /api/eatery/{eateryId}/order-item/order/{orderId}
 * /api/eatery/{eateryId}/order-item/{orderItemId}
+* /api/eatery/{eateryId}/order-item/{orderItemId}/status/{status}
 * /api/eatery/{eateryId}/order/post
 * /api/eatery/{eateryId}/order/status/created
 * /api/eatery/{eateryId}/order/status/{status}

@@ -1,5 +1,6 @@
 package az.qrfood.backend.order.dto;
 
+import az.qrfood.backend.order.OrderItemStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,14 +35,9 @@ public class OrderItemDTO {
     private Long dishId;// todo: orderItemId vs id
 
     /**
-     * The ID of the order item itself, potentially distinct from the dish ID.
+     * The ID of the order itself that this item belongs to., potentially distinct from the dish ID.
      */
-    private Long orderItemId;
-
-    /**
-     * The name of the dish.
-     */
-    private String name;
+    private Long orderId;
 
     /**
      * The quantity of the dish ordered.
@@ -54,9 +50,12 @@ public class OrderItemDTO {
     private String note;
 
     /**
-     * The price of this individual order item (price per unit * quantity).
+     * The price of this individual order item (price per-unit * quantity).
      */
     private BigDecimal price;
 
-
+    /**
+     * The current status of this order item.
+     */
+    private OrderItemStatus status;
 }

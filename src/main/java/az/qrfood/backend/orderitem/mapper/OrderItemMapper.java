@@ -45,11 +45,11 @@ public class OrderItemMapper {
         return OrderItemDTO.builder()
                 .id(orderItem.getId())
                 .dishId(orderItem.getDishEntity().getId())
-                .orderItemId(orderItem.getOrder().getId())
-                .name(dishName)
+                .orderId(orderItem.getOrder().getId())
                 .quantity(orderItem.getQuantity())
                 .note(orderItem.getNote())
                 .price(orderItem.getDishEntity().getPrice())
+                .status(orderItem.getStatus())
                 .build();
     }
 

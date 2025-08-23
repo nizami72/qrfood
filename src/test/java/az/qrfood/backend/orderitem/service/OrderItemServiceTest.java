@@ -77,8 +77,7 @@ public class OrderItemServiceTest {
         orderItemDTO = OrderItemDTO.builder()
                 .id(1L)
                 .dishId(1L)
-                .orderItemId(1L)
-                .name("Test Dish")
+                .orderId(1L)
                 .quantity(2)
                 .note("Test note")
                 .build();
@@ -96,7 +95,6 @@ public class OrderItemServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(1L, result.getId());
-        assertEquals("Test Dish", result.getName());
         assertEquals(2, result.getQuantity());
         assertEquals("Test note", result.getNote());
         verify(orderItemRepository).findById(1L);
@@ -191,8 +189,7 @@ public class OrderItemServiceTest {
         OrderItemDTO updatedDTO = OrderItemDTO.builder()
                 .id(1L)
                 .dishId(1L)
-                .orderItemId(1L)
-                .name("Test Dish")
+                .orderId(1L)
                 .quantity(3)
                 .note("Updated note")
                 .build();

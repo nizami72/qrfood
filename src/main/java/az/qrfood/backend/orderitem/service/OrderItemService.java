@@ -67,4 +67,13 @@ public interface OrderItemService {
      * @return The {@link OrderItem} entity.
      */
     OrderItem getOrderItemEntityById(Long id);
+
+    /**
+     * Updates the status of an existing order item.
+     *
+     * @param id     The ID of the order item to update.
+     * @param status The new status for the order item.
+     * @return The updated {@link OrderItemDTO}.
+     */
+    OrderItemDTO updateOrderItemStatus(Long id, az.qrfood.backend.order.OrderItemStatus status);
 }

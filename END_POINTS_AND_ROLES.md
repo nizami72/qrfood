@@ -184,6 +184,7 @@
 | [GET getOrderItemsByOrderId(Long)](src/main/java/az/qrfood/backend/orderitem/controller/OrderItemController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER, CASHIER` | `/api/eatery/{eateryId}/order-item/order/{orderId}` |
 | [POST postOrderItem(OrderItemDTO)](src/main/java/az/qrfood/backend/orderitem/controller/OrderItemController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/order-item/order/{orderId}` |
 | [PUT putOrderItem(Long, OrderItemDTO)](src/main/java/az/qrfood/backend/orderitem/controller/OrderItemController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/order-item/{orderItemId}` |
+| [PUT updateOrderItemStatus(Long, OrderItemStatus)](src/main/java/az/qrfood/backend/orderitem/controller/OrderItemController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER` | `/api/eatery/{eateryId}/order-item/{orderItemId}/status/{status}` |
 
 ###### [🔝](#navigation)
 
