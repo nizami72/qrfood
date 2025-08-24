@@ -2,6 +2,12 @@ package az.qrfood.backend.table.controller;
 
 import az.qrfood.backend.table.dto.TableDto;
 import az.qrfood.backend.table.service.TableService;
+import az.qrfood.backend.tableassignment.dto.TableAssignmentDto;
+import az.qrfood.backend.tableassignment.service.TableAssignmentService;
+import az.qrfood.backend.user.entity.User;
+import az.qrfood.backend.user.entity.UserProfile;
+import az.qrfood.backend.user.repository.UserRepository;
+import az.qrfood.backend.user.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -11,8 +17,12 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @Log4j2
@@ -20,15 +30,23 @@ import java.util.List;
 public class TableController {
 
     private final TableService tableService;
+    private final TableAssignmentService tableAssignmentService;
+    private final UserRepository userRepository;
+    private final UserProfileService userProfileService;
 
-    public TableController(TableService tableService) {
+    public TableController(TableService tableService, TableAssignmentService tableAssignmentService,
+                          UserRepository userRepository, UserProfileService userProfileService) {
         this.tableService = tableService;
+        this.tableAssignmentService = tableAssignmentService;
+        this.userRepository = userRepository;
+        this.userProfileService = userProfileService;
     }
 
     /**
-     * GET all tables for a specific eatery
+     * GET all tables for a specific eatery.
+     * If the user is a waiter, only returns the tables that this waiter is assigned to.
      */
-    @Operation(summary = "Get all tables for an eatery", description = "Retrieves a list of all tables for the specified eatery")
+    @Operation(summary = "Get all tables for an eatery", description = "Retrieves a list of all tables for the specified eatery. If the user is a waiter, only returns the tables that this waiter is assigned to.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved list of tables"),
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
@@ -37,7 +55,54 @@ public class TableController {
     @GetMapping("${table}")
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'WAITER', 'KITCHEN_ADMIN', 'CASHIER')")
     public ResponseEntity<List<TableDto>> getTables(@PathVariable Long eateryId) {
-        return ResponseEntity.ok(tableService.listTablesForEatery(eateryId));
+        try {
+            // Get the current authenticated user
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+
+            // Check if the user has the WAITER role
+            boolean isWaiter = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("WAITER"));
+
+            if (isWaiter) {
+                // Get the waiter's ID
+                Optional<User> userOptional = userRepository.findByUsername(username);
+                if (userOptional.isPresent()) {
+                    User user = userOptional.get();
+                    Optional<UserProfile> userProfileOptional = userProfileService.findProfileByUser(user);
+                    if (userProfileOptional.isPresent()) {
+                        UserProfile userProfile = userProfileOptional.get();
+                        Long waiterId = userProfile.getId();
+
+                        // Get all tables assigned to this waiter
+                        List<TableAssignmentDto> assignments = tableAssignmentService.getTableAssignmentsByWaiterId(waiterId);
+
+                        // Extract the table IDs from the assignments
+                        List<Long> assignedTableIds = assignments.stream()
+                                .map(TableAssignmentDto::getTableId)
+                                .collect(Collectors.toList());
+
+                        // Get all tables for the eatery
+                        List<TableDto> allTables = tableService.listTablesForEatery(eateryId);
+
+                        // Filter the tables to only include those assigned to the waiter
+                        List<TableDto> assignedTables = allTables.stream()
+                                .filter(table -> assignedTableIds.contains(table.id()))
+                                .collect(Collectors.toList());
+
+                        return ResponseEntity.ok(assignedTables);
+                    }
+                }
+                // If we couldn't get the waiter's ID, return an empty list
+                return ResponseEntity.ok(List.of());
+            } else {
+                // For non-waiter users, return all tables to the eatery
+                return ResponseEntity.ok(tableService.listTablesForEatery(eateryId));
+            }
+        } catch (EntityNotFoundException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
