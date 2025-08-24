@@ -1,7 +1,5 @@
 package az.qrfood.backend.auth.config;
 
-import static org.springframework.http.HttpMethod.GET;
-
 import az.qrfood.backend.auth.filter.EateryIdCheckFilter;
 import az.qrfood.backend.auth.filter.JwtRequestFilter;
 import az.qrfood.backend.auth.service.CustomUserDetailsService;

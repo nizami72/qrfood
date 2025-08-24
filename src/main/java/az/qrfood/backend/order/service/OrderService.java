@@ -209,14 +209,16 @@ public class OrderService {
 
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found with id " + id));
+        OrderStatus orderDtoStatus = orderDTO.getStatus();
 
         // Update only allowed fields
-        if (orderDTO.getStatus() != null) {
-            // todo consider update order status depending on role
+        if (orderDtoStatus != null
+                && orderDtoStatus != order.getStatus()
+                && (orderDtoStatus == OrderStatus.PAID || orderDtoStatus == OrderStatus.CANCELLED)) {
+
             try {
-                OrderStatus status = orderDTO.getStatus();
-                if (canUpdateStatus(auth, status)) {
-                    order.setStatus(status);
+                if (canUpdateStatus(auth, orderDtoStatus)) {
+                    order.setStatus(orderDtoStatus);
                 } else {
                     throw new UnauthorizedStatusChangeException();
                 }

@@ -34,3 +34,4 @@ Sort all orders in a clint device and decide when it shsould be put in deactiv s
 Install KDE connect
 Create information enntries on eatery editing page +qr
 Add page refresh on phone orders page +qr
+Waiter can see only its own tables, and can create order for its tables +qr

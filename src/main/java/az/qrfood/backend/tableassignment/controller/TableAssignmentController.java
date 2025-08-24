@@ -76,7 +76,7 @@ public class TableAssignmentController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("${table.assignment}")
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN')")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'CASHIER', 'WAITER')")
     public ResponseEntity<List<TableAssignmentDto>> getAllTableAssignments(@PathVariable Long eateryId) {
         try {
             List<TableAssignmentDto> assignments = tableAssignmentService.getAllTableAssignments(eateryId);

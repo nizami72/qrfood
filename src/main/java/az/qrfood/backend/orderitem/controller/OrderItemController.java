@@ -104,7 +104,7 @@ public class OrderItemController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'WAITER')")
     @PostMapping("${order.item.order.id}")
     public ResponseEntity<OrderItemDTO> postOrderItem(@RequestBody OrderItemDTO orderItemDTO) {
         log.debug("REST request to create OrderItem : {}", orderItemDTO);
@@ -135,7 +135,7 @@ public class OrderItemController {
             @ApiResponse(responseCode = "404", description = "Order item not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'WAITER')")
     @PutMapping("${order.item.id}")
     public ResponseEntity<OrderItemDTO> putOrderItem(
             @PathVariable Long orderItemId,

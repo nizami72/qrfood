@@ -79,7 +79,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'CASHIER', 'WAITER', 'KITCHEN_ADMIN')")
     @GetMapping("${usr}")
     public ResponseEntity<List<UserResponse>> getAllEateryUsers(@PathVariable Long eateryId) {
         List<UserResponse> responses = userService.getAllUsers(eateryId);

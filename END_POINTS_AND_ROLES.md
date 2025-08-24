@@ -182,8 +182,8 @@
 | [GET getAllOrderItems()](src/main/java/az/qrfood/backend/orderitem/controller/OrderItemController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/order-item` |
 | [GET getOrderItemById(Long)](src/main/java/az/qrfood/backend/orderitem/controller/OrderItemController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER, CASHIER` | `/api/eatery/{eateryId}/order-item/{orderItemId}` |
 | [GET getOrderItemsByOrderId(Long)](src/main/java/az/qrfood/backend/orderitem/controller/OrderItemController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER, CASHIER` | `/api/eatery/{eateryId}/order-item/order/{orderId}` |
-| [POST postOrderItem(OrderItemDTO)](src/main/java/az/qrfood/backend/orderitem/controller/OrderItemController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/order-item/order/{orderId}` |
-| [PUT putOrderItem(Long, OrderItemDTO)](src/main/java/az/qrfood/backend/orderitem/controller/OrderItemController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/order-item/{orderItemId}` |
+| [POST postOrderItem(OrderItemDTO)](src/main/java/az/qrfood/backend/orderitem/controller/OrderItemController.java) | `EATERY_ADMIN, WAITER` | `/api/eatery/{eateryId}/order-item/order/{orderId}` |
+| [PUT putOrderItem(Long, OrderItemDTO)](src/main/java/az/qrfood/backend/orderitem/controller/OrderItemController.java) | `EATERY_ADMIN, WAITER` | `/api/eatery/{eateryId}/order-item/{orderItemId}` |
 
 ###### [🔝](#navigation)
 
@@ -204,7 +204,7 @@
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
 | [DELETE deleteTableAssignment(Long, Long)](src/main/java/az/qrfood/backend/tableassignment/controller/TableAssignmentController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/table-assignment/{assignmentId}` |
-| [GET getAllTableAssignments(Long)](src/main/java/az/qrfood/backend/tableassignment/controller/TableAssignmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN` | `/api/eatery/{eateryId}/table-assignment` |
+| [GET getAllTableAssignments(Long)](src/main/java/az/qrfood/backend/tableassignment/controller/TableAssignmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, CASHIER, WAITER` | `/api/eatery/{eateryId}/table-assignment` |
 | [GET getTableAssignmentById(Long, Long)](src/main/java/az/qrfood/backend/tableassignment/controller/TableAssignmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER` | `/api/eatery/{eateryId}/table-assignment/{assignmentId}` |
 | [GET getTableAssignmentsByTableId(Long, Long)](src/main/java/az/qrfood/backend/tableassignment/controller/TableAssignmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER` | `/api/eatery/{eateryId}/table-assignment/table/{tableId}` |
 | [GET getTableAssignmentsByWaiterId(Long, Long)](src/main/java/az/qrfood/backend/tableassignment/controller/TableAssignmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER` | `/api/eatery/{eateryId}/table-assignment/waiter/{waiterId}` |
@@ -233,7 +233,7 @@
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
 | [DELETE deleteUser(Long, Long)](src/main/java/az/qrfood/backend/user/controller/UserController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/user/{userId}` |
-| [GET getAllEateryUsers(Long)](src/main/java/az/qrfood/backend/user/controller/UserController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/user` |
+| [GET getAllEateryUsers(Long)](src/main/java/az/qrfood/backend/user/controller/UserController.java) | `EATERY_ADMIN, CASHIER, WAITER, KITCHEN_ADMIN` | `/api/eatery/{eateryId}/user` |
 | [GET getAllUsers()](src/main/java/az/qrfood/backend/user/controller/UserController.java) | `public` | `/api/eatery/{eateryId}/user/users` |
 | [GET getAllUsersFromAllEateries()](src/main/java/az/qrfood/backend/user/controller/UserController.java) | `public` | `/api/user` |
 | [GET getUserById(Long)](src/main/java/az/qrfood/backend/user/controller/UserController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/user/{userId}` |

@@ -30,7 +30,10 @@ public class AliveController {
     @ResponseBody
     //[[test]]
     public Alive test() {
-        log.info("Live requested");
+        log.trace("Test TRACE log");
+        log.info("Test INFO log");
+        log.warn("Test WARN log");
+        log.error("Test ERROR log");
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
         String out = "I am still alive:-)";

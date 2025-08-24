@@ -3,13 +3,18 @@
     <variable name="logPath" value="${LOG_FILE_PATH}/" />
     <property name="prefix" value="-->" />
 
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+    <conversionRule conversionWord="wht" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
+
     <!-- 🔹 Консоль: только INFO и выше -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>%d{HH:mm:ss:SSS} %-5level [%.20t] %logger{24}.%M ${prefix} %msg%n</Pattern>
+            <pattern>
+                %d{HH:mm:ss.SSS} %highlight(%-5level) [%cyan(%.20t)] %magenta(%logger{24}:%line) %msg%n
+            </pattern>
         </layout>
     </appender>
 
@@ -21,7 +26,9 @@
             <onMismatch>DENY</onMismatch>
         </filter>
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>%d{HH:mm:ss:SSS} %-5level [%.20t] %logger{24}.%M ${prefix} %msg%n</Pattern>
+            <Pattern>
+                %d{HH:mm:ss.SSS} %highlight(%-5level) [%cyan(%.20t)] %magenta(%logger{24}:%line) %msg%n
+            </Pattern>
         </layout>
     </appender>
 
