@@ -4,12 +4,17 @@ import az.qrfood.backend.alive.dto.Alive;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.info.GitProperties;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 @Log4j2
 @Controller
@@ -20,6 +25,12 @@ public class AliveController {
     private String version;
     @Value("${spring.application.name}")
     private String applicationName;
+    private final GitProperties gitProperties;
+    private Map<String, Object> m = new HashMap<>();
+
+    public AliveController(GitProperties gitProperties) {
+        this.gitProperties = gitProperties;
+    }
 
     /**
      * AliveController request.
@@ -34,10 +45,17 @@ public class AliveController {
         log.info("Test INFO log");
         log.warn("Test WARN log");
         log.error("Test ERROR log");
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        LocalDateTime now = LocalDateTime.now();
+
+        String commitTime = p("\"git.commit.time\"").toString();
         String out = "I am still alive:-)";
-        return new Alive(applicationName, version, out, dtf.format(now));
+        return new Alive(applicationName, version, out, commitTime);
+    }
+
+    private Object p(String key) {
+        if(m.isEmpty()) {
+            gitProperties.forEach(p -> m.put(p.getKey(), p.getValue())); // copies all 27 key-values
+        }
+        return m.get(key);
     }
 
 }

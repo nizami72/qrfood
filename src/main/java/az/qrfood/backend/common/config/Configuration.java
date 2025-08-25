@@ -14,6 +14,7 @@ import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.info.GitProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,8 +23,10 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 
 /**
  * Main Spring configuration class for the QR Food Order backend application.
@@ -142,4 +145,13 @@ public class Configuration {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-}
+
+    @Bean
+    public GitProperties gitProperties() throws IOException {
+        Properties properties = new Properties();
+        var stream = getClass().getClassLoader().getResourceAsStream("git.properties");
+        if (stream != null) {
+            properties.load(stream);
+        }
+        return new GitProperties(properties);
+    }}

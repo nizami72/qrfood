@@ -91,7 +91,7 @@ public class User implements UserDetails {
      * Indicates whether the user's account has expired.
      *
      * @return {@code true} if the user's account is valid (not expired), {@code false} otherwise.
-     *         In a real application, this might involve checking an expiration date.
+     *         In a real application, this might involve checking an expiration commitDate.
      */
     @Override
     public boolean isAccountNonExpired() {

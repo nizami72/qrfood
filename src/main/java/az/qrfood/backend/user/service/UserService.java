@@ -211,7 +211,7 @@ public class UserService {
         }
         User user = userOp.get();
 
-        // First delete all refresh tokens for the user
+        // First, delete all refresh tokens for the user
         refreshTokenService.deleteByUser(user);
         log.debug("Deleted refresh tokens for user ID: {}", id);
 
@@ -248,7 +248,7 @@ public class UserService {
 
         User user = userOpt.get();
 
-        // First delete all refresh tokens for the user
+        // First, delete all refresh tokens for the user
         refreshTokenService.deleteByUser(user);
         log.debug("Deleted refresh tokens for user: {}", username);
 

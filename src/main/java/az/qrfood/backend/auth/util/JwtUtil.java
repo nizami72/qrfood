@@ -62,7 +62,7 @@ public class JwtUtil {
     }
 
     /**
-     * Extracts the expiration date from the given JWT token.
+     * Extracts the expiration commitDate from the given JWT token.
      *
      * @param token The JWT token.
      * @return The expiration {@link Date} of the token.
@@ -102,7 +102,7 @@ public class JwtUtil {
      * Checks if the given JWT token has expired.
      *
      * @param token The JWT token.
-     * @return {@code true} if the token's expiration date is before the current date, {@code false} otherwise.
+     * @return {@code true} if the token's expiration commitDate is before the current commitDate, {@code false} otherwise.
      */
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
