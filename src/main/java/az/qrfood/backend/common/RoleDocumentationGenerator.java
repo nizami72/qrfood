@@ -51,7 +51,7 @@ public class RoleDocumentationGenerator implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         Set<String> urls = new TreeSet<>();
-        try (PrintWriter writer = new PrintWriter(new FileWriter("END_POINTS_AND_ROLES.md"))) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("wiki/md/END_POINTS_AND_ROLES.md"))) {
 
             Reflections reflections = new Reflections("az.qrfood.backend");
             Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(RestController.class);
@@ -124,7 +124,7 @@ public class RoleDocumentationGenerator implements ApplicationRunner {
         }
 
 
-        try (PrintWriter writer = new PrintWriter(new FileWriter("END_POINTS.md"))) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("wiki/md/END_POINTS.md"))) {
 
             writer.println("### End Points");
             for (String mdLink : urls) {
