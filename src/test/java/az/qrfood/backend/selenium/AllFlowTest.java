@@ -1,14 +1,14 @@
 package az.qrfood.backend.selenium;
 
-import static az.qrfood.backend.selenium.Util.FAST;
-import static az.qrfood.backend.selenium.Util.NORM;
-import static az.qrfood.backend.selenium.Util.NORM_BY_2;
-import static az.qrfood.backend.selenium.Util.PHASE_CREATE_DISHES;
-import static az.qrfood.backend.selenium.Util.PHASE_CREATE_TABLES;
-import static az.qrfood.backend.selenium.Util.PHASE_DELETE_USER;
-import static az.qrfood.backend.selenium.Util.PHASE_LOGIN;
-import static az.qrfood.backend.selenium.Util.PHASE_OPEN_PAGE;
-import static az.qrfood.backend.selenium.Util.pause;
+import static az.qrfood.backend.selenium.SeleniumUtil.FAST;
+import static az.qrfood.backend.selenium.SeleniumUtil.NORM;
+import static az.qrfood.backend.selenium.SeleniumUtil.NORM_BY_2;
+import static az.qrfood.backend.selenium.SeleniumUtil.PHASE_CREATE_DISHES;
+import static az.qrfood.backend.selenium.SeleniumUtil.PHASE_CREATE_TABLES;
+import static az.qrfood.backend.selenium.SeleniumUtil.PHASE_DELETE_USER;
+import static az.qrfood.backend.selenium.SeleniumUtil.PHASE_LOGIN;
+import static az.qrfood.backend.selenium.SeleniumUtil.PHASE_OPEN_PAGE;
+import static az.qrfood.backend.selenium.SeleniumUtil.pause;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterEach;
@@ -59,7 +59,7 @@ public class AllFlowTest {
 //    @Order(1)
     public void registration() {
         openPage("register", 400);
-        Util.registerEateryAdmin(driver, wait, testName, testPassword, testEmail, testRestaurantName, NORM);
+        SeleniumUtil.registerEateryAdmin(driver, wait, testName, testPassword, testEmail, testRestaurantName, NORM);
         pause(500);
     }
 
@@ -84,7 +84,7 @@ public class AllFlowTest {
     public void editCategory() {
         openPage("login", 500);
         login(NORM);
-        Util.createCategories(driver, wait, NORM_BY_2);
+        SeleniumUtil.createCategories(driver, wait, NORM_BY_2);
         pause(2000);
 
     }
@@ -125,7 +125,7 @@ public class AllFlowTest {
 
         // ================== REGISTER USER ==================
         openPage("register", 400);
-        Util.registerEateryAdmin(driver, wait, testName, testPassword, testEmail, testRestaurantName, NORM);
+        SeleniumUtil.registerEateryAdmin(driver, wait, testName, testPassword, testEmail, testRestaurantName, NORM);
         pause(500);
 
         // ================== LOGIN USER ==================
@@ -136,7 +136,7 @@ public class AllFlowTest {
         pause(2000);
 
         // ================== CREATE CATEGORY ==================
-        Util.createCategories(driver, wait, NORM_BY_2);
+        SeleniumUtil.createCategories(driver, wait, NORM_BY_2);
         pause(2000);
 
         // ================== CREATE DISHES ==================
@@ -160,9 +160,9 @@ public class AllFlowTest {
         openPage("login", 100);
         login(NORM);
         navigate("nav004", "/admin/tables", NORM);
-        Util.pause(4000);
+        SeleniumUtil.pause(4000);
         navigate("nav005", "/admin/orders", NORM);
-        Util.pause(40000);
+        SeleniumUtil.pause(40000);
     }
 
     //    @Test
@@ -172,25 +172,24 @@ public class AllFlowTest {
         createUser(NORM);
     }
 
-
     private void createTables(String norm) {
         navigate("nav004", "/admin/tables", norm);
-        Util.findButtonByTextAndClick(driver, "Masa əlavə et", norm);
-        Util.typeIntoInputById(driver, "Masa 1", "tblcrrt01", norm);
-        Util.typeIntoInputById(driver, "6", "tblcrrt02", norm);
-        Util.typeIntoInputById(driver, "VIP Masa", "tblcrrt03", norm);
-        Util.findButtonByTextAndClick(driver, "Masa əlavə et", norm);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Masa əlavə et", norm);
+        SeleniumUtil.typeIntoInputById(driver, "Masa 1", "tblcrrt01", norm);
+        SeleniumUtil.typeIntoInputById(driver, "6", "tblcrrt02", norm);
+        SeleniumUtil.typeIntoInputById(driver, "VIP Masa", "tblcrrt03", norm);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Masa əlavə et", norm);
         WebElement qrCode = driver.findElement(By.cssSelector("[id^='qr-card']"));
-        Util.highlight2(driver, qrCode, norm);
-        Util.findButtonByTextAndClick(driver, "Çap et", norm);
-        Util.pause(4000);
+        SeleniumUtil.highlight2(driver, qrCode, norm);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Çap et", norm);
+        SeleniumUtil.pause(4000);
         markTime(PHASE_CREATE_TABLES);
     }
 
     private void deleteUser(String temp) {
-        Util.findButtonByTextAndClick(driver, "Sil", temp);
-        Util.alertAccept(wait, driver, NORM);
-        Util.findButtonByTextAndClick(driver, "Çıxış", temp);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Sil", temp);
+        SeleniumUtil.alertAccept(wait, driver, NORM);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Çıxış", temp);
         markTime(PHASE_DELETE_USER);
     }
 
@@ -200,7 +199,7 @@ public class AllFlowTest {
         driver.manage().window().maximize();
         // Set to full-screen mode
 //        driver.manage().window().fullscreen();
-        Util.pause(pause);
+        SeleniumUtil.pause(pause);
         // Keep the browser open for a few seconds to observe
         markTime(PHASE_OPEN_PAGE);
     }
@@ -211,13 +210,13 @@ public class AllFlowTest {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("101")));
 
             WebElement loginEmailInput = driver.findElement(By.id("101"));
-            Util.typeIntoInput(driver, loginEmailInput, testEmail, temp);
+            SeleniumUtil.typeIntoInput(driver, loginEmailInput, testEmail, temp);
 
             WebElement loginPasswordInput = driver.findElement(By.id("102"));
-            Util.typeIntoInput(driver, loginPasswordInput, testPassword, temp);
+            SeleniumUtil.typeIntoInput(driver, loginPasswordInput, testPassword, temp);
 
             WebElement loginButton = driver.findElement(By.id("103"));
-            Util.click(driver, loginButton, temp);
+            SeleniumUtil.click(driver, loginButton, temp);
 
             // 2. Check if login succeeded by checking URL
             boolean loggedIn;
@@ -260,33 +259,33 @@ public class AllFlowTest {
 
     private void navigate(String id, String expectedUrl, String temp) {
         WebElement nameInput = driver.findElement(By.id(id));
-        Util.click(driver, nameInput, temp);
+        SeleniumUtil.click(driver, nameInput, temp);
         wait.until(ExpectedConditions.urlContains(expectedUrl));
-        Util.pause(NORM);
+        SeleniumUtil.pause(NORM);
     }
 
     private void createDishes(String temp) {
         navigate("nav003", "menu", temp);
-        Util.selectOptionByBySelectText(driver, 1, "Kateqoriya seçin", temp);
-        Util.findButtonByTextAndClick(driver, "Yemək əlavə et", NORM);
-        Util.findButtonByTextAndClick(driver, "Əvvəlcədən təyin edilmiş siyahı", NORM);
-        Util.checkCheckbox(driver, "dsh001", temp);
-        Util.checkCheckbox(driver, "dsh002", temp);
-        Util.checkCheckbox(driver, "dsh003", temp);
-        Util.checkCheckbox(driver, "dsh004", temp);
-        Util.findButtonByTextAndClick(driver, "Add Selected Dishes (", NORM);
+        SeleniumUtil.selectOptionByBySelectText(driver, 1, "Kateqoriya seçin", temp);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Yemək əlavə et", NORM);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Əvvəlcədən təyin edilmiş siyahı", NORM);
+        SeleniumUtil.checkCheckbox(driver, "dsh001", temp);
+        SeleniumUtil.checkCheckbox(driver, "dsh002", temp);
+        SeleniumUtil.checkCheckbox(driver, "dsh003", temp);
+        SeleniumUtil.checkCheckbox(driver, "dsh004", temp);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Add Selected Dishes (", NORM);
         pause(1500);
-        Util.selectOptionByBySelectText(driver, 2, "Kateqoriya seçin", temp);
+        SeleniumUtil.selectOptionByBySelectText(driver, 2, "Kateqoriya seçin", temp);
         markTime(PHASE_CREATE_DISHES);
     }
 
     private void createUser(String temp) {
         navigate("nav006", "users", temp);
-        Util.findButtonByTextAndClick(driver, "İstifadəçi əlavə et", NORM);
-        Util.typeIntoInputById(driver, "Olivia Scott User", "user-name", NORM);
-        Util.typeIntoInputById(driver, "OliviaScottUser@qaz.az", "user-username", NORM);
-        Util.typeIntoInputById(driver, "qqqq1111", "user-password", NORM);
-        Util.findButtonByTextAndClick(driver, "İstifadəçi əlavə et", NORM);
+        SeleniumUtil.findButtonByTextAndClick(driver, "İstifadəçi əlavə et", NORM);
+        SeleniumUtil.typeIntoInputById(driver, "Olivia Scott User", "user-name", NORM);
+        SeleniumUtil.typeIntoInputById(driver, "OliviaScottUser@qaz.az", "user-username", NORM);
+        SeleniumUtil.typeIntoInputById(driver, "qqqq1111", "user-password", NORM);
+        SeleniumUtil.findButtonByTextAndClick(driver, "İstifadəçi əlavə et", NORM);
 
     }
 
@@ -360,16 +359,16 @@ public class AllFlowTest {
 
     private void editEatery(String temp) {
 
-        Util.findButtonByTextAndClick(driver, "Redaktə et", NORM);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Redaktə et", NORM);
         WebElement el = driver.findElement(By.id("115"));
-        Util.typeIntoInput(driver, el, "68 Üzeyir Hacıbəyov, Bakı", temp);
+        SeleniumUtil.typeIntoInput(driver, el, "68 Üzeyir Hacıbəyov, Bakı", temp);
         WebElement phone = driver.findElement(By.id("116"));
-        Util.typeIntoInput(driver, phone, "50 123 4578", temp);
+        SeleniumUtil.typeIntoInput(driver, phone, "50 123 4578", temp);
         WebElement lat = driver.findElement(By.id("118"));
-        Util.typeIntoInput(driver, lat, "40.12345", temp);
+        SeleniumUtil.typeIntoInput(driver, lat, "40.12345", temp);
         WebElement lang = driver.findElement(By.id("119"));
-        Util.typeIntoInput(driver, lang, "49.9876", temp);
-        Util.findButtonByTextAndClick(driver, "Yadda saxla", NORM);
+        SeleniumUtil.typeIntoInput(driver, lang, "49.9876", temp);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Yadda saxla", NORM);
     }
 
 }

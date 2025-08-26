@@ -1,0 +1,361 @@
+{
+  "eatery": {
+    "id": 1,
+    "name": "Test Testov Resaturant",
+    "address": "123 Main Street, Baku, Azerbaijan",
+    "phones": ["+994 50 123 4567", "+994 55 987 6543"],
+    "geoLat": 40.3776,
+    "geoLng": 49.8925,
+    "categories": [
+      {
+        "categoryId": 1,
+        "eateryId": 1,
+        "nameAz": "Qəlyanaltılar",
+        "nameEn": "Appetizers",
+        "nameRu": "Закуски",
+        "image": "appetizers.jpg",
+        "dishes": [
+          {
+            "dishId": 1,
+            "categoryId": 1,
+            "nameAz": "Səbzəli salat",
+            "nameEn": "Vegetable Salad",
+            "nameRu": "Овощной салат",
+            "descriptionAz": "Təzə tərəvəzlərdən hazırlanmış salat",
+            "descriptionEn": "Salad made from fresh vegetables",
+            "descriptionRu": "Салат из свежих овощей",
+            "price": 8.50,
+            "image": "vegetable_salad.jpg",
+            "isAvailable": true
+          },
+          {
+            "dishId": 2,
+            "categoryId": 1,
+            "nameAz": "Toyuq salatı",
+            "nameEn": "Chicken Salad",
+            "nameRu": "Куриный салат",
+            "descriptionAz": "Toyuq əti ilə hazırlanmış salat",
+            "descriptionEn": "Salad made with chicken meat",
+            "descriptionRu": "Салат с куриным мясом",
+            "price": 10.00,
+            "image": "chicken_salad.jpg",
+            "isAvailable": true
+          },
+          {
+            "dishId": 3,
+            "categoryId": 1,
+            "nameAz": "Pendir assortisi",
+            "nameEn": "Cheese Platter",
+            "nameRu": "Ассорти сыров",
+            "descriptionAz": "Müxtəlif növ pendirlərdən ibarət qəlyanaltı",
+            "descriptionEn": "Appetizer consisting of various types of cheese",
+            "descriptionRu": "Закуска из различных видов сыра",
+            "price": 15.00,
+            "image": "cheese_platter.jpg",
+            "isAvailable": true
+          },
+          {
+            "dishId": 4,
+            "categoryId": 1,
+            "nameAz": "Zeytun assortisi",
+            "nameEn": "Olive Assortment",
+            "nameRu": "Ассорти оливок",
+            "descriptionAz": "Müxtəlif növ zeytunlardan ibarət qəlyanaltı",
+            "descriptionEn": "Appetizer consisting of various types of olives",
+            "descriptionRu": "Закуска из различных видов оливок",
+            "price": 7.50,
+            "image": "olive_assortment.jpg",
+            "isAvailable": true
+          }
+        ]
+      },
+      {
+        "categoryId": 2,
+        "eateryId": 1,
+        "nameAz": "Əsas yeməklər",
+        "nameEn": "Main Courses",
+        "nameRu": "Основные блюда",
+        "image": "main_courses.jpg",
+        "dishes": [
+          {
+            "dishId": 5,
+            "categoryId": 2,
+            "nameAz": "Toyuq kababı",
+            "nameEn": "Chicken Kebab",
+            "nameRu": "Куриный кебаб",
+            "descriptionAz": "Kömürdə bişirilmiş toyuq kababı",
+            "descriptionEn": "Grilled chicken kebab",
+            "descriptionRu": "Куриный кебаб на гриле",
+            "price": 18.00,
+            "image": "chicken_kebab.jpg",
+            "isAvailable": true
+          },
+          {
+            "dishId": 6,
+            "categoryId": 2,
+            "nameAz": "Quzu kababı",
+            "nameEn": "Lamb Kebab",
+            "nameRu": "Кебаб из баранины",
+            "descriptionAz": "Kömürdə bişirilmiş quzu əti kababı",
+            "descriptionEn": "Grilled lamb kebab",
+            "descriptionRu": "Кебаб из баранины на гриле",
+            "price": 22.00,
+            "image": "lamb_kebab.jpg",
+            "isAvailable": true
+          },
+          {
+            "dishId": 7,
+            "categoryId": 2,
+            "nameAz": "Balıq şişi",
+            "nameEn": "Fish Skewer",
+            "nameRu": "Рыба на шампуре",
+            "descriptionAz": "Kömürdə bişirilmiş təzə balıq şişi",
+            "descriptionEn": "Grilled fresh fish skewer",
+            "descriptionRu": "Свежая рыба на гриле",
+            "price": 20.00,
+            "image": "fish_skewer.jpg",
+            "isAvailable": true
+          },
+          {
+            "dishId": 8,
+            "categoryId": 2,
+            "nameAz": "Tərəvəz kababı",
+            "nameEn": "Vegetable Kebab",
+            "nameRu": "Овощной кебаб",
+            "descriptionAz": "Kömürdə bişirilmiş tərəvəz kababı",
+            "descriptionEn": "Grilled vegetable kebab",
+            "descriptionRu": "Овощной кебаб на гриле",
+            "price": 15.00,
+            "image": "vegetable_kebab.jpg",
+            "isAvailable": true
+          }
+        ]
+      },
+      {
+        "categoryId": 3,
+        "eateryId": 1,
+        "nameAz": "İçkilər",
+        "nameEn": "Drinks",
+        "nameRu": "Напитки",
+        "image": "drinks.jpg",
+        "dishes": [
+          {
+            "dishId": 9,
+            "categoryId": 3,
+            "nameAz": "Ayran",
+            "nameEn": "Ayran",
+            "nameRu": "Айран",
+            "descriptionAz": "Ənənəvi sərinləşdirici içki",
+            "descriptionEn": "Traditional refreshing drink",
+            "descriptionRu": "Традиционный освежающий напиток",
+            "price": 3.00,
+            "image": "ayran.jpg",
+            "isAvailable": true
+          },
+          {
+            "dishId": 10,
+            "categoryId": 3,
+            "nameAz": "Kompot",
+            "nameEn": "Compote",
+            "nameRu": "Компот",
+            "descriptionAz": "Meyvələrdən hazırlanmış sərinləşdirici içki",
+            "descriptionEn": "Refreshing drink made from fruits",
+            "descriptionRu": "Освежающий напиток из фруктов",
+            "price": 4.00,
+            "image": "compote.jpg",
+            "isAvailable": true
+          },
+          {
+            "dishId": 11,
+            "categoryId": 3,
+            "nameAz": "Çay",
+            "nameEn": "Tea",
+            "nameRu": "Чай",
+            "descriptionAz": "Ənənəvi Azərbaycan çayı",
+            "descriptionEn": "Traditional Azerbaijani tea",
+            "descriptionRu": "Традиционный азербайджанский чай",
+            "price": 2.50,
+            "image": "tea.jpg",
+            "isAvailable": true
+          },
+          {
+            "dishId": 12,
+            "categoryId": 3,
+            "nameAz": "Qəhvə",
+            "nameEn": "Coffee",
+            "nameRu": "Кофе",
+            "descriptionAz": "Təzə dəmlənmiş qəhvə",
+            "descriptionEn": "Freshly brewed coffee",
+            "descriptionRu": "Свежесваренный кофе",
+            "price": 5.00,
+            "image": "coffee.jpg",
+            "isAvailable": true
+          }
+        ]
+      }
+    ]
+  },
+  "tables": [
+    {
+      "id": 1,
+      "number": "1",
+      "seats": 4,
+      "note": "Window view",
+      "status": "ACTIVE",
+      "eateryId": 1,
+      "qrCodeDto": {
+        "id": 1,
+        "qrCodeAsBytes": null,
+        "validFrom": "2023-01-01T00:00:00",
+        "validTo": "2025-01-01T00:00:00",
+        "content": "https://qrfood.az/table/1"
+      }
+    },
+    {
+      "id": 2,
+      "number": "2",
+      "seats": 2,
+      "note": "Near entrance",
+      "status": "ACTIVE",
+      "eateryId": 1,
+      "qrCodeDto": {
+        "id": 2,
+        "qrCodeAsBytes": null,
+        "validFrom": "2023-01-01T00:00:00",
+        "validTo": "2025-01-01T00:00:00",
+        "content": "https://qrfood.az/table/2"
+      }
+    },
+    {
+      "id": 3,
+      "number": "3",
+      "seats": 6,
+      "note": "Large table",
+      "status": "ACTIVE",
+      "eateryId": 1,
+      "qrCodeDto": {
+        "id": 3,
+        "qrCodeAsBytes": null,
+        "validFrom": "2023-01-01T00:00:00",
+        "validTo": "2025-01-01T00:00:00",
+        "content": "https://qrfood.az/table/3"
+      }
+    },
+    {
+      "id": 4,
+      "number": "4",
+      "seats": 4,
+      "note": "Center area",
+      "status": "ACTIVE",
+      "eateryId": 1,
+      "qrCodeDto": {
+        "id": 4,
+        "qrCodeAsBytes": null,
+        "validFrom": "2023-01-01T00:00:00",
+        "validTo": "2025-01-01T00:00:00",
+        "content": "https://qrfood.az/table/4"
+      }
+    },
+    {
+      "id": 5,
+      "number": "5",
+      "seats": 2,
+      "note": "Quiet corner",
+      "status": "ACTIVE",
+      "eateryId": 1,
+      "qrCodeDto": {
+        "id": 5,
+        "qrCodeAsBytes": null,
+        "validFrom": "2023-01-01T00:00:00",
+        "validTo": "2025-01-01T00:00:00",
+        "content": "https://qrfood.az/table/5"
+      }
+    },
+    {
+      "id": 6,
+      "number": "6",
+      "seats": 8,
+      "note": "For large groups",
+      "status": "ACTIVE",
+      "eateryId": 1,
+      "qrCodeDto": {
+        "id": 6,
+        "qrCodeAsBytes": null,
+        "validFrom": "2023-01-01T00:00:00",
+        "validTo": "2025-01-01T00:00:00",
+        "content": "https://qrfood.az/table/6"
+      }
+    },
+    {
+      "id": 7,
+      "number": "7",
+      "seats": 4,
+      "note": "Near kitchen",
+      "status": "ACTIVE",
+      "eateryId": 1,
+      "qrCodeDto": {
+        "id": 7,
+        "qrCodeAsBytes": null,
+        "validFrom": "2023-01-01T00:00:00",
+        "validTo": "2025-01-01T00:00:00",
+        "content": "https://qrfood.az/table/7"
+      }
+    }
+  ],
+  "staff": [
+    {
+      "email": "AdminTestTestov@mail.az",
+      "password": "qqqq1111",
+      "roles": ["EATERY_ADMIN"],
+      "profile": {
+        "name": "Admin Test Testov",
+        "phone": "+994 55 333 4444"
+      }
+    },
+    {
+      "email": "KitchenTestTestov@mail.az",
+      "password": "qqqq1111",
+      "roles": ["KITCHEN_ADMIN"],
+      "profile": {
+        "name": "Kitchen Test Testov",
+        "phone": "+994 55 333 4444"
+      }
+    },
+    {
+      "email": "CashierTestTestov@mail.az",
+      "password": "qqqq1111",
+      "roles": ["CASHIER"],
+      "profile": {
+        "name": "Cashier Test Testov",
+        "phone": "+994 70 555 6666"
+      }
+    },
+    {
+      "email": "WaiterFirstTestov@mail.az",
+      "password": "qqqq1111",
+      "roles": ["WAITER"],
+      "profile": {
+        "name": "Waiter First Testov",
+        "phone": "+994 77 777 8888"
+      }
+    },
+    {
+      "email": "WaiterSeconTestov@mail.az",
+      "password": "qqqq1111",
+      "roles": ["WAITER"],
+      "profile": {
+        "name": "Waiter Second Testov",
+        "phone": "+994 51 999 0000"
+      }
+    },
+    {
+      "email": "WaiterThirdTestov@mail.az",
+      "password": "qqqq1111",
+      "roles": ["WAITER"],
+      "profile": {
+        "name": "Waiter Third Testov",
+        "phone": "+994 50 123 4567"
+      }
+    }
+  ]
+}

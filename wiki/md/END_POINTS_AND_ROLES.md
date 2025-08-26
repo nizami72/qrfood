@@ -21,6 +21,7 @@
 
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
+| [DELETE deleteEatery(Long)](src/main/java/az/qrfood/backend/user/controller/AdminController.java) | `public` | `/api/admin/eatery/{eateryId}` |
 | [GET getEateryDetails(Long)](src/main/java/az/qrfood/backend/user/controller/AdminController.java) | `public` | `/api/admin/eatery/{eateryId}/details` |
 | [GET getEateryResources(Long)](src/main/java/az/qrfood/backend/user/controller/AdminController.java) | `public` | `/api/admin/eatery/{eateryId}/resources` |
 | [POST impersonateUser(Long, Authentication)](src/main/java/az/qrfood/backend/user/controller/AdminController.java) | `public` | `/api/admin/impersonate/{userId}` |

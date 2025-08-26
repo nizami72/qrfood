@@ -10,11 +10,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
 import java.time.Duration;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -27,7 +24,7 @@ public class LoginPageTest {
 
     @BeforeEach
     public void setUp() {
-        // Set up Chrome driver with headless option
+        // Set up the Chrome driver with a headless option
         ChromeOptions options = new ChromeOptions();
 //        options.addArguments("--headless");
         options.addArguments("--disable-gpu");

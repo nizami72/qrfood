@@ -1,8 +1,8 @@
 package az.qrfood.backend.selenium;
 
-import static az.qrfood.backend.selenium.Util.FINAL_PAUSE;
-import static az.qrfood.backend.selenium.Util.NORM;
-import static az.qrfood.backend.selenium.Util.pause;
+import static az.qrfood.backend.selenium.SeleniumUtil.FINAL_PAUSE;
+import static az.qrfood.backend.selenium.SeleniumUtil.NORM;
+import static az.qrfood.backend.selenium.SeleniumUtil.pause;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.extern.log4j.Log4j2;
@@ -84,9 +84,9 @@ public class DishTest {
 
     @Test
     public void createDishes() {
-        Util.openPage(driver, host, "login" , NORM);
-        Util.login(driver, wait, testEmail, testPassword, testRestaurantName, NORM);
-        Util.createDishes(driver, wait, NORM);
+        SeleniumUtil.openPage(driver, host, "login" , NORM);
+        SeleniumUtil.login(driver, wait, testEmail, testPassword, testRestaurantName, NORM);
+        SeleniumUtil.createDishes(driver, wait, NORM);
         pause(NORM, FINAL_PAUSE);
     }
 

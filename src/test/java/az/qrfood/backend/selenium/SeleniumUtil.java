@@ -1,7 +1,9 @@
 package az.qrfood.backend.selenium;
 
+import static az.qrfood.backend.selenium.TestTestovCreator.visualEffect;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import az.qrfood.backend.selenium.dto.StaffItem;
+import az.qrfood.backend.selenium.dto.TableItem;
 import lombok.extern.log4j.Log4j2;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -13,11 +15,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 @Log4j2
-public class Util {
+public class SeleniumUtil {
 
     public static String FAST = "FAST", NORM = "NORM", NORM_BY_2 = "NORM05", TYPING_DELAY = "DELAY",
             BETWEEN_STEP = "BETWEEN_STEP", ALERT_PAUSE = "ALERT_PAUSE", HIGHLIGHT_PAUSE = "HIGHLIGHT_PAUSE";
@@ -28,15 +31,18 @@ public class Util {
             PHASE_CREATE_DISHES = "Create dished",
             PHASE_CREATE_TABLES = "Create Tables",
             PHASE_DELETE_USER = "Delete user",
-            FINAL_PAUSE = "FINAL_PAUSE";
+            FINAL_PAUSE = "FINAL_PAUSE",
+            PHASE_CREATE_CATEGORIES = "Create categories",
+            PHASE_CREATE_STAFF = "Create staff",
+            PHASE_EDIT_USER = "Edit user";
 
     private static final Map<String, Map<String, Integer>> m = Map.of(
             FAST, Map.of(
-                    TYPING_DELAY, 2,
+                    TYPING_DELAY, 5,
                     BETWEEN_STEP, 20,
-                    HIGHLIGHT_PAUSE, 400,
-                    ALERT_PAUSE, 1000,
-                    FINAL_PAUSE, 1000
+                    HIGHLIGHT_PAUSE, 100,
+                    ALERT_PAUSE, 100,
+                    FINAL_PAUSE, 100
             ),
             NORM, Map.of(
                     TYPING_DELAY, 20,
@@ -55,6 +61,7 @@ public class Util {
     );
 
     public static void highlight2(WebDriver driver, WebElement element, String temp) {
+        if(!visualEffect) return;
         JavascriptExecutor js = (JavascriptExecutor) driver;
         String originalStyle = element.getAttribute("style");
 
@@ -109,6 +116,11 @@ public class Util {
         typeIntoInput(d, nameInput, text, temp);
     }
 
+    public static void typeIntoInputById(WebDriver d, int text, String elementId, String temp) {
+        WebElement nameInput = d.findElement(By.id(elementId));
+        typeIntoInput(d, nameInput, String.valueOf(text), temp);
+    }
+
     public static void typeIntoInput(WebDriver d, WebElement e, String text, String temp) {
         e.clear();
         highlight2(d, e, temp);
@@ -136,6 +148,14 @@ public class Util {
         pause(m.get(temp).get(BETWEEN_STEP));
     }
 
+    public static void findButtonsByTextAndClick(WebDriver driver, String text, int buttonIndex, String temp) {
+        List<WebElement> buttons = driver.findElements(By.xpath("//button[text()='arg123']".replace("arg123", text)));
+        WebElement currentButton = buttons.get(buttonIndex);
+        highlight2(driver, currentButton, temp);
+        currentButton.click();
+        pause(m.get(temp).get(BETWEEN_STEP));
+    }
+
     public static void checkCheckbox(WebDriver driver, String id, String temp) {
         WebElement checkbox = driver.findElement(By.id(id));
         if (!checkbox.isSelected()) {
@@ -151,22 +171,22 @@ public class Util {
         Select select = new Select(selectElement);
         select.selectByIndex(index);
         pause(m.get(temp).get(BETWEEN_STEP));
-
-
     }
 
     private static long t = System.currentTimeMillis();
 
-    public static void markTime(String phase) {
+    public static long markTime(String phase) {
+        long passed = 0;
         if (t == 0) {
             log.debug(phase);
             t = System.currentTimeMillis();
         } else {
             long now = System.currentTimeMillis();
-            long passed = now - t;
+            passed = now - t;
             t = now;
             log.debug("Flow [{}] duration [{}] second", phase, passed / 1000);
         }
+        return passed/1000;
     }
 
     public static void registerEateryAdmin(
@@ -177,68 +197,67 @@ public class Util {
         // 2. Enter registration details
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("106")));
         WebElement nameInput = driver.findElement(By.id("106"));
-        Util.typeIntoInput(driver, nameInput, userName, temp);
+        SeleniumUtil.typeIntoInput(driver, nameInput, userName, temp);
 
         WebElement emailInput = driver.findElement(By.id("107"));
-        Util.typeIntoInput(driver, emailInput, userMail, temp);
+        SeleniumUtil.typeIntoInput(driver, emailInput, userMail, temp);
 
         WebElement passwordInput = driver.findElement(By.id("108"));
-        Util.typeIntoInput(driver, passwordInput, userPass, temp);
+        SeleniumUtil.typeIntoInput(driver, passwordInput, userPass, temp);
 
         WebElement confirmPasswordInput = driver.findElement(By.id("109"));
-        Util.typeIntoInput(driver, confirmPasswordInput, userPass, temp);
+        SeleniumUtil.typeIntoInput(driver, confirmPasswordInput, userPass, temp);
 
         WebElement restaurantNameInput = driver.findElement(By.id("110"));
-        Util.typeIntoInput(driver, restaurantNameInput, eateryName, temp);
+        SeleniumUtil.typeIntoInput(driver, restaurantNameInput, eateryName, temp);
 
         // 3. Click the Register button
         WebElement registerButton = driver.findElement(By.id("111"));
-        Util.click(driver, registerButton, temp);
+        SeleniumUtil.click(driver, registerButton, temp);
 
         // 4. Wait for and accept the alert
-        Util.alertAccept(wait, driver, NORM);
+        SeleniumUtil.alertAccept(wait, driver, temp);
         wait.until(ExpectedConditions.urlContains("/admin/login"));
         // 1. Verify redirection to login page
         assertTrue(driver.getCurrentUrl().contains("/admin/login"),
                 "URL should contain '/admin/login' after successful registration");
-        markTime(PHASE_REGISTRATION);
 
     }
 
     public static void createCategories(WebDriver driver, WebDriverWait wait, String temp) {
         navigate(driver, wait, "nav002", "/admin/categories", temp);
-        Util.findButtonByTextAndClick(driver, "Kateqoriya əlavə et", NORM);
-        Util.findButtonByTextAndClick(driver, "Əvvəlcədən təyin edilmiş siyahı", NORM);
-        Util.checkCheckbox(driver, "ch003", temp);
-        Util.checkCheckbox(driver, "ch004", temp);
-        Util.checkCheckbox(driver, "ch005", temp);
-        Util.checkCheckbox(driver, "ch006", temp);
-        Util.checkCheckbox(driver, "ch007", temp);
-        Util.findButtonByTextAndClick(driver, "Seçilmiş kateqoriyaları yarat", NORM);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Kateqoriya əlavə et", NORM);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Əvvəlcədən təyin edilmiş siyahı", NORM);
+        SeleniumUtil.checkCheckbox(driver, "ch003", temp);
+        SeleniumUtil.checkCheckbox(driver, "ch004", temp);
+        SeleniumUtil.checkCheckbox(driver, "ch005", temp);
+        SeleniumUtil.checkCheckbox(driver, "ch006", temp);
+        SeleniumUtil.checkCheckbox(driver, "ch007", temp);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Seçilmiş kateqoriyaları yarat", NORM);
     }
 
     public static void navigate(WebDriver driver, WebDriverWait wait, String id, String expectedUrl, String temp) {
         WebElement nameInput = driver.findElement(By.id(id));
-        Util.click(driver, nameInput, temp);
+        SeleniumUtil.click(driver, nameInput, temp);
         wait.until(ExpectedConditions.urlContains(expectedUrl));
-        Util.pause(NORM);
+        SeleniumUtil.pause(NORM);
     }
 
     public static boolean login(WebDriver driver, WebDriverWait wait,
-                          String testEmail, String testPassword,
-                           String testRestaurantName, String temp) {
+                                String testEmail, String testPassword,
+                                String testRestaurantName, String temp) {
         try {
             // 1. Wait for the login form
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("101")));
 
             WebElement loginEmailInput = driver.findElement(By.id("101"));
-            Util.typeIntoInput(driver, loginEmailInput, testEmail, temp);
+            SeleniumUtil.typeIntoInput(driver, loginEmailInput, testEmail, temp);
 
             WebElement loginPasswordInput = driver.findElement(By.id("102"));
-            Util.typeIntoInput(driver, loginPasswordInput, testPassword, temp);
+            SeleniumUtil.typeIntoInput(driver, loginPasswordInput, testPassword, temp);
 
             WebElement loginButton = driver.findElement(By.id("103"));
-            Util.click(driver, loginButton, temp);
+            SeleniumUtil.click(driver, loginButton, temp);
 
             // 2. Check if login succeeded by checking URL
             boolean loggedIn;
@@ -256,49 +275,114 @@ public class Util {
             }
 
             // 3. Verify restaurant header
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("h2")));
-            List<WebElement> restaurantHeaders = driver.findElements(By.tagName("h2"));
+            WebElement restaurantDiv = driver.findElement(
+                    By.xpath("//div[contains(@class, 'text-gray-700') and contains(text(),'" + testRestaurantName + "')]")
+            );
 
-            if (restaurantHeaders.isEmpty()) {
+            String restaurantName = restaurantDiv.getText();
+
+            if (restaurantName.isEmpty()) {
                 System.out.println("No restaurant headers found after login");
                 return false;
+            } else {
+                log.debug("Restaurant header found [{}]", restaurantName);
             }
 
-            boolean foundRestaurant = restaurantHeaders.stream()
-                    .anyMatch(header -> header.getText().equals(testRestaurantName));
+            boolean foundRestaurant = restaurantName.equals(testRestaurantName);
 
             if (!foundRestaurant) {
                 log.debug("Expected restaurant [{}] not found", testRestaurantName);
                 return false;
             }
+
         } catch (NoSuchElementException | TimeoutException e) {
-            log.debug("Login process encountered a problem: " + e.getMessage());
+            log.debug("Login process encountered a problem [{}] ", e.getMessage());
         }
-        markTime(PHASE_LOGIN);
         return true;
 
     }
 
     public static void openPage(WebDriver driver, String host, String path, String pause) {
         driver.get(host + "/admin/" + path);
-        driver.manage().window().maximize();
-        Util.pause(pause);
-        markTime(PHASE_OPEN_PAGE);
+//        driver.manage().window().maximize();
     }
 
     public static void createDishes(WebDriver driver, WebDriverWait wait, String temp) {
         navigate(driver, wait, "nav003", "menu", temp);
-        Util.selectOptionByBySelectText(driver, 1, "Kateqoriya seçin", temp);
-        Util.findButtonByTextAndClick(driver, "Yemək əlavə et", NORM);
-        Util.findButtonByTextAndClick(driver, "Əvvəlcədən təyin edilmiş siyahı", NORM);
-        Util.checkCheckbox(driver, "dsh001", temp);
-        Util.checkCheckbox(driver, "dsh002", temp);
-        Util.checkCheckbox(driver, "dsh003", temp);
-        Util.checkCheckbox(driver, "dsh004", temp);
-        Util.findButtonByTextAndClick(driver, "Add Selected Dishes (", NORM);
-        pause(NORM);
-        markTime(PHASE_CREATE_DISHES);
+        SeleniumUtil.selectOptionByBySelectText(driver, 1, "Kateqoriya seçin", temp);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Yemək əlavə et", temp);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Əvvəlcədən təyin edilmiş siyahı", temp);
+        SeleniumUtil.checkCheckbox(driver, "dsh001", temp);
+        SeleniumUtil.checkCheckbox(driver, "dsh002", temp);
+        SeleniumUtil.checkCheckbox(driver, "dsh003", temp);
+        SeleniumUtil.checkCheckbox(driver, "dsh004", temp);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Add Selected Dishes (", temp);
     }
 
+    public static void editEatery(WebDriver driver, String temp) {
+        SeleniumUtil.findButtonByTextAndClick(driver, "Redaktə et", NORM);
+        WebElement el = driver.findElement(By.id("115"));
+        SeleniumUtil.typeIntoInput(driver, el, "68 Üzeyir Hacıbəyov, Bakı", temp);
+        WebElement phone = driver.findElement(By.id("116"));
+        SeleniumUtil.typeIntoInput(driver, phone, "50 123 4578", temp);
+        WebElement lat = driver.findElement(By.id("118"));
+        SeleniumUtil.typeIntoInput(driver, lat, "40.12345", temp);
+        WebElement lang = driver.findElement(By.id("119"));
+        SeleniumUtil.typeIntoInput(driver, lang, "49.9876", temp);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Yadda saxla", NORM);
+    }
+
+    public static void createUser(WebDriver driver, WebDriverWait wait, StaffItem stuffItem, String temp) {
+
+        String id;
+        if (stuffItem.getRoles().contains("KITCHEN_ADMIN")) {
+            id = "role-KITCHEN_ADMIN";
+        } else if (stuffItem.getRoles().contains("CASHIER")) {
+            id = "role-CASHIER";
+        } else if (stuffItem.getRoles().contains("WAITER")) {
+            id = "role-WAITER";
+        } else return;
+
+        navigate(driver, wait, "nav006", "users", temp);
+        SeleniumUtil.findButtonByTextAndClick(driver, "İstifadəçi əlavə et", temp);
+        SeleniumUtil.typeIntoInputById(driver, stuffItem.getProfile().getName(), "user-name", temp);
+        SeleniumUtil.typeIntoInputById(driver, stuffItem.getEmail(), "user-username", temp);
+        SeleniumUtil.typeIntoInputById(driver, stuffItem.getProfile().getPhone(), "user-phone", temp);
+        SeleniumUtil.typeIntoInputById(driver, stuffItem.getPassword(), "user-password", temp);
+        SeleniumUtil.checkCheckbox(driver, id, temp);
+        SeleniumUtil.findButtonByTextAndClick(driver, "İstifadəçi əlavə et", temp);
+    }
+
+    static Iterator<Integer> idx = List.of(1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3).iterator();
+
+    public static void createTables(WebDriver driver, WebDriverWait wait, List<TableItem> tableItems, String norm) {
+        for (TableItem tableItem : tableItems) {
+            navigate(driver, wait, "nav004", "/admin/tables", norm);
+            SeleniumUtil.findButtonByTextAndClick(driver, "Masa əlavə et", norm);
+            SeleniumUtil.typeIntoInputById(driver, tableItem.getNumber(), "tblcrrt01", norm);
+            SeleniumUtil.typeIntoInputById(driver, tableItem.getSeats(), "tblcrrt02", norm);
+            SeleniumUtil.typeIntoInputById(driver, tableItem.getNote(), "tblcrrt03", norm);
+            SeleniumUtil.findButtonByTextAndClick(driver, "Masa əlavə et", norm);
+            SeleniumUtil.pause(norm);
+            assignTableWaiter(driver, wait, tableItem, idx.next(), norm);
+        }
+    }
+
+    static int buttonIndex = 0;
+
+    public static void assignTableWaiter(WebDriver driver, WebDriverWait wait, TableItem tableItem,
+                                         int selectIdx, String norm) {
+        SeleniumUtil.findButtonsByTextAndClick(driver, "Ofisiant təyin et", buttonIndex++, norm);
+        SeleniumUtil.selectOptionByBySelectText(driver, selectIdx, "Ofisiant seçin", norm);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Təyin et", norm);
+    }
+
+    public static void printQrCode(WebDriver driver, WebDriverWait wait, String norm) {
+        navigate(driver, wait, "nav004", "/admin/tables", norm);
+        WebElement qrCode = driver.findElement(By.cssSelector("[id^='qr-card']"));
+        SeleniumUtil.highlight2(driver, qrCode, norm);
+        SeleniumUtil.findButtonByTextAndClick(driver, "Çap et", norm);
+        SeleniumUtil.pause(norm);
+    }
 
 }
