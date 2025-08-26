@@ -10,9 +10,11 @@ import az.qrfood.backend.dish.dto.DishDto;
 import az.qrfood.backend.dish.entity.DishEntity;
 import az.qrfood.backend.dish.entity.DishEntityTranslation;
 import az.qrfood.backend.dish.repository.DishRepository;
+import az.qrfood.backend.order.repository.OrderItemRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +38,7 @@ public class DishService {
     private final DishRepository dishRepository;
     private final CategoryRepository categoryRepository;
     private final StorageService storageService;
+    private final OrderItemRepository orderItemRepository;
 
     @Value("${folder.predefined.dish.images}")
     private String appHomeFolderImage;
@@ -48,12 +51,16 @@ public class DishService {
      * @param dishRepository     The repository for Dish entities.
      * @param categoryRepository The repository for Category entities.
      * @param storageService     The service for handling file storage operations.
+     * @param orderItemRepository The repository for OrderItem entities.
      */
     public DishService(DishRepository dishRepository,
-                       CategoryRepository categoryRepository, StorageService storageService) {
+                       CategoryRepository categoryRepository, 
+                       StorageService storageService,
+                       OrderItemRepository orderItemRepository) {
         this.dishRepository = dishRepository;
         this.categoryRepository = categoryRepository;
         this.storageService = storageService;
+        this.orderItemRepository = orderItemRepository;
     }
 
     /**
@@ -156,20 +163,31 @@ public class DishService {
     /**
      * Deletes a dish from a specific category.
      * <p>
-     * This method is transactional. It finds the category and the dish within it,
-     * then removes the dish from the category's item list. Due to {@code orphanRemoval=true}
-     * on the {@code items} collection in {@link Category}, the dish entity will be
-     * automatically deleted from the database when the transaction commits.
+     * This method is transactional. It first checks if the dish is referenced by any order items.
+     * If it is, a DataIntegrityViolationException is thrown with a meaningful message.
+     * Otherwise, it finds the category and the dish within it, then removes the dish from the
+     * category's item list. Due to {@code orphanRemoval=true} on the {@code items} collection
+     * in {@link Category}, the dish entity will be automatically deleted from the database
+     * when the transaction commits.
      * </p>
      *
      * @param categoryId The ID of the category from which to delete the dish.
      * @param dishId     The ID of the dish to delete.
      * @return A {@link ResponseEntity} with a success message.
      * @throws EntityNotFoundException if the category or the dish within the category is not found.
+     * @throws DataIntegrityViolationException if the dish is referenced by any order items.
      */
     @Transactional
     public ResponseEntity<String> deleteDishItemById(Long categoryId, Long dishId) {
         log.debug("Requested to delete dish [{}] from category [{}]", dishId, categoryId);
+
+//         Check if the dish is referenced by any order items
+        if (orderItemRepository.existsByDishEntityId(dishId)) {
+            log.warn("Cannot delete dish [{}] because it is referenced by order items", dishId);
+            throw new DataIntegrityViolationException(
+                    String.format("Cannot delete dish [%s] because it is referenced by order items. " +
+                            "Please delete the associated order items first or mark the dish as unavailable instead.", dishId));
+        }
 
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException("Category not found " + categoryId));

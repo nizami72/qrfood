@@ -219,7 +219,10 @@ public class UserService {
         List<TableAssignment> tableAssignments = tableAssignmentRepository.findByWaiter(user);
         if (!tableAssignments.isEmpty()) {
             log.debug("Deleting {} table assignments for user ID: {}", tableAssignments.size(), id);
-            tableAssignmentRepository.deleteAll(tableAssignments);
+            // Delete each table assignment individually to avoid issues with bulk deletion
+            for (TableAssignment assignment : tableAssignments) {
+                tableAssignmentRepository.deleteById(assignment.getId());
+            }
         }
 
         Optional<UserProfile> userProfileOpt = userProfileRepository.findByUser(user);

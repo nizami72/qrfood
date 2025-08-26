@@ -217,13 +217,31 @@ public class CategoryService {
 
     /**
      * Deletes a category by its unique identifier.
+     * This also deletes all associated category translations due to the cascade relationship.
      *
      * @param categoryId The ID of the category to delete.
      * @return A {@link ResponseEntity} with a success message.
      */
+    @Transactional
     public ResponseEntity<String> deleteCategory(Long categoryId) {
-        categoryRepository.deleteById(categoryId);
-        return ResponseEntity.ok(String.format("Category [%s] deleted successfully", categoryId));
+        // Find the category to ensure it exists and to get its translations
+        Optional<Category> categoryOpt = categoryRepository.findById(categoryId);
+        if (categoryOpt.isPresent()) {
+            Category category = categoryOpt.get();
+
+            // Explicitly clear the translation list to ensure they are deleted
+            // This helps prevent issues with orphaned translations
+            if (category.getTranslations() != null) {
+                category.getTranslations().clear();
+                categoryRepository.save(category);
+            }
+
+            // Now delete the category
+            categoryRepository.deleteById(categoryId);
+            return ResponseEntity.ok(String.format("Category [%s] and its translations deleted successfully", categoryId));
+        } else {
+            return ResponseEntity.ok(String.format("Category [%s] not found", categoryId));
+        }
     }
 
     /**

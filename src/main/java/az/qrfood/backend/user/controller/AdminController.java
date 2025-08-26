@@ -3,20 +3,19 @@ package az.qrfood.backend.user.controller;
 import az.qrfood.backend.auth.service.CustomUserDetailsService;
 import az.qrfood.backend.auth.util.JwtUtil;
 import az.qrfood.backend.category.dto.CategoryDto;
-import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.category.service.CategoryService;
 import az.qrfood.backend.dish.dto.DishDto;
 import az.qrfood.backend.dish.service.DishService;
 import az.qrfood.backend.eatery.dto.EateryDto;
-import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.eatery.service.EateryService;
 import az.qrfood.backend.order.dto.OrderDto;
-import az.qrfood.backend.order.entity.Order;
-import az.qrfood.backend.order.mapper.OrderMapper;
+import az.qrfood.backend.order.dto.OrderItemDTO;
 import az.qrfood.backend.order.service.OrderService;
+import az.qrfood.backend.orderitem.service.OrderItemService;
 import az.qrfood.backend.table.dto.TableDto;
-import az.qrfood.backend.table.entity.TableInEatery;
 import az.qrfood.backend.table.service.TableService;
+import az.qrfood.backend.tableassignment.dto.TableAssignmentDto;
+import az.qrfood.backend.tableassignment.service.TableAssignmentService;
 import az.qrfood.backend.user.dto.UserResponse;
 import az.qrfood.backend.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -57,14 +56,16 @@ public class AdminController {
     private final EateryService eateryService;
     private final TableService tableService;
     private final OrderService orderService;
-    private final OrderMapper orderMapper;
+    private final OrderItemService orderItemService;
+    private final TableAssignmentService tableAssignmentService;
     //</editor-fold>
 
     //<editor-fold desc="Constructor">
     public AdminController(CustomUserDetailsService userDetailsService, JwtUtil jwtUtil,
                            CategoryService categoryService, DishService dishService,
                            UserService userService, EateryService eateryService, TableService tableService,
-                           OrderService orderService, OrderMapper orderMapper) {
+                           OrderService orderService, OrderItemService orderItemService,
+                           TableAssignmentService tableAssignmentService) {
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
         this.categoryService = categoryService;
@@ -73,7 +74,8 @@ public class AdminController {
         this.eateryService = eateryService;
         this.tableService = tableService;
         this.orderService = orderService;
-        this.orderMapper = orderMapper;
+        this.orderItemService = orderItemService;
+        this.tableAssignmentService = tableAssignmentService;
     }
     //</editor-fold>
 
@@ -226,6 +228,101 @@ public class AdminController {
         response.put("geoLat", eatery.getGeoLat());
         response.put("geoLng", eatery.getGeoLng());
         response.put("ownerProfileId", eatery.getOwnerProfileId());
+
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Deletes an eatery and all related data.
+     * <p>
+     * This endpoint deletes an eatery and all its related data including:
+     * - All users (except eatery admin if there is another eatery related to them)
+     * - All tables and table assignments
+     * - All orders
+     * - All categories and dishes
+     * - All category translations
+     * </p>
+     *
+     * @param eateryId The ID of the eatery to delete.
+     * @return ResponseEntity with a success message.
+     */
+    @Operation(summary = "Delete eatery with all related data", description = "Deletes an eatery and all its related data including users, tables, orders, categories, dishes, and category translations")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Eatery deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Eatery not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Not authorized to delete this eatery"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @DeleteMapping("${admin.eatery}")
+    @PreAuthorize("@authz.hasAnyRole(authentication)")
+//    @Transactional
+    public ResponseEntity<?> deleteEatery(@PathVariable Long eateryId) {
+        log.info("Deleting eatery with ID: {} and all related data", eateryId);
+
+        // Get eatery details
+        EateryDto eatery = eateryService.getEateryById(eateryId);
+
+        // Delete all order items for the eatery
+        List<OrderDto> orders = orderService.getOrdersByEateryId(eateryId);
+        for (OrderDto order : orders) {
+            List<OrderItemDTO> orderItems = order.getItems();
+            for (OrderItemDTO item : orderItems) {
+                orderItemService.deleteOrderItem(item.getId());
+            }
+        }
+
+        // Now delete all orders for the eatery
+        for (OrderDto order : orders) {
+            orderService.deleteOrder(order.getId());
+        }
+        log.info("Deleted {} orders for eatery ID: {}", orders.size(), eateryId);
+
+        // Delete all tables and tables assigment for the eatery
+        List<TableDto> tables = tableService.listTablesForEatery(eateryId);
+        for (TableDto table : tables) {
+            List<TableAssignmentDto> tableAssignments =
+                    tableAssignmentService.getTableAssignmentsByTableId(table.id());
+            for (TableAssignmentDto tableAssignment : tableAssignments) {
+                log.debug("Deleting teble assigment [{}]", tableAssignment.getId());
+                tableAssignmentService.deleteTableAssignment(tableAssignment.getId());
+            }
+            log.debug("Deleting table [{}]", table.id());
+            tableService.deleteTable(table.id());
+        }
+        log.info("Deleted {} tables for eatery ID: {}", tables.size(), eateryId);
+
+        // Delete all dishes in each category
+        List<CategoryDto> categories = categoryService.findAllCategoryForEatery(eateryId);
+        for (CategoryDto category : categories) {
+            // Get and delete all dishes in the category
+            List<DishDto> dishes = dishService.getAllDishesInCategory(category.getCategoryId());
+            for (DishDto dish : dishes) {
+                dishService.deleteDishItemById(category.getCategoryId(), dish.getDishId());
+            }
+            log.info("Deleted {} dishes in category ID: {}", dishes.size(), category.getCategoryId());
+        }
+
+        // Delete all categories after all dishes have been deleted
+        for (CategoryDto category : categories) {
+            categoryService.deleteCategory(category.getCategoryId());
+        }
+        log.info("Deleted {} categories for eatery ID: {}", categories.size(), eateryId);
+
+        // Delete all users for the eatery
+        List<UserResponse> users = userService.getAllUsers(eateryId);
+        for (UserResponse user : users) {
+            userService.deleteUser(user.getId());
+        }
+        log.info("Deleted {} users for eatery ID: {}", users.size(), eateryId);
+
+        // Finally, delete the eatery
+        eateryService.deleteEatery(eateryId);
+        log.info("Deleted eatery ID: {}", eateryId);
+
+        // Create the response
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Eatery and all related data deleted successfully");
+        response.put("eateryId", eateryId);
 
         return ResponseEntity.ok(response);
     }
