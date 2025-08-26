@@ -10,14 +10,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import org.springframework.security.access.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Global exception handler for the application.
@@ -79,7 +83,7 @@ public class GlobalExceptionHandler {
     /**
      * Handles {@link OrderNotFoundException} and returns a 404 Not Found response.
      *
-     * @param ex      The caught {@link OrderNotFoundException}.
+     * @param ex The caught {@link OrderNotFoundException}.
      * @return A {@link ResponseEntity} with an {@link ApiResponse} indicating the order was not found.
      */
     @ExceptionHandler(OrderNotFoundException.class)
@@ -103,7 +107,13 @@ public class GlobalExceptionHandler {
 
         String requestUri = request.getRequestURI();
         String method = request.getMethod();
-        log.error("Access to[{}:{}] denied", method, requestUri);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        String roles = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(", "));
+
+        log.error("Action of [{}], with role [{}] to [{}:{}] denied", username, roles, method, requestUri);
 
         UserExceptionHandler.ErrorResponse errorResponse = new UserExceptionHandler.ErrorResponse(
                 HttpStatus.FORBIDDEN.value(),
@@ -130,10 +140,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ApiResponse<Void>> handleException(UserAlreadyExistsException ex) {
         log.error(ex.getMessage());
-         return ResponseEntity
-            .status(ResponseCodes.USER_ALREADY_EXISTS.getHttpStatus())
-            .header("X-Error-Code", ResponseCodes.USER_ALREADY_EXISTS.getMessage())
-            .body(new ApiResponse<>(ResponseCodes.USER_ALREADY_EXISTS));
+        return ResponseEntity
+                .status(ResponseCodes.USER_ALREADY_EXISTS.getHttpStatus())
+                .header("X-Error-Code", ResponseCodes.USER_ALREADY_EXISTS.getMessage())
+                .body(new ApiResponse<>(ResponseCodes.USER_ALREADY_EXISTS));
     }
 
     /**

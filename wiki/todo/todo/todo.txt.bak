@@ -31,4 +31,11 @@ we can do all things for you, send your menu, then change the password +qr
 Fix adding again the same dish from predefind
 Sort all orders in a clint device and decide when it shsould be put in deactiv state
 Sort all orders in a clint device and decide when it shsould be put in deactiv state +pr
-x 2025-08-20 Sort all orders in a clint device and decide when it shsould be put in deactiv state +qr
+Install KDE connect
+Create information enntries on eatery editing page +qr
+Add page refresh on phone orders page +qr
+Waiter can see only its own tables, and can create order for its tables +qr
+(D) Login as waiter ans check operations +qr
+(D) Login as cashier ans check operations +qr
+(D) Login as kitchen ans check operations +qr
+Login as admin ans check operations +qr

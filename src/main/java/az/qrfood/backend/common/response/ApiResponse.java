@@ -28,6 +28,7 @@ public class ApiResponse<T> {
      * A human-readable message describing the outcome of the API operation.
      */
     private String message;
+    private String messageKey;
 
     /**
      * The actual data payload returned by the API operation.
@@ -73,6 +74,7 @@ public class ApiResponse<T> {
     public ApiResponse(ResponseCodes codes, T data, Instant timestamp) {
         this.success = codes.isSuccess();
         this.message = codes.getMessage();
+        this.messageKey = codes.getMessageKey();
         this.data = data;
         this.code = codes.getHttpStatus().value();
         this.timestamp = timestamp;
@@ -81,6 +83,7 @@ public class ApiResponse<T> {
     public ApiResponse(ResponseCodes codes, Instant timestamp) {
         this.success = codes.isSuccess();
         this.message = codes.getMessage();
+        this.messageKey = codes.getMessage();
         this.code = codes.getHttpStatus().value();
         this.timestamp = timestamp;
     }
@@ -88,6 +91,7 @@ public class ApiResponse<T> {
     public ApiResponse(ResponseCodes codes) {
         this.success = codes.isSuccess();
         this.message = codes.getMessage();
+        this.messageKey = codes.getMessageKey();
         this.data = null;
         this.code = codes.getHttpStatus().value();
         this.timestamp = Instant.now();

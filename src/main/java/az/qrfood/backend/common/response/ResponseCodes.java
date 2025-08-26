@@ -1,5 +1,6 @@
 package az.qrfood.backend.common.response;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 public enum ResponseCodes {
@@ -8,6 +9,7 @@ public enum ResponseCodes {
     RESOURCE_MISMATCH_OR_NOT_FOUND(
             false,
             "Access to resources that are unrelated or do not exist",
+            "response.notYourResource",
             HttpStatus.NOT_FOUND,
             "Requested resource does not exist or is not related to the given context (e.g., entity ownership mismatch)"
     ),
@@ -15,6 +17,7 @@ public enum ResponseCodes {
     INVALID_JWT(
             false,
             "Invalid or expired authentication token, please log in again",
+            "response.jwtInvalid",
             HttpStatus.UNAUTHORIZED,
             "JWT is missing, malformed, expired or signature verification failed"
     ),
@@ -22,6 +25,7 @@ public enum ResponseCodes {
     EATERY_MISMATCH(
             false,
             "Access denied for the requested eatery.",
+            "response.notYourEatery",
             HttpStatus.CONFLICT,
             "EateryId mismatch: Access denied for the requested eatery."
 
@@ -31,6 +35,7 @@ public enum ResponseCodes {
     USER_ALREADY_EXISTS(
             false,
             "A user with this email already exists",
+            "response.userExist",
             HttpStatus.CONFLICT,
             "Attempt to register with an email that's already in use"
     ),
@@ -38,6 +43,7 @@ public enum ResponseCodes {
     INVALID_PASSWORD(
             false,
             "Password does not meet security requirements",
+            "response.invalidPass",
             HttpStatus.UNPROCESSABLE_ENTITY,
             "Password validation failed due to length or complexity"
     ),
@@ -45,36 +51,26 @@ public enum ResponseCodes {
     ACCESS_DENIED(
             false,
             "You do not have permission to access this resource",
-            HttpStatus.FORBIDDEN,
+            "response.accessDenied", HttpStatus.FORBIDDEN,
             "User attempted to access a restricted resource"
     );
 
+    @Getter
     private final boolean success;
+    @Getter
     private final String message;
+    @Getter
+    private final String messageKey;
+    @Getter
     private final HttpStatus httpStatus;
+    @Getter
     private final String debugMessage;
 
-    ResponseCodes(boolean success, String message, HttpStatus httpStatus, String debugMessage) {
+    ResponseCodes(boolean success, String message, String messageKey, HttpStatus httpStatus, String debugMessage) {
         this.success = success;
         this.message = message;
+        this.messageKey = messageKey;
         this.httpStatus = httpStatus;
         this.debugMessage = debugMessage;
-    }
-
-
-    public String getMessage() {
-        return message;
-    }
-
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
-
-    public String getDebugMessage() {
-        return debugMessage;
-    }
-
-    public boolean isSuccess() {
-        return success;
     }
 }
