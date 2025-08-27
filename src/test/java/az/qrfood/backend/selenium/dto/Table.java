@@ -1,7 +1,6 @@
 package az.qrfood.backend.selenium.dto;
 
-public class TableItem {
-
+public class Table {
 	private String number;
 	private String note;
 	private int eateryId;

@@ -9,7 +9,6 @@ public class Eatery{
 	private Object geoLat;
 	private List<String> phones;
 	private int id;
-	private List<CategoriesItem> categories;
 
 	public Object getGeoLng(){
 		return geoLng;
@@ -33,9 +32,5 @@ public class Eatery{
 
 	public int getId(){
 		return id;
-	}
-
-	public List<CategoriesItem> getCategories(){
-		return categories;
 	}
 }

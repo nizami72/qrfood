@@ -3,7 +3,7 @@ package az.qrfood.backend.selenium;
 import static az.qrfood.backend.selenium.TestTestovCreator.visualEffect;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import az.qrfood.backend.selenium.dto.StaffItem;
-import az.qrfood.backend.selenium.dto.TableItem;
+import az.qrfood.backend.selenium.dto.Table;
 import lombok.extern.log4j.Log4j2;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -18,6 +18,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 @Log4j2
 public class SeleniumUtil {
@@ -172,6 +173,28 @@ public class SeleniumUtil {
         select.selectByIndex(index);
         pause(m.get(temp).get(BETWEEN_STEP));
     }
+
+    public static void selectRandomOptionByText(WebDriver driver, String text, String temp) {
+        WebElement selectElement = driver.findElement(
+                By.xpath("//select[option[text()='arg1']]".replace("arg1", text))
+        );
+        Select select = new Select(selectElement);
+
+        // получаем все доступные опции
+        List<WebElement> options = select.getOptions();
+
+        if (options.size() > 2) {
+            // исключаем первый элемент, если он "пустой"/"default"
+            int randomIndex = new Random().nextInt(options.size() - 1) + 1;
+            select.selectByIndex(randomIndex);
+        } else {
+            // если опция всего одна — выбираем её
+            select.selectByIndex(1);
+        }
+
+        pause(m.get(temp).get(BETWEEN_STEP));
+    }
+
 
     private static long t = System.currentTimeMillis();
 
@@ -355,8 +378,8 @@ public class SeleniumUtil {
 
     static Iterator<Integer> idx = List.of(1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3).iterator();
 
-    public static void createTables(WebDriver driver, WebDriverWait wait, List<TableItem> tableItems, String norm) {
-        for (TableItem tableItem : tableItems) {
+    public static void createTables(WebDriver driver, WebDriverWait wait, List<Table> tableItems, String norm) {
+        for (Table tableItem : tableItems) {
             navigate(driver, wait, "nav004", "/admin/tables", norm);
             SeleniumUtil.findButtonByTextAndClick(driver, "Masa əlavə et", norm);
             SeleniumUtil.typeIntoInputById(driver, tableItem.getNumber(), "tblcrrt01", norm);
@@ -370,10 +393,11 @@ public class SeleniumUtil {
 
     static int buttonIndex = 0;
 
-    public static void assignTableWaiter(WebDriver driver, WebDriverWait wait, TableItem tableItem,
+    public static void assignTableWaiter(WebDriver driver, WebDriverWait wait, Table tableItem,
                                          int selectIdx, String norm) {
+        driver.navigate().refresh();
         SeleniumUtil.findButtonsByTextAndClick(driver, "Ofisiant təyin et", buttonIndex++, norm);
-        SeleniumUtil.selectOptionByBySelectText(driver, selectIdx, "Ofisiant seçin", norm);
+        SeleniumUtil.selectRandomOptionByText(driver, "Ofisiant seçin", norm);
         SeleniumUtil.findButtonByTextAndClick(driver, "Təyin et", norm);
     }
 

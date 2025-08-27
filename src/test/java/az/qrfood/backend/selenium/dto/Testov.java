@@ -4,18 +4,23 @@ import java.util.List;
 
 public class Testov{
 	private Eatery eatery;
-	private List<TableItem> tables;
+	private List<Table> tables;
 	private List<StaffItem> staff;
+	private List<CategoriesItem> categories;
 
 	public Eatery getEatery(){
 		return eatery;
 	}
 
-	public List<TableItem> getTables(){
+	public List<Table> getTables(){
 		return tables;
 	}
 
 	public List<StaffItem> getStaff(){
 		return staff;
+	}
+
+	public List<CategoriesItem> getCategories(){
+		return categories;
 	}
 }
