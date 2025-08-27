@@ -23,7 +23,7 @@ import java.util.Random;
 @Log4j2
 public class SeleniumUtil {
 
-    public static String FAST = "FAST", NORM = "NORM", NORM_BY_2 = "NORM05", TYPING_DELAY = "DELAY",
+    public static String FAST = "FAST", NORM = "NORM", NORM_X_2 = "NORM05", TYPING_DELAY = "DELAY",
             BETWEEN_STEP = "BETWEEN_STEP", ALERT_PAUSE = "ALERT_PAUSE", HIGHLIGHT_PAUSE = "HIGHLIGHT_PAUSE";
 
     public static String PHASE_OPEN_PAGE = "Open page",
@@ -52,7 +52,7 @@ public class SeleniumUtil {
                     ALERT_PAUSE, 1000,
                     FINAL_PAUSE, 3000
             ),
-            NORM_BY_2, Map.of(
+            NORM_X_2, Map.of(
                     TYPING_DELAY, 40,
                     BETWEEN_STEP, 600,
                     HIGHLIGHT_PAUSE, 400,

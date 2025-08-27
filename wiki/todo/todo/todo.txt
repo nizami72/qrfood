@@ -1,6 +1,5 @@
 (B) Interceptor for /api/eatery/{eateryId}/user/name/{userName} +qr
-(C) Interceptor for /api/admin/api/eatery/{eateryId}/user/{userId} +qr
-(A) Interceptor for /api/eatery/{eateryId}/user/{userId} +qr
+
 (F) Teken and refresh token feature +qr
 (X) Task description +project @context due:2025-10-10
 (Z) Create a new email for qrfood. +qr

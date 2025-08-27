@@ -1,6 +1,5 @@
 (B) Interceptor for /api/eatery/{eateryId}/user/name/{userName} +qr
 (C) Interceptor for /api/admin/api/eatery/{eateryId}/user/{userId} +qr
-(A) Interceptor for /api/eatery/{eateryId}/user/{userId} +qr
 (F) Teken and refresh token feature +qr
 (X) Task description +project @context due:2025-10-10
 (Z) Create a new email for qrfood. +qr
@@ -38,4 +37,4 @@ Waiter can see only its own tables, and can create order for its tables +qr
 (D) Login as waiter ans check operations +qr
 (D) Login as cashier ans check operations +qr
 (D) Login as kitchen ans check operations +qr
-Login as admin ans check operations +qr
+(D) Login as admin ans check operations +qr

@@ -20,6 +20,7 @@ import az.qrfood.backend.user.repository.UserRepository;
 import az.qrfood.backend.tableassignment.entity.TableAssignment;
 import az.qrfood.backend.auth.service.RefreshTokenService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -123,7 +125,10 @@ public class UserService {
 
     @Transactional
     public UserResponse updateUser(Long id, UserRequest request) {
-        request.getRoles().remove(Role.SUPER_ADMIN);
+        Set<Role> roles = request.getRoles();
+        if(roles != null && !roles.isEmpty()) {
+            request.getRoles().remove(Role.SUPER_ADMIN);
+        }
         User user = findUserByUserId(id);
         return updateUserI(user, request);
     }
@@ -139,14 +144,15 @@ public class UserService {
      * @throws EntityNotFoundException if the userUnderChange with the given ID is not found.
      * @throws IllegalStateException   if the new username already exists.
      */
-    protected UserResponse updateUserI(User userUnderChange, UserRequest userNewData) {
+    protected UserResponse updateUserI(User userUnderChange, @Valid UserRequest userNewData) {
 
-        if (!userUnderChange.getUsername().equals(userNewData.getUsername())) {
+        String mayBeUserName = userNewData.getUsername();
+        if (StringUtils.hasLength(mayBeUserName) &&  !userUnderChange.getUsername().equals(mayBeUserName)) {
             validateUserDoesNotExist(userNewData.getUsername());
             userUnderChange.setUsername(userNewData.getUsername());
         }
 
-        // Only update password if it's provided
+        // Only update the password if it's provided
         if (userNewData.getPassword() != null && !userNewData.getPassword().isEmpty()) {
             userUnderChange.setPassword(passwordEncoder.encode(userNewData.getPassword()));
         }

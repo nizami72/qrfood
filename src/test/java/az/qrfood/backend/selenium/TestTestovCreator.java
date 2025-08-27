@@ -37,15 +37,19 @@ public class TestTestovCreator {
     private WebDriver driver;
     private WebDriverWait wait;
     private Testov testov;
-    private final String howFast = FAST;
-    final String host = "http://localhost:5173";
+    private String howFast;
+    String host;
     final static boolean visualEffect = false;
     private long totalTime;
     StaffItem admin;
 
     @BeforeEach
     public void setUp() throws IOException {
-        testov = TestUtil.json2Pojo(TestUtil.readFileFromResources("fakeData/Testov.json"), Testov.class);
+        host = System.getenv("HOST");
+        String fileWithData = System.getenv("JSON_SOURCE");
+        howFast = System.getenv("HOW_FAST");
+
+        testov = TestUtil.json2Pojo(TestUtil.readFileFromResources(fileWithData), Testov.class);
         Assertions.assertNotNull(testov);
         admin = testov.getStaff().stream().filter(s -> s.getRoles().contains("EATERY_ADMIN")).findFirst()
                 .orElseThrow();

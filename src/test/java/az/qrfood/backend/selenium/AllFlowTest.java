@@ -2,7 +2,7 @@ package az.qrfood.backend.selenium;
 
 import static az.qrfood.backend.selenium.SeleniumUtil.FAST;
 import static az.qrfood.backend.selenium.SeleniumUtil.NORM;
-import static az.qrfood.backend.selenium.SeleniumUtil.NORM_BY_2;
+import static az.qrfood.backend.selenium.SeleniumUtil.NORM_X_2;
 import static az.qrfood.backend.selenium.SeleniumUtil.PHASE_CREATE_DISHES;
 import static az.qrfood.backend.selenium.SeleniumUtil.PHASE_CREATE_TABLES;
 import static az.qrfood.backend.selenium.SeleniumUtil.PHASE_DELETE_USER;
@@ -84,7 +84,7 @@ public class AllFlowTest {
     public void editCategory() {
         openPage("login", 500);
         login(NORM);
-        SeleniumUtil.createCategories(driver, wait, NORM_BY_2);
+        SeleniumUtil.createCategories(driver, wait, NORM_X_2);
         pause(2000);
 
     }
@@ -136,7 +136,7 @@ public class AllFlowTest {
         pause(2000);
 
         // ================== CREATE CATEGORY ==================
-        SeleniumUtil.createCategories(driver, wait, NORM_BY_2);
+        SeleniumUtil.createCategories(driver, wait, NORM_X_2);
         pause(2000);
 
         // ================== CREATE DISHES ==================
