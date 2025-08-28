@@ -71,7 +71,7 @@ public class RoleDocumentationGenerator implements ApplicationRunner {
                     String roles = extractRoles(method);
                     String httpMethod = extractHttpMethod(method);
                     String methodSignature = formatMethodSignature(method);
-                    String sourceFile = "src/main/java/" + controller.getName().replace('.', '/') + ".java";
+                    String sourceFile = "../../src/main/java/" + controller.getName().replace('.', '/') + ".java";
 
                     EndpointInfo info = new EndpointInfo(
                             httpMethod,
