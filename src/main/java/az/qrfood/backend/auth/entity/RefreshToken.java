@@ -40,12 +40,14 @@ public class RefreshToken {
      */
     @Column(nullable = false)
     private Instant expiryDate;
-    
+
+    private Long activeEateryId;
+
     /**
      * The user associated with this refresh token.
      */
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
-    
+
 }

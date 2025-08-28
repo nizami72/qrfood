@@ -98,6 +98,10 @@ public class EateryIdCheckFilter extends OncePerRequestFilter implements Ordered
                 Long tokenEateryId;
                 try {
                     tokenEateryId = jwtUtil.extractClaim(jwt, claims -> claims.get("eateryId", Long.class));
+                    if(tokenEateryId == null) {
+                        handleError(response, ResponseCodes.EATERY_ID_MISSING);
+                        return;
+                    }
                 } catch (Exception e) {
                     log.error("Error extracting eateryId from JWT token", e);
                     // If a token is invalid or eateryId cannot be extracted, treat as mismatch
@@ -114,16 +118,27 @@ public class EateryIdCheckFilter extends OncePerRequestFilter implements Ordered
                     // In a stateless JWT system, clearing security context or redirecting
                     // is typically handled on the client side by invalidating the token.
                     // Here, we simply reject the request.
+                    handleError(response, ResponseCodes.EATERY_MISMATCH);
                     SecurityContextHolder.clearContext(); // Clear context for this request
                     response.setStatus(HttpStatus.PRECONDITION_FAILED.value());
                     response.setContentType("application/json");
                     response.getWriter().write(Util.toJsonString(new ApiResponse<Void>(ResponseCodes.EATERY_MISMATCH, null)));
                     return;
+                } else {
+                    log.debug("EateryId matched: token eateryId {}, path eateryId {}", tokenEateryId, pathEateryId);
                 }
             }
         }
 
         // Continue with the filter chain
         filterChain.doFilter(request, response);
+    }
+
+    private void handleError(HttpServletResponse response, ResponseCodes responseCode) throws IOException {
+        SecurityContextHolder.clearContext(); // Clear context for this request
+        response.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+        response.setContentType("application/json");
+        response.getWriter().write(Util.toJsonString(new ApiResponse<Void>(responseCode, null)));
+
     }
 }

@@ -1,6 +1,6 @@
 package az.qrfood.backend.auth;
 
-import az.qrfood.backend.user.entity.UserProfile;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
  * </p>
  */
 @Component("authz")
+@Log4j2
 public class PermissionChecker {
 
     /**
@@ -48,15 +49,4 @@ public class PermissionChecker {
         }
         return false;
     }
-
-
-//    public boolean hasEateryAccess(Authentication auth, Long eateryId) {
-//        if (auth == null || !auth.isAuthenticated()) return false;
-//
-//        if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_SUPER_ADMIN"))) return true;
-//
-//        UserProfile userProfile = auth.getPrincipal();
-//        return userProfile.getEateryIds().contains(eateryId);
-//}
-
 }

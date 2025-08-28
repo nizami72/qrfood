@@ -151,7 +151,7 @@ public class AuthController {
 
         // Generate refresh token
         log.debug("Generating refresh token for user");
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userOptional.get());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userOptional.get(), eateryId);
 
         log.debug("Return token, refresh token, user ID, and eatery ID");
         LoginResponse response = new LoginResponse(jwt, refreshToken.getToken(), userId, eateryId);
@@ -308,24 +308,9 @@ public class AuthController {
     @PostMapping("${auth.token.refresh}")
     public ResponseEntity<?> refreshToken(HttpServletRequest request1, @Valid @RequestBody TokenRefreshRequest request) {
 
-        Long eateryId = null;
-
-        String authorizationHeader = request1.getHeader("Authorization");
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            String jwt = authorizationHeader.substring(7);
-
-            // Extract eateryId from JWT token
-            try {
-                eateryId = jwtUtil.extractClaim(jwt, claims -> claims.get("eateryId", Long.class));
-            } catch (Exception e) {
-                log.error("Error extracting eateryId from JWT token", e);
-                throw new TokenRefreshException(jwt, "Invalid JWT token");
-            }
-        }
 
         String requestRefreshToken = request.getRefreshToken();
 
-        Long finalEateryId = eateryId;
         return refreshTokenService.findByToken(requestRefreshToken)
                 .map(refreshTokenService::verifyExpiration)
                 .map(refreshToken -> {
@@ -335,9 +320,10 @@ public class AuthController {
                     UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
 
                     // Generate a new access token
-                    String token = jwtUtil.generateToken(userDetails, finalEateryId);
+                    Long eateryId = refreshToken.getActiveEateryId();
+                    String token = jwtUtil.generateToken(userDetails, eateryId);
 
-                    return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken, finalEateryId));
+                    return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken, eateryId));
                 })
                 .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
                         "Refresh token is not in database!"));

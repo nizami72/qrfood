@@ -56,10 +56,10 @@ public class RefreshTokenService {
      * </p>
      *
      * @param user     The user for whom to create the refresh token.
-     * @param eateryId The ID of the eatery associated with this token, if applicable.
+     * @param activeEateryId The ID of the eatery associated with this token, if applicable.
      * @return The created RefreshToken.
      */
-    public RefreshToken createRefreshToken(User user) {
+    public RefreshToken createRefreshToken(User user, Long activeEateryId) {
         // Check if a user already has a refresh token
         Optional<RefreshToken> existingToken = refreshTokenRepository.findByUser(user);
 
@@ -71,6 +71,7 @@ public class RefreshTokenService {
         refreshToken.setUser(user);
         refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
         refreshToken.setToken(UUID.randomUUID().toString());
+        if(activeEateryId != null) refreshToken.setActiveEateryId(activeEateryId);
 
         return refreshTokenRepository.save(refreshToken);
     }

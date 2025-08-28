@@ -130,6 +130,7 @@ public class JwtRequestFilter extends OncePerRequestFilter implements Ordered {
             jwt = authorizationHeader.substring(7); // Extract the token itself
             try {
                 username = jwtUtil.extractUsername(jwt); // Extract the username from the token
+                log.debug("Request by [{}]", username );
             } catch (ExpiredJwtException e) {
                 log.warn("JWT token expired for path: {}", path);
                 sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "JWT token has expired");

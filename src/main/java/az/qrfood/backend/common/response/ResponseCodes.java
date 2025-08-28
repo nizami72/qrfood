@@ -31,6 +31,14 @@ public enum ResponseCodes {
 
     ),
 
+    EATERY_ID_MISSING(
+            false,
+            "Access denied, eatery id must be set in token.",
+            "response.notEateryIdInJwt",
+            HttpStatus.BAD_REQUEST,
+            "Access denied duw to missing eatery ID."
+
+    ),
 
     USER_ALREADY_EXISTS(
             false,
