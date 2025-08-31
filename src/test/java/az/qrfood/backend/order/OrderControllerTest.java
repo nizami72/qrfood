@@ -167,7 +167,7 @@ class OrderControllerTest {
      */
     @Test
     @Order(3)
-    void getAllEateryOrdersByStatus() {
+    void getOrdersByStatus() {
         fileLog.println("\n===== 🟢 GET ALL ORDERS FOR EATERY ID: " + eateryId + " =====");
 
         Response response = given()

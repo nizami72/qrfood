@@ -2,13 +2,13 @@ package az.qrfood.backend.order.repository;
 
 import az.qrfood.backend.order.OrderStatus;
 import az.qrfood.backend.order.entity.Order;
+import az.qrfood.backend.table.entity.TableInEatery;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
+import java.util.Set;
 
 /**
  * Spring Data JPA repository for the {@link Order} entity.
@@ -41,5 +41,16 @@ public interface CustomerOrderRepository extends JpaRepository<Order, Long> {
      */
     @Query("SELECT o FROM Order o WHERE o.table.eatery.id = :eateryId")
     List<Order> findByTableEateryId(@Param("eateryId") Long eateryId);
-}
 
+    /**
+     * Retrieves a list of orders associated with any of the specified tables.
+     * <p>
+     * This method uses a custom JPQL query to fetch orders where the table
+     * associated with the order is in the given set of tables.
+     * </p>
+     *
+     * @param tables The set of tables to filter orders by.
+     * @return A list of {@link Order} entities associated with any of the specified tables.
+     */
+    List<Order> findByTableIn(Set<TableInEatery> tables);
+}

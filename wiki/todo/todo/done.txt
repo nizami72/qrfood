@@ -16,3 +16,5 @@ x 2025-08-19 Interceptor for /api/qrcode/api/eatery/{eatery}/table/{table} +qr
 x 2025-08-19 Second post in Instagram +qr
 x 2025-08-20 Sort all orders in a clint device and decide when it shsould be put in deactiv state +qr
 x 2025-08-27 Interceptor for /api/eatery/{eateryId}/user/{userId} +qr
+x 2025-08-31 Error: Waiter should see only orders for its tables +qr
+x 2025-08-31 Create a new email for qrfood. +qr

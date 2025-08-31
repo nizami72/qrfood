@@ -11,7 +11,9 @@ import az.qrfood.backend.order.service.OrderService;
 import az.qrfood.backend.service.WebSocketService;
 import az.qrfood.backend.table.entity.TableStatus;
 import az.qrfood.backend.table.service.TableService;
+import az.qrfood.backend.user.UserUtils;
 import az.qrfood.backend.user.entity.Role;
+import az.qrfood.backend.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -22,6 +24,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -32,6 +35,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import java.security.Principal;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -91,8 +95,8 @@ public class OrderController {
     })
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
     @GetMapping("${order.status}")
-    public ResponseEntity<List<OrderDto>> getAllEateryOrdersByStatus(@PathVariable("status") String status,
-                                                                     @CookieValue(value = DEVICE, defaultValue = "") String cookie
+    public ResponseEntity<List<OrderDto>> getOrdersByStatus(@PathVariable("status") String status,
+                                                            @CookieValue(value = DEVICE, defaultValue = "") String cookie
     ) {
         log.debug("GET all order by status [{}]", status);
         return ResponseEntity.ok(orderService.getAllOrdersByStatus(status));
@@ -113,8 +117,13 @@ public class OrderController {
     })
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
     @GetMapping("${orders}")
-    public ResponseEntity<List<OrderDto>> getOrdersByEateryId(@PathVariable Long eateryId) {
+    public ResponseEntity<List<OrderDto>> getOrdersByEateryId(@PathVariable Long eateryId, Principal principal) {
         log.debug("REST request to get Orders for eatery ID: {}", eateryId);
+        Set<Role> roles = UserUtils.getCurrentUserRoles();
+        if(roles.size() == 1 && roles.contains(Role.WAITER)){
+            Long waiterId = ((User)((UsernamePasswordAuthenticationToken) principal).getPrincipal()).getId();
+            return ResponseEntity.ok(orderService.getOrdersByWaiterId(waiterId));
+        }
         return ResponseEntity.ok(orderService.getOrdersByEateryId(eateryId));
     }
 

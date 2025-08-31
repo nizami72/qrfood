@@ -1,8 +1,6 @@
 (B) Interceptor for /api/eatery/{eateryId}/user/name/{userName} +qr
-
 (F) Teken and refresh token feature +qr
 (X) Task description +project @context due:2025-10-10
-(Z) Create a new email for qrfood. +qr
 ---------------------------------
 Cloudflare Turnstile +qr
 Coton +buy
@@ -32,9 +30,13 @@ Sort all orders in a clint device and decide when it shsould be put in deactiv s
 Sort all orders in a clint device and decide when it shsould be put in deactiv state +pr
 Install KDE connect
 Create information enntries on eatery editing page +qr
-Add page refresh on phone orders page +qr
-Waiter can see only its own tables, and can create order for its tables +qr
+(E) Add page refresh on phone orders page +qr
+(G) Waiter can see only its own tables, and can create order for its tables +qr
 (D) Login as waiter ans check operations +qr
 (D) Login as cashier ans check operations +qr
 (D) Login as kitchen ans check operations +qr
 (D) Login as admin ans check operations +qr
+Error: when order by the same phone from another table +qr @fix
+Error: The same table name in header line 2 for orders with different tables +qr @fix
+Add table page update via socket  +qr @feat
+(Z) ------------------------ +qr

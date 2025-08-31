@@ -17,6 +17,8 @@ import az.qrfood.backend.order.repository.CustomerOrderRepository;
 import az.qrfood.backend.order.repository.OrderItemRepository;
 import az.qrfood.backend.table.entity.TableInEatery;
 import az.qrfood.backend.table.repository.TableRepository;
+import az.qrfood.backend.tableassignment.dto.TableAssignmentDto;
+import az.qrfood.backend.tableassignment.service.TableAssignmentService;
 import az.qrfood.backend.user.entity.Role;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
@@ -27,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Service for managing orders.
@@ -47,6 +50,7 @@ public class OrderService {
     private final TableRepository tableRepository;
     private final OrderMapper orderMapper;
     private final ClientDeviceRepository clientDeviceRepository;
+    private final TableAssignmentService tableAssignmentService;
     //</editor-fold>
 
     //<editor-fold desc="Constructor">
@@ -54,24 +58,28 @@ public class OrderService {
     /**
      * Constructs an OrderService with necessary dependencies.
      *
-     * @param orderRepository     The repository for customer orders.
-     * @param orderItemRepository The repository for order items.
-     * @param dishRepository      The repository for dish entities.
-     * @param tableRepository     The repository for table entities.
-     * @param orderMapper         The mapper for converting between Order entities and DTOs.
+     * @param orderRepository        The repository for customer orders.
+     * @param orderItemRepository    The repository for order items.
+     * @param dishRepository         The repository for dish entities.
+     * @param tableRepository        The repository for table entities.
+     * @param orderMapper            The mapper for converting between Order entities and DTOs.
+     * @param clientDeviceRepository The repository for client devices.
+     * @param tableAssignmentService The service for table assignments.
      */
     public OrderService(CustomerOrderRepository orderRepository,
                         OrderItemRepository orderItemRepository,
                         DishRepository dishRepository,
                         TableRepository tableRepository,
                         OrderMapper orderMapper,
-                        ClientDeviceRepository clientDeviceRepository) {
+                        ClientDeviceRepository clientDeviceRepository,
+                        TableAssignmentService tableAssignmentService) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.dishRepository = dishRepository;
         this.tableRepository = tableRepository;
         this.orderMapper = orderMapper;
         this.clientDeviceRepository = clientDeviceRepository;
+        this.tableAssignmentService = tableAssignmentService;
     }
     //</editor-fold>
 
@@ -319,6 +327,43 @@ public class OrderService {
                     return orderMapper.toDtoList(filteredOrders);
                 })
                 .orElse(List.of());
+    }
+
+    /**
+     * Retrieves orders assigned to a specific waiter.
+     * <p>
+     * This method gets all table assignments for the waiter, extracts the tables,
+     * and then retrieves all orders for those tables.
+     * </p>
+     *
+     * @param waiterId The ID of the waiter to get orders for.
+     * @return A list of {@link OrderDto} representing orders assigned to the waiter.
+     */
+    public List<OrderDto> getOrdersByWaiterId(Long waiterId) {
+        log.debug("Request to get Orders by waiter ID : {}", waiterId);
+
+        // Get all table assignments for the waiter
+        List<TableAssignmentDto> tableAssignments = tableAssignmentService.getTableAssignmentsByWaiterId(waiterId);
+
+        if (tableAssignments.isEmpty()) {
+            return List.of();
+        }
+
+        // Extract the tables from the assignments
+        Set<TableInEatery> tables = tableAssignments.stream()
+                .map(assignment -> tableRepository.findById(assignment.getTableId()))
+                .filter(java.util.Optional::isPresent)
+                .map(java.util.Optional::get)
+                .collect(Collectors.toSet());
+
+        if (tables.isEmpty()) {
+            return List.of();
+        }
+
+        // Get all orders for those tables
+        List<Order> orders = orderRepository.findByTableIn(tables);
+
+        return orderMapper.toDtoList(orders);
     }
 
     // NAV allowance to update order status
