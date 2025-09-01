@@ -44,11 +44,11 @@
 
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
-| [GET logout()](../../src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/logout` |
+| [GET logout(HttpServletResponse)](../../src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/logout` |
 | [GET status()](../../src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/status` |
-| [POST login(LoginRequest)](../../src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/login` |
+| [POST login(LoginRequest, HttpServletResponse)](../../src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/login` |
 | [POST recreateTokenOnEateryChange(RecreateTokenOnEateryChangeRequest)](../../src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/receate-token-oan-eatery-change` |
-| [POST refreshToken(HttpServletRequest, TokenRefreshRequest)](../../src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/refresh-token` |
+| [POST refreshToken(HttpServletRequest, HttpServletResponse)](../../src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/refresh-token` |
 
 ###### [🔝](#navigation)
 

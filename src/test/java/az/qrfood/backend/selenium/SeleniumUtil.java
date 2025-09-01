@@ -387,6 +387,7 @@ public class SeleniumUtil {
             SeleniumUtil.typeIntoInputById(driver, tableItem.getNote(), "tblcrrt03", norm);
             SeleniumUtil.findButtonByTextAndClick(driver, "Masa əlavə et", norm);
             SeleniumUtil.pause(norm);
+            log.debug("Table created [{}]", tableItem);
             assignTableWaiter(driver, wait, tableItem, idx.next(), norm);
         }
     }
@@ -395,10 +396,14 @@ public class SeleniumUtil {
 
     public static void assignTableWaiter(WebDriver driver, WebDriverWait wait, Table tableItem,
                                          int selectIdx, String norm) {
-        driver.navigate().refresh();
+//        driver.navigate().refresh();
+        SeleniumUtil.pause(norm);
+        SeleniumUtil.pause(norm);
         SeleniumUtil.findButtonsByTextAndClick(driver, "Ofisiant təyin et", buttonIndex++, norm);
         SeleniumUtil.selectRandomOptionByText(driver, "Ofisiant seçin", norm);
         SeleniumUtil.findButtonByTextAndClick(driver, "Təyin et", norm);
+        SeleniumUtil.pause(norm);
+        log.debug("Waiter assigned");
     }
 
     public static void printQrCode(WebDriver driver, WebDriverWait wait, String norm) {

@@ -17,7 +17,9 @@ import az.qrfood.backend.user.repository.UserRepository;
 import az.qrfood.backend.user.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -98,7 +100,7 @@ public class AuthController {
     @PostMapping("${auth.login}")
     @Operation(summary = "Logins a user", description = "Logins user, use email as login and password")
     // [[login]]
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         log.debug("Login request: {}", loginRequest);
         try {
             log.debug("Attempting to authenticate user using AuthenticationManager");
@@ -153,9 +155,17 @@ public class AuthController {
         log.debug("Generating refresh token for user");
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userOptional.get(), eateryId);
 
-        log.debug("Return token, refresh token, user ID, and eatery ID");
-        LoginResponse response = new LoginResponse(jwt, refreshToken.getToken(), userId, eateryId);
-        return ResponseEntity.ok(response);
+        log.debug("Set refresh token in a secure httpOnly cookie");
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken.getToken());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true); // Enable for HTTPS
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(604800); // 7 days in seconds
+        response.addCookie(refreshTokenCookie);
+
+        log.debug("Return token, user ID, and eatery ID (refresh token is in cookie)");
+        LoginResponse loginResponse = new LoginResponse(jwt, userId, eateryId);
+        return ResponseEntity.ok(loginResponse);
     }
 
     /**
@@ -180,7 +190,7 @@ public class AuthController {
 
             // Get the username from the authenticated user
             String username = authentication.getName();
-            log.debug("User is authenticated: {}", username);
+            log.debug("Authenticated user [{}]", username);
 
             // Get the user entity from the repository
             Optional<User> userOptional = userRepository.findByUsername(username);
@@ -298,20 +308,38 @@ public class AuthController {
     /**
      * Endpoint for refreshing an access token using a refresh token.
      * <p>
-     * This endpoint accepts a refresh token and, if valid, generates a new access token.
+     * This endpoint extracts the refresh token from the httpOnly cookie and, if valid, generates a new access token.
      * </p>
      *
-     * @param request A {@link TokenRefreshRequest} containing the refresh token.
-     * @return A {@link ResponseEntity} containing a {@link TokenRefreshResponse} with the new access token
-     *         and the refresh token. Returns {@code HttpStatus.FORBIDDEN} if the refresh token is invalid or expired.
+     * @param request The HttpServletRequest containing the cookies.
+     * @param response The HttpServletResponse for setting the new refresh token cookie.
+     * @return A {@link ResponseEntity} containing a {@link TokenRefreshResponse} with the new access token.
+     *         Returns {@code HttpStatus.FORBIDDEN} if the refresh token is invalid or expired.
      */
     @PostMapping("${auth.token.refresh}")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request1, @Valid @RequestBody TokenRefreshRequest request) {
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        // Extract refresh token from cookies
+        String requestRefreshToken = null;
+        Cookie[] cookies = request.getCookies();
 
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    requestRefreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
 
-        String requestRefreshToken = request.getRefreshToken();
+        if (requestRefreshToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Refresh token is missing"));
+        }
 
-        return refreshTokenService.findByToken(requestRefreshToken)
+        // Make a final copy of the refresh token for use in the lambda
+        final String finalRefreshToken = requestRefreshToken;
+
+        return refreshTokenService.findByToken(finalRefreshToken)
                 .map(refreshTokenService::verifyExpiration)
                 .map(refreshToken -> {
                     User user = refreshToken.getUser();
@@ -323,9 +351,20 @@ public class AuthController {
                     Long eateryId = refreshToken.getActiveEateryId();
                     String token = jwtUtil.generateToken(userDetails, eateryId);
 
-                    return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken, eateryId));
+                    // Generate a new refresh token
+                    RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user, eateryId);
+
+                    // Set the new refresh token in a cookie
+                    Cookie refreshTokenCookie = new Cookie("refreshToken", newRefreshToken.getToken());
+                    refreshTokenCookie.setHttpOnly(true);
+                    refreshTokenCookie.setSecure(true); // Enable for HTTPS
+                    refreshTokenCookie.setPath("/");
+                    refreshTokenCookie.setMaxAge(604800); // 7 days in seconds
+                    response.addCookie(refreshTokenCookie);
+
+                    return ResponseEntity.ok(new TokenRefreshResponse(token, eateryId));
                 })
-                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+                .orElseThrow(() -> new TokenRefreshException(finalRefreshToken,
                         "Refresh token is not in database!"));
     }
 
@@ -333,15 +372,17 @@ public class AuthController {
      * Endpoint for user logout.
      * <p>
      * In a JWT-based authentication system, the server typically doesn't maintain session state.
-     * Therefore, this endpoint primarily serves to clear the security context on the server-side
-     * and signals to the client that they should remove their JWT token from local storage.
+     * Therefore, this endpoint primarily serves to clear the security context on the server-side,
+     * delete the refresh token from the database, clear the refresh token cookie,
+     * and signal to the client that they should remove their JWT token from memory.
      * </p>
      *
+     * @param response The HttpServletResponse for clearing the refresh token cookie.
      * @return A {@link ResponseEntity} with a success message confirming the logout action.
      */
     @GetMapping("${auth.logout}")
     //[[logout]]
-    public ResponseEntity<?> logout() {
+    public ResponseEntity<?> logout(HttpServletResponse response) {
         // Get the current authentication from the security context
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -355,6 +396,14 @@ public class AuthController {
             Optional<User> userOptional = userRepository.findByUsername(username);
             userOptional.ifPresent(refreshTokenService::deleteByUser);
         }
+
+        // Clear the refresh token cookie
+        Cookie refreshTokenCookie = new Cookie("refreshToken", "");
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(0); // Expire immediately
+        response.addCookie(refreshTokenCookie);
 
         // Clear the security context
         SecurityContextHolder.clearContext();

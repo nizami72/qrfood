@@ -1,6 +1,7 @@
 package az.qrfood.backend.selenium.dto;
 
 public class Table {
+
 	private String number;
 	private String note;
 	private int eateryId;
@@ -35,5 +36,17 @@ public class Table {
 
 	public String getStatus(){
 		return status;
+	}
+
+	@Override
+	public String toString() {
+		return "{\"Table\":\n{"
+				+ "        \"number\":\"" + number + "\""
+				+ ",         \"note\":\"" + note + "\""
+				+ ",         \"eateryId\":\"" + eateryId + "\""
+				+ ",         \"id\":\"" + id + "\""
+				+ ",         \"seats\":\"" + seats + "\""
+				+ ",         \"status\":\"" + status + "\""
+				+ "\n}\n}";
 	}
 }

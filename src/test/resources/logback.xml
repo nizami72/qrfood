@@ -1,0 +1,48 @@
+<configuration>
+
+    <variable name="logPath" value="${LOG_FILE_PATH}/" />
+    <property name="prefix" value="-->" />
+
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+    <conversionRule conversionWord="wht" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
+
+    <!-- 🔹 Консоль: только INFO и выше -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>
+                %d{HH:mm:ss.SSS} %highlight(%-5level) [%cyan(%.20t)] %magenta(%logger{24}:%line) %msg%n
+            </pattern>
+        </layout>
+    </appender>
+
+    <!-- 🔹 Консоль: только DEBUG для своего пакета -->
+    <appender name="CONSOLE_DEBUG" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{HH:mm:ss.SSS} %highlight(%-5level) [%cyan(%.20t)] %magenta(%logger{24}:%line) %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+
+    <!-- 🔹 Твой пакет — DEBUG в файл и консоль -->
+    <logger name="az.qrfood.backend" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE_DEBUG" />
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <!-- 🔹 Корневой логгер — INFO+ -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </root>
+
+</configuration>

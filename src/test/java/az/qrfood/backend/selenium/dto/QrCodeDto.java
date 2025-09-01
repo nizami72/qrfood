@@ -26,4 +26,14 @@ public class QrCodeDto{
 	public String getValidTo(){
 		return validTo;
 	}
+
+	@Override
+	public String toString() {
+		return "{\"QrCodeDto\":\n{"
+				+ "        \"id\":\"" + id + "\""
+				+ ",         \"validFrom\":\"" + validFrom + "\""
+				+ ",         \"content\":\"" + content + "\""
+				+ ",         \"validTo\":\"" + validTo + "\""
+				+ "\n}\n}";
+	}
 }
