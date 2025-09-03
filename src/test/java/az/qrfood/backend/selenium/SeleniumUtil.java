@@ -218,28 +218,26 @@ public class SeleniumUtil {
             String userMail, String eateryName, String temp) {
 
         // 2. Enter registration details
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("106")));
-        WebElement nameInput = driver.findElement(By.id("106"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("name")));
+        WebElement nameInput = driver.findElement(By.id("name"));
         SeleniumUtil.typeIntoInput(driver, nameInput, userName, temp);
 
-        WebElement emailInput = driver.findElement(By.id("107"));
+        WebElement emailInput = driver.findElement(By.id("email"));
         SeleniumUtil.typeIntoInput(driver, emailInput, userMail, temp);
 
-        WebElement passwordInput = driver.findElement(By.id("108"));
+        WebElement passwordInput = driver.findElement(By.id("password"));
         SeleniumUtil.typeIntoInput(driver, passwordInput, userPass, temp);
 
-        WebElement confirmPasswordInput = driver.findElement(By.id("109"));
+        WebElement confirmPasswordInput = driver.findElement(By.id("confirmPassword"));
         SeleniumUtil.typeIntoInput(driver, confirmPasswordInput, userPass, temp);
 
-        WebElement restaurantNameInput = driver.findElement(By.id("110"));
+        WebElement restaurantNameInput = driver.findElement(By.id("restaurantName"));
         SeleniumUtil.typeIntoInput(driver, restaurantNameInput, eateryName, temp);
 
         // 3. Click the Register button
-        WebElement registerButton = driver.findElement(By.id("111"));
-        SeleniumUtil.click(driver, registerButton, temp);
+        findButtonByTextAndClick(driver, "Qeydiyyatdan keçin", temp);
 
         // 4. Wait for and accept the alert
-        SeleniumUtil.alertAccept(wait, driver, temp);
         wait.until(ExpectedConditions.urlContains("/admin/login"));
         // 1. Verify redirection to login page
         assertTrue(driver.getCurrentUrl().contains("/admin/login"),

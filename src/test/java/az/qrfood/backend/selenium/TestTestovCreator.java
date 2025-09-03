@@ -1,6 +1,5 @@
 package az.qrfood.backend.selenium;
 
-import static az.qrfood.backend.selenium.SeleniumUtil.FAST;
 import static az.qrfood.backend.selenium.SeleniumUtil.PHASE_CREATE_CATEGORIES;
 import static az.qrfood.backend.selenium.SeleniumUtil.PHASE_CREATE_DISHES;
 import static az.qrfood.backend.selenium.SeleniumUtil.PHASE_CREATE_STAFF;
@@ -10,7 +9,6 @@ import static az.qrfood.backend.selenium.SeleniumUtil.PHASE_LOGIN;
 import static az.qrfood.backend.selenium.SeleniumUtil.PHASE_REGISTRATION;
 import static az.qrfood.backend.selenium.SeleniumUtil.markTime;
 import static az.qrfood.backend.selenium.SeleniumUtil.pause;
-import static org.reflections.Reflections.log;
 import az.qrfood.backend.selenium.dto.StaffItem;
 import az.qrfood.backend.selenium.dto.Testov;
 import az.qrfood.backend.util.TestUtil;
@@ -100,6 +98,7 @@ public class TestTestovCreator {
 //                deleteUser(FAST);
 //            }
 //        }
+
 
         // ================== REGISTER USER ==================
         SeleniumUtil.openPage(driver, host, "register", howFast);

@@ -127,7 +127,6 @@ public class GlobalExceptionHandler {
 
     }
 
-
     @ExceptionHandler(NotYourResourceException.class)
     public ResponseEntity<ApiResponse<Void>> handleNo(NotYourResourceException ex) {
         log.error(ex.getMessage());
