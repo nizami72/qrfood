@@ -43,7 +43,7 @@ import java.util.Properties;
                 description = "Contactless restaurant ordering system via QR code", // Translated from Russian
                 contact = @Contact(
                         name = "QR Food Support",
-                        email = "support@qrfood.az",
+                        email = "info@qrfood.az",
                         url = "https://qrfood.az/support"
                 ),
                 license = @License(
