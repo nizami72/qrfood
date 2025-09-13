@@ -10,6 +10,7 @@ import az.qrfood.backend.user.dto.RegisterResponse;
 import az.qrfood.backend.util.ApiUtils;
 import az.qrfood.backend.util.FakeData;
 import az.qrfood.backend.util.TestUtil;
+import io.restassured.builder.MultiPartSpecBuilder;
 import io.restassured.response.Response;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort; // <-- IMPORT THIS
 import org.springframework.test.context.ActiveProfiles;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import static io.restassured.RestAssured.given;
@@ -91,11 +93,16 @@ public class CategoryApiTest {
                 "nameRu", ci.getNameRu()
         );
 
+        MultiPartSpecBuilder dataPart = new MultiPartSpecBuilder(categoryData)
+                .controlName("data")
+                .mimeType("application/json")
+                .charset(StandardCharsets.UTF_8); // Explicitly set the charset!
+
         Response response =
                 given()
                         .baseUri(baseUrl) // This will now have the correct port
                         .header("Authorization", "Bearer " + jwtToken)
-                        .multiPart("data", categoryData, "application/json")
+                        .multiPart(dataPart.build())
                         .multiPart("image", new File("src/test/resources/image/salad.webp"), "image/webp")
                         .when()
                         .post(TestUtil.formatUrl(eateryIdCategory, eateryId.toString()))
@@ -117,8 +124,8 @@ public class CategoryApiTest {
         Response registerResponse = ApiUtils.sendGetRequest(baseUrl, jwtToken, url, 200);
         CategoryDto categoryDto = registerResponse.as(CategoryDto.class);
         assertEquals(categoryDto.nameEn(), ci.getNameEn());
-//        assertEquals(categoryDto.nameRu(), ci.getNameRu());
-//        assertEquals(categoryDto.nameAz(), ci.getNameAz());
+        assertEquals(categoryDto.nameRu(), ci.getNameRu());
+        assertEquals(categoryDto.nameAz(), ci.getNameAz());
         log.debug("Created category [{}]", categoryDto);
     }
 
@@ -134,8 +141,8 @@ public class CategoryApiTest {
         }
         CategoryDto categoryDto = categories.getFirst();
         assertEquals(categoryDto.nameEn(), ci.getNameEn());
-//        assertEquals(categoryDto.nameRu(), ci.getNameRu());
-//        assertEquals(categoryDto.nameAz(), ci.getNameAz());
+        assertEquals(categoryDto.nameRu(), ci.getNameRu());
+        assertEquals(categoryDto.nameAz(), ci.getNameAz());
         log.debug("All categories: [{}]", categoryDto);
     }
 
