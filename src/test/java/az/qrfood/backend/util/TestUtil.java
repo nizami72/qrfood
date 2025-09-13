@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -61,13 +63,41 @@ public class TestUtil {
     }
 
     public static String readFileFromResources(String fileName) {
-        try (InputStream inputStream = az.qrfood.backend.common.Util.class.getResourceAsStream("/" + fileName);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-            return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+        try (InputStream inputStream = az.qrfood.backend.common.Util.class.getResourceAsStream("/" + fileName)) {
+            if (inputStream == null) {
+                log.error("Resource not found: {}", fileName);
+                return null;
+            }
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, java.nio.charset.StandardCharsets.UTF_8))) {
+                return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+            }
         } catch (IOException e) {
             log.error("Error reading resource file [{}]", e.getMessage());
             return null;
         }
+    }
+
+    public static String formatUrl(String url, String... args) {
+
+        Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{[^/]+\\}");
+        Matcher matcher = PLACEHOLDER_PATTERN.matcher(url);
+
+        int count = 0;
+        while (matcher.find()) {
+            count++;
+        }
+
+        if (count != args.length) {
+            throw new IllegalArgumentException(
+                "Expected " + count + " arguments but got " + args.length
+            );
+        }
+
+        for (String arg : args) {
+            url = url.replaceFirst(PLACEHOLDER_PATTERN.pattern(), arg);
+        }
+
+        return url;
     }
 
 }

@@ -290,9 +290,9 @@ public class AllFlowTest {
     }
 
     @BeforeEach
-    // NOTE: load properties from create-eatery-test.properties
+    // NOTE: load properties from create-eatery-application-test.properties
     public void setUp() throws IOException {
-        properties.load(new FileReader("src/test/resources/create-eatery-test.properties"));
+        properties.load(new FileReader("src/test/resources/create-eatery-application-test.properties"));
 
         for (String key : properties.stringPropertyNames()) {
             String value = properties.getProperty(key);

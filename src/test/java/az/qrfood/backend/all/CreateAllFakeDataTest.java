@@ -136,7 +136,7 @@ public class CreateAllFakeDataTest {
             categoryList.forEach(category -> {
 
                 String json1 = TestDataLoader.serializeToJsonString(
-                        new CategoryDto(category.nameAz(), category.nameEn(), category.nameRu(), category.image()));
+                        new CategoryDto(null, null,  category.nameAz(), category.nameEn(), category.nameRu(), category.image()));
 
                 Response response = given()
                         .baseUri(baseUrl)

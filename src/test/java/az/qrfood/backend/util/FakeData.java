@@ -1,19 +1,56 @@
 package az.qrfood.backend.util;
 
-import az.qrfood.backend.category.entity.Category;
+import az.qrfood.backend.user.entity.Role;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
 public class FakeData {
 
+    public static Long id() {
+        // Generate a random positive ID (non-zero)
+        return ThreadLocalRandom.current().nextLong(1, 1_000_000L);
+    }
+
 
     private static final Random rand = new Random();
+
+
+    private static final List<UserAndProfile> USER_DTO = List.of(
+            UserAndProfile.builder().mail( "adminFirst@qrfo").password("qqqq1111").name("Admin First").phone("").roles(Set.of(Role.EATERY_ADMIN)).build(),
+            UserAndProfile.builder().mail("adminSecond@qrfo").password("qqqq1111").name("Admin Second").phone("").roles(Set.of(Role.EATERY_ADMIN)).build(),
+            UserAndProfile.builder().mail( "adminThird@qrfo").password("qqqq1111").name("Admin Third").phone("").roles(Set.of(Role.EATERY_ADMIN)).build(),
+            UserAndProfile.builder().mail("waiterFirst@qrfo").password("qqqq1111").name("Waiter First").phone("").roles(Set.of(Role.WAITER)).build(),
+            UserAndProfile.builder().mail("waiterSecond@qrfo").password("qqqq1111").name("Waiter Second").phone("").roles(Set.of(Role.WAITER)).build(),
+            UserAndProfile.builder().mail( "waiterThird@qrfo").password("qqqq1111").name("Waiter Third").phone("").roles(Set.of(Role.WAITER)).build(),
+            UserAndProfile.builder().mail("cashierFirst@qrfo").password("qqqq1111").name("Cashier First").phone("").roles(Set.of(Role.CASHIER)).build(),
+            UserAndProfile.builder().mail("cashierSecond@qrfo").password("qqqq1111").name("Cashier Second").phone("").roles(Set.of(Role.CASHIER)).build(),
+            UserAndProfile.builder().mail( "cashierThird@qrfo").password("qqqq1111").name("Cashier Third").phone("").roles(Set.of(Role.CASHIER)).build(),
+            UserAndProfile.builder().mail("kitchenFirstFirst@qrfo").password("qqqq1111").name("Kitchen First").phone("").roles(Set.of(Role.KITCHEN_ADMIN)).build(),
+            UserAndProfile.builder().mail("kitchenSecond@qrfo").password("qqqq1111").name("Kitchen Second").phone("").roles(Set.of(Role.KITCHEN_ADMIN)).build(),
+            UserAndProfile.builder().mail("kitchenThird@qrfo").password("qqqq1111").name("Kitchen Third").phone("").roles(Set.of(Role.KITCHEN_ADMIN)).build()
+    );
+
+    private static final List<String> EMAILS = List.of(
+            "john.doe@example.com",
+            "jane.smith@example.com",
+            "michael.brown@example.com",
+            "linda.johnson@example.com",
+            "robert.wilson@example.com",
+            "emily.davis@example.com",
+            "david.miller@example.com",
+            "sarah.moore@example.com",
+            "james.taylor@example.com",
+            "olivia.anderson@example.com"
+    );
+
+
     private static final List<String> fakeAddresses = List.of(
             "0979 Deandre Prairie, Gradyland, IN 65361",
             "191 Lorenzo Springs, Elizabethville, MA 98759",
@@ -35,7 +72,7 @@ public class FakeData {
             "Suite 203 004 Herzog Views, South Roberto, UT 80945",
             "Suite 346 0629 DuBuque Stravenue, Carsonborough, NE 69903",
             "Suite 997 411 Hammes Loop, New Takisha, GA 01249"
-            );
+    );
 
     private static final List<String> fakeEateryNames = List.of(
             "The Hungry Spoon",
@@ -81,35 +118,40 @@ public class FakeData {
             "Harper Robinson",
             "Matthew Clark",
             "Evelyn Lewis"
-        );
+    );
 
     private static final List<String> fakePhoneNumbers = List.of(
-            "99450 1234567",
-            "(994) 55 7654321",
-            "(994) 70 1122334",
-            "(994) 12 9988776",
-            "(994) 50 3456789",
-            "(994) 55 4567890",
-            "(994) 70 5678901",
-            "(994) 12 6789012",
-            "(994) 50 7890123",
-            "(994) 55 8901234",
-            "(994) 70 9012345",
-            "(994) 12 1239876",
-            "(994) 50 2341987",
-            "(994) 55 3452098",
-            "(994) 70 4563109",
-            "(994) 12 5674210",
-            "(994) 50 6785321",
-            "(994) 55 7896432",
-            "(994) 70 8907543",
-            "(994) 12 9018654",
-            "(994) 50 1129765",
-            "(994) 55 2230876",
-            "(994) 70 3341987",
-            "(994) 12 4452098",
             "(994) 50 5563109"
     );
+
+    private static final List<String> fakeCategoryNames = List.of(
+            "Salads",
+            "Soups",
+            "Main Courses",
+            "Desserts",
+            "Drinks",
+            "Breakfast",
+            "Pasta",
+            "Pizzas",
+            "Seafood"
+    );
+
+    public static UserAndProfile user(Role role) {
+
+        List<UserAndProfile> filtered = USER_DTO.stream()
+                .filter(u -> u.roles().contains(role))
+                .toList();
+
+        if (filtered.isEmpty()) {
+            throw new IllegalArgumentException("No user found with role: " + role);
+        }
+
+        return filtered.get(getRandomInt(0, filtered.size()));
+    }
+
+    public static String categoryName() {
+        return fakeCategoryNames.get(getRandomInt(0, fakeCategoryNames.size()));
+    }
 
     public static int getRandomInt(int min, int max) {
         return rand.nextInt(max - min) + min;
@@ -117,6 +159,14 @@ public class FakeData {
 
     public static String generateFakeAddress() {
         return fakeAddresses.get(getRandomInt(0, fakeAddresses.size()));
+    }
+
+    public static String password() {
+        return "qqqq1111";
+    }
+
+    public static String mail() {
+        return EMAILS.get(getRandomInt(0, EMAILS.size()));
     }
 
     public static String eateryName() {
@@ -146,19 +196,19 @@ public class FakeData {
 
     /**
      * Generate fake user first and last name.
-
+     *
      * @param arg reduces selection od user to 4 means only fist arg amount might be returned.
      * @return First Last name
      */
     public static String user(int arg) {
-        return fakeUsers.get(getRandomInt(0,arg));
+        return fakeUsers.get(getRandomInt(0, arg));
     }
 
     public static String mail(String arg) {
         return arg.replace(" ", "") + "@qrfood.az";
     }
 
-    private static double gD(double min, double max ) {
+    private static double gD(double min, double max) {
         double minq = 10.0001;
         double maxq = 10.9999;
 

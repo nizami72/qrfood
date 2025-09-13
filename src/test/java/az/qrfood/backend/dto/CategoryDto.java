@@ -1,3 +1,6 @@
 package az.qrfood.backend.dto;
 
-public record CategoryDto(String nameAz, String nameEn, String nameRu, String image) {}
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record CategoryDto(Long categoryId, Long EateryId, String nameAz, String nameEn, String nameRu, String image) {}

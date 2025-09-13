@@ -36,7 +36,7 @@ public class CategoryTest {
 
     @BeforeEach
     public void setUp() throws IOException {
-        properties.load(new FileReader("src/test/resources/create-eatery-test.properties"));
+        properties.load(new FileReader("src/test/resources/create-eatery-application-test.properties"));
         for (String key : properties.stringPropertyNames()) {
             String value = properties.getProperty(key);
             if (value != null && value.startsWith("${") && value.endsWith("}")) {

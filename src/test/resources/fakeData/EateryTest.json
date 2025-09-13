@@ -1,7 +1,7 @@
 {
   "eatery": {
     "id": 1,
-    "name": "Test Testov Resaturant",
+    "name": "Eatery Eatery  Resaturant",
     "address": "123 Main Street, Baku, Azerbaijan",
     "phones": [
       "+994 50 123 4567",
@@ -307,68 +307,68 @@
   ],
   "staff": [
     {
-      "email": "AdminTestTestov@mail.az",
+      "email": "AdminEateryTest@mail.az",
       "password": "qqqq1111",
       "roles": [
         "EATERY_ADMIN"
       ],
       "profile": {
-        "name": "Admin Test Testov",
+        "name": "Admin Eatery  Test",
         "phone": "+994 55 333 4444"
       }
     },
     {
-      "email": "KitchenTestTestov@mail.az",
+      "email": "KitchenEateryTest@mail.az",
       "password": "qqqq1111",
       "roles": [
         "KITCHEN_ADMIN"
       ],
       "profile": {
-        "name": "Kitchen Test Testov",
+        "name": "Kitchen Eatery  Test",
         "phone": "+994 55 333 4444"
       }
     },
     {
-      "email": "CashierTestTestov@mail.az",
+      "email": "CashierEateryTest@mail.az",
       "password": "qqqq1111",
       "roles": [
         "CASHIER"
       ],
       "profile": {
-        "name": "Cashier Test Testov",
+        "name": "Cashier Eatery  Test",
         "phone": "+994 70 555 6666"
       }
     },
     {
-      "email": "WaiterFirstTestov@mail.az",
+      "email": "WaiterFirstTest@mail.az",
       "password": "qqqq1111",
       "roles": [
         "WAITER"
       ],
       "profile": {
-        "name": "Waiter First Testov",
+        "name": "Waiter First Test",
         "phone": "+994 77 777 8888"
       }
     },
     {
-      "email": "WaiterSeconTestov@mail.az",
+      "email": "WaiterSeconTest@mail.az",
       "password": "qqqq1111",
       "roles": [
         "WAITER"
       ],
       "profile": {
-        "name": "Waiter Second Testov",
+        "name": "Waiter Second Test",
         "phone": "+994 51 999 0000"
       }
     },
     {
-      "email": "WaiterThirdTestov@mail.az",
+      "email": "WaiterThirdTest@mail.az",
       "password": "qqqq1111",
       "roles": [
         "WAITER"
       ],
       "profile": {
-        "name": "Waiter Third Testov",
+        "name": "Waiter Third Test",
         "phone": "+994 50 123 4567"
       }
     }

@@ -6,7 +6,7 @@
 * /api/admin/impersonate/{userId}
 * /api/auth/login
 * /api/auth/logout
-* /api/auth/receate-token-oan-eatery-change
+* /api/auth/recreate-token-on-eatery-change
 * /api/auth/refresh-token
 * /api/auth/status
 * /api/category/common

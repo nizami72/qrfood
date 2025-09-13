@@ -77,7 +77,7 @@ public class CategoryService {
         // check if an eatery exists
         Optional<Eatery> eateryOp = eateryRepository.findById(eateryId);
         if (eateryOp.isEmpty()) {
-            throw new EntityNotFoundException(String.format(
+           throw new EntityNotFoundException(String.format(
                     "Cant create category for eatery %s, eatery not found", eateryId));
         }
 

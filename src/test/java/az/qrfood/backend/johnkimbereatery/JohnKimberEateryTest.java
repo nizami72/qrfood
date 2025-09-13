@@ -143,6 +143,8 @@ public class JohnKimberEateryTest {
                 // Create category
                 String categoryJson = TestDataLoader.serializeToJsonString(
                         new CategoryDto(
+                                null,
+                                null,
                                 categoryData.getNameAz(),
                                 categoryData.getNameEn(),
                                 categoryData.getNameRu(),

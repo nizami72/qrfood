@@ -47,7 +47,7 @@
 | [GET logout(HttpServletResponse)](../../src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/logout` |
 | [GET status()](../../src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/status` |
 | [POST login(LoginRequest, HttpServletResponse)](../../src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/login` |
-| [POST recreateTokenOnEateryChange(RecreateTokenOnEateryChangeRequest)](../../src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/receate-token-oan-eatery-change` |
+| [POST recreateTokenOnEateryChange(RecreateTokenOnEateryChangeRequest)](../../src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/recreate-token-on-eatery-change` |
 | [POST refreshToken(HttpServletRequest, HttpServletResponse)](../../src/main/java/az/qrfood/backend/auth/controller/AuthController.java) | `public` | `/api/auth/refresh-token` |
 
 ###### [🔝](#navigation)

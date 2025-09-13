@@ -152,7 +152,6 @@ public class AuthController {
         final String jwt = jwtUtil.generateToken(userDetails, eateryId);
 
         // Generate refresh token
-        log.debug("Generating refresh token for user");
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userOptional.get(), eateryId);
 
         log.debug("Set refresh token in a secure httpOnly cookie");
