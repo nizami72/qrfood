@@ -1,16 +1,20 @@
 package az.qrfood.backend.dish;
 
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import az.qrfood.backend.dish.dto.CommonDishDto;
 import az.qrfood.backend.dish.dto.DishDto;
-import az.qrfood.backend.dto.Category;
 import az.qrfood.backend.dto.CategoryDto;
-import az.qrfood.backend.dto.Dish;
+import az.qrfood.backend.selenium.dto.CategoriesItem;
+import az.qrfood.backend.selenium.dto.StaffItem;
+import az.qrfood.backend.selenium.dto.Testov;
+import az.qrfood.backend.util.ApiUtils;
 import az.qrfood.backend.util.TestDataLoader;
-import com.fasterxml.jackson.core.type.TypeReference;
-import io.restassured.RestAssured;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
+import az.qrfood.backend.util.TestUtil;
+import io.restassured.builder.MultiPartSpecBuilder;
 import io.restassured.response.Response;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,124 +25,125 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.ActiveProfiles;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import org.springframework.data.util.Pair;
 import java.util.List;
+import java.util.Map;
 
-@SpringBootTest
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Log4j2
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DishApiTest {
 
-    private static PrintStream fileLog;
+    //<editor-fold desc="Fields">
+    @LocalServerPort
+    private int port;
 
     @Value("${base.url}")
-    String baseUrl;
+    private String baseUrl;
     @Value("${eatery.id.category.id.dish}")
-    String eateryIdCategoryIdDish;
+    private String eateryIdCategoryIdDish;
     @Value("${eatery.id.category.id.dish.id}")
-    String eateryIdCategoryIdDishId;
+    private String eateryIdCategoryIdDishId;
+    @Value("${test.data.json-source}")
+    private String jsonSourceFile;
+    @Value("${admin.api.eatery}")
+    String adminApiEateryUrl;
 
-    List<Category> dishes;
-    String jwtToken;
-    Long userId;
-    Long eateryId = 1L; // Default eatery ID for tests
-    Long categoryId = 1L; // Default category ID for tests
-    Long dishId; // Will be set during test execution
+    @Value("${eatery.id.category}")
+    String eateryIdCategory;
 
-    String email = "NatalieReed@qaz.az";
-    String password = "qqqq1111";
+    @Value("${auth.login}")
+    String loginUrl;
+
+    private String jwtToken;
+    private Long userId;
+    private Long eateryId = 1L; // Default eatery ID for tests
+    private Long categoryId = 1L; // Default category ID for tests
+    private Long dishId; // Will be set during test execution
+
+    CategoriesItem ci;
+    private Testov testov;
+    StaffItem admin;
+    //</editor-fold>
 
     @BeforeAll
     void setup() throws Exception {
         // Setup logging
-        fileLog = new PrintStream(new FileOutputStream("logs/test/dish.log", false));
-        RestAssured.filters(
-                new RequestLoggingFilter(fileLog),
-                new ResponseLoggingFilter(fileLog)
-        );
+        baseUrl = "http://localhost:" + port;
+        System.out.println("Test server running on: " + baseUrl); // For debugging
 
-        // Load test data
-        dishes = TestDataLoader.loadJsonListFromResource(
-                "dishes.json",
-                new TypeReference<>() {
-                });
+        testov = TestUtil.json2Pojo(TestUtil.readFileFromResources(jsonSourceFile), Testov.class);
+        admin = testov.getStaff().stream().filter(s -> s.getRoles().contains("EATERY_ADMIN")).findFirst()
+                .orElseThrow();
 
-        // Authenticate
-        String authPayload = """
-                {
-                  "email": "%s",
-                  "password": "%s"
-                }
-                """.formatted(email, password);
+        ci = testov.getCategories().get(0);
+        String email = admin.getEmail();
+        String pass = admin.getPassword();
+        Pair<Long, Long> userEatery = ApiUtils.registerUserAndEatery(email, pass, testov.getEatery().getName(), baseUrl, adminApiEateryUrl);
 
-        Response authResponse = given()
-                .baseUri(baseUrl)
-                .contentType("application/json")
-                .body(authPayload)
-                .when()
-                .post("/api/auth/login")
-                .then()
-                .statusCode(200)
-                .extract()
-                .response();
-
-        jwtToken = authResponse.jsonPath().getString("jwt");
-        userId = authResponse.jsonPath().getLong("userId");
-
-        log.debug("Authenticated as user ID: {}", userId);
+        userId = userEatery.getFirst();
+        eateryId = userEatery.getSecond();
+        jwtToken = ApiUtils.login(email, pass, eateryId, baseUrl, loginUrl);
 
     }
-
 
     @Test
     @Order(1)
     void shouldCreateCategory() {
-        fileLog.println("\n========== 📤 Creating a category ==========");
+        log.debug("\n==================== 📥 CREATE CATEGORY =====================");
 
-        Category category = dishes.getFirst();
-        String json = TestDataLoader.serializeToJsonString(
-                new CategoryDto(null, null, category.nameAz(), category.nameEn(), category.nameRu(), category.image()));
+        Map<String, String> categoryData = Map.of(
+                "nameAz", ci.getNameAz(),
+                "nameEn", ci.getNameEn(),
+                "nameRu", ci.getNameRu()
+        );
+
+        MultiPartSpecBuilder dataPart = new MultiPartSpecBuilder(categoryData)
+                .controlName("data")
+                .mimeType("application/json")
+                .charset(StandardCharsets.UTF_8); // Explicitly set the charset!
 
         Response response = given()
-                .baseUri(baseUrl)
+                .baseUri(baseUrl) // This will now have the correct port
                 .header("Authorization", "Bearer " + jwtToken)
-                .multiPart("data", "data.json", json.getBytes(StandardCharsets.UTF_8), "application/json")
-                .multiPart("image", new File("src/test/resources/image/" + category.image()))
+                .multiPart(dataPart.build())
+                .multiPart("image", new File("src/test/resources/image/salad.webp"), "image/webp")
                 .when()
-                .post("/api/eatery/" + eateryId + "/category")
+                .post(TestUtil.formatUrl(eateryIdCategory, eateryId.toString()))
                 .then()
                 .log().all()
                 .statusCode(200)
                 .extract()
                 .response();
 
-        categoryId = Long.parseLong(response.getBody().asString());
-        log.debug("Created category ID: {}", categoryId);
-
-        fileLog.println("========== 📥 Category created successfully ==========\n");
+        categoryId = response.as(Long.class);
+        log.info("Created category with ID [{}]", categoryId);
     }
 
     @Test
     @Order(2)
     void shouldCreateDish() {
-        fileLog.println("\n========== 📤 Creating a dish ==========");
+        log.debug("\n========== 📤 Creating a dish ==========");
 
-        Dish dish = dishes.getFirst().dishes().getFirst();
+        DishDto dish = testov.getCategories().getFirst().getDishes().getFirst();
         String json = TestDataLoader.serializeToJsonString(dish);
 
         Response response = given()
                 .baseUri(baseUrl)
                 .header("Authorization", "Bearer " + jwtToken)
                 .multiPart("data", "data.json", json.getBytes(StandardCharsets.UTF_8), "application/json")
-                .multiPart("image", new File("src/test/resources/image/" + dish.image()))
+                .multiPart("image", new File("src/test/resources/image/" + dish.getImage()))
                 .when()
                 .post(eateryIdCategoryIdDish.replace("{eateryId}", eateryId.toString())
-                                           .replace("{categoryId}", categoryId.toString()))
+                        .replace("{categoryId}", categoryId.toString()))
                 .then()
                 .log().all()
                 .statusCode(200)
@@ -148,84 +153,65 @@ public class DishApiTest {
         dishId = Long.parseLong(response.getBody().asString());
         log.debug("Created dish ID: {}", dishId);
 
-        fileLog.println("========== 📥 Dish created successfully ==========\n");
+        log.debug("========== 📥 Dish created successfully ==========\n");
     }
-
 
     @Test
     @Order(3)
     void shouldGetDishById() {
-        fileLog.println("\n========== 📤 Getting dish by ID ==========");
-
-        given()
-                .baseUri(baseUrl)
-                .header("Authorization", "Bearer " + jwtToken)
-                .when()
-                .get(eateryIdCategoryIdDishId.replace("{eateryId}", eateryId.toString())
-                                           .replace("{categoryId}", categoryId.toString())
-                                           .replace("{dishId}", dishId.toString()))
-                .then()
-                .log().all()
-                .statusCode(200);
-
-        fileLog.println("========== 📥 Dish retrieved successfully ==========\n");
+        log.debug("\n========== 📤 Getting dish by ID ==========");
+        DishDto dish = testov.getCategories().getFirst().getDishes().getFirst();
+        DishDto actual = getDish(DishDto.class);
+        validateDishDto(dish, actual);
+        log.debug("========== 📥 Dish retrieved successfully ==========\n");
     }
 
     @Test
     @Order(4)
     void shouldGetAllDishesInCategory() {
-        fileLog.println("\n========== 📤 Getting all dishes in category ==========");
-
-        given()
-                .baseUri(baseUrl)
-                .header("Authorization", "Bearer " + jwtToken)
-                .when()
-                .get(eateryIdCategoryIdDish.replace("{eateryId}", eateryId.toString())
-                                          .replace("{categoryId}", categoryId.toString()))
-                .then()
-                .log().all()
-                .statusCode(200);
-
-        fileLog.println("========== 📥 Dishes retrieved successfully ==========\n");
+        log.debug("\n========== 📤 Getting all dishes in category ==========");
+        List<DishDto> dishDtos = getDishes(DishDto.class);
+        assertEquals(1, dishDtos.size(), "List of dishes in category should not be empty");
+        log.debug("========== 📥 Dishes retrieved successfully ==========\n");
     }
 
     @Test
     @Order(6)
     void shouldDeleteDishById() {
-        fileLog.println("\n========== 📤 Deleting dish by ID ==========");
+        log.debug("\n========== 📤 Deleting dish by ID ==========");
 
         given()
                 .baseUri(baseUrl)
                 .header("Authorization", "Bearer " + jwtToken)
                 .when()
                 .delete(eateryIdCategoryIdDishId.replace("{eateryId}", eateryId.toString())
-                                              .replace("{categoryId}", categoryId.toString())
-                                              .replace("{dishId}", dishId.toString()))
+                        .replace("{categoryId}", categoryId.toString())
+                        .replace("{dishId}", dishId.toString()))
                 .then()
                 .log().all()
                 .statusCode(200);
 
-        fileLog.println("========== 📥 Dish deleted successfully ==========\n");
+        log.debug("========== 📥 Dish deleted successfully ==========\n");
     }
 
     @Test
     @Order(5)
     void shouldUpdateDish() {
-        fileLog.println("\n========== 📤 Updating dish ==========");
+        log.debug("\n========== 📤 Updating dish ==========");
+        DishDto expected = DishDto.builder()
+                .dishId(dishId)
+                .categoryId(categoryId)
+                .nameAz("Updated Test Dish Az")
+                .nameEn("Updated Test Dish En")
+                .nameRu("Updated Test Dish Ru")
+                .price(BigDecimal.valueOf(15.99))
+                .descriptionAz("Updated Dish Description Az")
+                .descriptionEn("Updated Dish Description En")
+                .descriptionRu("Updated Dish Description Ru")
+                .isAvailable(true)
+                .build();
 
-        String json = TestDataLoader.serializeToJsonString(
-                DishDto.builder()
-                        .dishId(dishId)
-                        .categoryId(categoryId)
-                        .nameAz("Updated Test Dish Az")
-                        .nameEn("Updated Test Dish En")
-                        .nameRu("Updated Test Dish Ru")
-                        .price(BigDecimal.valueOf(15.99))
-                        .descriptionAz("Updated Dish Description Az")
-                        .descriptionEn("Updated Dish Description En")
-                        .descriptionRu("Updated Dish Description Ru")
-                        .isAvailable(true)
-                        .build());
+        String json = TestDataLoader.serializeToJsonString(expected);
 
         given()
                 .baseUri(baseUrl)
@@ -233,19 +219,21 @@ public class DishApiTest {
                 .multiPart("data", "data.json", json.getBytes(StandardCharsets.UTF_8), "application/json")
                 .when()
                 .put(eateryIdCategoryIdDishId.replace("{eateryId}", eateryId.toString())
-                                           .replace("{categoryId}", categoryId.toString())
-                                           .replace("{dishId}", dishId.toString()))
+                        .replace("{categoryId}", categoryId.toString())
+                        .replace("{dishId}", dishId.toString()))
                 .then()
                 .log().all()
                 .statusCode(200);
 
-        fileLog.println("========== 📥 Dish updated successfully ==========\n");
+        DishDto actual = getDish(DishDto.class);
+        validateDishDto(expected, actual);
+        log.debug("========== 📥 Dish updated successfully ==========\n");
     }
 
     @Test
     @Order(7)
     void shouldTestInterceptorValidation() {
-        fileLog.println("\n========== 📤 Testing interceptor validation ==========");
+        log.debug("\n========== 📤 Testing interceptor validation ==========");
 
         // Try to access a dish with incorrect eateryId (should be rejected by interceptor)
         long incorrectEateryId = eateryId + 100;
@@ -255,66 +243,90 @@ public class DishApiTest {
                 .header("Authorization", "Bearer " + jwtToken)
                 .when()
                 .get(eateryIdCategoryIdDishId.replace("{eateryId}", Long.toString(incorrectEateryId))
-                                           .replace("{categoryId}", categoryId.toString())
-                                           .replace("{dishId}", dishId.toString()))
+                        .replace("{categoryId}", categoryId.toString())
+                        .replace("{dishId}", dishId.toString()))
                 .then()
                 .log().all()
-                .statusCode(403); // Expecting forbidden due to interceptor validation
+                .statusCode(409); // Expecting forbidden due to interceptor validation
 
-        fileLog.println("========== 📥 Interceptor validation test completed ==========\n");
+        log.debug("========== 📥 Interceptor validation test completed ==========\n");
     }
 
     @Test
     @Order(8)
     void shouldGetCommonDishes() {
-        fileLog.println("\n========== 📤 Getting common dishes ==========");
-
-        // Test the CommonDishController endpoint
-        given()
-                .baseUri(baseUrl)
-                .header("Authorization", "Bearer " + jwtToken)
-                .when()
-                .get("/api/dish/common/Breakfast")
-                .then()
-                .log().all()
-                .statusCode(200);
-
-        fileLog.println("========== 📥 Common dishes retrieved successfully ==========\n");
+        log.debug("\n========== 📤 Getting common dishes ==========");
+        Response res = ApiUtils.sendGetRequest(baseUrl, jwtToken, "/api/dish/common/Salads", 200);
+        List<CommonDishDto> idList = res.as(new io.restassured.common.mapper.TypeRef<List<CommonDishDto>>() {});
+        assertFalse(idList.isEmpty(), "List of predefined dishes in category should not be empty");
+        log.debug("========== 📥 Common dishes retrieved successfully ==========\n");
     }
 
     @Test
     @Order(9)
     void shouldCreateDishesFromTemplates() {
-        fileLog.println("\n========== 📤 Creating dishes from templates ==========");
+        log.debug("\n========== 📤 Creating dishes from templates ==========");
 
-        // Create a simple request body with common dish templates
-        String requestBody = """
-                [
-                  {
-                    "nameAz": "Template Dish Az",
-                    "nameEn": "Template Dish En",
-                    "nameRu": "Template Dish Ru",
-                    "descriptionAz": "Template Description Az",
-                    "descriptionEn": "Template Description En",
-                    "descriptionRu": "Template Description Ru",
-                    "price": 12.99,
-                    "image": "dish1.jpg"
-                  }
-                ]
-                """;
+        List<DishDto> dishes = List.of(DishDto.builder()
+                .nameAz("Updated Test Dish Az")
+                .nameEn("Updated Test Dish En")
+                .nameRu("Updated Test Dish Ru")
+                .price(BigDecimal.valueOf(15.99))
+                .descriptionAz("Updated Dish Description Az")
+                .descriptionEn("Updated Dish Description En")
+                .descriptionRu("Updated Dish Description Ru")
+                .isAvailable(true)
+                .build());
 
-        given()
+        Response response = given()
                 .baseUri(baseUrl)
                 .header("Authorization", "Bearer " + jwtToken)
                 .contentType("application/json")
-                .body(requestBody)
+                .body(dishes)
                 .when()
                 .post("/api/dish/common/" + categoryId)
                 .then()
                 .log().all()
-                .statusCode(200);
+                .statusCode(200)
+                .extract()
+                .response();
 
-        fileLog.println("========== 📥 Dishes created from templates successfully ==========\n");
+        List<Long> idList = response.as(new io.restassured.common.mapper.TypeRef<List<Long>>() {});
+        dishId = idList.getFirst();
+        DishDto dishDto = getDish(DishDto.class);
+        validateDishDto(dishDto, dishes.getFirst());
+        log.debug("========== 📥 Dishes created from templates successfully ==========\n");
+    }
+
+    private <T> T getDish(Class<T> clazz) {
+        String url = eateryIdCategoryIdDishId.replace("{eateryId}", eateryId.toString())
+                .replace("{categoryId}", categoryId.toString())
+                .replace("{dishId}", dishId.toString());
+
+        Response res = ApiUtils.sendGetRequest(baseUrl, jwtToken, url, 200);
+        return res.as(clazz);
+    }
+
+    private <T> List<T> getDishes(Class<T> clazz) {
+        String url = eateryIdCategoryIdDish.replace("{eateryId}", eateryId.toString())
+                .replace("{categoryId}", categoryId.toString());
+
+        Response res = ApiUtils.sendGetRequest(baseUrl, jwtToken, url, 200);
+
+        // Use jsonPath().getList() to deserialize into a List of the given class.
+        // The "." argument specifies that the entire JSON response body is the list.
+        return res.jsonPath().getList(".", clazz);
+    }
+
+    private void validateDishDto(DishDto expected, DishDto actual) {
+        assertEquals(actual.getNameAz(), expected.getNameAz());
+        assertEquals(actual.getNameEn(), expected.getNameEn());
+        assertEquals(actual.getNameRu(), expected.getNameRu());
+        assertEquals(actual.getPrice(), expected.getPrice());
+        assertEquals(actual.getDescriptionAz(), expected.getDescriptionAz());
+        assertEquals(actual.getDescriptionEn(), expected.getDescriptionEn());
+        assertEquals(actual.getDescriptionRu(), expected.getDescriptionRu());
+        log.debug("Expected [{}], actual [{}]", expected, actual);
     }
 
 }

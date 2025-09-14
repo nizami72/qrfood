@@ -1,6 +1,5 @@
 package az.qrfood.backend.dish.service;
 
-import az.qrfood.backend.category.dto.CategoryDto;
 import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.category.repo.CategoryRepository;
 import az.qrfood.backend.common.Util;
@@ -238,7 +237,7 @@ public class DishService {
 
         // Update the dish properties
         dishEntity.setPrice(dto.getPrice());
-        dishEntity.setAvailable(dto.isAvailable());
+        dishEntity.setAvailable(dto.isIsAvailable());
 
         // Update translations
         dishEntity.getTranslations().forEach(translation -> {
@@ -254,7 +253,9 @@ public class DishService {
             }
         });
 
-        saveImage(multipartFile, dishEntity);
+        if(multipartFile != null && !multipartFile.isEmpty()) {
+            saveImage(multipartFile, dishEntity);
+        }
 
         // Save the updated dish
         return dishRepository.save(dishEntity);

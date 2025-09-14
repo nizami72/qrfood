@@ -211,7 +211,7 @@ public class CategoryApiTest {
     }
 
 
-    void registerUserAndEatery() {
+    private void registerUserAndEatery() {
         RegisterRequest registerRequest = RegisterRequest.builder()
                 .user(RegisterRequest.UserDto.builder()
                         .email(admin.getEmail())

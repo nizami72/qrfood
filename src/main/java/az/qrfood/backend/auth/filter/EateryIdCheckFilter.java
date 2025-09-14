@@ -111,7 +111,7 @@ public class EateryIdCheckFilter extends OncePerRequestFilter implements Ordered
                 }
 
                 // If eateryId is in the token and doesn't match the path's eateryId
-                if (tokenEateryId != null && !tokenEateryId.equals(pathEateryId)) {
+                if (!tokenEateryId.equals(pathEateryId)) {
                     log.error("EateryId mismatch: token eateryId {} does not match path eateryId {}",
                             tokenEateryId, pathEateryId);
 
@@ -119,10 +119,6 @@ public class EateryIdCheckFilter extends OncePerRequestFilter implements Ordered
                     // is typically handled on the client side by invalidating the token.
                     // Here, we simply reject the request.
                     handleError(response, ResponseCodes.EATERY_MISMATCH);
-                    SecurityContextHolder.clearContext(); // Clear context for this request
-                    response.setStatus(HttpStatus.PRECONDITION_FAILED.value());
-                    response.setContentType("application/json");
-                    response.getWriter().write(Util.toJsonString(new ApiResponse<Void>(ResponseCodes.EATERY_MISMATCH, null)));
                     return;
                 } else {
                     log.debug("EateryId matched: token eateryId {}, path eateryId {}", tokenEateryId, pathEateryId);
@@ -135,8 +131,8 @@ public class EateryIdCheckFilter extends OncePerRequestFilter implements Ordered
     }
 
     private void handleError(HttpServletResponse response, ResponseCodes responseCode) throws IOException {
-        SecurityContextHolder.clearContext(); // Clear context for this request
-        response.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+        SecurityContextHolder.clearContext();
+        response.setStatus(responseCode.getHttpStatus().value());
         response.setContentType("application/json");
         response.getWriter().write(Util.toJsonString(new ApiResponse<Void>(responseCode, null)));
 

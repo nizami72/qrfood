@@ -1,8 +1,16 @@
 package az.qrfood.backend.util;
 
+import az.qrfood.backend.auth.dto.LoginRequest;
+import az.qrfood.backend.user.dto.RegisterRequest;
+import az.qrfood.backend.user.dto.RegisterResponse;
 import io.restassured.response.Response;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.data.util.Pair;
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Log4j2
 public class ApiUtils {
 
     /**
@@ -39,4 +47,33 @@ public class ApiUtils {
                 .extract()
                 .response();
     }
+
+    public static Pair<Long, Long> registerUserAndEatery(String email, String password, String eateryName, String baseUrl, String endpoint) {
+        RegisterRequest registerRequest = RegisterRequest.builder()
+                .user(RegisterRequest.UserDto.builder()
+                        .email(email)
+                        .password(password)
+                        .build())
+                .restaurant(RegisterRequest.RestaurantDto.builder()
+                        .name(eateryName)
+                        .build())
+                .build();
+        // POST to create admin and eatery
+        Response registerResponse = sendPostRequest(baseUrl, endpoint, registerRequest, 201);
+        RegisterResponse rr = registerResponse.as(RegisterResponse.class);
+        log.debug("Created user and eatery [{}]", rr);
+        assertNotNull(rr);
+        assertNotNull(rr.userId());
+        assertNotNull(rr.eateryId());
+        assertTrue(rr.success());
+        return Pair.of(rr.userId(), rr.eateryId());
+    }
+
+    public static String login(String email, String password, Long eateryId, String baseUrl, String loginUrl) {
+        log.debug("Login as [{}]", email);
+        LoginRequest loginRequest = new LoginRequest(email, password, eateryId);
+        Response authResponse = ApiUtils.sendPostRequest(baseUrl, loginUrl, loginRequest, 200);
+        return authResponse.jsonPath().getString("jwt");
+    }
+
 }
