@@ -141,6 +141,7 @@ public class OrderController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("${order.id}")
+    // [[getOrderById]]
     public ResponseEntity<OrderDto> getOrderById(@PathVariable Long orderId) {
         log.debug("REST request to get Order : {}", orderId);
         return ResponseEntity.ok(orderService.getOrderById(orderId));
@@ -200,7 +201,7 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "Order not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'CASHIER')")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'CASHIER', 'WAITER')")
     @PutMapping("${order.id.put}")
     public ResponseEntity<OrderDto> updateOrder(
             @PathVariable Long eateryId,
@@ -272,7 +273,7 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "Order not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'WAITER')")
     @DeleteMapping("${order.id.delete}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
         orderService.deleteOrder(orderId);

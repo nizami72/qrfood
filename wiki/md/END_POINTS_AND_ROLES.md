@@ -163,13 +163,13 @@
 
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
-| [DELETE deleteOrder(Long)](../../src/main/java/az/qrfood/backend/order/controller/OrderController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/order/{orderId}/delete` |
+| [DELETE deleteOrder(Long)](../../src/main/java/az/qrfood/backend/order/controller/OrderController.java) | `EATERY_ADMIN, WAITER` | `/api/eatery/{eateryId}/order/{orderId}/delete` |
 | [GET getOrderById(Long)](../../src/main/java/az/qrfood/backend/order/controller/OrderController.java) | `public` | `/api/eatery/{eateryId}/order/{orderId}` |
 | [GET getOrdersByEateryId(Long, Principal)](../../src/main/java/az/qrfood/backend/order/controller/OrderController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER, CASHIER` | `/api/eatery/{eateryId}/orders` |
 | [GET getOrdersByEateryIdAndTableId(Long, String)](../../src/main/java/az/qrfood/backend/order/controller/OrderController.java) | `public` | `/api/eatery/{eateryId}/order/status/created` |
 | [GET getOrdersByStatus(String, String)](../../src/main/java/az/qrfood/backend/order/controller/OrderController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER, CASHIER` | `/api/eatery/{eateryId}/order/status/{status}` |
 | [POST postOrder(HttpServletResponse, Long, OrderDto, String)](../../src/main/java/az/qrfood/backend/order/controller/OrderController.java) | `public` | `/api/eatery/{eateryId}/order/post` |
-| [PUT updateOrder(Long, Long, OrderDto)](../../src/main/java/az/qrfood/backend/order/controller/OrderController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, CASHIER` | `/api/eatery/{eateryId}/order/{orderId}/put` |
+| [PUT updateOrder(Long, Long, OrderDto)](../../src/main/java/az/qrfood/backend/order/controller/OrderController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, CASHIER, WAITER` | `/api/eatery/{eateryId}/order/{orderId}/put` |
 
 ###### [🔝](#navigation)
 

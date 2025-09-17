@@ -7,18 +7,24 @@ import az.qrfood.backend.selenium.dto.Table;
 import lombok.extern.log4j.Log4j2;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Log4j2
 public class SeleniumUtil {
@@ -149,12 +155,24 @@ public class SeleniumUtil {
         pause(m.get(temp).get(BETWEEN_STEP));
     }
 
+    public static void findElementByTextAndClick(WebDriver driver, String element, String text, String temp) {
+        WebElement button = driver.findElement(By.xpath("//" + element +"[text()='arg123']".replace("arg123", text)));
+        highlight2(driver, button, temp);
+        button.click();
+        pause(m.get(temp).get(BETWEEN_STEP));
+    }
+
     public static void findButtonsByTextAndClick(WebDriver driver, String text, int buttonIndex, String temp) {
         List<WebElement> buttons = driver.findElements(By.xpath("//button[text()='arg123']".replace("arg123", text)));
         WebElement currentButton = buttons.get(buttonIndex);
         highlight2(driver, currentButton, temp);
         currentButton.click();
         pause(m.get(temp).get(BETWEEN_STEP));
+    }
+
+    public static void findByCssSelectorAndClick(WebDriver driver, String cssSelector) {
+        WebElement menuButton = driver.findElement(By.cssSelector(cssSelector));
+        menuButton.click();
     }
 
     public static void checkCheckbox(WebDriver driver, String id, String temp) {
@@ -411,5 +429,102 @@ public class SeleniumUtil {
         SeleniumUtil.findButtonByTextAndClick(driver, "Çap et", norm);
         SeleniumUtil.pause(norm);
     }
+
+
+    public static WebDriver createDriver(List<WebDriver> webDrivers, AtomicInteger windowIndex) {
+        // --- START: Manual Device Definition ---
+
+        Map<String, Object> prefs = new HashMap<>();
+        prefs.put("credentials_enable_service", false);
+        prefs.put("profile.password_manager_enabled", false);
+
+        // 1. Create a map for the device metrics
+        Map<String, Object> deviceMetrics = new HashMap<>();
+        deviceMetrics.put("width", 393);
+        deviceMetrics.put("height", 851);
+        deviceMetrics.put("pixelRatio", 2.75);
+        // Add the preferences to disable the password manager
+        deviceMetrics.put("credentials_enable_service", false);
+        deviceMetrics.put("profile.password_manager_enabled", false);
+
+        // 2. Create a map for the mobile emulation options and add the metrics
+        Map<String, Object> mobileEmulation = new HashMap<>();
+        mobileEmulation.put("deviceMetrics", deviceMetrics);
+        mobileEmulation.put("userAgent", "Mozilla/5.0 (Linux; Android 12; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Mobile Safari/537.36");
+
+        // --- END: Manual Device Definition ---
+
+        ChromeOptions options = new ChromeOptions();
+        options.setExperimentalOption("mobileEmulation", mobileEmulation); // Use the manual definition
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-gpu");
+        options.addArguments("--disable-dev-shm-usage");
+        // Disable the "Chrome is being controlled..." message
+        options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+        options.setExperimentalOption("useAutomationExtension", false);
+
+        options.setExperimentalOption("prefs", prefs);
+
+
+        WebDriver driver = new ChromeDriver(options);
+
+        driver.manage().window().setSize(new Dimension(393, 1000));
+        // Position the new window so it doesn't overlap
+        int xPosition = 1900 + windowIndex.getAndIncrement() * 520; // 393px width + ~17px scrollbar/border
+        driver.manage().window().setPosition(new Point(xPosition, 0));
+        webDrivers.add(driver);
+        return driver;
+    }
+
+    /**
+     * Creates a new ChromeDriver instance and positions it in a
+     * specific quadrant of the screen.
+     *
+     * @return A configured WebDriver instance.
+     */
+    public WebDriver createDriver1(AtomicInteger windowIndex) {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-gpu");
+        options.addArguments("--disable-dev-shm-usage");
+        // Remove "--headless=new" if you want to see the windows
+
+        WebDriver driver = new ChromeDriver(options);
+
+        // Define screen and window dimensions
+        final int screenWidth = 1900;
+        final int screenHeight = 1080;
+        final int windowWidth = screenWidth / 2;
+        final int windowHeight = screenHeight / 2;
+
+        // First, set the size of the new window
+        driver.manage().window().setSize(new Dimension(windowWidth, windowHeight));
+
+        // Determine the position based on the static index
+        Point position;
+        int quadrant = windowIndex.getAndIncrement() % 4; // Use modulo to cycle through 0, 1, 2, 3
+
+        switch (quadrant) {
+            case 0: // Top-Left Quadrant
+                position = new Point(1920, 0);
+                break;
+            case 1: // Top-Right Quadrant
+                position = new Point(1900 + windowWidth, 0);
+                break;
+            case 2: // Bottom-Left Quadrant
+                position = new Point(1900, windowHeight);
+                break;
+            case 3: // Bottom-Right Quadrant
+                position = new Point(1900 + windowWidth, windowHeight);
+                break;
+            default: // Fallback, should not be reached
+                position = new Point(0, 0);
+                break;
+        }
+
+        driver.manage().window().setPosition(position);
+        return driver;
+    }
+
 
 }

@@ -217,16 +217,18 @@ public class OrderService {
 
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found with id " + id));
-        OrderStatus orderDtoStatus = orderDTO.getStatus();
+
+        OrderStatus newStatus = orderDTO.getStatus();
 
         // Update only allowed fields
-        if (orderDtoStatus != null
-                && orderDtoStatus != order.getStatus()
-                && (orderDtoStatus == OrderStatus.PAID || orderDtoStatus == OrderStatus.CANCELLED)) {
+        if (newStatus != null
+                && newStatus != order.getStatus()
+//                && (newStatus == OrderStatus.PAID || newStatus == OrderStatus.CANCELLED)
+        ) {
 
             try {
-                if (canUpdateStatus(auth, orderDtoStatus)) {
-                    order.setStatus(orderDtoStatus);
+                if (canUpdateStatus(auth, newStatus)) {
+                    order.setStatus(newStatus);
                 } else {
                     throw new UnauthorizedStatusChangeException();
                 }

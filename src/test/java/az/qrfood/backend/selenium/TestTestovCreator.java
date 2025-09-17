@@ -24,6 +24,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.test.context.ActiveProfiles;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.HashMap;
@@ -140,6 +141,9 @@ public class TestTestovCreator {
         pause(howFast);
         totalTime += markTime(PHASE_CREATE_TABLES);
         log.debug("Total time [{}]", totalTime);
+
+
+        // ================== CREATE TABLE ASSIGMENT ==================
 
     }
 }
