@@ -35,8 +35,6 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Log4j2
 public class TestTestovCreator {
@@ -60,14 +58,13 @@ public class TestTestovCreator {
 
     @BeforeEach
     public void setUp() throws IOException {
-        host = config.host();
-        eateriesByAdminUrl = config.eateryAdminEateries();
-        eateryAdminUrl = config.eateryAdminUrl();
-
-        loginUrl = config.loginUrl();
         String fileWithData = System.getenv("JSON_SOURCE");
         howFast = System.getenv("HOW_FAST");
+        host = System.getenv("HOST");
 
+        eateriesByAdminUrl = config.eateryAdminEateries();
+        eateryAdminUrl = config.eateryAdminUrl();
+        loginUrl = config.loginUrl();
 
         testov = TestUtil.json2Pojo(TestUtil.readFileFromResources(fileWithData), Testov.class);
         Assertions.assertNotNull(testov);
@@ -112,7 +109,7 @@ public class TestTestovCreator {
     public void flow() {
 
         // ================== DELETE Eatery IF EXISTS ==================
-        deleteEateryBeforeCreation();
+//        deleteEateryBeforeCreation();
 
         // ================== REGISTER USER ==================
         registerUser();

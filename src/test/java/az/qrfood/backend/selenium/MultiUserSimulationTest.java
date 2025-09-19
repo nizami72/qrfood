@@ -70,6 +70,8 @@ public class MultiUserSimulationTest {
 
     @BeforeAll
     void setupAll() throws JsonProcessingException {
+        host = System.getenv("HOST");
+
         fileWithData = config.fileWithData();
         testov = TestUtil.json2Pojo(TestUtil.readFileFromResources(fileWithData), Testov.class);
         Assertions.assertNotNull(testov);
@@ -79,12 +81,11 @@ public class MultiUserSimulationTest {
                 .findFirst()
                 .orElseThrow();
 
-        host = config.host();
         howFast = config.howFast();
         eateriesByAdminUrl = config.eateryAdminEateries();
         loginUrl = config.loginUrl();
-        waiterUrl = config.feOrdersUrl();
-        feLoginUrl = config.feLoginUrl();
+        waiterUrl = host + config.feOrdersUrl();
+        feLoginUrl = host + config.feLoginUrl();
 
         menuUrls = menuUrls();
 

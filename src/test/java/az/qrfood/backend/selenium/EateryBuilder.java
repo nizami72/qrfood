@@ -136,7 +136,9 @@ public class EateryBuilder {
     }
 
     public static void openPage(WebDriver driver, String host, String path, String pause) {
-        driver.get(host + "/admin/" + path);
+        String url = host + "/admin/" + path;
+        log.debug("Try to open page [{}]", url);
+        driver.get(url);
 //        driver.manage().window().maximize();
     }
 
