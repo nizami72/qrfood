@@ -59,7 +59,7 @@ public class AllFlowTest {
 //    @Order(1)
     public void registration() {
         openPage("register", 400);
-        SeleniumUtil.registerEateryAdmin(driver, wait, testName, testPassword, testEmail, testRestaurantName, NORM);
+        EateryBuilder.registerEateryAdmin(driver, wait, testName, testPassword, testEmail, testRestaurantName, NORM);
         pause(500);
     }
 
@@ -84,7 +84,7 @@ public class AllFlowTest {
     public void editCategory() {
         openPage("login", 500);
         login(NORM);
-        SeleniumUtil.createCategories(driver, wait, NORM_X_2);
+        EateryBuilder.createCategories(driver, wait, NORM_X_2);
         pause(2000);
 
     }
@@ -125,7 +125,7 @@ public class AllFlowTest {
 
         // ================== REGISTER USER ==================
         openPage("register", 400);
-        SeleniumUtil.registerEateryAdmin(driver, wait, testName, testPassword, testEmail, testRestaurantName, NORM);
+        EateryBuilder.registerEateryAdmin(driver, wait, testName, testPassword, testEmail, testRestaurantName, NORM);
         pause(500);
 
         // ================== LOGIN USER ==================
@@ -136,7 +136,7 @@ public class AllFlowTest {
         pause(2000);
 
         // ================== CREATE CATEGORY ==================
-        SeleniumUtil.createCategories(driver, wait, NORM_X_2);
+        EateryBuilder.createCategories(driver, wait, NORM_X_2);
         pause(2000);
 
         // ================== CREATE DISHES ==================
@@ -266,7 +266,7 @@ public class AllFlowTest {
 
     private void createDishes(String temp) {
         navigate("nav003", "menu", temp);
-        SeleniumUtil.selectOptionByBySelectText(driver, 1, "Kateqoriya seçin", temp);
+        SeleniumUtil.selectOptionWithText(driver, 1, "Kateqoriya seçin", temp);
         SeleniumUtil.findButtonByTextAndClick(driver, "Yemək əlavə et", NORM);
         SeleniumUtil.findButtonByTextAndClick(driver, "Əvvəlcədən təyin edilmiş siyahı", NORM);
         SeleniumUtil.checkCheckbox(driver, "dsh001", temp);
@@ -275,7 +275,7 @@ public class AllFlowTest {
         SeleniumUtil.checkCheckbox(driver, "dsh004", temp);
         SeleniumUtil.findButtonByTextAndClick(driver, "Add Selected Dishes (", NORM);
         pause(1500);
-        SeleniumUtil.selectOptionByBySelectText(driver, 2, "Kateqoriya seçin", temp);
+        SeleniumUtil.selectOptionWithText(driver, 2, "Kateqoriya seçin", temp);
         markTime(PHASE_CREATE_DISHES);
     }
 

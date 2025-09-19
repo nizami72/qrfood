@@ -379,8 +379,8 @@ public class OrderService {
 
         return switch (status) {
             case CREATED -> roles.contains(Role.WAITER);
-            case IN_PROGRESS -> roles.contains(Role.KITCHEN_ADMIN);
-            case READY_FOR_PICKUP -> roles.contains(Role.KITCHEN_ADMIN);
+            case PREPARING -> roles.contains(Role.KITCHEN_ADMIN);
+            case READY -> roles.contains(Role.KITCHEN_ADMIN);
             case SERVED -> roles.contains(Role.WAITER);
             case PAID -> roles.contains(Role.CASHIER);
             case CANCELLED -> roles.contains(Role.WAITER) || roles.contains(Role.CASHIER);

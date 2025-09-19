@@ -1,6 +1,6 @@
 package az.qrfood.backend.order.dto;
 
-import az.qrfood.backend.order.OrderItemStatus;
+import az.qrfood.backend.order.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -61,5 +61,5 @@ public class OrderItemDTO {
     /**
      * The current status of this order item.
      */
-    private OrderItemStatus status;
+    private OrderStatus status;
 }

@@ -1,5 +1,6 @@
 ### End Points
 * /api/admin/eatery
+* /api/admin/eatery-admin/{admin}
 * /api/admin/eatery/{eateryId}
 * /api/admin/eatery/{eateryId}/details
 * /api/admin/eatery/{eateryId}/resources

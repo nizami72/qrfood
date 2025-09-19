@@ -84,9 +84,9 @@ public class DishTest {
 
     @Test
     public void createDishes() {
-        SeleniumUtil.openPage(driver, host, "login" , NORM);
-        SeleniumUtil.login(driver, wait, testEmail, testPassword, testRestaurantName, NORM);
-        SeleniumUtil.createDishes(driver, wait, NORM);
+        EateryBuilder.openPage(driver, host, "login" , NORM);
+        EateryBuilder.login(driver, wait, testEmail, testPassword, testRestaurantName, NORM);
+        EateryBuilder.createDishes(driver, wait, NORM);
         pause(NORM, FINAL_PAUSE);
     }
 

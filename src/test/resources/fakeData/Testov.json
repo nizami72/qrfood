@@ -12,188 +12,814 @@
   },
   "categories": [
     {
-      "categoryId": 1,
-      "eateryId": 1,
-      "nameAz": "Qəlyanaltılar",
-      "nameEn": "Appetizers",
-      "nameRu": "Закуски",
-      "image": "appetizers.jpg",
+      "nameAz": "Burgerlər",
+      "nameEn": "Burgers",
+      "nameRu": "Бургеры",
+      "image": "Burgers.webp",
       "dishes": [
         {
-          "dishId": 1,
-          "categoryId": 1,
-          "nameAz": "Səbzəli salat",
-          "nameEn": "Vegetable Salad",
-          "nameRu": "Овощной салат",
-          "descriptionAz": "Təzə tərəvəzlərdən hazırlanmış salat",
-          "descriptionEn": "Salad made from fresh vegetables",
-          "descriptionRu": "Салат из свежих овощей",
-          "price": 8.50,
-          "image": "vegetable_salad.jpg",
-          "isAvailable": true
+          "nameAz": "Pendir Burger",
+          "nameEn": "Cheese Burger",
+          "nameRu": "Чизбургер",
+          "descriptionAz": "Mal əti, pendir, kahı, pomidor, turşu xiyar, xüsusi sous",
+          "descriptionEn": "Beef, cheese, lettuce, tomato, pickles, special sauce",
+          "descriptionRu": "Говядина, сыр, салат, помидор, соленые огурцы, специальный соус",
+          "price": 1.99,
+          "image": "cheese_burger.webp"
         },
         {
-          "dishId": 2,
-          "categoryId": 1,
-          "nameAz": "Toyuq salatı",
-          "nameEn": "Chicken Salad",
-          "nameRu": "Куриный салат",
-          "descriptionAz": "Toyuq əti ilə hazırlanmış salat",
-          "descriptionEn": "Salad made with chicken meat",
-          "descriptionRu": "Салат с куриным мясом",
-          "price": 10.00,
-          "image": "chicken_salad.jpg",
-          "isAvailable": true
+          "nameAz": "Toyuq Burger",
+          "nameEn": "Chicken Burger",
+          "nameRu": "Куриный Бургер",
+          "descriptionAz": "Qızardılmış toyuq filesi, kahı, pomidor, mayonez",
+          "descriptionEn": "Grilled chicken fillet, lettuce, tomato, mayonnaise",
+          "descriptionRu": "Жареное куриное филе, салат, помидор, майонез",
+          "price": 1.99,
+          "image": "chicken_burger.webp"
         },
         {
-          "dishId": 3,
-          "categoryId": 1,
-          "nameAz": "Pendir assortisi",
-          "nameEn": "Cheese Platter",
-          "nameRu": "Ассорти сыров",
-          "descriptionAz": "Müxtəlif növ pendirlərdən ibarət qəlyanaltı",
-          "descriptionEn": "Appetizer consisting of various types of cheese",
-          "descriptionRu": "Закуска из различных видов сыра",
-          "price": 15.00,
-          "image": "cheese_platter.jpg",
-          "isAvailable": true
+          "nameAz": "Vegeterian Burger",
+          "nameEn": "Vegetarian Burger",
+          "nameRu": "Вегетарианский Бургер",
+          "descriptionAz": "Tərəvəz kotleti, kahı, pomidor, soğan, xüsusi sous",
+          "descriptionEn": "Vegetable patty, lettuce, tomato, onion, special sauce",
+          "descriptionRu": "Овощная котлета, салат, помидор, лук, специальный соус",
+          "price": 1.99,
+          "image": "vegetarian_burger.webp"
         },
         {
-          "dishId": 4,
-          "categoryId": 1,
-          "nameAz": "Zeytun assortisi",
-          "nameEn": "Olive Assortment",
-          "nameRu": "Ассорти оливок",
-          "descriptionAz": "Müxtəlif növ zeytunlardan ibarət qəlyanaltı",
-          "descriptionEn": "Appetizer consisting of various types of olives",
-          "descriptionRu": "Закуска из различных видов оливок",
-          "price": 7.50,
-          "image": "olive_assortment.jpg",
-          "isAvailable": true
+          "nameAz": "Cüt Burger",
+          "nameEn": "Double Burger",
+          "nameRu": "Двойной Бургер",
+          "descriptionAz": "İkiqat mal əti, cüt pendir, kahı, pomidor, xüsusi sous",
+          "descriptionEn": "Double beef patty, double cheese, lettuce, tomato, special sauce",
+          "descriptionRu": "Двойная говяжья котлета, двойной сыр, салат, помидор, специальный соус",
+          "price": 1.99,
+          "image": "double_burger.webp"
         }
       ]
     },
     {
-      "categoryId": 2,
-      "eateryId": 1,
-      "nameAz": "Əsas yeməklər",
-      "nameEn": "Main Courses",
-      "nameRu": "Основные блюда",
-      "image": "main_courses.jpg",
+      "nameAz": "Pizza",
+      "nameEn": "Pizza",
+      "nameRu": "Пицца",
+      "image": "Pizza.webp",
       "dishes": [
         {
-          "dishId": 5,
-          "categoryId": 2,
-          "nameAz": "Toyuq kababı",
+          "nameAz": "Marqarita Pizza",
+          "nameEn": "Margherita Pizza",
+          "nameRu": "Пицца Маргарита",
+          "descriptionAz": "Pomidor sousu, mozzarella pendiri, reyhan",
+          "descriptionEn": "Tomato sauce, mozzarella cheese, basil",
+          "descriptionRu": "Томатный соус, сыр моцарелла, базилик",
+          "price": 1.99,
+          "image": "margherita_pizza.webp"
+        },
+        {
+          "nameAz": "Pepperoni Pizza",
+          "nameEn": "Pepperoni Pizza",
+          "nameRu": "Пицца Пепперони",
+          "descriptionAz": "Pomidor sousu, mozzarella pendiri, pepperoni kolbasası",
+          "descriptionEn": "Tomato sauce, mozzarella cheese, pepperoni sausage",
+          "descriptionRu": "Томатный соус, сыр моцарелла, колбаса пепперони",
+          "price": 1.99,
+          "image": "pepperoni_pizza.webp"
+        },
+        {
+          "nameAz": "Toyuq BBQ Pizza",
+          "nameEn": "BBQ Chicken Pizza",
+          "nameRu": "Пицца Курица Барбекю",
+          "descriptionAz": "BBQ sousu, toyuq filesi, qırmızı soğan, mozzarella",
+          "descriptionEn": "BBQ sauce, chicken fillet, red onion, mozzarella",
+          "descriptionRu": "Соус барбекю, куриное филе, красный лук, моцарелла",
+          "price": 1.99,
+          "image": "bbq_chicken_pizza.webp"
+        },
+        {
+          "nameAz": "Qarışıq Pizza",
+          "nameEn": "Mixed Pizza",
+          "nameRu": "Пицца Ассорти",
+          "descriptionAz": "Pomidor sousu, mozzarella, sosiska, göbələk, zeytun, bolqar bibəri",
+          "descriptionEn": "Tomato sauce, mozzarella, sausage, mushrooms, olives, bell peppers",
+          "descriptionRu": "Томатный соус, моцарелла, колбаса, грибы, оливки, болгарский перец",
+          "price": 1.99,
+          "image": "mixed_pizza.webp"
+        },
+        {
+          "nameAz": "Dəniz Məhsulları Pizza",
+          "nameEn": "Seafood Pizza",
+          "nameRu": "Пицца Морепродукты",
+          "descriptionAz": "Pomidor sousu, mozzarella, krevet, kalamar, midye",
+          "descriptionEn": "Tomato sauce, mozzarella, shrimp, calamari, mussels",
+          "descriptionRu": "Томатный соус, моцарелла, креветки, кальмары, мидии",
+          "price": 1.99,
+          "image": "seafood_pizza.webp"
+        }
+      ]
+    },
+    {
+      "nameAz": "Kabablar",
+      "nameEn": "Kebabs",
+      "nameRu": "Кебабы",
+      "image": "Kebabs.webp",
+      "dishes": [
+        {
+          "nameAz": "Tikə Kabab",
+          "nameEn": "Tike Kebab",
+          "nameRu": "Тике Кебаб",
+          "descriptionAz": "Quzu ətindən hazırlanmış tikə kabab",
+          "descriptionEn": "Lamb kebab pieces",
+          "descriptionRu": "Кусочки шашлыка из баранины",
+          "price": 1.99,
+          "image": "tike_kebab.webp"
+        },
+        {
+          "nameAz": "Lülə Kabab",
+          "nameEn": "Lula Kebab",
+          "nameRu": "Люля Кебаб",
+          "descriptionAz": "Çəkilmiş quzu ətindən lülə kabab",
+          "descriptionEn": "Minced lamb lula kebab",
+          "descriptionRu": "Люля кебаб из рубленой баранины",
+          "price": 1.99,
+          "image": "lula_kebab.webp"
+        },
+        {
+          "nameAz": "Toyuq Kababı",
           "nameEn": "Chicken Kebab",
-          "nameRu": "Куриный кебаб",
-          "descriptionAz": "Kömürdə bişirilmiş toyuq kababı",
-          "descriptionEn": "Grilled chicken kebab",
-          "descriptionRu": "Куриный кебаб на гриле",
-          "price": 18.00,
-          "image": "chicken_kebab.jpg",
-          "isAvailable": true
+          "nameRu": "Куриный Кебаб",
+          "descriptionAz": "Toyuq filesindən hazırlanmış kabab",
+          "descriptionEn": "Chicken fillet kebab",
+          "descriptionRu": "Шашлык из куриного филе",
+          "price": 1.99,
+          "image": "chicken_kebab.webp"
         },
         {
-          "dishId": 6,
-          "categoryId": 2,
-          "nameAz": "Quzu kababı",
-          "nameEn": "Lamb Kebab",
-          "nameRu": "Кебаб из баранины",
-          "descriptionAz": "Kömürdə bişirilmiş quzu əti kababı",
-          "descriptionEn": "Grilled lamb kebab",
-          "descriptionRu": "Кебаб из баранины на гриле",
-          "price": 22.00,
-          "image": "lamb_kebab.jpg",
-          "isAvailable": true
+          "nameAz": "Dana Basdırma",
+          "nameEn": "Beef Basturma Kebab",
+          "nameRu": "Кебаб из Бастурмы",
+          "descriptionAz": "Ədviyyatlı dana ətindən kabab",
+          "descriptionEn": "Spicy beef kebab",
+          "descriptionRu": "Шашлык из пряной говядины",
+          "price": 1.99,
+          "image": "beef_basturma_kebab.webp"
         },
         {
-          "dishId": 7,
-          "categoryId": 2,
-          "nameAz": "Balıq şişi",
-          "nameEn": "Fish Skewer",
-          "nameRu": "Рыба на шампуре",
-          "descriptionAz": "Kömürdə bişirilmiş təzə balıq şişi",
-          "descriptionEn": "Grilled fresh fish skewer",
-          "descriptionRu": "Свежая рыба на гриле",
-          "price": 20.00,
-          "image": "fish_skewer.jpg",
-          "isAvailable": true
-        },
-        {
-          "dishId": 8,
-          "categoryId": 2,
-          "nameAz": "Tərəvəz kababı",
+          "nameAz": "Sebzeli Kabab",
           "nameEn": "Vegetable Kebab",
-          "nameRu": "Овощной кебаб",
-          "descriptionAz": "Kömürdə bişirilmiş tərəvəz kababı",
-          "descriptionEn": "Grilled vegetable kebab",
-          "descriptionRu": "Овощной кебаб на гриле",
-          "price": 15.00,
-          "image": "vegetable_kebab.jpg",
-          "isAvailable": true
+          "nameRu": "Овощной Кебаб",
+          "descriptionAz": "Pomidor, badımcan, bibər və göbələk kababı",
+          "descriptionEn": "Tomato, eggplant, pepper, and mushroom kebab",
+          "descriptionRu": "Шашлык из помидоров, баклажанов, перца и грибов",
+          "price": 1.99,
+          "image": "vegetable_kebab.webp"
         }
       ]
     },
     {
-      "categoryId": 3,
-      "eateryId": 1,
+      "nameAz": "Salatlar",
+      "nameEn": "Salads",
+      "nameRu": "Салаты",
+      "image": "Salads.webp",
+      "dishes": [
+        {
+          "nameAz": "Sezar Salatı",
+          "nameEn": "Caesar Salad",
+          "nameRu": "Салат Цезарь",
+          "descriptionAz": "Toyuq, kahı, parmezan pendiri və sezar sousu ilə",
+          "descriptionEn": "With chicken, lettuce, parmesan cheese and caesar dressing",
+          "descriptionRu": "С курицей, листьями салата, сыром пармезан и соусом цезарь",
+          "price": 1.99,
+          "image": "caesar_salad.webp"
+        },
+        {
+          "nameAz": "Yunan Salatı",
+          "nameEn": "Greek Salad",
+          "nameRu": "Греческий салат",
+          "descriptionAz": "Xiyar, pomidor, zeytun, feta pendiri və zeytun yağı ilə",
+          "descriptionEn": "With cucumber, tomato, olives, feta cheese and olive oil",
+          "descriptionRu": "С огурцом, помидором, оливками, сыром фета и оливковым маслом",
+          "price": 1.99,
+          "image": "greek_salad.webp"
+        },
+        {
+          "nameAz": "Paytaxt Salatı",
+          "nameEn": "Capital Salad",
+          "nameRu": "Салат Столичный",
+          "descriptionAz": "Kartof, yerkökü, yaşıl noxud, toyuq əti, xiyar, yumurta, mayonez",
+          "descriptionEn": "Potatoes, carrots, green peas, chicken, cucumber, egg, mayonnaise",
+          "descriptionRu": "Картофель, морковь, зеленый горошек, курица, огурец, яйцо, майонез",
+          "price": 1.99,
+          "image": "capital_salad.webp"
+        },
+        {
+          "nameAz": "Manqal Salatı",
+          "nameEn": "Mangal Salad",
+          "nameRu": "Салат Мангал",
+          "descriptionAz": "Manqalda bişirilmiş badımcan, bibər, pomidor, soğan",
+          "descriptionEn": "Grilled eggplant, bell pepper, tomato, onion",
+          "descriptionRu": "Баклажаны, перец, помидоры, лук, приготовленные на мангале",
+          "price": 1.99,
+          "image": "mangal_salad.webp"
+        },
+        {
+          "nameAz": "Mimoza Salatı",
+          "nameEn": "Mimosa Salad",
+          "nameRu": "Салат Мимоза",
+          "descriptionAz": "Kartof, yerkökü, yumurta, pendir, toyuq, mayonez",
+          "descriptionEn": "Potatoes, carrots, egg, cheese, chicken, mayonnaise",
+          "descriptionRu": "Картофель, морковь, яйцо, сыр, курица, майонез",
+          "price": 1.99,
+          "image": "mimosa_salad.webp"
+        },
+        {
+          "nameAz": "Göbələk Salatı",
+          "nameEn": "Mushroom Salad",
+          "nameRu": "Грибной Салат",
+          "descriptionAz": "Qızardılmış göbələk, soğan, xama",
+          "descriptionEn": "Fried mushrooms, onions, sour cream",
+          "descriptionRu": "Жареные грибы, лук, сметана",
+          "price": 1.99,
+          "image": "mushroom_salad.webp"
+        }
+      ]
+    },
+    {
+      "nameAz": "Şorbalar",
+      "nameEn": "Soups",
+      "nameRu": "Супы",
+      "image": "Soups.webp",
+      "dishes": [
+        {
+          "nameAz": "Mərci Şorbası",
+          "nameEn": "Lentil Soup",
+          "nameRu": "Чечевичный Суп",
+          "descriptionAz": "Qırmızı mərci, nanə, limon dilimi ilə",
+          "descriptionEn": "Red lentils, mint, lemon slice",
+          "descriptionRu": "Красная чечевица, мята, долька лимона",
+          "price": 1.99,
+          "image": "lentil_soup.webp"
+        },
+        {
+          "nameAz": "Düşbərə",
+          "nameEn": "Dushbara",
+          "nameRu": "Дюшбара",
+          "descriptionAz": "Xəmir içərisində qiymə, nanə, sirkə",
+          "descriptionEn": "Dumplings with minced meat, mint, vinegar",
+          "descriptionRu": "Пельмени с фаршем, мята, уксус",
+          "price": 1.99,
+          "image": "dushbara.webp"
+        },
+        {
+          "nameAz": "Toyuq Şorbası",
+          "nameEn": "Chicken Soup",
+          "nameRu": "Куриный Суп",
+          "descriptionAz": "Toyuq əti, düyü, kartof, yerkökü",
+          "descriptionEn": "Chicken, rice, potatoes, carrots",
+          "descriptionRu": "Курица, рис, картофель, морковь",
+          "price": 1.99,
+          "image": "chicken_soup.webp"
+        },
+        {
+          "nameAz": "Tom Yum Şorbası",
+          "nameEn": "Tom Yum Soup",
+          "nameRu": "Суп Том Ям",
+          "descriptionAz": "Krevet, göbələk, pomidor, limon otu, ədviyyatlı sous",
+          "descriptionEn": "Shrimp, mushrooms, tomatoes, lemongrass, spicy sauce",
+          "descriptionRu": "Креветки, грибы, помидоры, лемонграсс, острый соус",
+          "price": 1.99,
+          "image": "tom_yum_soup.webp"
+        },
+        {
+          "nameAz": "Püre Şorba",
+          "nameEn": "Cream Soup",
+          "nameRu": "Суп-пюре",
+          "descriptionAz": "Göbələk və ya balqabaq püre şorbası",
+          "descriptionEn": "Mushroom or pumpkin cream soup",
+          "descriptionRu": "Грибной или тыквенный суп-пюре",
+          "price": 1.99,
+          "image": "cream_soup.webp"
+        }
+      ]
+    },
+    {
+      "nameAz": "Qəlyanaltılar",
+      "nameEn": "Snacks",
+      "nameRu": "Закуски",
+      "image": "Snacks.webp",
+      "dishes": [
+        {
+          "nameAz": "Kartof Fri",
+          "nameEn": "French Fries",
+          "nameRu": "Картофель Фри",
+          "descriptionAz": "Qızardılmış kartof dilimləri",
+          "descriptionEn": "Fried potato slices",
+          "descriptionRu": "Жареные ломтики картофеля",
+          "price": 1.99,
+          "image": "french_fries.webp"
+        },
+        {
+          "nameAz": "Soğan Halqaları",
+          "nameEn": "Onion Rings",
+          "nameRu": "Луковые Кольца",
+          "descriptionAz": "Qızardılmış soğan halqaları",
+          "descriptionEn": "Fried onion rings",
+          "descriptionRu": "Жареные луковые кольца",
+          "price": 1.99,
+          "image": "onion_rings.webp"
+        },
+        {
+          "nameAz": "Nuggets",
+          "nameEn": "Nuggets",
+          "nameRu": "Наггетсы",
+          "descriptionAz": "Toyuq filesindən nuggets",
+          "descriptionEn": "Chicken fillet nuggets",
+          "descriptionRu": "Наггетсы из куриного филе",
+          "price": 1.99,
+          "image": "nuggets.webp"
+        },
+        {
+          "nameAz": "Pendir Çubuqları",
+          "nameEn": "Cheese Sticks",
+          "nameRu": "Сырные Палочки",
+          "descriptionAz": "Qızardılmış mozzarella pendir çubuqları",
+          "descriptionEn": "Fried mozzarella cheese sticks",
+          "descriptionRu": "Жареные палочки моцареллы",
+          "price": 1.99,
+          "image": "cheese_sticks.webp"
+        },
+        {
+          "nameAz": "Lavaş Roll",
+          "nameEn": "Lavash Roll",
+          "nameRu": "Лаваш Ролл",
+          "descriptionAz": "Toyuq və tərəvəzlərlə lavaşda roll",
+          "descriptionEn": "Chicken and vegetable roll in lavash bread",
+          "descriptionRu": "Рулет с курицей и овощами в лаваше",
+          "price": 1.99,
+          "image": "lavash_roll.webp"
+        }
+      ]
+    },
+    {
       "nameAz": "İçkilər",
       "nameEn": "Drinks",
       "nameRu": "Напитки",
-      "image": "drinks.jpg",
+      "image": "Drinks.webp",
       "dishes": [
         {
-          "dishId": 9,
-          "categoryId": 3,
+          "nameAz": "Kola",
+          "nameEn": "Coke",
+          "nameRu": "Кола",
+          "descriptionAz": "Soyuq qazlı içki",
+          "descriptionEn": "Cold carbonated drink",
+          "descriptionRu": "Холодный газированный напиток",
+          "price": 1.99,
+          "image": "coke.webp"
+        },
+        {
+          "nameAz": "Fanta",
+          "nameEn": "Fanta",
+          "nameRu": "Фанта",
+          "descriptionAz": "Portağal dadlı qazlı içki",
+          "descriptionEn": "Orange flavored carbonated drink",
+          "descriptionRu": "Газированный напиток со вкусом апельсина",
+          "price": 1.99,
+          "image": "fanta.webp"
+        },
+        {
+          "nameAz": "Su",
+          "nameEn": "Water",
+          "nameRu": "Вода",
+          "descriptionAz": "Qazlı və ya qazsız su",
+          "descriptionEn": "Sparkling or still water",
+          "descriptionRu": "Газированная или негазированная вода",
+          "price": 1.99,
+          "image": "water.webp"
+        },
+        {
           "nameAz": "Ayran",
           "nameEn": "Ayran",
           "nameRu": "Айран",
-          "descriptionAz": "Ənənəvi sərinləşdirici içki",
-          "descriptionEn": "Traditional refreshing drink",
-          "descriptionRu": "Традиционный освежающий напиток",
-          "price": 3.00,
-          "image": "ayran.jpg",
-          "isAvailable": true
+          "descriptionAz": "Qatıqdan hazırlanmış milli içki",
+          "descriptionEn": "Traditional drink made from yogurt",
+          "descriptionRu": "Традиционный напиток из йогурта",
+          "price": 1.99,
+          "image": "ayran.webp"
         },
         {
-          "dishId": 10,
-          "categoryId": 3,
-          "nameAz": "Kompot",
-          "nameEn": "Compote",
-          "nameRu": "Компот",
-          "descriptionAz": "Meyvələrdən hazırlanmış sərinləşdirici içki",
-          "descriptionEn": "Refreshing drink made from fruits",
-          "descriptionRu": "Освежающий напиток из фруктов",
-          "price": 4.00,
-          "image": "compote.jpg",
-          "isAvailable": true
+          "nameAz": "Təzə Portağal Şirəsi",
+          "nameEn": "Fresh Orange Juice",
+          "nameRu": "Свежевыжатый Апельсиновый Сок",
+          "descriptionAz": "Təzə sıxılmış portağal şirəsi",
+          "descriptionEn": "Freshly squeezed orange juice",
+          "descriptionRu": "Свежевыжатый апельсиновый сок",
+          "price": 1.99,
+          "image": "fresh_orange_juice.webp"
+        }
+      ]
+    },
+    {
+      "nameAz": "Dəniz məhsulları",
+      "nameEn": "Seafood",
+      "nameRu": "Морепродукты",
+      "image": "Seafood.webp",
+      "dishes": [
+        {
+          "nameAz": "Qızılbalıq Stroyqan",
+          "nameEn": "Salmon Stroganoff",
+          "nameRu": "Строганов из Лосося",
+          "descriptionAz": "Qızılbalıq filesi, krem sousu, göbələklər",
+          "descriptionEn": "Salmon fillet, cream sauce, mushrooms",
+          "descriptionRu": "Филе лосося, сливочный соус, грибы",
+          "price": 1.99,
+          "image": "salmon_stroganoff.webp"
         },
         {
-          "dishId": 11,
-          "categoryId": 3,
-          "nameAz": "Çay",
-          "nameEn": "Tea",
-          "nameRu": "Чай",
-          "descriptionAz": "Ənənəvi Azərbaycan çayı",
-          "descriptionEn": "Traditional Azerbaijani tea",
-          "descriptionRu": "Традиционный азербайджанский чай",
-          "price": 2.50,
-          "image": "tea.jpg",
-          "isAvailable": true
+          "nameAz": "Krevet Tempura",
+          "nameEn": "Shrimp Tempura",
+          "nameRu": "Креветки Темпура",
+          "descriptionAz": "Xırtıldayan tempura xəmirində krevetlər",
+          "descriptionEn": "Shrimp in crispy tempura batter",
+          "descriptionRu": "Креветки в хрустящем кляре темпура",
+          "price": 1.99,
+          "image": "shrimp_tempura.webp"
         },
         {
-          "dishId": 12,
-          "categoryId": 3,
-          "nameAz": "Qəhvə",
-          "nameEn": "Coffee",
-          "nameRu": "Кофе",
-          "descriptionAz": "Təzə dəmlənmiş qəhvə",
-          "descriptionEn": "Freshly brewed coffee",
-          "descriptionRu": "Свежесваренный кофе",
-          "price": 5.00,
-          "image": "coffee.jpg",
-          "isAvailable": true
+          "nameAz": "Midye Sacda",
+          "nameEn": "Mussels on Saj",
+          "nameRu": "Мидии на Садже",
+          "descriptionAz": "Sacda tərəvəzlərlə bişirilmiş midye",
+          "descriptionEn": "Mussels cooked on saj with vegetables",
+          "descriptionRu": "Мидии, приготовленные на садже с овощами",
+          "price": 1.99,
+          "image": "mussels_on_saj.webp"
+        },
+        {
+          "nameAz": "Dəniz Məhsulları Paellyası",
+          "nameEn": "Seafood Paella",
+          "nameRu": "Паэлья с Морепродуктами",
+          "descriptionAz": "İspan düyü yeməyi dəniz məhsulları ilə",
+          "descriptionEn": "Spanish rice dish with seafood",
+          "descriptionRu": "Испанское рисовое блюдо с морепродуктами",
+          "price": 1.99,
+          "image": "seafood_paella.webp"
+        }
+      ]
+    },
+    {
+      "nameAz": "Vejetaryan",
+      "nameEn": "Vegetarian",
+      "nameRu": "Вегетарианское",
+      "image": "Vegetarian.webp",
+      "dishes": [
+        {
+          "nameAz": "Tərəvəzli Lazanya",
+          "nameEn": "Vegetable Lasagna",
+          "nameRu": "Овощная Лазанья",
+          "descriptionAz": "Müxtəlif tərəvəzlərdən hazırlanmış lazanya",
+          "descriptionEn": "Lasagna made with various vegetables",
+          "descriptionRu": "Лазанья из различных овощей",
+          "price": 1.99,
+          "image": "vegetable_lasagna.webp"
+        },
+        {
+          "nameAz": "Göbələk Risotto",
+          "nameEn": "Mushroom Risotto",
+          "nameRu": "Грибное Ризотто",
+          "descriptionAz": "Arborio düyüsü və müxtəlif göbələklər",
+          "descriptionEn": "Arborio rice with various mushrooms",
+          "descriptionRu": "Рис Арборио с различными грибами",
+          "price": 1.99,
+          "image": "mushroom_risotto.webp"
+        },
+        {
+          "nameAz": "Spanaq Kotteti",
+          "nameEn": "Spinach Cutlets",
+          "nameRu": "Шпинатные Котлеты",
+          "descriptionAz": "Spanaq və pendirdən hazırlanmış kotletlər",
+          "descriptionEn": "Cutlets made from spinach and cheese",
+          "descriptionRu": "Котлеты из шпината и сыра",
+          "price": 1.99,
+          "image": "spinach_cutlets.webp"
+        },
+        {
+          "nameAz": "Hummus Tabağı",
+          "nameEn": "Hummus Plate",
+          "nameRu": "Тарелка Хумуса",
+          "descriptionAz": "Hummus, zeytun yağı, çörək",
+          "descriptionEn": "Hummus, olive oil, bread",
+          "descriptionRu": "Хумус, оливковое масло, хлеб",
+          "price": 1.99,
+          "image": "hummus_plate.webp"
+        },
+        {
+          "nameAz": "Tərəvəzli Fajita",
+          "nameEn": "Vegetable Fajita",
+          "nameRu": "Овощная Фахита",
+          "descriptionAz": "Qızardılmış tərəvəzlər və ədviyyatlar",
+          "descriptionEn": "Sautéed vegetables and spices",
+          "descriptionRu": "Жареные овощи и специи",
+          "price": 1.99,
+          "image": "vegetable_fajita.webp"
+        }
+      ]
+    },
+    {
+      "nameAz": "Əsas yeməklər",
+      "nameEn": "Main Courses",
+      "nameRu": "Основные блюда",
+      "image": "main_courses.webp",
+      "dishes": [
+        {
+          "nameAz": "Sac içi",
+          "nameEn": "Saj Ichi",
+          "nameRu": "Садж Ичи",
+          "descriptionAz": "Qoyun əti, tərəvəzlər və ədviyyatlarla sacda bişirilmiş yemək",
+          "descriptionEn": "Dish cooked on saj with lamb, vegetables, and spices",
+          "descriptionRu": "Блюдо, приготовленное на садже с бараниной, овощами и специями",
+          "price": 1.99,
+          "image": "saj_ichi.webp"
+        },
+        {
+          "nameAz": "Quzu Qovurma",
+          "nameEn": "Lamb Goulash",
+          "nameRu": "Гуляш из Баранины",
+          "descriptionAz": "Quzu ətindən hazırlanmış qovurma",
+          "descriptionEn": "Goulash made from lamb",
+          "descriptionRu": "Гуляш из баранины",
+          "price": 1.99,
+          "image": "lamb_goulash.webp"
+        },
+        {
+          "nameAz": "Toyuq Tabaka",
+          "nameEn": "Chicken Tabaka",
+          "nameRu": "Цыпленок Табака",
+          "descriptionAz": "Qızardılmış bütöv toyuq",
+          "descriptionEn": "Fried whole chicken",
+          "descriptionRu": "Жареный цыпленок целиком",
+          "price": 1.99,
+          "image": "chicken_tabaka.webp"
+        },
+        {
+          "nameAz": "Ət Güveç",
+          "nameEn": "Meat Guvech",
+          "nameRu": "Мясной Гювеч",
+          "descriptionAz": "Ət və tərəvəzlərlə bişirilmiş güveç",
+          "descriptionEn": "Guvech cooked with meat and vegetables",
+          "descriptionRu": "Гювеч, приготовленный с мясом и овощами",
+          "price": 1.99,
+          "image": "meat_guvech.webp"
+        },
+        {
+          "nameAz": "İskəndər Kabab",
+          "nameEn": "Iskender Kebab",
+          "nameRu": "Искендер Кебаб",
+          "descriptionAz": "Nazik doğranmış dana əti, pide, pomidor sousu və yoğurt",
+          "descriptionEn": "Thinly sliced beef, pide bread, tomato sauce, and yogurt",
+          "descriptionRu": "Тонко нарезанная говядина, хлеб пита, томатный соус и йогурт",
+          "price": 1.99,
+          "image": "iskender_kebab.webp"
+        }
+      ]
+    },
+    {
+      "nameAz": "Qarnir",
+      "nameEn": "Side Dishes",
+      "nameRu": "Гарниры",
+      "image": "side_dishes.webp",
+      "dishes": [
+        {
+          "nameAz": "Düyü",
+          "nameEn": "Rice",
+          "nameRu": "Рис",
+          "descriptionAz": "Ağ düyü qarniri",
+          "descriptionEn": "White rice side dish",
+          "descriptionRu": "Гарнир из белого риса",
+          "price": 1.99,
+          "image": "rice.webp"
+        },
+        {
+          "nameAz": "Kartof Püresi",
+          "nameEn": "Mashed Potatoes",
+          "nameRu": "Картофельное Пюре",
+          "descriptionAz": "Kremalı kartof püresi",
+          "descriptionEn": "Creamy mashed potatoes",
+          "descriptionRu": "Сливочное картофельное пюре",
+          "price": 1.99,
+          "image": "mashed_potatoes.webp"
+        },
+        {
+          "nameAz": "Izgara Tərəvəzlər",
+          "nameEn": "Grilled Vegetables",
+          "nameRu": "Овощи Гриль",
+          "descriptionAz": "Mövsümi izqara tərəvəzlər",
+          "descriptionEn": "Seasonal grilled vegetables",
+          "descriptionRu": "Сезонные овощи гриль",
+          "price": 1.99,
+          "image": "grilled_vegetables.webp"
+        },
+        {
+          "nameAz": "Bulqur Pilavı",
+          "nameEn": "Bulgur Pilaf",
+          "nameRu": "Булгур Пилав",
+          "descriptionAz": "Ədviyyatlı bulqur pilavı",
+          "descriptionEn": "Spicy bulgur pilaf",
+          "descriptionRu": "Пряный булгур пилав",
+          "price": 1.99,
+          "image": "bulgur_pilaf.webp"
+        }
+      ]
+    },
+    {
+      "nameAz": "Alkoqollu içkilər",
+      "nameEn": "Alcoholic Drinks",
+      "nameRu": "Алкогольные напитки",
+      "image": "alcoholic_drinks.webp",
+      "dishes": [
+        {
+          "nameAz": "Qırmızı Şərab",
+          "nameEn": "Red Wine",
+          "nameRu": "Красное Вино",
+          "descriptionAz": "Quru və ya yarımşirin qırmızı şərab",
+          "descriptionEn": "Dry or semi-sweet red wine",
+          "descriptionRu": "Сухое или полусладкое красное вино",
+          "price": 1.99,
+          "image": "red_wine.webp"
+        },
+        {
+          "nameAz": "Ağ Şərab",
+          "nameEn": "White Wine",
+          "nameRu": "Белое Вино",
+          "descriptionAz": "Quru və ya yarımşirin ağ şərab",
+          "descriptionEn": "Dry or semi-sweet white wine",
+          "descriptionRu": "Сухое или полусладкое белое вино",
+          "price": 1.99,
+          "image": "white_wine.webp"
+        },
+        {
+          "nameAz": "Pivə",
+          "nameEn": "Beer",
+          "nameRu": "Пиво",
+          "descriptionAz": "Yerli və ya idxal pivə",
+          "descriptionEn": "Local or imported beer",
+          "descriptionRu": "Местное или импортное пиво",
+          "price": 1.99,
+          "image": "beer.webp"
+        },
+        {
+          "nameAz": "Viski",
+          "nameEn": "Whiskey",
+          "nameRu": "Виски",
+          "descriptionAz": "Seçilmiş viski növləri",
+          "descriptionEn": "Selected types of whiskey",
+          "descriptionRu": "Выбранные виды виски",
+          "price": 1.99,
+          "image": "whiskey.webp"
+        },
+        {
+          "nameAz": "Kokteyl",
+          "nameEn": "Cocktail",
+          "nameRu": "Коктейль",
+          "descriptionAz": "Müxtəlif klassik və müəllif kokteylləri",
+          "descriptionEn": "Various classic and signature cocktails",
+          "descriptionRu": "Различные классические и авторские коктейли",
+          "price": 1.99,
+          "image": "cocktail.webp"
+        }
+      ]
+    },
+    {
+      "nameAz": "Uşaq menyusu",
+      "nameEn": "Kids Menu",
+      "nameRu": "Детское меню",
+      "image": "kids_menu.webp",
+      "dishes": [
+        {
+          "nameAz": "Mini Burger",
+          "nameEn": "Mini Burger",
+          "nameRu": "Мини Бургер",
+          "descriptionAz": "Kiçik ölçülü toyuq burgeri və ya pendir burger",
+          "descriptionEn": "Small chicken or cheese burger",
+          "descriptionRu": "Маленький куриный или чизбургер",
+          "price": 1.99,
+          "image": "mini_burger.webp"
+        },
+        {
+          "nameAz": "Toyuq Naggetsləri",
+          "nameEn": "Chicken Nuggets",
+          "nameRu": "Куриные Наггетсы",
+          "descriptionAz": "5 ədəd toyuq naggets və kartof fri",
+          "descriptionEn": "5 pieces of chicken nuggets and french fries",
+          "descriptionRu": "5 штук куриных наггетсов и картофель фри",
+          "price": 1.99,
+          "image": "chicken_nuggets.webp"
+        },
+        {
+          "nameAz": "Makaron Pendir ilə",
+          "nameEn": "Mac and Cheese",
+          "nameRu": "Макароны с Сыром",
+          "descriptionAz": "Pendir souslu makaron",
+          "descriptionEn": "Macaroni with cheese sauce",
+          "descriptionRu": "Макароны с сырным соусом",
+          "price": 1.99,
+          "image": "mac_and_cheese.webp"
+        },
+        {
+          "nameAz": "Şirin Kreplər",
+          "nameEn": "Sweet Crepes",
+          "nameRu": "Сладкие Блины",
+          "descriptionAz": "Meyvə və şokolad souslu şirin kreplər",
+          "descriptionEn": "Sweet crepes with fruit and chocolate sauce",
+          "descriptionRu": "Сладкие блины с фруктами и шоколадным соусом",
+          "price": 1.99,
+          "image": "sweet_crepes.webp"
+        },
+        {
+          "nameAz": "Meyvə Şirəsi",
+          "nameEn": "Fruit Juice",
+          "nameRu": "Фруктовый Сок",
+          "descriptionAz": "Alma və ya portağal şirəsi",
+          "descriptionEn": "Apple or orange juice",
+          "descriptionRu": "Яблочный или апельсиновый сок",
+          "price": 1.99,
+          "image": "fruit_juice.webp"
+        }
+      ]
+    },
+    {
+      "nameAz": "Şirniyyatlar",
+      "nameEn": "Desserts",
+      "nameRu": "Десерты",
+      "image": "Desserts.webp",
+      "dishes": [
+        {
+          "nameAz": "Şokoladlı Fondant",
+          "nameEn": "Chocolate Fondant",
+          "nameRu": "Шоколадный Фондан",
+          "descriptionAz": "İsti axan şokoladlı keks",
+          "descriptionEn": "Warm flowing chocolate cake",
+          "descriptionRu": "Теплый кекс с вытекающим шоколадом",
+          "price": 2.49,
+          "image": "chocolate_fondant.webp"
+        },
+        {
+          "nameAz": "Paxlava",
+          "nameEn": "Pakhlava",
+          "nameRu": "Пахлава",
+          "descriptionAz": "Qoz və şərbətlə hazırlanmış ənənəvi şirniyyat",
+          "descriptionEn": "Traditional pastry made with walnuts and syrup",
+          "descriptionRu": "Традиционная выпечка с грецкими орехами и сиропом",
+          "price": 2.99,
+          "image": "pakhlava.webp"
+        },
+        {
+          "nameAz": "Tiramisu",
+          "nameEn": "Tiramisu",
+          "nameRu": "Тирамису",
+          "descriptionAz": "Qəhvə, maskarpone pendiri və kakao ilə italyan deserti",
+          "descriptionEn": "Italian dessert with coffee, mascarpone cheese, and cocoa",
+          "descriptionRu": "Итальянский десерт с кофе, сыром маскарпоне и какао",
+          "price": 3.49,
+          "image": "tiramisu.webp"
+        },
+        {
+          "nameAz": "Çiyələkli Çizkeyk",
+          "nameEn": "Strawberry Cheesecake",
+          "nameRu": "Клубничный Чизкейк",
+          "descriptionAz": "Təzə çiyələk və pendir kremi ilə",
+          "descriptionEn": "With fresh strawberries and cream cheese",
+          "descriptionRu": "Со свежей клубникой и сливочным сыром",
+          "price": 3.29,
+          "image": "strawberry_cheesecake.webp"
+        },
+        {
+          "nameAz": "Künəfə",
+          "nameEn": "Kunefe",
+          "nameRu": "Кюнефе",
+          "descriptionAz": "İsti pendirli və şərbətli türk deserti",
+          "descriptionEn": "Warm Turkish dessert with cheese and syrup",
+          "descriptionRu": "Теплый турецкий десерт с сыром и сиропом",
+          "price": 3.99,
+          "image": "kunefe.webp"
+        },
+        {
+          "nameAz": "Dondurma Assorti",
+          "nameEn": "Ice Cream Assortment",
+          "nameRu": "Ассорти из Мороженого",
+          "descriptionAz": "Müxtəlif çeşidli üç top dondurma",
+          "descriptionEn": "Three scoops of various ice cream flavors",
+          "descriptionRu": "Три шарика мороженого разных сортов",
+          "price": 2.79,
+          "image": "ice_cream_assortment.webp"
+        },
+        {
+          "nameAz": "Meyvə Tabağı",
+          "nameEn": "Fruit Platter",
+          "nameRu": "Фруктовая Тарелка",
+          "descriptionAz": "Mövsümi təzə meyvələrin çeşidi",
+          "descriptionEn": "An assortment of seasonal fresh fruits",
+          "descriptionRu": "Ассорти из сезонных свежих фруктов",
+          "price": 4.99,
+          "image": "fruit_platter.webp"
         }
       ]
     }

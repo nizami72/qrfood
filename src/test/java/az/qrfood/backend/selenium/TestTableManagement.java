@@ -85,14 +85,14 @@ public class TestTableManagement {
 
 
         // ================== LOGIN USER ==================
-        SeleniumUtil.openPage(driver, host, "login", howFast);
-        SeleniumUtil.login(driver, wait, admin.getEmail(), admin.getPassword(), testov.getEatery().getName(), howFast);
+        EateryBuilder.openPage(driver, host, "login", howFast);
+        EateryBuilder.login(driver, wait, admin.getEmail(), admin.getPassword(), testov.getEatery().getName(), howFast);
         pause(howFast);
         totalTime += markTime(PHASE_LOGIN);
 
 
         // ================== CREATE TABLES ==================
-        SeleniumUtil.createTables(driver, wait, testov.getTables(), howFast);
+        EateryBuilder.createTables(driver, wait, testov.getTables(), howFast);
         pause(howFast);
         totalTime += markTime(PHASE_CREATE_TABLES);
         log.debug("Total time [{}]", totalTime);

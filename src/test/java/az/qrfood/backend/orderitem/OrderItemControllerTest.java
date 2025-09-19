@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import az.qrfood.backend.order.OrderItemStatus;
+import az.qrfood.backend.order.OrderStatus;
 import az.qrfood.backend.order.dto.OrderItemDTO;
 import az.qrfood.backend.auth.dto.LoginRequest;
 import az.qrfood.backend.auth.dto.LoginResponse;
@@ -145,25 +145,25 @@ public class OrderItemControllerTest {
         log.info("========== 📤 Request: Update order item status ==========");
 
         OrderItemDTO item = getOrderItem(200);
-        assertEquals(OrderItemStatus.CREATED, getOrderItem(200).getStatus(), "Order item status should be updated to CREATED");
+        assertEquals(OrderStatus.CREATED, getOrderItem(200).getStatus(), "Order item status should be updated to CREATED");
 
         // Update the order item status to PREPARING
-        item.setStatus(OrderItemStatus.PREPARING);
+        item.setStatus(OrderStatus.PREPARING);
         putOrderItemId(item);
-        assertEquals(OrderItemStatus.PREPARING, getOrderItem(200).getStatus(), "Order item status should be updated to PREPARING");
+        assertEquals(OrderStatus.PREPARING, getOrderItem(200).getStatus(), "Order item status should be updated to PREPARING");
 
         log.info("========== 📥 Response: Order item status updated to PREPARING successfully ==========");
 
         // Update the order item status to READY
-        item.setStatus(OrderItemStatus.READY);
+        item.setStatus(OrderStatus.READY);
         putOrderItemId(item);
-        assertEquals(OrderItemStatus.READY, getOrderItem(200).getStatus(), "Order item status should be updated to READY");
+        assertEquals(OrderStatus.READY, getOrderItem(200).getStatus(), "Order item status should be updated to READY");
         log.info("========== 📥 Response: Order item status updated to READY successfully ==========");
 
         // Update the order item status to SERVED
-        item.setStatus(OrderItemStatus.SERVED);
+        item.setStatus(OrderStatus.SERVED);
         putOrderItemId(item);
-        assertEquals(OrderItemStatus.SERVED, getOrderItem(200).getStatus(), "Order item status should be updated to SERVED");
+        assertEquals(OrderStatus.SERVED, getOrderItem(200).getStatus(), "Order item status should be updated to SERVED");
         log.info("========== 📥 Response: Order item status updated to SERVED successfully ==========");
     }
 

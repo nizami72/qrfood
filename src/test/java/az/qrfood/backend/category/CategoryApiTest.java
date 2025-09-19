@@ -1,8 +1,7 @@
 package az.qrfood.backend.category;
 
 import az.qrfood.backend.auth.dto.LoginRequest;
-import az.qrfood.backend.dto.CategoryDto;
-import az.qrfood.backend.selenium.dto.CategoriesItem;
+import az.qrfood.backend.category.dto.CategoryDto;
 import az.qrfood.backend.selenium.dto.StaffItem;
 import az.qrfood.backend.selenium.dto.Testov;
 import az.qrfood.backend.user.dto.RegisterRequest;
@@ -62,7 +61,7 @@ public class CategoryApiTest {
 
     private Testov testov;
     StaffItem admin;
-    CategoriesItem ci;
+    CategoryDto ci;
     String jwtToken;
     Long eateryId;
     Long categoryId;
@@ -123,9 +122,9 @@ public class CategoryApiTest {
         String url = TestUtil.formatUrl(uriEateryIdCategoryId, eateryId.toString(), categoryId.toString());
         Response registerResponse = ApiUtils.sendGetRequest(baseUrl, jwtToken, url, 200);
         CategoryDto categoryDto = registerResponse.as(CategoryDto.class);
-        assertEquals(categoryDto.nameEn(), ci.getNameEn());
-        assertEquals(categoryDto.nameRu(), ci.getNameRu());
-        assertEquals(categoryDto.nameAz(), ci.getNameAz());
+        assertEquals(categoryDto.getNameEn(), ci.getNameEn());
+        assertEquals(categoryDto.getNameRu(), ci.getNameRu());
+        assertEquals(categoryDto.getNameAz(), ci.getNameAz());
         log.debug("Created category [{}]", categoryDto);
     }
 
@@ -140,9 +139,9 @@ public class CategoryApiTest {
             throw new RuntimeException("No categories found");
         }
         CategoryDto categoryDto = categories.getFirst();
-        assertEquals(categoryDto.nameEn(), ci.getNameEn());
-        assertEquals(categoryDto.nameRu(), ci.getNameRu());
-        assertEquals(categoryDto.nameAz(), ci.getNameAz());
+        assertEquals(categoryDto.getNameEn(), ci.getNameEn());
+        assertEquals(categoryDto.getNameRu(), ci.getNameRu());
+        assertEquals(categoryDto.getNameAz(), ci.getNameAz());
         log.debug("All categories: [{}]", categoryDto);
     }
 
@@ -182,7 +181,7 @@ public class CategoryApiTest {
         String url =  TestUtil.formatUrl(uriEateryIdCategoryId, eateryId.toString(), categoryId.toString());
         Response registerResponse1 = ApiUtils.sendGetRequest(baseUrl, jwtToken, url, 200);
         CategoryDto categoryDto = registerResponse1.as(CategoryDto.class);
-        assertEquals(categoryDto.nameEn(), updatedCategoryNameEn);
+        assertEquals(categoryDto.getNameEn(), updatedCategoryNameEn);
     }
 
     @Test

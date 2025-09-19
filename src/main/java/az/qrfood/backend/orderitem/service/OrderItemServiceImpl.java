@@ -166,7 +166,7 @@ public class OrderItemServiceImpl implements OrderItemService {
      */
     @Override
     @Transactional
-    public OrderItemDTO updateOrderItemStatus(OrderItem orderItem, az.qrfood.backend.order.OrderItemStatus status) {
+    public OrderItemDTO updateOrderItemStatus(OrderItem orderItem, az.qrfood.backend.order.OrderStatus status) {
         log.debug("Request to update OrderItem [{}] to new status [{}]", orderItem.getId(), status);
 
         orderItem.setStatus(status);
@@ -209,28 +209,28 @@ public class OrderItemServiceImpl implements OrderItemService {
 
         // Check if there is at least one order item with PREPARING status
         boolean hasPreparingItem = orderItems.stream()
-                .anyMatch(item -> item.getStatus() == az.qrfood.backend.order.OrderItemStatus.PREPARING);
+                .anyMatch(item -> item.getStatus() == az.qrfood.backend.order.OrderStatus.PREPARING);
 
         if (hasPreparingItem) {
-            order.setStatus(az.qrfood.backend.order.OrderStatus.IN_PROGRESS);
+            order.setStatus(az.qrfood.backend.order.OrderStatus.PREPARING);
             orderRepository.save(order);
             return;
         }
 
         // Check if all order items have the same status
         boolean allCreated = orderItems.stream()
-                .allMatch(item -> item.getStatus() == az.qrfood.backend.order.OrderItemStatus.CREATED);
+                .allMatch(item -> item.getStatus() == az.qrfood.backend.order.OrderStatus.CREATED);
 
         boolean allReady = orderItems.stream()
-                .allMatch(item -> item.getStatus() == az.qrfood.backend.order.OrderItemStatus.READY);
+                .allMatch(item -> item.getStatus() == az.qrfood.backend.order.OrderStatus.READY);
 
         boolean allServed = orderItems.stream()
-                .allMatch(item -> item.getStatus() == az.qrfood.backend.order.OrderItemStatus.SERVED);
+                .allMatch(item -> item.getStatus() == az.qrfood.backend.order.OrderStatus.SERVED);
 
         if (allCreated) {
             order.setStatus(az.qrfood.backend.order.OrderStatus.CREATED);
         } else if (allReady) {
-            order.setStatus(az.qrfood.backend.order.OrderStatus.READY_FOR_PICKUP);
+            order.setStatus(az.qrfood.backend.order.OrderStatus.READY);
         } else if (allServed) {
             order.setStatus(az.qrfood.backend.order.OrderStatus.SERVED);
         }

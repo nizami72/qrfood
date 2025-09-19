@@ -82,9 +82,9 @@ public class CategoryTest {
 
     @Test
     public void createCategories() {
-        SeleniumUtil.openPage(driver, host, "login" , NORM);
-        SeleniumUtil.login(driver, wait, testEmail, testPassword, testRestaurantName, NORM);
-        SeleniumUtil.createCategories(driver, wait, NORM);
+        EateryBuilder.openPage(driver, host, "login" , NORM);
+        EateryBuilder.login(driver, wait, testEmail, testPassword, testRestaurantName, NORM);
+        EateryBuilder.createCategories(driver, wait, NORM);
         pause(NORM);
     }
 

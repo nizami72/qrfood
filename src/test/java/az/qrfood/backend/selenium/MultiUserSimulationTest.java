@@ -1,8 +1,6 @@
 package az.qrfood.backend.selenium;
 
-import static az.qrfood.backend.selenium.SeleniumUtil.navigate;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import az.qrfood.backend.selenium.dto.StaffItem;
 import az.qrfood.backend.selenium.dto.Testov;
 import az.qrfood.backend.util.TestUtil;
@@ -109,7 +107,7 @@ public class MultiUserSimulationTest {
     }
 
     private void simulateClient(String url, FileWriter csvWriter) {
-        WebDriver driver = SeleniumUtil.createDriver(webDrivers, windowIndex);
+        WebDriver driver = EateryBuilder.createDriver(webDrivers, windowIndex);
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         long startTime = System.currentTimeMillis();
 
@@ -132,16 +130,16 @@ public class MultiUserSimulationTest {
 
     private void simulateWaiter(int waiterIndex, FileWriter csvWriter) {
 
-        WebDriver driver = SeleniumUtil.createDriver(webDrivers, windowIndex);
+        WebDriver driver = EateryBuilder.createDriver(webDrivers, windowIndex);
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20)); // Longer wait for waiter
         long startTime = System.currentTimeMillis();
 
         try {
             driver.get(WAITER_LOGIN_URL);
-            SeleniumUtil.openPage(driver, host, "login", howFast);
-            SeleniumUtil.login(driver, wait, waiterStaff.get(waiterIndex).getEmail(), waiterStaff.get(waiterIndex).getPassword(), testov.getEatery().getName(), howFast);
+            EateryBuilder.openPage(driver, host, "login", howFast);
+            EateryBuilder.login(driver, wait, waiterStaff.get(waiterIndex).getEmail(), waiterStaff.get(waiterIndex).getPassword(), testov.getEatery().getName(), howFast);
             SeleniumUtil.findByCssSelectorAndClick(driver, "button[aria-label='Toggle menu']");
-            navigate(driver, wait, "nav005", "/admin/orders", howFast);
+            EateryBuilder.navigate(driver, wait, "nav005", "/admin/orders", howFast);
 
             // Determine waiter table range
             int[] range = computeTableRangeForWaiter(waiterIndex);

@@ -6,6 +6,7 @@ import az.qrfood.backend.user.dto.RegisterResponse;
 import io.restassured.response.Response;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.util.Pair;
+
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -16,9 +17,9 @@ public class ApiUtils {
     /**
      * Sends a POST request to a specified endpoint.
      *
-     * @param baseUri The base URI of the API.
-     * @param endpoint The endpoint path for the request.
-     * @param requestBody The request payload (can be a POJO, Map, or String).
+     * @param baseUri            The base URI of the API.
+     * @param endpoint           The endpoint path for the request.
+     * @param requestBody        The request payload (can be a POJO, Map, or String).
      * @param expectedStatusCode The expected HTTP status code for validation.
      * @return The full Response object from the API call.
      */
@@ -27,9 +28,9 @@ public class ApiUtils {
                 .baseUri(baseUri)
                 .contentType("application/json") // Assuming JSON content type
                 .body(requestBody)
-            .when()
+                .when()
                 .post(endpoint)
-            .then()
+                .then()
                 .statusCode(expectedStatusCode)
                 .extract()
                 .response();
@@ -41,6 +42,31 @@ public class ApiUtils {
                 .header("Authorization", "Bearer " + jwtToken)
                 .when()
                 .get(endpoint)
+                .then()
+                .log().all()
+                .statusCode(expectedStatusCode)
+                .extract()
+                .response();
+    }
+
+    public static Response sendGetRequest(String baseUri, String jwtToken, String endpoint) {
+        return given()
+                .baseUri(baseUri)
+                .header("Authorization", "Bearer " + jwtToken)
+                .when()
+                .get(endpoint)
+                .then()
+                .log().all()
+                .extract()
+                .response();
+    }
+
+    public static Response sendDeleteRequest(String baseUri, String jwtToken, String endpoint, int expectedStatusCode) {
+        return given()
+                .baseUri(baseUri)
+                .header("Authorization", "Bearer " + jwtToken)
+                .when()
+                .delete(endpoint)
                 .then()
                 .log().all()
                 .statusCode(expectedStatusCode)

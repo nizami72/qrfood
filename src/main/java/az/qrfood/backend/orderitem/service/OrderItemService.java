@@ -74,5 +74,5 @@ public interface OrderItemService {
      * @param status The new status for the order item.
      * @return The updated {@link OrderItemDTO}.
      */
-    OrderItemDTO updateOrderItemStatus(OrderItem orderItem, az.qrfood.backend.order.OrderItemStatus status);
+    OrderItemDTO updateOrderItemStatus(OrderItem orderItem, az.qrfood.backend.order.OrderStatus status);
 }

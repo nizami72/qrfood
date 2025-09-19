@@ -3,12 +3,9 @@ package az.qrfood.backend.dish;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import az.qrfood.backend.category.dto.CategoryDto;
 import az.qrfood.backend.dish.dto.CommonDishDto;
 import az.qrfood.backend.dish.dto.DishDto;
-import az.qrfood.backend.dto.CategoryDto;
-import az.qrfood.backend.selenium.dto.CategoriesItem;
 import az.qrfood.backend.selenium.dto.StaffItem;
 import az.qrfood.backend.selenium.dto.Testov;
 import az.qrfood.backend.util.ApiUtils;
@@ -69,7 +66,7 @@ public class DishApiTest {
     private Long categoryId = 1L; // Default category ID for tests
     private Long dishId; // Will be set during test execution
 
-    CategoriesItem ci;
+    CategoryDto ci;
     private Testov testov;
     StaffItem admin;
     //</editor-fold>

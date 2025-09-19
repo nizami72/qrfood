@@ -17,12 +17,14 @@ import az.qrfood.backend.table.service.TableService;
 import az.qrfood.backend.tableassignment.dto.TableAssignmentDto;
 import az.qrfood.backend.tableassignment.service.TableAssignmentService;
 import az.qrfood.backend.user.dto.UserResponse;
+import az.qrfood.backend.user.entity.Role;
 import az.qrfood.backend.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -37,6 +39,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -326,6 +329,33 @@ public class AdminController {
 
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * Retrieves a list of eateries associated with a specific user based on the provided admin username.
+     *
+     * @param admin the username of the admin whose associated eateries are to be retrieved
+     * @return a ResponseEntity containing a list of EateryDto objects representing the eateries associated with the user,
+     *         or a NOT_FOUND response if the user does not have the required roles
+     */
+    @GetMapping("${admin.eatery.admin.eateries}")
+    @PreAuthorize("@authz.hasAnyRole(authentication)")
+    public ResponseEntity<List<EateryDto>> getEateryBelongToUser(@PathVariable String admin) {
+
+        UserResponse user = userService.getUserByUsername(admin);
+        Set<String> roles = user.getRoles();
+        if (roles.isEmpty() || !roles.contains(Role.EATERY_ADMIN.name())) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
+        List<EateryDto> eateryDtos = eateryService.findEateriesByUserProfileId(user.getId());
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(eateryDtos);
+
+    }
+
 
     private List<Map<String, Object>> fetchCategories(Long eateryId) {
         // Get all categories for the eatery

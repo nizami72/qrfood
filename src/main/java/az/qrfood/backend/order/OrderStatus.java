@@ -16,12 +16,12 @@ public enum OrderStatus {
     /**
      * The order is in progress (at least one item is being prepared).
      */
-    IN_PROGRESS,
+    PREPARING,
 
     /**
      * The order is ready for pickup (all items are ready).
      */
-    READY_FOR_PICKUP,
+    READY,
 
     /**
      * The order has been served (all items have been served).

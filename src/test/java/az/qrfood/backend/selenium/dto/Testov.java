@@ -1,12 +1,13 @@
 package az.qrfood.backend.selenium.dto;
 
+import az.qrfood.backend.category.dto.CategoryDto;
 import java.util.List;
 
 public class Testov{
 	private Eatery eatery;
 	private List<Table> tables;
 	private List<StaffItem> staff;
-	private List<CategoriesItem> categories;
+	private List<CategoryDto> categories;
 
 	public Eatery getEatery(){
 		return eatery;
@@ -20,7 +21,7 @@ public class Testov{
 		return staff;
 	}
 
-	public List<CategoriesItem> getCategories(){
+	public List<az.qrfood.backend.category.dto.CategoryDto> getCategories(){
 		return categories;
 	}
 }

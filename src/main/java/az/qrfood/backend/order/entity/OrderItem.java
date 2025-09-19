@@ -1,7 +1,7 @@
 package az.qrfood.backend.order.entity;
 
 import az.qrfood.backend.dish.entity.DishEntity;
-import az.qrfood.backend.order.OrderItemStatus;
+import az.qrfood.backend.order.OrderStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -74,5 +74,5 @@ public class OrderItem {
      * Default status is CREATED when a new order item is created.
      */
     @Enumerated(EnumType.STRING)
-    private OrderItemStatus status = OrderItemStatus.CREATED;
+    private OrderStatus status = OrderStatus.CREATED;
 }
