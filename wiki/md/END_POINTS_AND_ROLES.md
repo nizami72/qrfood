@@ -195,6 +195,7 @@
 
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
+| [GET getQrContents(Long)](../../src/main/java/az/qrfood/backend/qr/controller/QrController.java) | `public` | `/api/qrcode/eatery/{eateryId}/contents` |
 | [GET getQrImage(Long, Integer)](../../src/main/java/az/qrfood/backend/qr/controller/QrController.java) | `EATERY_ADMIN` | `/api/qrcode/eatery/{eateryId}/table/{tableId}` |
 
 ###### [🔝](#navigation)

@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 /**
  * REST controller for managing QR code generation and retrieval.
@@ -64,4 +65,16 @@ public class QrController {
                 .body(qrCode);
     }
 
+
+    @Operation(summary = "Get all QR contents", description = "Returns list of all QR code content strings")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List fetched successfully"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PreAuthorize("@authz.hasAnyRole(authentication)")
+    @GetMapping(value = "${api.qr-code.contents}")
+    public ResponseEntity<List<String>> getQrContents(@PathVariable("eateryId") Long eateryId) {
+        List<String> contents = qrService.getAllQrContents(eateryId);
+        return ResponseEntity.ok(contents);
+    }
 }

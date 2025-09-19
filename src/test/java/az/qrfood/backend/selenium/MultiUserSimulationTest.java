@@ -1,11 +1,14 @@
 package az.qrfood.backend.selenium;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import az.qrfood.backend.selenium.dto.StaffItem;
 import az.qrfood.backend.selenium.dto.Testov;
+import az.qrfood.backend.util.ApiUtils;
 import az.qrfood.backend.util.TestUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import io.restassured.response.Response;
 import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -41,10 +44,18 @@ public class MultiUserSimulationTest {
     private String howFast;
     String fileWithData;
     static private Testov testov;
+
+    private String loginUrl;
+    private String eateriesByAdminUrl;
+
+    private String superAdminMail = "nizami.budagov@gmail.com";
+    private String superAdminPass = "qqqq1111";
+
+    private StaffItem admin;
     private List<StaffItem> waiterStaff;
-    private static String[] menuUrls;
-    private static final String WAITER_URL = "http://localhost:5173/admin/orders";
-    private static final String WAITER_LOGIN_URL = "http://localhost:5173/admin/login";
+    private static List<String> menuUrls;
+    private String waiterUrl;
+    private String feLoginUrl;
     private static final int WAITER_COUNT = 2;
     private static final String CSV_FILE = "simulation_results.csv";
     private static AtomicInteger windowIndex = new AtomicInteger(0);
@@ -60,18 +71,40 @@ public class MultiUserSimulationTest {
     @BeforeAll
     void setupAll() throws JsonProcessingException {
         fileWithData = config.fileWithData();
+        testov = TestUtil.json2Pojo(TestUtil.readFileFromResources(fileWithData), Testov.class);
+        Assertions.assertNotNull(testov);
+        admin = testov.getStaff()
+                .stream()
+                .filter(s -> s.getRoles().contains("EATERY_ADMIN"))
+                .findFirst()
+                .orElseThrow();
+
         host = config.host();
         howFast = config.howFast();
-        menuUrls = config.menuUrls();
+        eateriesByAdminUrl = config.eateryAdminEateries();
+        loginUrl = config.loginUrl();
+        waiterUrl = config.feOrdersUrl();
+        feLoginUrl = config.feLoginUrl();
+
+        menuUrls = menuUrls();
 
         // Sets up the ChromeDriver binary once for all tests
         WebDriverManager.chromedriver().setup();
-        testov = TestUtil.json2Pojo(TestUtil.readFileFromResources(fileWithData), Testov.class);
         Assertions.assertNotNull(testov);
         waiterStaff = testov.getStaff().stream()
                 .filter(staffItem -> staffItem.getRoles().contains("WAITER"))
                 .toList();
         Assertions.assertFalse(waiterStaff.isEmpty());
+    }
+
+    @AfterEach
+    public void tearDown() throws InterruptedException {
+        Thread.sleep(120000);
+        for (WebDriver driver : webDrivers) {
+            if (driver != null) {
+                driver.quit();
+            }
+        }
     }
 
     @Test
@@ -82,7 +115,7 @@ public class MultiUserSimulationTest {
             csvWriter.write("timestamp,userType,url,result,responseTimeMs\n");
 
             // Create a thread pool with enough threads for all concurrent users
-            ExecutorService executor = Executors.newFixedThreadPool(menuUrls.length + 1);
+            ExecutorService executor = Executors.newFixedThreadPool(menuUrls.size() + 1);
 
             // Submit client simulation tasks
             for (String url : menuUrls) {
@@ -135,7 +168,7 @@ public class MultiUserSimulationTest {
         long startTime = System.currentTimeMillis();
 
         try {
-            driver.get(WAITER_LOGIN_URL);
+            driver.get(feLoginUrl);
             EateryBuilder.openPage(driver, host, "login", howFast);
             EateryBuilder.login(driver, wait, waiterStaff.get(waiterIndex).getEmail(), waiterStaff.get(waiterIndex).getPassword(), testov.getEatery().getName(), howFast);
             SeleniumUtil.findByCssSelectorAndClick(driver, "button[aria-label='Toggle menu']");
@@ -168,28 +201,18 @@ public class MultiUserSimulationTest {
             clickIfPresent(wait, By.cssSelector(".mark-served"));
 
             long duration = System.currentTimeMillis() - startTime;
-            logResult(csvWriter, "WAITER-" + waiterIndex + "[" + range[0] + "-" + range[1] + "]", WAITER_URL, "SUCCESS", duration);
+            logResult(csvWriter, "WAITER-" + waiterIndex + "[" + range[0] + "-" + range[1] + "]", waiterUrl, "SUCCESS", duration);
             System.out.println("👨‍🍳 Waiter " + waiterIndex + " updated order status in " + duration + " ms");
 
         } catch (Exception e) {
-            logResult(csvWriter, "WAITER", WAITER_URL, "FAIL: " + e.getMessage(), -1);
+            logResult(csvWriter, "WAITER", waiterUrl, "FAIL: " + e.getMessage(), -1);
             System.err.println("❌ Waiter error: " + e.getMessage());
         } finally {
 //            driver.quit();
         }
     }
 
-    @AfterEach
-    public void tearDown() throws InterruptedException {
-        Thread.sleep(120000);
-        for (WebDriver driver : webDrivers) {
-            if (driver != null) {
-                driver.quit();
-            }
-        }
-    }
-
-    private int extractAnyNumber(String s) {
+       private int extractAnyNumber(String s) {
         StringBuilder sb = new StringBuilder();
         for (char c : s.toCharArray()) {
             if (Character.isDigit(c)) sb.append(c);
@@ -283,5 +306,23 @@ public class MultiUserSimulationTest {
     private static void chooseDish(WebDriver driver, String howFast) {
         SeleniumUtil.findButtonByTextAndClick(driver, "+", howFast);
     }
+
+    private List<String> menuUrls() {
+        String jwt = ApiUtils.login(superAdminMail, superAdminPass, null, host, loginUrl);
+
+        Long id = TestTestovCreator.getEateryId(jwt, testov.getEatery().getName(), host,
+                Utils.replacePlaceHolders(eateriesByAdminUrl, admin.getEmail()));
+
+        Assertions.assertNotNull(id);
+        String u = config.qrContentUrls().replace("{eateryId}", id.toString());
+        Response res = ApiUtils.sendGetRequest(host, jwt, u);
+        if(res.getStatusCode() == 200) {
+            return res.as(List.class);
+        }
+        throw new RuntimeException("Failed to get menu urls");
+    }
+
+
+
 
 }

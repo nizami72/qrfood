@@ -9,6 +9,7 @@ import static az.qrfood.backend.selenium.SeleniumUtil.PHASE_LOGIN;
 import static az.qrfood.backend.selenium.SeleniumUtil.PHASE_REGISTRATION;
 import static az.qrfood.backend.selenium.SeleniumUtil.markTime;
 import static az.qrfood.backend.selenium.SeleniumUtil.pause;
+
 import az.qrfood.backend.category.dto.CategoryDto;
 import az.qrfood.backend.dish.dto.DishDto;
 import az.qrfood.backend.selenium.dto.StaffItem;
@@ -34,6 +35,8 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Log4j2
 public class TestTestovCreator {
@@ -198,18 +201,23 @@ public class TestTestovCreator {
 
     private void deleteEateryBeforeCreation() {
         String jwt = ApiUtils.login(superAdminMail, superAdminPass, null, host, loginUrl);
-        Response res = ApiUtils.sendGetRequest(host, jwt,  eateriesByAdminUrl + admin.getEmail());
-        if(res.statusCode() != 200) return;
+        Long id = getEateryId(jwt, testov.getEatery().getName(), host, Utils.replacePlaceHolders(eateriesByAdminUrl, admin.getEmail()));
+        ApiUtils.sendDeleteRequest(host, jwt, eateryAdminUrl + "/" + id, 200);
+    }
+
+    public static Long getEateryId(String jwt, String eateryName, String host, String url) {
+        Response res = ApiUtils.sendGetRequest(host, jwt, url);
+        if (res.statusCode() != 200) return null;
         List<Map<String, Object>> d = res.as(List.class);
         Object id = d.stream()
                 .filter(eateryDto -> eateryDto
                         .get("name")
-                        .equals(testov.getEatery().getName()))
+                        .equals(eateryName))
                 .findFirst()
                 .orElseThrow()
-                .get("id")
-                ;
-        ApiUtils.sendDeleteRequest(host, jwt, eateryAdminUrl + id, 200);
+                .get("id");
+        return Long.valueOf(id.toString());
     }
+
 
 }

@@ -1,10 +1,9 @@
 package az.qrfood.backend.selenium;
 
 import org.aeonbits.owner.Config;
-import org.aeonbits.owner.Config.Key;
 
-@Config.Sources({"classpath:selenium-test.properties",
-        "classpath:application.properties"})
+@Config.LoadPolicy(Config.LoadType.MERGE)
+@Config.Sources({"classpath:selenium-test.properties", "classpath:application.properties"})
 public interface TestConfig extends Config {
 
     @Key("host")
@@ -16,19 +15,22 @@ public interface TestConfig extends Config {
     @Key("json.source")
     String fileWithData();
 
-    @Key("login.url2")
+    @Key("auth.login")
     String loginUrl();
 
-    @Key("menu.urls")
-    String[] menuUrls();
-
-    @Key("orders.url")
-    String ordersUrl();
+    @Key("frontend.orders.url")
+    String feOrdersUrl();
 
     @Key("admin.eatery.admin.eateries")
     String eateryAdminEateries();
 
-    @Key("api.admin.eatery")
+    @Key("admin.api.eatery")
     String eateryAdminUrl();
+
+    @Key("api.qr-code.contents")
+    String qrContentUrls();
+
+    @Key("frontend.login.url")
+    String feLoginUrl();
 
 }

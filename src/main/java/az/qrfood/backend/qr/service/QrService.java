@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service class for managing QR code generation and retrieval.
@@ -23,6 +24,8 @@ import java.util.Optional;
 @Log4j2
 public class QrService {
 
+    private final az.qrfood.backend.qr.repository.QrRepository qrRepository;
+
     private final EateryRepository eateryRepository;
 
     @Value("${segment.menu}")
@@ -33,8 +36,9 @@ public class QrService {
      *
      * @param eateryRepository The repository for Eatery entities.
      */
-    public QrService(EateryRepository eateryRepository) {
+    public QrService(EateryRepository eateryRepository, az.qrfood.backend.qr.repository.QrRepository qrRepository) {
         this.eateryRepository = eateryRepository;
+        this.qrRepository = qrRepository;
     }
 
     /**
@@ -87,6 +91,18 @@ public class QrService {
                     eateryId, tableNumber));
         }
         return op.get().getQrCode().getQrCodeAsBytes();
+    }
+
+    /**
+     * Returns all QR content strings stored in the system.
+     * @return list of content values from QrCode entities
+     */
+    public List<String> getAllQrContents(Long eateryId) {
+        return qrRepository.findAllByEateryId( eateryId)
+                .stream()
+//                .map(QrCode::getContent)
+                .filter(s -> s != null && !s.isBlank())
+                .collect(Collectors.toList());
     }
 
 }
