@@ -183,7 +183,7 @@ public class OrderItemServiceImpl implements OrderItemService {
      * <p>
      * The rules for determining the order status are:
      * - If all order items are CREATED → order CREATED
-     * - If there is at least one order item PREPARING → order IN_PROGRESS
+     * - If there is at least one order item PREPARING → order PREPARING
      * - If all order items are READY → order READY_FOR_PICKUP
      * - If all order items are SERVED → order SERVED
      * - If the order is closed and paid → PAID
