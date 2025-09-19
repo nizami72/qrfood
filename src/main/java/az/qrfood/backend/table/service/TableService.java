@@ -9,7 +9,10 @@ import az.qrfood.backend.table.dto.TableDto;
 import az.qrfood.backend.table.entity.TableInEatery;
 import az.qrfood.backend.table.entity.TableStatus;
 import az.qrfood.backend.table.repository.TableRepository;
+import az.qrfood.backend.tableassignment.dto.TableAssignmentDto;
+import az.qrfood.backend.tableassignment.service.TableAssignmentService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
  * </p>
  */
 @Service
+@Slf4j
 public class TableService {
 
     @Value("${host.name}")
@@ -33,6 +37,8 @@ public class TableService {
     private final QrService qrService;
     private final TableRepository tableRepository;
     private final EateryRepository eateryRepository;
+    private final TableAssignmentService assignmentService;
+
 
     /**
      * Constructs a TableService with necessary dependencies.
@@ -41,10 +47,11 @@ public class TableService {
      * @param tableRepository  The repository for TableInEatery entities.
      * @param eateryRepository The repository for Eatery entities.
      */
-    public TableService(QrService qrService, TableRepository tableRepository, EateryRepository eateryRepository) {
+    public TableService(QrService qrService, TableRepository tableRepository, EateryRepository eateryRepository, TableAssignmentService assignmentService) {
         this.qrService = qrService;
         this.tableRepository = tableRepository;
         this.eateryRepository = eateryRepository;
+        this.assignmentService = assignmentService;
     }
 
     /**
@@ -158,6 +165,13 @@ public class TableService {
      */
     @Transactional
     public void deleteTable(Long id) {
+        List<TableAssignmentDto> assignments = assignmentService.getTableAssignmentsByTableId(id);
+        if (!assignments.isEmpty()) {
+            assignments
+                    .forEach(ass -> assignmentService.deleteTableAssignment(ass.getId()));
+        }
+
+        log.debug("Deleting table with id [{}]", id);
         tableRepository.deleteById(id);
     }
 
