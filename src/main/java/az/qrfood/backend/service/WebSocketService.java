@@ -17,7 +17,7 @@ public class WebSocketService {
      * @param restaurantId the ID of the restaurant
      */
     public void notifyNewOrder(String restaurantId) {
-        messagingTemplate.convertAndSend("/topic/orders/" + restaurantId, 
+        messagingTemplate.convertAndSend("/topic/orders/" + restaurantId,
             new OrderNotification("NEW_ORDER", "A new order has been created"));
     }
 
@@ -32,8 +32,19 @@ public class WebSocketService {
         if (status != null && !status.isEmpty()) {
             message += " to status: " + status;
         }
-        messagingTemplate.convertAndSend("/topic/orders/" + restaurantId, 
+        messagingTemplate.convertAndSend("/topic/orders/" + restaurantId,
             new OrderNotification("ORDER_UPDATED", message));
+    }
+
+    /**
+     * Send a notification that an order has been deleted for a specific restaurant
+     * @param restaurantId the ID of the restaurant
+     * @param orderId the ID of the deleted order
+     */
+    public void notifyOrderDeleted(String restaurantId, Long orderId) {
+        String message = "Order #" + orderId + " has been deleted";
+        messagingTemplate.convertAndSend("/topic/orders/" + restaurantId,
+            new OrderNotification("ORDER_DELETED", message));
     }
 
     // Simple notification class

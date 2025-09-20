@@ -56,7 +56,6 @@ public class MultiUserSimulationTest {
     private static List<String> menuUrls;
     private String waiterUrl;
     private String feLoginUrl;
-    private static final int WAITER_COUNT = 2;
     private static final String CSV_FILE = "simulation_results.csv";
     private static AtomicInteger windowIndex = new AtomicInteger(0);
     List<WebDriver> webDrivers = new ArrayList<>();
@@ -66,6 +65,7 @@ public class MultiUserSimulationTest {
             "Samsung Galaxy S20 Ultra",
             "iPad Mini"
     );
+    private static int waitersCount;
     //</editor-fold>
 
     @BeforeAll
@@ -95,6 +95,7 @@ public class MultiUserSimulationTest {
         waiterStaff = testov.getStaff().stream()
                 .filter(staffItem -> staffItem.getRoles().contains("WAITER"))
                 .toList();
+        waitersCount = waiterStaff.size();
         Assertions.assertFalse(waiterStaff.isEmpty());
     }
 
@@ -124,7 +125,7 @@ public class MultiUserSimulationTest {
             }
 
             // Submit waiter simulation tasks for different table ranges
-            for (int w = 0; w < WAITER_COUNT; w++) {
+            for (int w = 0; w < waitersCount; w++) {
                 final int waiterIndex = w;
                 executor.submit(() -> simulateWaiter(waiterIndex, csvWriter));
             }
@@ -270,7 +271,7 @@ public class MultiUserSimulationTest {
         }
         if (min == Integer.MAX_VALUE) return new int[]{-1, -1};
         int total = (max - min + 1);
-        int slice = Math.max(1, (int) Math.ceil(total / (double) WAITER_COUNT));
+        int slice = Math.max(1, (int) Math.ceil(total / (double) waitersCount));
         int start = min + waiterIndex * slice;
         int end = Math.min(max, start + slice - 1);
         return new int[]{start, end};

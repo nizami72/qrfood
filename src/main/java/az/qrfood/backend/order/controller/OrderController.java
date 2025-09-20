@@ -276,7 +276,16 @@ public class OrderController {
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'WAITER')")
     @DeleteMapping("${order.id.delete}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
+        // Retrieve the order entity to extract eatery ID before deletion
+        Order order = orderService.getOrderEntityById(orderId);
+        Long eateryId = order.getTable().getEatery().getId();
+
+        // Perform deletion
         orderService.deleteOrder(orderId);
+
+        // Notify via WebSocket so other clients update in real-time
+        webSocketService.notifyOrderDeleted(String.valueOf(eateryId), orderId);
+
         return ResponseEntity.ok().build();
     }
 

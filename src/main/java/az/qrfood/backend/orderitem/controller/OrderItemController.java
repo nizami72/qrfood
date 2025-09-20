@@ -168,7 +168,7 @@ public class OrderItemController {
             @ApiResponse(responseCode = "404", description = "Order item not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'WAITER')")
     @DeleteMapping("${order.item.id}")
     public ResponseEntity<Void> deleteOrderItem(@PathVariable Long orderItemId) {
         log.debug("Deleting OrderItem [{}]", orderItemId);

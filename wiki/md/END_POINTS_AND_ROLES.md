@@ -180,7 +180,7 @@
 
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
-| [DELETE deleteOrderItem(Long)](../../src/main/java/az/qrfood/backend/orderitem/controller/OrderItemController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/order-item/{orderItemId}` |
+| [DELETE deleteOrderItem(Long)](../../src/main/java/az/qrfood/backend/orderitem/controller/OrderItemController.java) | `EATERY_ADMIN, WAITER` | `/api/eatery/{eateryId}/order-item/{orderItemId}` |
 | [GET getAllOrderItems()](../../src/main/java/az/qrfood/backend/orderitem/controller/OrderItemController.java) | `EATERY_ADMIN` | `/api/eatery/{eateryId}/order-item` |
 | [GET getOrderItemById(Long)](../../src/main/java/az/qrfood/backend/orderitem/controller/OrderItemController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER, CASHIER` | `/api/eatery/{eateryId}/order-item/{orderItemId}` |
 | [GET getOrderItemsByOrderId(Long)](../../src/main/java/az/qrfood/backend/orderitem/controller/OrderItemController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER, CASHIER` | `/api/eatery/{eateryId}/order-item/order/{orderId}` |
