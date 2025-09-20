@@ -126,6 +126,9 @@ public class EateryBuilder {
 
             // 3. Verify restaurant header
             String actualSelectedEatery = SeleniumUtil.findSelectedOptionTextById(driver, "select-restaurant-desktop");
+            if(actualSelectedEatery == null || actualSelectedEatery.length() < 2) {
+                actualSelectedEatery = SeleniumUtil.findSelectedOptionTextById(driver, "select-restaurant-mobile");
+            }
             assertTrue(actualSelectedEatery != null && actualSelectedEatery.length() > 2, "Actual eatery name is empty or null");
             assertEquals(actualSelectedEatery, testRestaurantName, "Actual eatery name is empty or different");
         } catch (NoSuchElementException | TimeoutException e) {
