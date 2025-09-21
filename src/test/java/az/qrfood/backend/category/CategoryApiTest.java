@@ -31,10 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-// STEP 1: Configure the test to run a REAL web server on a RANDOM port
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-// You can remove @TestPropertySource, as @ActiveProfiles("test") already loads application-test.properties
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Log4j2
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

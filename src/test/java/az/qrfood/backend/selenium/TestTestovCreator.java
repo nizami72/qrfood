@@ -109,7 +109,7 @@ public class TestTestovCreator {
     public void flow() {
 
         // ================== DELETE Eatery IF EXISTS ==================
-//        deleteEateryBeforeCreation();
+        deleteEateryBeforeCreation();
 
         // ================== REGISTER USER ==================
         registerUser();
