@@ -3,8 +3,8 @@ package az.qrfood.backend.order.controller;
 import static az.qrfood.backend.client.controller.ClientDeviceController.DEVICE;
 
 import az.qrfood.backend.client.service.ClientDeviceService;
+import az.qrfood.backend.order.OrderStatus;
 import az.qrfood.backend.order.dto.OrderDto;
-import az.qrfood.backend.order.dto.OrderStatusUpdateDTO;
 import az.qrfood.backend.order.entity.Order;
 import az.qrfood.backend.order.mapper.OrderMapper;
 import az.qrfood.backend.order.service.OrderService;
@@ -227,41 +227,6 @@ public class OrderController {
     }
 
     /**
-     * Updates the status of an order.
-     *
-     * @param id        The ID of the order to update.
-     * @param statusDTO The {@link OrderStatusUpdateDTO} containing the new status.
-     * @return A {@link ResponseEntity} with status 200 (OK) and the updated {@link OrderDto} in the body.
-     */
-    @Operation(summary = "Update order status", description = "Updates the status of an order with the specified ID", tags = {"Order Management"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Order status updated successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid status value"),
-            @ApiResponse(responseCode = "404", description = "Order not found"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER')")
-//    @PutMapping("${order.id}") // This mapping is commented out in the original code
-    public ResponseEntity<OrderDto> updateOrderStatus(
-            @PathVariable Long id,
-            @RequestBody OrderStatusUpdateDTO statusDTO
-    ) {
-        log.debug("REST request to update Order status : {}", id);
-
-        // Get the updated order
-        OrderDto updatedOrder = orderService.updateOrderStatus(id, statusDTO.getStatus());
-
-        // Get the order entity to extract the eatery ID
-        Order order = orderService.getOrderEntityById(id);
-        Long eateryId = order.getTable().getEatery().getId();
-
-        // Send WebSocket notification about the updated order status
-        webSocketService.notifyOrderUpdate(String.valueOf(eateryId), id, statusDTO.getStatus());
-
-        return ResponseEntity.ok(updatedOrder);
-    }
-
-    /**
      * Deletes an order by its ID.
      *
      * @param orderId The ID of the order to delete.
@@ -290,6 +255,35 @@ public class OrderController {
     }
 
     /**
+     * Adds dishes to an existing order that has not been paid yet.
+     *
+     * @param orderId  The ID of the order to add dishes to.
+     * @param orderDTO The {@link OrderDto} containing the new dishes to add.
+     * @return A {@link ResponseEntity} with status 200 (OK) and the updated {@link OrderDto} in the body.
+     */
+    @Operation(summary = "Add dishes to an existing order", description = "Adds dishes to an order that has not been paid yet and updates its status to PREPARING", tags = {"Order Management"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dishes added successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "Order not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PostMapping("${order.id.add-dishes}")
+    public ResponseEntity<OrderDto> addDishesToOrder(@PathVariable Long eateryId, @PathVariable Long orderId,
+            @RequestBody OrderDto orderDTO
+    ) {
+        log.debug("REST request to add dishes to Order : {}", orderId);
+
+        // Get the updated order
+        OrderDto updatedOrder = orderService.addDishesToOrder(orderId, orderDTO);
+
+        // Send WebSocket notification about the updated order
+        webSocketService.notifyOrderUpdate(String.valueOf(eateryId), orderId, OrderStatus.PREPARING.toString());
+
+        return ResponseEntity.ok(updatedOrder);
+    }
+
+    /**
      * Retrieves the list of order with status "CREATED" for a specific eatery and device.
      * <p>
      * This endpoint is used by the client application to determine whether to show
@@ -308,7 +302,7 @@ public class OrderController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("${api.eatery.order.status.created}")
-    public ResponseEntity<List<OrderDto>> getOrdersByEateryIdAndTableId(
+    public ResponseEntity<List<OrderDto>> getOrdersByEateryIdDeviceUuid(
             @PathVariable Long eateryId,
             @CookieValue(value = DEVICE, required = false) String deviceUuid
     ) {

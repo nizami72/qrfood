@@ -28,6 +28,9 @@ public class OrderWebMvcConfig implements WebMvcConfigurer {
     @Value("${order.id.put}")
     private String orderIdPutPath;
 
+    @Value("${order.id.add-dishes}")
+    private String orderIdAddDishesPath;
+
     @Value("${order.item.order.id}")
 ///api/eatery/{eateryId}/order-item/order/{orderId}
     private String orderItemPath;
@@ -40,9 +43,9 @@ public class OrderWebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // Register the interceptor for order-related endpoints
-        log.info("Registering OrderControllerInterceptor for paths: {}, {}, {}, {}",
-                orderIdPath, orderIdDeletePath, orderIdPutPath, orderItemPath);
+        log.info("Registering OrderControllerInterceptor for paths: {}, {}, {}, {}, {}",
+                orderIdPath, orderIdDeletePath, orderIdPutPath, orderIdAddDishesPath, orderItemPath);
         registry.addInterceptor(orderControllerInterceptor)
-                .addPathPatterns(orderIdPath, orderIdDeletePath, orderIdPutPath, orderIdPath, orderItemPath);
+                .addPathPatterns(orderIdPath, orderIdDeletePath, orderIdPutPath, orderIdAddDishesPath, orderItemPath);
     }
 }

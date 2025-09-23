@@ -7,80 +7,31 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import az.qrfood.backend.order.dto.OrderDto;
 import az.qrfood.backend.order.dto.OrderItemDTO;
 import az.qrfood.backend.order.dto.OrderStatusUpdateDTO;
-import io.restassured.RestAssured;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
+import az.qrfood.backend.util.AbstractTest;
+import az.qrfood.backend.util.TestUtil;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeAll;
+import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
-@SpringBootTest(properties = "spring.config.name=application-test")
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class OrderControllerTest {
+@Log4j2
+class OrderControllerTest extends AbstractTest {
 
-    private static PrintStream fileLog;
-    @Value("${base.url}")
-    String baseUrl;
-    String jwtToken;
-    Long userId;
-
-    @Value("${order}")
+    @Value("${order.post}")
     String orderEndPoint;
+
     @Value("${order.id}")
     String orderIdEndPoint;
-    @Value("${order.status}")
-    String orderStatusEndPoint;
 
-    Long eateryId = 1L; // Use an existing eatery ID
     Long tableId = 1L; // Use an existing table ID
+    String jwtToken;
     Long orderId;
-
-
-    @BeforeAll
-    void setupLogging() throws Exception {
-        fileLog = new PrintStream(new FileOutputStream("logs/test/order.log", false));
-        RestAssured.filters(
-                new RequestLoggingFilter(fileLog),
-                new ResponseLoggingFilter(fileLog)
-        );
-
-        // Fetch token
-        String authPayload = """
-                {
-                  "email": "nizami.budagov1@gmail.com",
-                  "password": "qqqq1111"
-                }
-                """;
-
-        Response authResponse = given()
-                .baseUri(baseUrl)
-                .contentType("application/json")
-                .body(authPayload)
-                .when()
-                .post("/api/auth/login")
-                .then()
-                .statusCode(200)
-                .extract()
-                .response();
-
-        jwtToken = authResponse.jsonPath().getString("jwt");
-        userId = authResponse.jsonPath().getLong("userId");
-    }
 
     /**
      * =============================== CREATE ORDER REQUEST =============================
@@ -88,12 +39,12 @@ class OrderControllerTest {
     @Test
     @Order(1)
     void postOrder() {
-        fileLog.println("\n==================== 📥 CREATE ORDER =====================");
+        log.debug("\n==================== 📥 CREATE ORDER =====================");
 
         // Print endpoint for debugging
-        String endpoint = orderEndPoint.replace("{eateryId}", eateryId.toString());
-        fileLog.println("Using endpoint: " + endpoint);
-        fileLog.println("Base URL: " + baseUrl);
+        String endpoint = TestUtil.formatUrl(orderEndPoint, eateryId.toString());
+        log.debug("Using endpoint: {}", endpoint);
+        log.debug("Base URL: {}", baseUrl);
 
         // Simplified order with minimal required fields
         OrderDto orderDto = OrderDto.builder()
@@ -106,12 +57,12 @@ class OrderControllerTest {
                 ))
                 .build();
 
-        fileLog.println("Request body: " + orderDto);
+        log.debug("Request body: {}", orderDto);
 
         try {
             Response response = given()
                     .baseUri(baseUrl)
-                    .header("Authorization", "Bearer " + jwtToken)
+//                    .header("Authorization", "Bearer " + jwtToken)
                     .contentType("application/json")
                     .body(orderDto)
                     .when()
@@ -123,15 +74,15 @@ class OrderControllerTest {
                     .response();
 
             orderId = response.jsonPath().getLong("id");
-            fileLog.println("Created order with ID: " + orderId);
+            log.debug("Created order with ID: {}", orderId);
 
             // Verify the order was created with the correct data
             assertNotNull(orderId, "Order ID should not be null");
         } catch (Exception e) {
-            fileLog.println("Error creating order: " + e.getMessage());
-            e.printStackTrace(fileLog);
+            log.debug("Error creating order: {}", e.getMessage());
+            log.error(e);
 
-            // For testing purposes, set a dummy orderId so other tests can run
+            // For testing purposes, set a fake orderId so other tests can run
             orderId = 1L;
             throw e;
         }
@@ -143,7 +94,7 @@ class OrderControllerTest {
     @Test
     @Order(2)
     void getOrderById() {
-        fileLog.println("\n===== 🟢 GET ORDER BY ID: " + orderId + " =====");
+        log.debug("\n===== \uD83D\uDFE2 GET ORDER BY ID: {} =====", orderId);
 
         Response response = given()
                 .baseUri(baseUrl)
@@ -168,7 +119,7 @@ class OrderControllerTest {
     @Test
     @Order(3)
     void getOrdersByStatus() {
-        fileLog.println("\n===== 🟢 GET ALL ORDERS FOR EATERY ID: " + eateryId + " =====");
+        log.debug("\n===== \uD83D\uDFE2 GET ALL ORDERS FOR EATERY ID: {} =====", eateryId);
 
         Response response = given()
                 .baseUri(baseUrl)
@@ -195,7 +146,7 @@ class OrderControllerTest {
     @Test
     @Order(4)
     void updateOrder() {
-        fileLog.println("\n===== 🔄 UPDATE ORDER ID: " + orderId + " =====");
+        log.debug("\n===== \uD83D\uDD04 UPDATE ORDER ID: {} =====", orderId);
 
         // First, get the current order data
         OrderDto currentOrder = given()
@@ -239,7 +190,7 @@ class OrderControllerTest {
     @Disabled // note disabled as the corresponding method is not fully implemented
     @Order(5)
     void updateOrderStatus() {
-        fileLog.println("\n===== 🔄 UPDATE ORDER STATUS ID: " + orderId + " =====");
+        log.debug("\n===== \uD83D\uDD04 UPDATE ORDER STATUS ID: {} =====", orderId);
 
         OrderStatusUpdateDTO statusUpdate = new OrderStatusUpdateDTO();
         statusUpdate.setStatus("COMPLETED");
@@ -250,7 +201,7 @@ class OrderControllerTest {
                 .contentType("application/json")
                 .body(statusUpdate)
                 .when()
-                .put(baseUrl + "/api/orders/" + orderId + "/status") // Using direct path as per controller
+                .put(baseUrl + "/api/orders/" + orderId + "/status") // Using a direct path as per controller
                 .then()
                 .log().all()
                 .statusCode(200)
@@ -268,7 +219,7 @@ class OrderControllerTest {
     @Test
     @Order(6)
     void deleteOrder() {
-        fileLog.println("\n===== 🔴 DELETE ORDER ID: " + orderId + " =====");
+        log.debug("\n===== \uD83D\uDD34 DELETE ORDER ID: {} =====", orderId);
 
         given()
                 .baseUri(baseUrl)

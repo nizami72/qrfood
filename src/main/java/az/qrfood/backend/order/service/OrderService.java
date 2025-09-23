@@ -163,6 +163,7 @@ public class OrderService {
      */
     @Transactional
     public Order createOrder(OrderDto orderDto) {
+        log.debug("Request to create new order");
         Long tableId = orderDto.getTableId();
 
         TableInEatery table = tableRepository.findById(tableId)
@@ -175,9 +176,16 @@ public class OrderService {
         order.setItems(new ArrayList<>());
         order = orderRepository.save(order);
 
-        List<OrderItemDTO> orderDtoItems = orderDto.getItems();
+        createOrderItems(orderDto.getItems(), order);
+
+        // Refresh the order to get the items
+        order = orderRepository.findById(order.getId()).orElse(order);
+        return order;
+    }
+
+    private void createOrderItems(List<OrderItemDTO> orderDtoItems, Order order) {
         if (orderDtoItems != null && !orderDtoItems.isEmpty()) {
-            for (OrderItemDTO dto : orderDto.getItems()) {
+            for (OrderItemDTO dto : orderDtoItems) {
                 DishEntity dish = dishRepository.findById(dto.getDishId())
                         .orElseThrow(() -> new RuntimeException("Dish not found with id " + dto.getDishId()));
 
@@ -194,10 +202,6 @@ public class OrderService {
                 }
             }
         }
-
-        // Refresh the order to get the items
-        order = orderRepository.findById(order.getId()).orElse(order);
-        return order;
     }
 
     /**
@@ -299,6 +303,42 @@ public class OrderService {
         log.debug("Request to get Orders by status : {}", status);
         List<Order> orders = orderRepository.findByStatus(status);
         return orderMapper.toDtoList(orders);
+    }
+
+    /**
+     * Adds dishes to an existing order that has not been paid yet.
+     * <p>
+     * This method allows adding additional dishes to an order that is in a status other than PAID or CANCELLED.
+     * When dishes are added, the order status is updated to PREPARING.
+     * </p>
+     *
+     * @param id       The ID of the order to add dishes to.
+     * @param orderDto The {@link OrderDto} containing the new dishes to add.
+     * @return The updated {@link OrderDto}.
+     * @throws RuntimeException if the order with the given ID is not found or if the order is already paid or cancelled.
+     */
+    @Transactional
+    public OrderDto addDishesToOrder(Long id, OrderDto orderDto) {
+        log.debug("Request to add dishes to Order : {}", id);
+
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found with id " + id));
+
+        // Check if the order is not paid or cancelled
+        if (order.getStatus() == OrderStatus.PAID || order.getStatus() == OrderStatus.CANCELLED) {
+            throw new RuntimeException("Cannot add dishes to an order that is already paid or cancelled");
+        }
+
+        createOrderItems(orderDto.getItems(), order);
+
+        // Update order status to PREPARING
+        OrderStatus currentStatus = order.getStatus();
+        if(currentStatus.equals(OrderStatus.READY) || currentStatus.equals(OrderStatus.SERVED)) {
+            order.setStatus(OrderStatus.PREPARING);
+        }
+
+        order = orderRepository.save(order);
+        return orderMapper.toDto(order);
     }
 
     /**
