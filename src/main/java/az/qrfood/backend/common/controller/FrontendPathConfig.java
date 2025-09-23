@@ -92,6 +92,8 @@ public class FrontendPathConfig {
     String orderIdDelete;
     @Value("${order.id.put}")
     String orderIdPut;
+    @Value("${order.id.add-dishes}")
+    String orderIdAddDishes;
     @Value("${order.table.id}")
     String orderTableId;
     @Value("${order}")
@@ -191,6 +193,7 @@ public class FrontendPathConfig {
         paths.put("predefinedDish", imagesPredefinedDishUri);
         paths.put("apiUser", apiUser);
         paths.put("reCreateTokenOnEateryChangeUrl", reCreateTokenOnEateryChangeUrl);
+        paths.put("orderIdAddDishes", orderIdAddDishes);
 //        paths.put("", );
         //.
 
