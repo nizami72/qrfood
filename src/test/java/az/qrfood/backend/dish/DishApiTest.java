@@ -3,18 +3,16 @@ package az.qrfood.backend.dish;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import az.qrfood.backend.category.dto.CategoryDto;
+
 import az.qrfood.backend.dish.dto.CommonDishDto;
 import az.qrfood.backend.dish.dto.DishDto;
-import az.qrfood.backend.selenium.dto.StaffItem;
-import az.qrfood.backend.selenium.dto.Testov;
+import az.qrfood.backend.util.AbstractTest;
 import az.qrfood.backend.util.ApiUtils;
 import az.qrfood.backend.util.TestDataLoader;
 import az.qrfood.backend.util.TestUtil;
 import io.restassured.builder.MultiPartSpecBuilder;
 import io.restassured.response.Response;
 import lombok.extern.log4j.Log4j2;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -22,75 +20,30 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import java.io.File;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import org.springframework.data.util.Pair;
 import java.util.List;
 import java.util.Map;
-
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Log4j2
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class DishApiTest {
+public class DishApiTest extends AbstractTest {
 
     //<editor-fold desc="Fields">
-    @LocalServerPort
-    private int port;
-
-    @Value("${base.url}")
-    private String baseUrl;
     @Value("${eatery.id.category.id.dish}")
     private String eateryIdCategoryIdDish;
     @Value("${eatery.id.category.id.dish.id}")
     private String eateryIdCategoryIdDishId;
-    @Value("${test.data.json-source}")
-    private String jsonSourceFile;
-    @Value("${admin.api.eatery}")
-    String adminApiEateryUrl;
-
     @Value("${eatery.id.category}")
     String eateryIdCategory;
-
-    @Value("${auth.login}")
-    String loginUrl;
-
-    private String jwtToken;
-    private Long userId;
-    private Long eateryId = 1L; // Default eatery ID for tests
-    private Long categoryId = 1L; // Default category ID for tests
+    private Long categoryId; // Default category ID for tests
     private Long dishId; // Will be set during test execution
-
-    CategoryDto ci;
-    private Testov testov;
-    StaffItem admin;
     //</editor-fold>
-
-    @BeforeAll
-    void setup() throws Exception {
-        // Setup logging
-        baseUrl = "http://localhost:" + port;
-        System.out.println("Test server running on: " + baseUrl); // For debugging
-
-        testov = TestUtil.json2Pojo(TestUtil.readFileFromResources(jsonSourceFile), Testov.class);
-        admin = testov.getStaff().stream().filter(s -> s.getRoles().contains("EATERY_ADMIN")).findFirst()
-                .orElseThrow();
-
-        ci = testov.getCategories().get(0);
-        String email = admin.getEmail();
-        String pass = admin.getPassword();
-        Pair<Long, Long> userEatery = ApiUtils.registerUserAndEatery(email, pass, testov.getEatery().getName(), baseUrl, adminApiEateryUrl);
-
-        userId = userEatery.getFirst();
-        eateryId = userEatery.getSecond();
-        jwtToken = ApiUtils.login(email, pass, eateryId, baseUrl, loginUrl);
-
-    }
 
     @Test
     @Order(1)
@@ -254,7 +207,8 @@ public class DishApiTest {
     void shouldGetCommonDishes() {
         log.debug("\n========== 📤 Getting common dishes ==========");
         Response res = ApiUtils.sendGetRequest(baseUrl, jwtToken, "/api/dish/common/Salads", 200);
-        List<CommonDishDto> idList = res.as(new io.restassured.common.mapper.TypeRef<List<CommonDishDto>>() {});
+        List<CommonDishDto> idList = res.as(new io.restassured.common.mapper.TypeRef<>() {
+        });
         assertFalse(idList.isEmpty(), "List of predefined dishes in category should not be empty");
         log.debug("========== 📥 Common dishes retrieved successfully ==========\n");
     }
@@ -288,7 +242,8 @@ public class DishApiTest {
                 .extract()
                 .response();
 
-        List<Long> idList = response.as(new io.restassured.common.mapper.TypeRef<List<Long>>() {});
+        List<Long> idList = response.as(new io.restassured.common.mapper.TypeRef<>() {
+        });
         dishId = idList.getFirst();
         DishDto dishDto = getDish(DishDto.class);
         validateDishDto(dishDto, dishes.getFirst());

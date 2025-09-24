@@ -28,30 +28,21 @@ import org.springframework.test.context.ActiveProfiles;
 public abstract class AbstractTest {
 
     @LocalServerPort
-    private int port;
-
+    protected int port;
     @Value("${test.data.json-source}")
-    private String jsonSourceFile;
-
-    // We will build this dynamically now, so the @Value is not needed
-    public String baseUrl;
-
-    @Value("${eatery.id.category}")
-    String eateryIdCategory;
+    protected String jsonSourceFile;
     @Value("${admin.api.eatery}")
     String adminApiEateryUrl;
     @Value("${auth.login}")
     String loginUrl;
-    @Value("${eatery.id.category.id}")
-    String uriEateryIdCategoryId;
 
-    public Testov testov;
-    StaffItem admin;
-    CategoryDto ci;
-    String jwtToken;
-    public Long eateryId;
-    Long categoryId;
-    Long userId;
+    protected String baseUrl;
+    protected CategoryDto ci;
+    protected String jwtToken;
+    protected Long eateryId;
+    protected Testov testov;
+    protected StaffItem admin;
+    protected Long userId;
 
     @BeforeAll
     void setup() throws Exception {
@@ -67,7 +58,7 @@ public abstract class AbstractTest {
         login();
     }
 
-    private void registerUserAndEatery() {
+    public void registerUserAndEatery() {
         RegisterRequest registerRequest = RegisterRequest.builder()
                 .user(RegisterRequest.UserDto.builder()
                         .email(admin.getEmail())
@@ -89,7 +80,7 @@ public abstract class AbstractTest {
         log.debug("Registered eatery and eatery admin [{}]", rr);
     }
 
-    private void login() {
+    public void login() {
         log.debug("Login as [{}]", admin.getEmail());
         LoginRequest loginRequest = new LoginRequest(admin.getEmail(), admin.getPassword(), eateryId);
         Response authResponse = ApiUtils.sendPostRequest(baseUrl, loginUrl, loginRequest, 200);
