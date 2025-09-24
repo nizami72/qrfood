@@ -273,7 +273,7 @@ public class EateryBuilder {
 
         driver.manage().window().setSize(new Dimension(393, 1000));
         // Position the new window so it doesn't overlap
-        int xPosition = 1900 + windowIndex.getAndIncrement() * 520; // 393px width + ~17px scrollbar/border
+        int xPosition = 0 + windowIndex.getAndIncrement() * 520; // 393px width + ~17px scrollbar/border
         driver.manage().window().setPosition(new Point(xPosition, 0));
         webDrivers.add(driver);
         return driver;
