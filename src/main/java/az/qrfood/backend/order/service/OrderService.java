@@ -231,11 +231,11 @@ public class OrderService {
         ) {
 
             try {
-                if (canUpdateStatus(auth, newStatus)) {
+//                if (canUpdateStatus(auth, newStatus)) {
                     order.setStatus(newStatus);
-                } else {
-                    throw new UnauthorizedStatusChangeException();
-                }
+//                } else {
+//                    throw new UnauthorizedStatusChangeException();
+//                }
             } catch (IllegalArgumentException e) {
                 log.warn("Invalid status: {}", orderDTO.getStatus());
             }
