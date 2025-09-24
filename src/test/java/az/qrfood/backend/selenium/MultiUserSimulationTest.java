@@ -39,6 +39,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MultiUserSimulationTest {
 
     //<editor-fold desc="Fields">
+    public static int CLIENT_COUNT = 2;
+    public static int SLEEP_MINUTES_BEFORE_END = 10;
+
     private final TestConfig config = ConfigFactory.create(TestConfig.class);
     private String host;
     private String howFast;
@@ -87,7 +90,7 @@ public class MultiUserSimulationTest {
         waiterUrl = host + config.feOrdersUrl();
         feLoginUrl = host + config.feLoginUrl();
 
-        menuUrls = menuUrls();
+        menuUrls = Utils.getRandomElements(menuUrls(), CLIENT_COUNT);
 
         // Sets up the ChromeDriver binary once for all tests
         WebDriverManager.chromedriver().setup();
@@ -101,7 +104,7 @@ public class MultiUserSimulationTest {
 
     @AfterEach
     public void tearDown() throws InterruptedException {
-        Thread.sleep(120000);
+        Thread.sleep((long) SLEEP_MINUTES_BEFORE_END * 60 * 1000);
         for (WebDriver driver : webDrivers) {
             if (driver != null) {
                 driver.quit();
