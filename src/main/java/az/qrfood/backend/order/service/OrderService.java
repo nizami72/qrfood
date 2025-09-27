@@ -187,7 +187,7 @@ public class OrderService {
         if (orderDtoItems != null && !orderDtoItems.isEmpty()) {
             for (OrderItemDTO dto : orderDtoItems) {
                 DishEntity dish = dishRepository.findById(dto.getDishId())
-                        .orElseThrow(() -> new RuntimeException("Dish not found with id " + dto.getDishId()));
+                        .orElseThrow(() -> new RuntimeException("Error while creation order items, dish not found with id " + dto.getDishId()));
 
                 OrderItem orderItem = new OrderItem();
                 orderItem.setOrder(order);

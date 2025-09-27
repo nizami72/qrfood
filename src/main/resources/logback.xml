@@ -32,34 +32,13 @@
         </layout>
     </appender>
 
-    <!-- 🔹 Файл: info.log (INFO и выше) -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath}info.log</file>
+    <!-- 🔹 Single file for all levels (DEBUG and above) -->
+    <appender name="FILE_ALL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}application.log</file>
         <append>true</append>
         <immediateFlush>true</immediateFlush>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${logPath}info_%d{dd-MM-yy}.%i.log</fileNamePattern>
-            <maxFileSize>10MB</maxFileSize>
-            <maxHistory>60</maxHistory>
-            <totalSizeCap>20GB</totalSizeCap>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d{dd/MM HH:mm:ss} [%-5level] %logger{24}.%M ${prefix} %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <!-- 🔹 Файл: debug.log (только DEBUG) -->
-    <appender name="FILE_DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath}debug.log</file>
-        <append>true</append>
-        <immediateFlush>true</immediateFlush>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>DEBUG</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${logPath}debug_%d{dd-MM-yy}.%i.log</fileNamePattern>
+            <fileNamePattern>${logPath}application_%d{dd-MM-yy}.%i.log</fileNamePattern>
             <maxFileSize>10MB</maxFileSize>
             <maxHistory>60</maxHistory>
             <totalSizeCap>20GB</totalSizeCap>
@@ -71,7 +50,7 @@
 
     <!-- 🔹 Твой пакет — DEBUG в файл и консоль -->
     <logger name="az.qrfood.backend" level="DEBUG" additivity="false">
-        <appender-ref ref="FILE_DEBUG" />
+        <appender-ref ref="FILE_ALL" />
         <appender-ref ref="CONSOLE_DEBUG" />
         <appender-ref ref="CONSOLE" />
     </logger>
@@ -79,7 +58,7 @@
     <!-- 🔹 Корневой логгер — INFO+ -->
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
-        <appender-ref ref="FILE" />
+        <appender-ref ref="FILE_ALL" />
     </root>
 
 </configuration>

@@ -2,6 +2,15 @@
 
 This document provides a comprehensive step-by-step checklist for manual testing of all client flows and backend calls in the QR Food Order System. It covers all actions an end user can make from the app, organized by user role.
 
+- [Client Flow](#client-flow)
+- [Eatery Admin Flow](#2-eatery-admin-flow)
+- [KITCHEN_ADMIN Flow](#KITCHEN_ADMIN flow)
+- [WAITER Flow](#WAITER)
+- [CASHIER Flow](#)
+- [Cross-Role Testing](#)
+- [Edge Cases and Error Handling](#)
+- [Performance Testing](#)
+
 ## Prerequisites
 
 Before starting the testing process, ensure the following prerequisites are in place:
@@ -21,7 +30,7 @@ Before starting the testing process, ensure the following prerequisites are in p
 
 ---
 
-## 1. CLIENT Flow
+## Client Flow
 
 ### 1.1 Initial QR Code Scanning
 
@@ -165,7 +174,7 @@ Before starting the testing process, ensure the following prerequisites are in p
 
 ---
 
-## 2. EATERY_ADMIN Flow
+## 2. Eatery Admin Flow
 
 ### 2.1 Authentication
 

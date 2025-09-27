@@ -98,7 +98,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
         // Validate dish exists
         DishEntity dish = dishRepository.findById(orderItemDTO.getDishId())
-                .orElseThrow(() -> new EntityNotFoundException("Dish not found with id " + orderItemDTO.getDishId()));
+                .orElseThrow(() -> new EntityNotFoundException("Error while creation order item, dish not found with id " + orderItemDTO.getDishId()));
 
         OrderItem orderItem = new OrderItem();
         orderItem.setOrder(order);

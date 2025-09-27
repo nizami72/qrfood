@@ -97,6 +97,7 @@ ssh -i /home/nizami/.ssh/key2 root@157.180.16.28 'bash -s' < /home/nizami/Dropbo
    ````
 4. Then open [PHP MyAdmin](http://localhost)
 
+### Downlosd Log Files
 
 ## Статусы заказа и блюд
 
