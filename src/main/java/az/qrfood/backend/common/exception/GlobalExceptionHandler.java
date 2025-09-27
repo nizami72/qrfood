@@ -8,6 +8,7 @@ import az.qrfood.backend.user.exception.UserExceptionHandler;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
+import org.apache.catalina.connector.ClientAbortException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -143,6 +144,13 @@ public class GlobalExceptionHandler {
                 .status(ResponseCodes.USER_ALREADY_EXISTS.getHttpStatus())
                 .header("X-Error-Code", ResponseCodes.USER_ALREADY_EXISTS.getMessage())
                 .body(new ApiResponse<>(ResponseCodes.USER_ALREADY_EXISTS));
+    }
+
+    @ExceptionHandler(ClientAbortException.class)
+    public void handleClientAbortException(ClientAbortException ex) {
+        // Клиент разорвал соединение. Это не ошибка сервера.
+        // Просто логируем на уровне DEBUG или WARN и ничего не отправляем в ответ.
+        log.warn("Client aborted the connection: {}", ex.getMessage());
     }
 
     /**

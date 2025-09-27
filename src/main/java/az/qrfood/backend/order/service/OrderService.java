@@ -20,6 +20,7 @@ import az.qrfood.backend.table.repository.TableRepository;
 import az.qrfood.backend.tableassignment.dto.TableAssignmentDto;
 import az.qrfood.backend.tableassignment.service.TableAssignmentService;
 import az.qrfood.backend.user.entity.Role;
+import az.qrfood.backend.table.entity.TableStatus;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -248,6 +249,9 @@ public class OrderService {
         }
 
         order = orderRepository.save(order);
+        if (order.getStatus() == OrderStatus.PAID || order.getStatus() == OrderStatus.CANCELLED) {
+            activateTableIfNoActiveOrders(order.getTable());
+        }
         return orderMapper.toDto(order);
     }
 
@@ -278,6 +282,9 @@ public class OrderService {
         }
 
         order = orderRepository.save(order);
+        if (order.getStatus() == OrderStatus.PAID || order.getStatus() == OrderStatus.CANCELLED) {
+            activateTableIfNoActiveOrders(order.getTable());
+        }
         return orderMapper.toDto(order);
     }
 
@@ -290,12 +297,16 @@ public class OrderService {
     public void deleteOrder(Long id) {
         log.debug("Request to delete Order : {}", id);
         Order order = orderRepository.findById(id).orElseThrow();
+        TableInEatery table = order.getTable();
         List<ClientDevice> clientDevices = clientDeviceRepository.findByOrdersId(id);
         for (ClientDevice device : clientDevices) {
             device.getOrders().remove(order);
         }
         clientDeviceRepository.saveAll(clientDevices);
         orderRepository.deleteById(id);
+        if (table != null) {
+            activateTableIfNoActiveOrders(table);
+        }
     }
 
     /**
@@ -444,6 +455,18 @@ public class OrderService {
             case PAID -> 4;
             case CANCELLED -> 5;
         };
+    }
+
+    private void activateTableIfNoActiveOrders(TableInEatery table) {
+        if (table == null) return;
+        long activeCount = orderRepository.countByTableAndStatusIn(
+                table,
+                java.util.List.of(OrderStatus.CREATED, OrderStatus.PREPARING, OrderStatus.READY, OrderStatus.SERVED)
+        );
+        if (activeCount == 0) {
+            table.setStatus(TableStatus.ACTIVE);
+            tableRepository.save(table);
+        }
     }
 
     // NAV allowance to update order status

@@ -119,7 +119,7 @@ public class JwtRequestFilter extends OncePerRequestFilter implements Ordered {
 
         String path = request.getRequestURI();
 
-        log.debug("JwtRequestFilter works");
+//        log.debug("JwtRequestFilter works");
         final String authorizationHeader = request.getHeader("Authorization");
 
         String username = null;

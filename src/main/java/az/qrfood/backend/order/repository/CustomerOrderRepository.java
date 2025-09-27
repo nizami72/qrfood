@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Set;
+import java.util.Collection;
 
 /**
  * Spring Data JPA repository for the {@link Order} entity.
@@ -53,4 +54,6 @@ public interface CustomerOrderRepository extends JpaRepository<Order, Long> {
      * @return A list of {@link Order} entities associated with any of the specified tables.
      */
     List<Order> findByTableIn(Set<TableInEatery> tables);
+
+    long countByTableAndStatusIn(TableInEatery table, Collection<OrderStatus> statuses);
 }
