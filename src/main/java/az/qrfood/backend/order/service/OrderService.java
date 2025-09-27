@@ -232,7 +232,9 @@ public class OrderService {
 
             try {
 //                if (canUpdateStatus(auth, newStatus)) {
+                    OrderStatus oldStatus = order.getStatus();
                     order.setStatus(newStatus);
+                    propagateStatusToItemsIfForward(order, oldStatus, newStatus);
 //                } else {
 //                    throw new UnauthorizedStatusChangeException();
 //                }
@@ -266,7 +268,10 @@ public class OrderService {
 
         try {
             OrderStatus status = OrderStatus.valueOf(newStatus);
+            OrderStatus oldStatus = order.getStatus();
             order.setStatus(status);
+            // propagate to order items if moving forward in flow
+            propagateStatusToItemsIfForward(order, oldStatus, status);
         } catch (IllegalArgumentException e) {
             log.warn("Invalid status: {}", newStatus);
             throw new RuntimeException("Invalid status: " + newStatus);
@@ -406,6 +411,39 @@ public class OrderService {
         List<Order> orders = orderRepository.findByTableIn(tables);
 
         return orderMapper.toDtoList(orders);
+    }
+
+    private void propagateStatusToItemsIfForward(Order order, OrderStatus oldStatus, OrderStatus newStatus) {
+        if (oldStatus == null || newStatus == null) return;
+        int oldRank = statusRank(oldStatus);
+        int newRank = statusRank(newStatus);
+        if (newRank <= oldRank) {
+            // backward or same: do not touch item statuses
+            return;
+        }
+        List<OrderItem> items = orderItemRepository.findByOrderId(order.getId());
+        boolean changed = false;
+        for (OrderItem item : items) {
+            if (statusRank(item.getStatus()) < newRank) {
+                item.setStatus(newStatus);
+                changed = true;
+            }
+        }
+        if (changed) {
+            orderItemRepository.saveAll(items);
+        }
+    }
+
+    private int statusRank(OrderStatus s) {
+        // Define the normal forward flow order
+        return switch (s) {
+            case CREATED -> 0;
+            case PREPARING -> 1;
+            case READY -> 2;
+            case SERVED -> 3;
+            case PAID -> 4;
+            case CANCELLED -> 5;
+        };
     }
 
     // NAV allowance to update order status

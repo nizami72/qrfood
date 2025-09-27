@@ -155,6 +155,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleGeneral(Exception ex) {
         log.error("An unexpected error occurred", ex); // Log the full exception stack trace
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .header(org.springframework.http.HttpHeaders.CONTENT_TYPE, org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
                 .body(ApiResponse.fail("Internal server error.", 500));
     }
 }
