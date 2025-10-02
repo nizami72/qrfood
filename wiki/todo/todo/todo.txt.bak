@@ -41,4 +41,6 @@ Error: The same table name in header line 2 for orders with different tables +qr
 Add table page update via socket  +qr @feat
 (Z) ------------------------ +qr
 atomic hanit
-Error when try to delete dish that is referenced by order, consider make approprite message to delete first order and then dish +qr
+(A) Error when try to delete dish that is referenced by order, consider make approprite message to delete first order and then dish +qr
+(A) add translation ofr clent.statusServed +qr
+add translation for orders.card.details +qr
