@@ -220,6 +220,26 @@
             <version>1.0.12</version>
         </dependency>
 
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
+            <version>7.10.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.gotson</groupId>
+            <artifactId>webp-imageio</artifactId>
+            <scope>test</scope>
+            <version>0.2.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>

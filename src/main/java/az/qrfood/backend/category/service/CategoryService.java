@@ -110,9 +110,10 @@ public class CategoryService {
         if (destinationFolder != null && multipartFile != null) {
             storageService.saveFile(destinationFolder, multipartFile, fileName);
             log.info("Category image file [{}] created at dir [{}]", fileName, destinationFolder);
-        } else  {
-            if (dishCategoryDto.getImage() == null || dishCategoryDto.getImage().isEmpty()) dishCategoryDto.setImage(
-                    defaultDishImage);
+        } else {
+            if (dishCategoryDto.getImage() == null || dishCategoryDto.getImage().isEmpty()) {
+                dishCategoryDto.setImage(defaultDishImage);
+            }
             String imageName = dishCategoryDto.getImage();
             sourceFile = appHomeFolderImage + imageName;
             storageService.saveFile(destinationFolder, sourceFile, fileName);
