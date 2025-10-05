@@ -1,8 +1,12 @@
 package az.qrfood.backend.order.repository;
 
+import az.qrfood.backend.order.OrderStatus;
 import az.qrfood.backend.order.entity.OrderItem;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -14,6 +18,7 @@ import java.util.List;
  */
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
+
     /**
      * Retrieves a list of {@link OrderItem} entities associated with a specific order ID.
      *
@@ -29,4 +34,15 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
      * @return true if there are any order items referencing the specified dish, false otherwise.
      */
     boolean existsByDishEntityId(Long dishId);
+
+    /**
+     * Finds order items by kitchen department and item statuses.
+     * Includes join to dish and its kitchen department to filter efficiently.
+     */
+    @Query("select oi from OrderItem oi " +
+            "join oi.dishEntity d " +
+            "join d.kitchenDepartment kd " +
+            "where kd.id = :departmentId and oi.status in :statuses")
+    List<OrderItem> findByDepartmentAndStatuses(@Param("departmentId") Long departmentId,
+                                                @Param("statuses") Collection<OrderStatus> statuses);
 }

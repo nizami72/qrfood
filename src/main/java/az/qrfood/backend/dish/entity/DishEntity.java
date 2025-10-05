@@ -2,6 +2,7 @@ package az.qrfood.backend.dish.entity;
 
 import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.common.entity.BaseEntity;
+import az.qrfood.backend.kitchendepartment.entity.KitchenDepartmentEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -52,6 +53,10 @@ public class DishEntity extends BaseEntity {
      * Defaults to {@code true}.
      */
     private boolean isAvailable = true;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "kitchen_department_id")
+    private KitchenDepartmentEntity kitchenDepartment;
 
     /**
      * A list of translations for this dish's name and description.

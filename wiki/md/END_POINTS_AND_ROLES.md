@@ -11,6 +11,7 @@
 - [FrontendLogController](#frontendlogcontroller)
 - [FrontendPathConfig](#frontendpathconfig)
 - [ImageController](#imagecontroller)
+- [KitchenDepartmentController](#kitchendepartmentcontroller)
 - [OrderController](#ordercontroller)
 - [OrderItemController](#orderitemcontroller)
 - [QrController](#qrcontroller)
@@ -155,6 +156,19 @@
 | [GET getEateryImageN(String, String, HttpServletResponse)](../../src/main/java/az/qrfood/backend/image/controller/ImageController.java) | `public` | `/api/image/eatery/{eateryId}/file/{fileName}` |
 | [GET getPredefinedCatImage(String, HttpServletResponse)](../../src/main/java/az/qrfood/backend/image/controller/ImageController.java) | `public` | `/api/image/predefined/category/{fileName}` |
 | [GET getPredefinedDishImage(String, HttpServletResponse)](../../src/main/java/az/qrfood/backend/image/controller/ImageController.java) | `public` | `/api/image/predefined/dish/{fileName}` |
+
+###### [🔝](#navigation)
+
+---
+
+### KitchenDepartmentController
+
+| Method | Role(s) | URL Path |
+|--------|---------|----------|
+| [DELETE deleteDepartment(Long)](../../src/main/java/az/qrfood/backend/kitchendepartment/controller/KitchenDepartmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN` | `/api/eatery/{eateryId}/kitchen-department/{departmentId}` |
+| [GET getDepartmentsForRestaurant(Long)](../../src/main/java/az/qrfood/backend/kitchendepartment/controller/KitchenDepartmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER, CASHIER` | `/api/eatery/{eateryId}/kitchen-department` |
+| [POST createDepartment(Long, CreateDepartmentRequestDto)](../../src/main/java/az/qrfood/backend/kitchendepartment/controller/KitchenDepartmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN` | `/api/eatery/{eateryId}/kitchen-department` |
+| [PUT updateDepartment(Long, Long, UpdateDepartmentRequestDto)](../../src/main/java/az/qrfood/backend/kitchendepartment/controller/KitchenDepartmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN` | `/api/eatery/{eateryId}/kitchen-department/{departmentId}` |
 
 ###### [🔝](#navigation)
 

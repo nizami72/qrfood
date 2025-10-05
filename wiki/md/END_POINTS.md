@@ -26,6 +26,8 @@
 * /api/eatery/{eateryId}/category/{categoryId}
 * /api/eatery/{eateryId}/category/{categoryId}/dish
 * /api/eatery/{eateryId}/category/{categoryId}/dish/{dishId}
+* /api/eatery/{eateryId}/kitchen-department
+* /api/eatery/{eateryId}/kitchen-department/{departmentId}
 * /api/eatery/{eateryId}/order-item
 * /api/eatery/{eateryId}/order-item/order/{orderId}
 * /api/eatery/{eateryId}/order-item/{orderItemId}

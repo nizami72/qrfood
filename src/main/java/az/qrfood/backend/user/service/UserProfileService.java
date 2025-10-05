@@ -148,4 +148,19 @@ public class UserProfileService {
     public Optional<UserProfile> findProfileById(Long id) {
         return userProfileRepository.findById(id);
     }
+
+    /**
+     * Retrieves the current authenticated user's profile from the security context.
+     *
+     * @return An Optional containing the current user's UserProfile if available.
+     */
+    public Optional<UserProfile> findCurrentUserProfile() {
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !(auth.getPrincipal() instanceof org.springframework.security.core.userdetails.UserDetails userDetails)) {
+            return Optional.empty();
+        }
+        String username = userDetails.getUsername();
+        return userRepository.findByUsername(username)
+                .flatMap(userProfileRepository::findByUser);
+    }
 }

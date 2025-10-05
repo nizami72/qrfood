@@ -61,6 +61,14 @@ This project is licensed under the MIT License.
 
 ## Hetzner Remote Command etc
 
+
+### Remote ssh
+
+SSH
+``` 
+ssh -i /home/nizami/.ssh/key2 root@157.180.16.28
+```
+
 ### See Logs Quickly
 
 SSH

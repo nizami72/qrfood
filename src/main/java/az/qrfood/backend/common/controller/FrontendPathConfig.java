@@ -124,6 +124,10 @@ public class FrontendPathConfig {
     String apiUser;
     @Value("${auth.refresh}")
     String reCreateTokenOnEateryChangeUrl;
+    @Value("${eatery.id.kitchen-department}")
+    String eateryIdKitchenDepartment;
+    @Value("${eatery.id.kitchen-department.id}")
+    String eateryIdKitchenDepartmentId;
     //</editor-fold>
 
     /**
@@ -194,6 +198,9 @@ public class FrontendPathConfig {
         paths.put("apiUser", apiUser);
         paths.put("reCreateTokenOnEateryChangeUrl", reCreateTokenOnEateryChangeUrl);
         paths.put("orderIdAddDishes", orderIdAddDishes);
+        paths.put("Kitchen Departments", "--------------------");
+        paths.put("eateryIdKitchenDepartment",eateryIdKitchenDepartment );
+        paths.put("eateryIdKitchenDepartmentId",eateryIdKitchenDepartmentId );
 //        paths.put("", );
         //.
 
