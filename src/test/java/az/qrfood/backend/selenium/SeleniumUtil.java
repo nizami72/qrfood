@@ -113,6 +113,10 @@ public class SeleniumUtil {
         highlight2(d, e, temp);
         typeText(e, text, m.get(temp).get(TYPING_DELAY));
     }
+
+    public static void typeIntoInput(WebDriver d, By by, String text, String temp) {
+        typeIntoInput(d, d.findElement(by), text, temp);
+    }
     //</editor-fold>
 
     //<editor-fold desc="Find Element & Click">
