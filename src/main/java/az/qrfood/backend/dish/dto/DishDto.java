@@ -23,6 +23,9 @@ public class DishDto {
 
     private Long categoryId;
 
+    // Optional link to a Kitchen Department
+    private Long kitchenDepartmentId;
+
     @NotBlank(message = "Name in Azerbaijani is required")
     @Size(min = 2, max = 50, message = "Name in Azerbaijani must not exceed characters")
     private String nameAz;
@@ -48,11 +51,11 @@ public class DishDto {
 
     private String image;
 
-    private boolean isAvailable = true;
+    private boolean available = true;
 
 
     public boolean isIsAvailable(){
-        return isAvailable;
+        return available;
     }
 
     @Override
@@ -60,6 +63,7 @@ public class DishDto {
         return String.format("""
         Dish {
             categoryId: %s
+            kitchenDepartmentId: %s
             nameAz        : %s
             nameEn        : %s
             nameRu        : %s
@@ -68,11 +72,11 @@ public class DishDto {
             descriptionRu : %s
             price         : %s
             imageUrl      : %s
-            isAvailable   : %s
+            available   : %s
         }
         """,
-                categoryId, nameAz, nameEn, nameRu, descriptionAz,
-                descriptionEn, descriptionRu, price, image, isAvailable
+                categoryId, kitchenDepartmentId, nameAz, nameEn, nameRu, descriptionAz,
+                descriptionEn, descriptionRu, price, image, available
         );
     }
 

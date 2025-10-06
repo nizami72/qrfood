@@ -9,6 +9,8 @@ import az.qrfood.backend.dish.dto.DishDto;
 import az.qrfood.backend.dish.entity.DishEntity;
 import az.qrfood.backend.dish.entity.DishEntityTranslation;
 import az.qrfood.backend.dish.repository.DishRepository;
+import az.qrfood.backend.kitchendepartment.entity.KitchenDepartmentEntity;
+import az.qrfood.backend.kitchendepartment.repository.KitchenDepartmentRepository;
 import az.qrfood.backend.order.repository.OrderItemRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
@@ -38,6 +40,7 @@ public class DishService {
     private final CategoryRepository categoryRepository;
     private final StorageService storageService;
     private final OrderItemRepository orderItemRepository;
+    private final KitchenDepartmentRepository kitchenDepartmentRepository;
 
     @Value("${folder.predefined.dish.images}")
     private String appHomeFolderImage;
@@ -53,13 +56,15 @@ public class DishService {
      * @param orderItemRepository The repository for OrderItem entities.
      */
     public DishService(DishRepository dishRepository,
-                       CategoryRepository categoryRepository, 
+                       CategoryRepository categoryRepository,
                        StorageService storageService,
-                       OrderItemRepository orderItemRepository) {
+                       OrderItemRepository orderItemRepository,
+                       KitchenDepartmentRepository kitchenDepartmentRepository) {
         this.dishRepository = dishRepository;
         this.categoryRepository = categoryRepository;
         this.storageService = storageService;
         this.orderItemRepository = orderItemRepository;
+        this.kitchenDepartmentRepository = kitchenDepartmentRepository;
     }
 
     /**
@@ -106,6 +111,15 @@ public class DishService {
         DishEntity dishEntity = Util.copyProperties(dto, DishEntity.class);
         dishEntity.setTranslations(new ArrayList<>());
         dishEntity.setCategory(optionalCategory.get());
+        
+        // Set kitchen department if provided
+        if (dto.getKitchenDepartmentId() != null) {
+            KitchenDepartmentEntity kd = kitchenDepartmentRepository.findById(dto.getKitchenDepartmentId())
+                    .orElseThrow(() -> new EntityNotFoundException("Kitchen Department not found: " + dto.getKitchenDepartmentId()));
+            dishEntity.setKitchenDepartment(kd);
+        } else {
+            dishEntity.setKitchenDepartment(null);
+        }
 
         dishEntity = dishRepository.save(dishEntity);
 
@@ -137,9 +151,10 @@ public class DishService {
         DishDto dto = DishDto.builder()
                 .dishId(dishEntity.getId())
                 .categoryId(dishEntity.getCategory().getId())
+                .kitchenDepartmentId(dishEntity.getKitchenDepartment() != null ? dishEntity.getKitchenDepartment().getId() : null)
                 .price(dishEntity.getPrice())
                 .image(dishEntity.getImage())
-                .isAvailable(dishEntity.isAvailable())
+                .available(dishEntity.isAvailable())
                 .build();
 
         dishEntity.getTranslations().forEach(t -> {
@@ -238,6 +253,15 @@ public class DishService {
         // Update the dish properties
         dishEntity.setPrice(dto.getPrice());
         dishEntity.setAvailable(dto.isIsAvailable());
+
+        // Update kitchen department
+        if (dto.getKitchenDepartmentId() != null) {
+            KitchenDepartmentEntity kd = kitchenDepartmentRepository.findById(dto.getKitchenDepartmentId())
+                    .orElseThrow(() -> new EntityNotFoundException("Kitchen Department not found: " + dto.getKitchenDepartmentId()));
+            dishEntity.setKitchenDepartment(kd);
+        } else {
+            dishEntity.setKitchenDepartment(null);
+        }
 
         // Update translations
         dishEntity.getTranslations().forEach(translation -> {

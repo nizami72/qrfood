@@ -137,7 +137,7 @@ public class CommonDishController {
                     .descriptionRu(template.getDescriptionRu())
                     .price(template.getPrice() != null ? template.getPrice() : BigDecimal.ZERO)
                     .image(template.getImage())
-                    .isAvailable(true)
+                    .available(true)
                     .build();
 
             try {

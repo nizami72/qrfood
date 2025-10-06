@@ -158,7 +158,7 @@ public class DishApiTest extends AbstractTest {
                 .descriptionAz("Updated Dish Description Az")
                 .descriptionEn("Updated Dish Description En")
                 .descriptionRu("Updated Dish Description Ru")
-                .isAvailable(true)
+                .available(true)
                 .build();
 
         String json = TestDataLoader.serializeToJsonString(expected);
@@ -226,7 +226,7 @@ public class DishApiTest extends AbstractTest {
                 .descriptionAz("Updated Dish Description Az")
                 .descriptionEn("Updated Dish Description En")
                 .descriptionRu("Updated Dish Description Ru")
-                .isAvailable(true)
+                .available(true)
                 .build());
 
         Response response = given()

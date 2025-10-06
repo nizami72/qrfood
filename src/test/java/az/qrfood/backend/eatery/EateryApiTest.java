@@ -270,7 +270,7 @@ public class EateryApiTest {
                         .descriptionAz("Updated Dish Description Az")
                         .descriptionEn("Updated Dish Description En")
                         .descriptionRu("Updated Dish Description Ru")
-                        .isAvailable(true)
+                        .available(true)
                         .build());
 
         given()
