@@ -4,6 +4,7 @@ import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.category.repo.CategoryRepository;
 import az.qrfood.backend.common.Util;
 import az.qrfood.backend.common.service.StorageService;
+import az.qrfood.backend.dish.exception.QrFoodDataIntegrityViolation;
 import az.qrfood.backend.lang.Language;
 import az.qrfood.backend.dish.dto.DishDto;
 import az.qrfood.backend.dish.entity.DishEntity;
@@ -198,7 +199,7 @@ public class DishService {
 //         Check if the dish is referenced by any order items
         if (orderItemRepository.existsByDishEntityId(dishId)) {
             log.warn("Cannot delete dish [{}] because it is referenced by order items", dishId);
-            throw new DataIntegrityViolationException(
+            throw new QrFoodDataIntegrityViolation(
                     String.format("Cannot delete dish [%s] because it is referenced by order items. " +
                             "Please delete the associated order items first or mark the dish as unavailable instead.", dishId));
         }

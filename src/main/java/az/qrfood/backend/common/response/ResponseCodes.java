@@ -61,7 +61,19 @@ public enum ResponseCodes {
             "You do not have permission to access this resource",
             "response.accessDenied", HttpStatus.FORBIDDEN,
             "User attempted to access a restricted resource"
-    );
+    ),
+
+    DATA_INTEGRITY(
+            false,
+            "Cannot delete dish because it is referenced by order items",
+            "response.integrityViolation", HttpStatus.FORBIDDEN,
+            "User attempted to delete dish referenced by order items"
+    ),
+
+
+
+
+    ;
 
     @Getter
     private final boolean success;

@@ -2,6 +2,7 @@ package az.qrfood.backend.common.exception;
 
 import az.qrfood.backend.common.response.ApiResponse;
 import az.qrfood.backend.common.response.ResponseCodes;
+import az.qrfood.backend.dish.exception.QrFoodDataIntegrityViolation;
 import az.qrfood.backend.dish.interceptor.NotYourResourceException;
 import az.qrfood.backend.user.exception.UserAlreadyExistsException;
 import az.qrfood.backend.user.exception.UserExceptionHandler;
@@ -144,6 +145,15 @@ public class GlobalExceptionHandler {
                 .status(ResponseCodes.USER_ALREADY_EXISTS.getHttpStatus())
                 .header("X-Error-Code", ResponseCodes.USER_ALREADY_EXISTS.getMessage())
                 .body(new ApiResponse<>(ResponseCodes.USER_ALREADY_EXISTS));
+    }
+
+    @ExceptionHandler(QrFoodDataIntegrityViolation.class)
+    public ResponseEntity<ApiResponse<Void>> e1(QrFoodDataIntegrityViolation ex) {
+        log.error(ex.getMessage());
+        return ResponseEntity
+                .status(ResponseCodes.DATA_INTEGRITY.getHttpStatus())
+                .header("X-Error-Code", ResponseCodes.DATA_INTEGRITY.getMessage())
+                .body(new ApiResponse<>(ResponseCodes.DATA_INTEGRITY));
     }
 
     @ExceptionHandler(ClientAbortException.class)

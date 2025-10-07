@@ -178,13 +178,11 @@ public class ImageController {
         byte[] data = null;
         try {
             log.warn("Try to get fall back photo");
-            String[] ptoFileExtensions = {".jpg", ".jpeg", ".png"};
-            for (String ptoFileExtension : ptoFileExtensions) {
-                if (new File(fallBackPhoto + ptoFileExtension).exists()) {
-                    data = Files.readAllBytes(Paths.get(fallBackPhoto + ptoFileExtension));
-                    log.warn("Fall back photo returned");
-                    break;
-                }
+            if (new File(fallBackPhoto).exists()) {
+                data = Files.readAllBytes(Paths.get(fallBackPhoto));
+                log.warn("Fall back photo returned");
+            } else {
+                log.error("Fall back photo [{}] not found", fallBackPhoto);
             }
         } catch (IOException ex) {
             log.error("Unable to get fallback photo from {} caused by {}", fallBackPhoto, ex.getClass().getName());
