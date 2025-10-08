@@ -2,9 +2,7 @@ package az.qrfood.backend.eatery.controller;
 
 import az.qrfood.backend.eatery.dto.EateryDto;
 import az.qrfood.backend.eatery.service.EateryService;
-import az.qrfood.backend.user.repository.UserRepository;
 import az.qrfood.backend.user.service.UserProfileService;
-import az.qrfood.backend.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -37,24 +35,18 @@ import java.util.List;
 public class EateryController {
 
     private final EateryService eateryService;
-    private final UserRepository userRepository;
     private final UserProfileService userProfileService;
-    private final UserService userService;
 
     /**
      * Constructs an EateryController with necessary service and repository dependencies.
      *
      * @param eateryService      The service for handling eatery business logic.
-     * @param userRepository     The repository for user data.
      * @param userProfileService The service for managing user profiles.
-     * @param userService        The service for user-related operations.
      */
-    public EateryController(EateryService eateryService, UserRepository userRepository,
-                            UserProfileService userProfileService, UserService userService) {
+    public EateryController(EateryService eateryService,
+                            UserProfileService userProfileService) {
         this.eateryService = eateryService;
-        this.userRepository = userRepository;
         this.userProfileService = userProfileService;
-        this.userService = userService;
     }
 
     /**
@@ -142,7 +134,9 @@ public class EateryController {
 
     /**
      * Deletes an eatery by its ID.
-     * This endpoint requires 'EATERY_ADMIN' role.
+     * Actually, a user can only make an eatery not active, deleting an entire eatery with all related data
+     * should be possible by SUPER ADMIN only. todo make needed changes
+     * This endpoint requires the 'EATERY_ADMIN' role.
      *
      * @param id The ID of the eatery to delete.
      * @return A {@link ResponseEntity} containing the ID of the deleted eatery.

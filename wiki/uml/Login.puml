@@ -1,76 +1,43 @@
 @startuml
-!theme vibrant
-title Frontend Login Process
+' Automatically numbers the steps for clarity
+autonumber
 
-actor User
+' Define participants in the sequence
+participant User
+participant "Login Component" as LoginComponent
+participant AuthContext
+participant API
+participant SuperAdminRoute
+participant TokenRefresh
+participant Window
 
-participant "Login.jsx" as Login
-participant "Browser" as Browser
-participant "React Router" as Router
-participant "LanguageContext" as Lang
-participant "logger.js" as Logger
-participant "API Server" as API
+== User Login Flow ==
 
-User -> Login: Enters email and password
-User -> Login: Clicks "Login" button
-activate Login
+User -> LoginComponent: Enter credentials
+LoginComponent -> API: POST /api/auth/login
+API --> LoginComponent: Return JWT token
+LoginComponent -> AuthContext: Set token via login()
+LoginComponent -> Window: Dispatch 'login-success' event
+Window -> TokenRefresh: Set up refresh timer
 
-Login -> API: POST /api/auth/login with credentials
-activate API
+== Token Refresh Cycle ==
 
-alt Successful Login
+note over TokenRefresh
+  Periodically checks token
+  expiration and refreshes it.
+end note
 
-    API --> Login: 200 OK with { jwt, userId }
-    deactivate API
+TokenRefresh -> API: POST /api/auth/refresh-token
+API --> TokenRefresh: Return new token
+TokenRefresh -> Window: Dispatch 'token-refreshed' event
+Window -> AuthContext: Update token state
 
-    Login -> Browser: localStorage.setItem('jwtToken', jwt)
-    Login -> Browser: localStorage.setItem('userId', userId)
+== Protected Route Access ==
 
-    Login -> Browser: window.dispatchEvent('login-success')
-
-    Login -> Router: navigate('/admin/restaurants')
-    activate Router
-    Router -> User: Renders Admin/Restaurants page
-    deactivate Router
-
-else API Error (e.g., invalid credentials)
-
-    API --> Login: 4xx/5xx Error with { message }
-    deactivate API
-
-    Login -> Lang: t('admin.login.loginError')
-    activate Lang
-    Lang --> Login: Returns translated error string
-    deactivate Lang
-
-    Login -> Logger: logError(errorMessage, ...)
-    activate Logger
-    Logger -> API: POST /api/logs/frontend
-    Logger --> Login
-    deactivate Logger
-
-    Login -> User: Displays error message
-
-else Network/Fetch Error
-
-    API --x Login: Fetch fails
-    deactivate API
-
-    Login -> Lang: t('admin.login.serverError')
-    activate Lang
-    Lang --> Login: Returns translated error string
-    deactivate Lang
-
-    Login -> Logger: logError(errorMessage, ...)
-    activate Logger
-    Logger -> API: POST /api/logs/frontend
-    Logger --> Login
-    deactivate Logger
-
-    Login -> User: Displays error message
-
-end
-
-deactivate Login
+User -> SuperAdminRoute: Navigate to protected route
+SuperAdminRoute -> AuthContext: Get token and isAuthenticated
+AuthContext --> SuperAdminRoute: Return token (null issue occurs here)
+' Self-call for internal logic check
+SuperAdminRoute -> SuperAdminRoute: Check SUPER_ADMIN role
 
 @enduml

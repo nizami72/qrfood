@@ -102,7 +102,7 @@ public class AdminController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping("${admin.impersonate}")
-    @PreAuthorize("@authz.hasAnyRole(authentication)")
+    @PreAuthorize("@authz.isSuperAdmin(authentication)")
     public ResponseEntity<?> impersonateUser(@PathVariable Long userId, Authentication authentication) {
         // Load the user to impersonate by ID
         UserDetails userToImpersonate = userDetailsService.loadUserById(userId);
@@ -142,7 +142,7 @@ public class AdminController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("${admin.resources}")
-    @PreAuthorize("@authz.hasAnyRole(authentication)")
+    @PreAuthorize("@authz.isSuperAdmin(authentication)")
     public ResponseEntity<?> getEateryResources(@PathVariable Long eateryId) {
         log.info("Retrieving all resources for eatery with ID: {}", eateryId);
 
@@ -205,7 +205,7 @@ public class AdminController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("${admin.eatery.details}")
-    @PreAuthorize("@authz.hasAnyRole(authentication)")
+    @PreAuthorize("@authz.isSuperAdmin(authentication)")
     public ResponseEntity<?> getEateryDetails(@PathVariable Long eateryId) {
         log.info("Retrieving detailed information for eatery with ID: {}", eateryId);
 
@@ -238,7 +238,7 @@ public class AdminController {
     /**
      * Deletes an eatery and all related data.
      * <p>
-     * This endpoint deletes an eatery and all its related data including:
+     * This endpoint deletes an eatery and all its related data including
      * - All users (except eatery admin if there is another eatery related to them)
      * - All tables and table assignments
      * - All orders
@@ -257,7 +257,7 @@ public class AdminController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @DeleteMapping("${admin.eatery}")
-    @PreAuthorize("@authz.hasAnyRole(authentication)")
+    @PreAuthorize("@authz.isSuperAdmin(authentication)")
 //    @Transactional
     public ResponseEntity<?> deleteEatery(@PathVariable Long eateryId) {
         log.info("Deleting eatery with ID: {} and all related data", eateryId);
@@ -338,7 +338,7 @@ public class AdminController {
      *         or a NOT_FOUND response if the user does not have the required roles
      */
     @GetMapping("${admin.eatery.admin.eateries}")
-    @PreAuthorize("@authz.hasAnyRole(authentication)")
+    @PreAuthorize("@authz.isSuperAdmin(authentication)")
     public ResponseEntity<List<EateryDto>> getEateryBelongToUser(@PathVariable String admin) {
 
         UserResponse user = userService.getUserByUsername(admin);

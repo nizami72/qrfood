@@ -199,6 +199,10 @@ public class TestTestovCreator {
     private void deleteEateryBeforeCreation() {
         String jwt = ApiUtils.login(superAdminMail, superAdminPass, null, host, loginUrl);
         Long id = getEateryId(jwt, testov.getEatery().getName(), host, Utils.replacePlaceHolders(eateriesByAdminUrl, admin.getEmail()));
+        if(id==null) {
+            log.debug("No Testov eatery found so nothing to delete");
+            return;
+        }
         ApiUtils.sendDeleteRequest(host, jwt, eateryAdminUrl + "/" + id, 200);
     }
 

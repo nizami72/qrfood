@@ -1,9 +1,6 @@
 package az.qrfood.backend.user.service;
 
-import az.qrfood.backend.category.service.CategoryService;
-import az.qrfood.backend.dish.service.DishService;
 import az.qrfood.backend.eatery.dto.EateryDto;
-import az.qrfood.backend.eatery.repository.EateryRepository;
 import az.qrfood.backend.eatery.service.EateryService;
 import az.qrfood.backend.user.UserUtils;
 import az.qrfood.backend.user.dto.GeneralResponse;
@@ -351,7 +348,7 @@ public class UserService {
 
         String phone = null;
         if (userProfile.getPhones() != null && !userProfile.getPhones().isEmpty()) {
-            phone = userProfile.getPhones().get(0);
+            phone = userProfile.getPhones().getFirst();
         }
 
         return new UserResponse(
