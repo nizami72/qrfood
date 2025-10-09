@@ -1,8 +1,12 @@
 package az.qrfood.backend.category.repo;
 
 import az.qrfood.backend.category.entity.Category;
+import az.qrfood.backend.dish.entity.DishStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -36,4 +40,28 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     Optional<Category> findByHash(int hash);
 
     Optional<Category> findByEateryIdAndId(Long eateryId, Long id);
+
+    @Query("""
+           SELECT c
+           FROM Category c
+           LEFT JOIN FETCH c.items d
+           WHERE c.eatery.id = :eateryId
+           AND d.dishStatus = :status
+           """)
+    List<Category> findCategoryWithFilteredDishes(
+            @Param("eateryId") Long eateryId,
+            @Param("status") DishStatus status);
+
+    @Query("""
+           SELECT c
+           FROM Category c
+           LEFT JOIN FETCH c.items d
+           WHERE c.eatery.id = :eateryId
+           AND d.dishStatus <> :excludedStatus
+           """)
+    List<Category> findCategoryWithDishesNotMatchingStatus(
+            @Param("eateryId") Long eateryId,
+            @Param("excludedStatus") DishStatus excludedStatus);
+
+
 }

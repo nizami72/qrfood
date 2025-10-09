@@ -49,10 +49,12 @@ public class DishEntity extends BaseEntity {
     private String image;
 
     /**
-     * Indicates whether the dish is currently available.
-     * Defaults to {@code true}.
+     * Indicates the dish status is it currently available or deleted or not available.
+     * Defaults to {@code AVAILABLE}.
      */
-    private boolean isAvailable = true;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DishStatus dishStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "kitchen_department_id")

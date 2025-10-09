@@ -4,6 +4,7 @@ import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.category.repo.CategoryRepository;
 import az.qrfood.backend.dish.dto.DishDto;
 import az.qrfood.backend.dish.entity.DishEntity;
+import az.qrfood.backend.dish.entity.DishStatus;
 import az.qrfood.backend.dish.repository.DishRepository;
 import az.qrfood.backend.dish.service.DishService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -131,7 +132,7 @@ public class DishController {
     @DeleteMapping("${eatery.id.category.id.dish.id}")
     public ResponseEntity<String> deleteDishItemById(@PathVariable Long categoryId, @PathVariable Long dishId) {
         log.debug("Requested to delete dish [{}] from category [{}]", dishId, categoryId);
-        return dishService.deleteDishItemById(categoryId,dishId);
+        return dishService.updateDishStatus(dishId, DishStatus.ARCHIVED);
     }
 
     /**

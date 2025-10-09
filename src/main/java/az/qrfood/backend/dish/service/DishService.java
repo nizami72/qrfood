@@ -4,6 +4,7 @@ import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.category.repo.CategoryRepository;
 import az.qrfood.backend.common.Util;
 import az.qrfood.backend.common.service.StorageService;
+import az.qrfood.backend.dish.entity.DishStatus;
 import az.qrfood.backend.dish.exception.QrFoodDataIntegrityViolation;
 import az.qrfood.backend.lang.Language;
 import az.qrfood.backend.dish.dto.DishDto;
@@ -155,7 +156,7 @@ public class DishService {
                 .kitchenDepartmentId(dishEntity.getKitchenDepartment() != null ? dishEntity.getKitchenDepartment().getId() : null)
                 .price(dishEntity.getPrice())
                 .image(dishEntity.getImage())
-                .available(dishEntity.isAvailable())
+                .available(dishEntity.getDishStatus().equals(DishStatus.AVAILABLE))
                 .build();
 
         dishEntity.getTranslations().forEach(t -> {
@@ -223,6 +224,24 @@ public class DishService {
     }
 
     /**
+     * Updates the status of a dish identified by its ID.
+     *
+     * @param dishId the unique identifier of the dish whose status needs to be updated
+     * @param status the new status to be applied to the dish
+     * @return a ResponseEntity containing a confirmation message indicating the dish ID and
+     *         that the status has been successfully updated
+     */
+    public ResponseEntity<String> updateDishStatus(Long dishId, DishStatus status) {
+        DishEntity dish = dishRepository.findById(dishId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Dish not found with id: " + dishId));
+
+        dish.setDishStatus(status);
+        dishRepository.save(dish);
+        return ResponseEntity.ok(String.format("Dish [%s] status changed", dishId));
+    }
+
+    /**
      * Updates an existing dish within a specific category.
      * <p>
      * This method is transactional. It updates the dish's price, availability,
@@ -253,7 +272,11 @@ public class DishService {
 
         // Update the dish properties
         dishEntity.setPrice(dto.getPrice());
-        dishEntity.setAvailable(dto.isIsAvailable());
+        if (dto.isIsAvailable()) {
+            dishEntity.setDishStatus(DishStatus.AVAILABLE);
+        } else {
+            dishEntity.setDishStatus(DishStatus.OUT_OF_STOCK);
+        }
 
         // Update kitchen department
         if (dto.getKitchenDepartmentId() != null) {

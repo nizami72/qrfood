@@ -6,6 +6,7 @@ import az.qrfood.backend.category.entity.CategoryTranslation;
 import az.qrfood.backend.category.repo.CategoryRepository;
 import az.qrfood.backend.common.Util;
 import az.qrfood.backend.common.service.StorageService;
+import az.qrfood.backend.dish.entity.DishStatus;
 import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.eatery.repository.EateryRepository;
 import az.qrfood.backend.lang.Language;
@@ -156,10 +157,7 @@ public class CategoryService {
      */
     public List<CategoryDto> findAllCategoryForEatery(long eateryId) {
 
-        Optional<Eatery> eateryOp = eateryRepository.findById(eateryId);
-        if (eateryOp.isEmpty()) {throw new EntityNotFoundException("Eatery not found"); }
-
-        List<Category> categories = eateryOp.get().getCategories();
+        List<Category> categories = categoryRepository.findCategoryWithDishesNotMatchingStatus(eateryId, DishStatus.OUT_OF_STOCK);
         if (categories.isEmpty()) {
             String error = String.format("Eatery [%s] has no any category and dish", eateryId);
             log.warn(error);
