@@ -45,19 +45,4 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("The user not found: " + username));
     }
 
-    /**
-     * Loads user information by their ID.
-     * <p>
-     * This method is used for impersonation functionality to retrieve user details
-     * by their ID. It queries the {@link UserRepository} for a user matching the provided ID.
-     * </p>
-     *
-     * @param userId The ID of the user to load.
-     * @return A {@link UserDetails} object representing the loaded user.
-     * @throws UsernameNotFoundException if a user with the specified ID is not found.
-     */
-    public UserDetails loadUserById(Long userId) throws UsernameNotFoundException {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("The user not found with ID: " + userId));
-    }
 }

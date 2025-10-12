@@ -9,6 +9,7 @@ import az.qrfood.backend.eatery.entity.EateryPhone;
 import az.qrfood.backend.eatery.repository.EateryRepository;
 import az.qrfood.backend.table.entity.TableInEatery;
 import az.qrfood.backend.table.service.TableService;
+import az.qrfood.backend.user.entity.Role;
 import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.entity.UserProfile;
 import az.qrfood.backend.user.repository.UserProfileRepository;
@@ -158,13 +159,12 @@ public class EateryService {
         }
         dto.setOwnerMail(
                 eatery.getUserProfiles().stream()
-                        .map(UserProfile :: getUser)
-                        .map(User:: getUsername)
+                        .map(UserProfile::getUser)
+                        .map(User::getUsername)
                         .findFirst()
                         .orElse("Mail Not Found")
 
         );
-
 
 
         return dto;
@@ -264,10 +264,14 @@ public class EateryService {
     public List<EateryDto> findEateriesByUserProfileId(Long id) {
         UserProfile userProfile = userProfileRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User profile with id not found: " + id));
-
-        return userProfile.getEateries().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        if (userProfile.getUser().getRoles().contains(Role.SUPER_ADMIN)) {
+            log.debug("Super admin is trying to find all eateries");
+            return getAllRestaurants();
+        } else {
+            return userProfile.getEateries().stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+        }
     }
 
 

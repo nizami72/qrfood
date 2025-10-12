@@ -3,7 +3,6 @@ package az.qrfood.backend.auth.controller;
 import az.qrfood.backend.auth.dto.LoginRequest;
 import az.qrfood.backend.auth.dto.LoginResponse;
 import az.qrfood.backend.auth.dto.RecreateTokenOnEateryChangeRequest;
-import az.qrfood.backend.auth.dto.TokenRefreshRequest;
 import az.qrfood.backend.auth.dto.TokenRefreshResponse;
 import az.qrfood.backend.auth.entity.RefreshToken;
 import az.qrfood.backend.auth.exception.TokenRefreshException;
@@ -11,6 +10,7 @@ import az.qrfood.backend.auth.service.CustomUserDetailsService;
 import az.qrfood.backend.auth.service.RefreshTokenService;
 import az.qrfood.backend.auth.util.JwtUtil;
 import az.qrfood.backend.eatery.entity.Eatery;
+import az.qrfood.backend.user.entity.Role;
 import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.entity.UserProfile;
 import az.qrfood.backend.user.repository.UserRepository;
@@ -94,8 +94,8 @@ public class AuthController {
      *
      * @param loginRequest The {@link LoginRequest} object containing user credentials and optional eatery ID.
      * @return A {@link ResponseEntity} containing a {@link LoginResponse} with the JWT token,
-     *         user ID, and eatery ID on success, or an error message with {@code HttpStatus.UNAUTHORIZED}
-     *         if authentication fails.
+     * user ID, and eatery ID on success, or an error message with {@code HttpStatus.UNAUTHORIZED}
+     * if authentication fails.
      */
     @PostMapping("${auth.login}")
     @Operation(summary = "Logins a user", description = "Logins user, use email as login and password")
@@ -176,7 +176,7 @@ public class AuthController {
      * </p>
      *
      * @return A {@link ResponseEntity} with user information if authenticated,
-     *         or a message indicating that the user is not authenticated.
+     * or a message indicating that the user is not authenticated.
      */
     @GetMapping("${auth.status}")
     public ResponseEntity<?> status() {
@@ -184,8 +184,8 @@ public class AuthController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         // Check if the user is authenticated
-        if (authentication != null && authentication.isAuthenticated() && 
-            !authentication.getPrincipal().equals("anonymousUser")) {
+        if (authentication != null && authentication.isAuthenticated() &&
+                !authentication.getPrincipal().equals("anonymousUser")) {
 
             // Get the username from the authenticated user
             String username = authentication.getName();
@@ -236,9 +236,9 @@ public class AuthController {
      *
      * @param request A {@link RecreateTokenOnEateryChangeRequest} containing the ID of the newly selected eatery.
      * @return A {@link ResponseEntity} containing a {@link LoginResponse} with the new JWT token,
-     *         user ID, and the updated eatery ID. Returns {@code HttpStatus.UNAUTHORIZED} if not authenticated,
-     *         {@code HttpStatus.NOT_FOUND} if user or profile not found, or {@code HttpStatus.FORBIDDEN}
-     *         if the user does not have access to the specified eatery.
+     * user ID, and the updated eatery ID. Returns {@code HttpStatus.UNAUTHORIZED} if not authenticated,
+     * {@code HttpStatus.NOT_FOUND} if user or profile not found, or {@code HttpStatus.FORBIDDEN}
+     * if the user does not have access to the specified eatery.
      */
     @PostMapping("${auth.refresh}")
 //    [[recreateTokenOnEateryChange]]
@@ -250,8 +250,8 @@ public class AuthController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         // Check if the user is authenticated
-        if (authentication == null || !authentication.isAuthenticated() || 
-            authentication.getPrincipal().equals("anonymousUser")) {
+        if (authentication == null || !authentication.isAuthenticated() ||
+                authentication.getPrincipal().equals("anonymousUser")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "User not authenticated"));
         }
@@ -282,7 +282,8 @@ public class AuthController {
         // Verify that the user has access to the specified eatery
         if (eateryId != null) {
             final Long finalEateryId = eateryId;
-            boolean hasAccess = userProfile.getEateries().stream()
+            boolean hasAccess = userProfile.getUser().getRoles().contains(Role.SUPER_ADMIN)
+                    || userProfile.getEateries().stream()
                     .anyMatch(eatery -> eatery.getId().equals(finalEateryId));
             if (!hasAccess) {
                 log.debug("User does not have access to the specified eatery: {}", eateryId);
@@ -310,10 +311,10 @@ public class AuthController {
      * This endpoint extracts the refresh token from the httpOnly cookie and, if valid, generates a new access token.
      * </p>
      *
-     * @param request The HttpServletRequest containing the cookies.
+     * @param request  The HttpServletRequest containing the cookies.
      * @param response The HttpServletResponse for setting the new refresh token cookie.
      * @return A {@link ResponseEntity} containing a {@link TokenRefreshResponse} with the new access token.
-     *         Returns {@code HttpStatus.FORBIDDEN} if the refresh token is invalid or expired.
+     * Returns {@code HttpStatus.FORBIDDEN} if the refresh token is invalid or expired.
      */
     @PostMapping("${auth.token.refresh}")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
@@ -386,8 +387,8 @@ public class AuthController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         // Log the logout attempt and delete refresh token
-        if (authentication != null && authentication.isAuthenticated() && 
-            !authentication.getPrincipal().equals("anonymousUser")) {
+        if (authentication != null && authentication.isAuthenticated() &&
+                !authentication.getPrincipal().equals("anonymousUser")) {
             String username = authentication.getName();
             log.debug("User logged out: {}", username);
 

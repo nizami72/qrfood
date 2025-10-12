@@ -137,32 +137,6 @@ public class JwtUtil {
     }
 
     /**
-     * Generates a JWT token for impersonation.
-     * <p>
-     * This method creates a token that includes the user's roles, an "impersonatedBy" claim
-     * to indicate who initiated the impersonation, and the impersonated user's ID.
-     * </p>
-     *
-     * @param userDetails    The {@link UserDetails} object containing the impersonated user's information.
-     * @param impersonatedBy The username of the user who initiated the impersonation.
-     * @return The generated JWT token.
-     */
-    public String generateImpersonationToken(UserDetails userDetails, String impersonatedBy) {
-        Map<String, Object> claims = new HashMap<>();
-        // Add user roles to claims
-        claims.put("roles", userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList()));
-        // Add the impersonatedBy claim
-        claims.put("impersonatedBy", impersonatedBy);
-        // Add the impersonated user's ID if userDetails is a User entity
-        if (userDetails instanceof User) {
-            claims.put("userId", ((User) userDetails).getId());
-        }
-        return createToken(claims, userDetails.getUsername());
-    }
-
-    /**
      * Creates a JWT token with the specified claims and subject.
      *
      * @param claims  The claims to be included in the token.

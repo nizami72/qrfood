@@ -83,48 +83,6 @@ public class AdminController {
     //</editor-fold>
 
     /**
-     * Impersonate a user by generating a new JWT token with their rights.
-     * <p>
-     * This endpoint allows a SUPER_ADMIN to log in on behalf of another user.
-     * It generates a new JWT token with the selected user's rights and an additional
-     * "impersonatedBy" claim to track who initiated the impersonation.
-     * </p>
-     *
-     * @param userId         The ID of the user to impersonate.
-     * @param authentication The current user's authentication.
-     * @return ResponseEntity with a JSON containing the new token and user ID.
-     */
-    @Operation(summary = "Impersonate a user", description = "Allows a SUPER_ADMIN to log in on behalf of another user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Impersonation successful"),
-            @ApiResponse(responseCode = "404", description = "User not found"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - Not authorized to impersonate"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @PostMapping("${admin.impersonate}")
-    @PreAuthorize("@authz.isSuperAdmin(authentication)")
-    public ResponseEntity<?> impersonateUser(@PathVariable Long userId, Authentication authentication) {
-        // Load the user to impersonate by ID
-        UserDetails userToImpersonate = userDetailsService.loadUserById(userId);
-
-        // Get the name of the user who is initiating the impersonation
-        String impersonatedBy = authentication.getName();
-
-        // Generate a new JWT token with the impersonated user's rights and the impersonatedBy claim
-        String token = jwtUtil.generateImpersonationToken(userToImpersonate, impersonatedBy);
-
-        // Log the impersonation action
-        log.info("User {} impersonated user {}", impersonatedBy, userToImpersonate.getUsername());
-
-        // Create the response with the new token and user ID
-        Map<String, Object> response = new HashMap<>();
-        response.put("token", token);
-        response.put("userId", userId);
-
-        return ResponseEntity.ok(response);
-    }
-
-    /**
      * Retrieve all resources (categories, dishes, users) for a specific eatery.
      * <p>
      * This endpoint returns a JSON document listing all resource IDs that belong to the specified eatery,
