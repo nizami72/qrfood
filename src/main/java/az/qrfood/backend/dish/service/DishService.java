@@ -122,7 +122,7 @@ public class DishService {
         } else {
             dishEntity.setKitchenDepartment(null);
         }
-
+        dishEntity.setDishStatus(DishStatus.AVAILABLE);
         dishEntity = dishRepository.save(dishEntity);
 
         List<DishEntityTranslation> translations = List.of(

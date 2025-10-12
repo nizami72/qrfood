@@ -10,6 +10,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -180,13 +181,23 @@ public class SeleniumUtil {
     }
 
     public static void checkCheckboxByWordDish(WebDriver driver, String catNameEn, String temp) {
+        // 1. Define the explicit wait with a timeout (e.g., 10 seconds)
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        // 2. The XPath expression remains the same
         String xpathExpression = String.format(
                 "//div[contains(@class, 'border') and .//p[text()='%s']]//input[@type='checkbox']",
                 catNameEn
         );
-        WebElement checkbox = driver.findElement(By.xpath(xpathExpression));
+
+        // 3. Wait until the element is clickable, then find it
+        WebElement checkbox = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpathExpression)));
+
+        // 4. Now that the element is ready, click it
         checkbox.click();
     }
+
+
     //</editor-fold>
 
     //<editor-fold desc="Select Option">

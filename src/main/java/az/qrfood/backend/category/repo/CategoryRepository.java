@@ -1,6 +1,7 @@
 package az.qrfood.backend.category.repo;
 
 import az.qrfood.backend.category.entity.Category;
+import az.qrfood.backend.category.entity.CategoryStatus;
 import az.qrfood.backend.dish.entity.DishStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -37,7 +38,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
      * @param hash The hash value of the category to retrieve.
      * @return An {@link Optional} containing the found category, or empty if not found.
      */
-    Optional<Category> findByHash(int hash);
+//    Optional<Category> findByHash(int hash);
 
     Optional<Category> findByEateryIdAndId(Long eateryId, Long id);
 
@@ -57,11 +58,24 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
            FROM Category c
            LEFT JOIN FETCH c.items d
            WHERE c.eatery.id = :eateryId
+           AND c.categoryStatus <> :excludedCategoryStatus
            AND d.dishStatus <> :excludedStatus
            """)
     List<Category> findCategoryWithDishesNotMatchingStatus(
+            @Param ("excludedCategoryStatus") CategoryStatus status,
             @Param("eateryId") Long eateryId,
             @Param("excludedStatus") DishStatus excludedStatus);
+
+
+    @Query("""
+           SELECT c
+           FROM Category c
+           WHERE c.eatery.id = :eateryId
+           AND c.categoryStatus <> :excludedCategoryStatus
+           """)
+    List<Category> findCategoryWithNotMatchingStatus(
+            @Param ("excludedCategoryStatus") CategoryStatus status,
+            @Param("eateryId") Long eateryId);
 
 
 }

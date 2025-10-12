@@ -2,6 +2,7 @@ package az.qrfood.backend.category.service;
 
 import az.qrfood.backend.category.dto.CategoryDto;
 import az.qrfood.backend.category.entity.Category;
+import az.qrfood.backend.category.entity.CategoryStatus;
 import az.qrfood.backend.category.entity.CategoryTranslation;
 import az.qrfood.backend.category.repo.CategoryRepository;
 import az.qrfood.backend.common.Util;
@@ -78,7 +79,7 @@ public class CategoryService {
         // check if an eatery exists
         Optional<Eatery> eateryOp = eateryRepository.findById(eateryId);
         if (eateryOp.isEmpty()) {
-           throw new EntityNotFoundException(String.format(
+            throw new EntityNotFoundException(String.format(
                     "Cant create category for eatery %s, eatery not found", eateryId));
         }
 
@@ -95,13 +96,7 @@ public class CategoryService {
         );
 
         category.setTranslations(categoryTranslations);
-        category.setHash(category.hashCode());
-        Optional<Category> mayExistCategory = categoryRepository.findByHash(category.hashCode());
-        if (mayExistCategory.isPresent()) {
-            Category c = mayExistCategory.get();
-            log.debug("The category with the same eatery ID and translation already exists, id [{}]", c.getId());
-            return c;
-        }
+        category.setCategoryStatus(CategoryStatus.ACTIVE);
         categoryRepository.save(category);
         log.debug("Dish category created [{}]", category);
 
@@ -133,8 +128,10 @@ public class CategoryService {
      */
     public CategoryDto findCategoryById(Long id) {
         Optional<Category> category = categoryRepository.findById(id);
-        if(category.isEmpty()) {throw new EntityNotFoundException(
-                String.format("The category with id [%s] not fount", id));}
+        if (category.isEmpty()) {
+            throw new EntityNotFoundException(
+                    String.format("The category with id [%s] not fount", id));
+        }
         return convertCategoryToDto(category.get());
     }
 
@@ -142,8 +139,10 @@ public class CategoryService {
     public CategoryDto findCategoryByEateryIdAndId(Long eateryId, Long id) {
         Optional<Category> category = categoryRepository.findByEateryIdAndId(eateryId, id);
 
-        if(category.isEmpty()) {throw new EntityNotFoundException(
-                String.format("The category with id [%s] not fount", id));}
+        if (category.isEmpty()) {
+            throw new EntityNotFoundException(
+                    String.format("The category with id [%s] not fount", id));
+        }
         log.debug("Items [{}] in category [{}]", category.get().getItems().size(), id);
         return convertCategoryToDto(category.get());
     }
@@ -157,7 +156,9 @@ public class CategoryService {
      */
     public List<CategoryDto> findAllCategoryForEatery(long eateryId) {
 
-        List<Category> categories = categoryRepository.findCategoryWithDishesNotMatchingStatus(eateryId, DishStatus.OUT_OF_STOCK);
+        List<Category> categories = categoryRepository.findCategoryWithNotMatchingStatus(
+                CategoryStatus.ARCHIVED,
+                eateryId);
         if (categories.isEmpty()) {
             String error = String.format("Eatery [%s] has no any category and dish", eateryId);
             log.warn(error);
@@ -192,24 +193,24 @@ public class CategoryService {
      */
     private CategoryDto convertCategoryToDto(Category category) {
 
-            CategoryDto dto = new CategoryDto();
-            dto.setEateryId(category.getEatery().getId());
-            dto.setDishes(category.getItems().stream()
-                    .map(DishService::convertEntityToDto)
-                    .collect(Collectors.toList())
-            );
-            dto.setCategoryId(category.getId());
-            dto.setImage(category.getCategoryImageFileName());
+        CategoryDto dto = new CategoryDto();
+        dto.setEateryId(category.getEatery().getId());
+        dto.setDishes(category.getItems().stream()
+                .map(DishService::convertEntityToDto)
+                .collect(Collectors.toList())
+        );
+        dto.setCategoryId(category.getId());
+        dto.setImage(category.getCategoryImageFileName());
 
-            category.getTranslations().forEach(t -> {
-                if (t.getLang().equals(Language.az.name())) {
-                    dto.setNameAz(t.getName());
-                } else if (t.getLang().equals(Language.en.name())) {
-                    dto.setNameEn(t.getName());
-                } else if (t.getLang().equals(Language.ru.name())) {
-                    dto.setNameRu(t.getName());
-                }
-            });
+        category.getTranslations().forEach(t -> {
+            if (t.getLang().equals(Language.az.name())) {
+                dto.setNameAz(t.getName());
+            } else if (t.getLang().equals(Language.en.name())) {
+                dto.setNameEn(t.getName());
+            } else if (t.getLang().equals(Language.ru.name())) {
+                dto.setNameRu(t.getName());
+            }
+        });
 
         return dto;
     }
@@ -242,6 +243,28 @@ public class CategoryService {
             return ResponseEntity.ok(String.format("Category [%s] not found", categoryId));
         }
     }
+
+
+    /**
+     * Updates a category status.
+     * This also deletes all associated category translations due to the cascade relationship.
+     *
+     * @param categoryId The ID of the category to delete.
+     * @return A {@link ResponseEntity} with a success message.
+     */
+    @Transactional
+    public ResponseEntity<String> updateCategoryStatus(Long categoryId, CategoryStatus status) {
+        // Find the category to ensure it exists and to get its translations
+        Optional<Category> categoryOpt = categoryRepository.findById(categoryId);
+        if (categoryOpt.isPresent()) {
+            Category category = categoryOpt.get();
+            category.setCategoryStatus(status);
+            return ResponseEntity.ok(String.format("Category [%s] status updated [{}]", status));
+        } else {
+            return ResponseEntity.ok(String.format("Category [%s] not found", categoryId));
+        }
+    }
+
 
     /**
      * Updates an existing category with new data.
@@ -294,10 +317,8 @@ public class CategoryService {
             }
         }
 
-        // Update hash
-        category.setHash(category.hashCode());
 
-        // Save updated category
+        // Save an updated category
         categoryRepository.save(category);
         log.debug("Category updated [{}]", category);
 

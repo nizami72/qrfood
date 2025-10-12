@@ -1,11 +1,24 @@
 package az.qrfood.backend.category.entity;
 
 import az.qrfood.backend.common.entity.BaseEntity;
-import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.dish.entity.DishEntity;
-import jakarta.persistence.*;
-import lombok.*;
-
+import az.qrfood.backend.eatery.entity.Eatery;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,15 +36,15 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(callSuper = true, exclude = {"eatery", "items", "translations"})
 @Table(name = "category")
 public class Category extends BaseEntity {
 
     /**
      * The eatery to which this category belongs.
-     * This is a many-to-one relationship, indicating that multiple categories
-     * can belong to a single eatery.
+     * The relationship is lazily fetched to optimize performance.
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "eatery_id", nullable = false)
     private Eatery eatery;
 
@@ -42,11 +55,13 @@ public class Category extends BaseEntity {
     private String categoryImageFileName;
 
     /**
-     * A hash value for the category, potentially used for caching or quick comparison.
-     * This is derived from the category's translations and its associated eatery.
+     * Indicates whether the category is currently active and should be displayed on the menu.
+     * Defaults to {@code true}.
      */
-    @Column(name = "hash")
-    private int hash;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CategoryStatus categoryStatus;
 
     /**
      * A list of dishes (items) that belong to this category.
@@ -65,24 +80,6 @@ public class Category extends BaseEntity {
      */
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CategoryTranslation> translations;
-
-
-    /**
-     * Provides a string representation of the Category object, including its ID,
-     * associated eatery ID, image file name, and counts of translations and items.
-     *
-     * @return A formatted string representation of the Category.
-     */
-    @Override
-    public String toString() {
-        return "Category {\n" +
-                "  id=" + getId() + ",\n" +
-                "  eateryId=" + (eatery != null ? eatery.getId() : "null") + ",\n" +
-                "  iconUrl='" + categoryImageFileName + "',\n" +
-                "  translationsCount=" + (translations != null ? translations.size() : 0) + ",\n" +
-                "  itemsCount=" + (items != null ? items.size() : 0) + "\n" +
-                '}';
-    }
 
     /**
      * Generates a hash code for the Category object.

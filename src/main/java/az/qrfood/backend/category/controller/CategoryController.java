@@ -3,6 +3,7 @@ package az.qrfood.backend.category.controller;
 import az.qrfood.backend.category.dto.CategoryDto;
 import az.qrfood.backend.category.dto.CategoryPredefined;
 import az.qrfood.backend.category.entity.Category;
+import az.qrfood.backend.category.entity.CategoryStatus;
 import az.qrfood.backend.category.service.CategoryService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -157,7 +158,7 @@ public class CategoryController {
     @DeleteMapping(value = "${eatery.id.category.id}")
     public ResponseEntity<String> deleteCategory(@PathVariable(value = "categoryId") Long categoryId) {
         log.debug("Delete category: {}", categoryId);
-        return categoryService.deleteCategory(categoryId);
+        return categoryService.updateCategoryStatus(categoryId, CategoryStatus.ARCHIVED);
     }
 
     /**
