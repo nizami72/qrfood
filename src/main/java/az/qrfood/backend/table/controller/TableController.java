@@ -1,6 +1,7 @@
 package az.qrfood.backend.table.controller;
 
 import az.qrfood.backend.table.dto.TableDto;
+import az.qrfood.backend.table.entity.TableStatus;
 import az.qrfood.backend.table.service.TableService;
 import az.qrfood.backend.tableassignment.dto.TableAssignmentDto;
 import az.qrfood.backend.tableassignment.service.TableAssignmentService;
@@ -177,7 +178,7 @@ public class TableController {
     @DeleteMapping("${table.id}")
     public ResponseEntity<Void> deleteTable(@PathVariable Long tableId) {
         try {
-            tableService.deleteTable(tableId);
+            tableService.updateTableStatus(tableId, TableStatus.ARCHIVED);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();

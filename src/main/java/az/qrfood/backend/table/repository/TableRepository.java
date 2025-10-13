@@ -1,10 +1,10 @@
 package az.qrfood.backend.table.repository;
 
 import az.qrfood.backend.table.entity.TableInEatery;
-import com.google.common.io.Files;
+import az.qrfood.backend.table.entity.TableStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -33,4 +33,21 @@ public interface TableRepository extends JpaRepository<TableInEatery, Long> {
      * @return An {@link Optional} containing the found {@link TableInEatery}, or empty if not found.
      */
     Optional<TableInEatery> findByEateryIdAndTableNumber(Long eateryId, String tableNumber);
+
+
+    /**
+     * Retrieves a list of not soft deleted tables belonging to a specific eatery.
+     *
+     * @param eateryId The ID of the eatery.
+     * @return A list of {@link TableInEatery} entities associated with the given eatery ID.
+     */
+
+    @Query("""
+            SELECT c
+            FROM TableInEatery c
+            WHERE c.eatery.id = :eateryId
+            AND c.status <> :excludedCategoryStatus
+            """)
+    List<TableInEatery> findByEateryIdAndStausNot(Long eateryId, TableStatus excludedCategoryStatus);
+
 }

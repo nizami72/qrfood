@@ -84,7 +84,7 @@ public class TableService {
      * @return A list of {@link TableDto} representing all tables in the specified eatery.
      */
     public List<TableDto> listTablesForEatery(Long eateryId) {
-        return tableRepository.findByEateryId(eateryId)
+        return tableRepository.findByEateryIdAndStausNot(eateryId, TableStatus.ARCHIVED)
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -156,6 +156,7 @@ public class TableService {
         TableInEatery table = tableRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Table not found with id: " + id));
         table.setStatus(tableNewStatus);
+        tableRepository.save(table);
     }
 
     /**

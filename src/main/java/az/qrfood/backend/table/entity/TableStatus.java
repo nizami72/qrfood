@@ -24,4 +24,6 @@ public enum TableStatus {
      * The table has been reserved for future use.
      */
     RESERVED,
+
+    ARCHIVED,
 }

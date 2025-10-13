@@ -30,26 +30,29 @@ ALTER TABLE dish
     ADD FOREIGN KEY (kitchen_department_id) REFERENCES kitchen_departments(id) ON DELETE SET NULL;
 
 
--- SQL-скрипт для миграции таблицы 'dish' в MySQL
-
--- Шаг 1: Добавляем новую колонку `dish_status`.
--- Мы используем VARCHAR(255), так как это стандартный способ хранения
--- Java Enum, аннотированных как @Enumerated(EnumType.STRING).
--- Колонка временно создается как NULLABLE, чтобы можно было добавить ее в таблицу с данными.
 ALTER TABLE dish ADD COLUMN dish_status VARCHAR(255);
 
--- Шаг 2: Заполняем новую колонку на основе значений из старой `is_available`.
--- Логика: если блюдо было доступно (true), его статус становится AVAILABLE.
--- Если было недоступно (false), мы считаем его архивированным (ARCHIVED).
 UPDATE dish
 SET dish_status = CASE
                       WHEN is_available = TRUE THEN 'AVAILABLE'
                       ELSE 'ARCHIVED'
     END;
 
--- Шаг 3: Теперь, когда все строки в новой колонке имеют значение,
--- мы можем безопасно установить ограничение NOT NULL, как того требует ваша Entity.
 ALTER TABLE dish MODIFY COLUMN dish_status VARCHAR(255) NOT NULL;
 
--- Шаг 4: После успешной миграции данных удаляем старую колонку `is_available`.
 ALTER TABLE dish DROP COLUMN is_available;
+
+# Table in an eatery
+ALTER TABLE table_in_eatery MODIFY COLUMN status VARCHAR(255) NOT NULL;
+
+alter table table_in_eatery
+    drop constraint table_in_eatery_chk_1;
+
+
+# Category modidieng
+ALTER TABLE category
+    ADD COLUMN created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ADD COLUMN updated_at DATETIME NULL ON UPDATE CURRENT_TIMESTAMP;
+
+
+ALTER TABLE category ADD COLUMN category_status VARCHAR(255) AFTER eatery_id;

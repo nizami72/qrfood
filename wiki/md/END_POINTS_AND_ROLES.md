@@ -18,8 +18,7 @@
 - [TableAssignmentController](#tableassignmentcontroller)
 - [TableController](#tablecontroller)
 - [UserController](#usercontroller)
-
-### AdminController Ok
+### AdminController
 
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
@@ -32,7 +31,7 @@
 
 ---
 
-### Alive Ok
+### Alive
 
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
@@ -42,7 +41,7 @@
 
 ---
 
-### AuthController Ok
+### AuthController
 
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
@@ -56,7 +55,7 @@
 
 ---
 
-### CategoryController Ok
+### CategoryController
 
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
