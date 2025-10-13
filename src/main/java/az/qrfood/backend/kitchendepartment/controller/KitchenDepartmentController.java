@@ -54,8 +54,8 @@ public class KitchenDepartmentController {
 
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN')")
     @DeleteMapping("${eatery.id.kitchen-department.id}")
-    public void deleteDepartment(@PathVariable("departmentId") Long id) {
-        // todo ensure department id corresponds with eatery id
-        departmentService.delete(id);
+    public void deleteDepartment(@PathVariable("eateryId") Long eateryId,
+                                 @PathVariable("departmentId") Long id) {
+        departmentService.delete(id, eateryId);
     }
 }

@@ -76,8 +76,8 @@ public class KitchenDepartmentService {
      * Deletes a kitchen department by id (requires access to the owning restaurant).
      */
     @Transactional
-    public void delete(Long departmentId) {
-        KitchenDepartmentEntity dept = departmentRepository.findById(departmentId)
+    public void delete(Long eateryId, Long departmentId) {
+        KitchenDepartmentEntity dept = departmentRepository.findByIdAndRestaurantId(eateryId, departmentId)
                 .orElseThrow(() -> new EntityNotFoundException("Department not found with id: " + departmentId));
         assertUserHasAccessToRestaurant(dept.getRestaurant().getId());
         departmentRepository.delete(dept);

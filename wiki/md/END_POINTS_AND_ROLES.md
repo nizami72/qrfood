@@ -164,7 +164,7 @@
 
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
-| [DELETE deleteDepartment(Long)](../../src/main/java/az/qrfood/backend/kitchendepartment/controller/KitchenDepartmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN` | `/api/eatery/{eateryId}/kitchen-department/{departmentId}` |
+| [DELETE deleteDepartment(Long, Long)](../../src/main/java/az/qrfood/backend/kitchendepartment/controller/KitchenDepartmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN` | `/api/eatery/{eateryId}/kitchen-department/{departmentId}` |
 | [GET getDepartmentsForRestaurant(Long)](../../src/main/java/az/qrfood/backend/kitchendepartment/controller/KitchenDepartmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER, CASHIER` | `/api/eatery/{eateryId}/kitchen-department` |
 | [POST createDepartment(Long, CreateDepartmentRequestDto)](../../src/main/java/az/qrfood/backend/kitchendepartment/controller/KitchenDepartmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN` | `/api/eatery/{eateryId}/kitchen-department` |
 | [PUT updateDepartment(Long, Long, UpdateDepartmentRequestDto)](../../src/main/java/az/qrfood/backend/kitchendepartment/controller/KitchenDepartmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN` | `/api/eatery/{eateryId}/kitchen-department/{departmentId}` |

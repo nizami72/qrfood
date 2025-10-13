@@ -4,27 +4,27 @@
 ---------------------------------
 Cloudflare Turnstile +qr
 Coton +buy
-Delete all user-related data when a user is deleted if the user has the role eatery-admin +qr
+
 Ear Phones +buy
 Feature: Reassign order to another table +qr
 For the request /api/eatery/2/order-item/order/4 what is dishItemId +qr
 Implement post put data validation +qr
 Keyboard +buy
-Modify orhan removal regarding orders and devices entities +qr
+
 On orders menu set default date today +qr
 Paid Order shown as Accepted on client device +qr
 Sneakers +buy
 Status order +qr
-The table status should be busy if an order is assigned to the table +qr
+
 To secure public API methods from scam and overloading +qr
-While creating a new user; it is created a new eatery, notified when run Kimber test +qr
+
 Write unit tests +ProjectX @office
 often asked questions +qr
 we can do all things for you, send your menu, then change the password +qr
 
 
 
-(A) Detalize what role can do what +qr
+(C) Detalize what role can do what +qr
 Fix adding again the same dish from predefind
 Sort all orders in a clint device and decide when it shsould be put in deactiv state
 Sort all orders in a clint device and decide when it shsould be put in deactiv state +pr
@@ -41,5 +41,8 @@ Error: The same table name in header line 2 for orders with different tables +qr
 Add table page update via socket  +qr @feat
 
 atomic hanit
-(A) Error when try to delete dish that is referenced by order, consider make approprite message to delete first order and then dish +qr
+(D) Error when try to delete dish that is referenced by order, consider make approprite message to delete first order and then dish +qr
 
+(A) add soft deletion for user +qr
+(A) add soft deletion for orders +qr
+(A) add soft deletion for Departments +qr

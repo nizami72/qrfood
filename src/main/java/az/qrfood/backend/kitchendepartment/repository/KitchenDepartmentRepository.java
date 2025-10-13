@@ -3,6 +3,7 @@ package az.qrfood.backend.kitchendepartment.repository;
 import az.qrfood.backend.kitchendepartment.entity.KitchenDepartmentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
+import java.util.Optional;
 
 public interface KitchenDepartmentRepository extends JpaRepository<KitchenDepartmentEntity, Long> {
 
@@ -12,6 +13,8 @@ public interface KitchenDepartmentRepository extends JpaRepository<KitchenDepart
      * @return A list of kitchen departments.
      */
     List<KitchenDepartmentEntity> findByRestaurantId(Long restaurantId);
+
+    Optional<KitchenDepartmentEntity> findByIdAndRestaurantId(Long Id, Long eateryId);
 
 
 }
