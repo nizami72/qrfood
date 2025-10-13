@@ -4,7 +4,6 @@
 * /api/admin/eatery/{eateryId}
 * /api/admin/eatery/{eateryId}/details
 * /api/admin/eatery/{eateryId}/resources
-* /api/admin/impersonate/{userId}
 * /api/auth/login
 * /api/auth/logout
 * /api/auth/recreate-token-on-eatery-change

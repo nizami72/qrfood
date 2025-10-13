@@ -71,7 +71,7 @@ public class QrController {
             @ApiResponse(responseCode = "200", description = "List fetched successfully"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication)")
+    @PreAuthorize("@authz.isSuperAdmin(authentication)")
     @GetMapping(value = "${api.qr-code.contents}")
     public ResponseEntity<List<String>> getQrContents(@PathVariable("eateryId") Long eateryId) {
         List<String> contents = qrService.getAllQrContents(eateryId);

@@ -60,7 +60,7 @@ public class EateryController {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved list of eateries"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication)")
+    @PreAuthorize("@authz.isSuperAdmin(authentication)")
     @GetMapping("${eatery}")
     public ResponseEntity<List<EateryDto>> getAllRestaurants() {
         return ResponseEntity.ok(eateryService.getAllRestaurants());

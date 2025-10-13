@@ -18,7 +18,8 @@
 - [TableAssignmentController](#tableassignmentcontroller)
 - [TableController](#tablecontroller)
 - [UserController](#usercontroller)
-### AdminController
+
+### AdminController Ok
 
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
@@ -26,13 +27,12 @@
 | [GET getEateryBelongToUser(String)](../../src/main/java/az/qrfood/backend/user/controller/AdminController.java) | `public` | `/api/admin/eatery-admin/{admin}` |
 | [GET getEateryDetails(Long)](../../src/main/java/az/qrfood/backend/user/controller/AdminController.java) | `public` | `/api/admin/eatery/{eateryId}/details` |
 | [GET getEateryResources(Long)](../../src/main/java/az/qrfood/backend/user/controller/AdminController.java) | `public` | `/api/admin/eatery/{eateryId}/resources` |
-| [POST impersonateUser(Long, Authentication)](../../src/main/java/az/qrfood/backend/user/controller/AdminController.java) | `public` | `/api/admin/impersonate/{userId}` |
 
 ###### [🔝](#navigation)
 
 ---
 
-### Alive
+### Alive Ok
 
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
@@ -42,7 +42,7 @@
 
 ---
 
-### AuthController
+### AuthController Ok
 
 | Method | Role(s) | URL Path |
 |--------|---------|----------|
@@ -56,7 +56,7 @@
 
 ---
 
-### CategoryController
+### CategoryController Ok
 
 | Method | Role(s) | URL Path |
 |--------|---------|----------|

@@ -42,7 +42,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @GetMapping("${api.user}")
-    @PreAuthorize("@authz.hasAnyRole(authentication)")
+    @PreAuthorize("@authz.isSuperAdmin(authentication)")
     // [[getAllUsersFromAllEateries]]
     public ResponseEntity<List<UserResponse>> getAllUsersFromAllEateries() {
         List<UserResponse> responses = userService.getAllUsers();
@@ -59,7 +59,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved list of users"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication)")
+    @PreAuthorize("@authz.isSuperAdmin(authentication)")
     @GetMapping("${users}")
     // [[getAllUsers]]
     public ResponseEntity<List<UserResponse>> getAllUsers() {
@@ -215,7 +215,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping("${usr.delete}")
-    @PreAuthorize("@authz.hasAnyRole(authentication)")
+    @PreAuthorize("@authz.isSuperAdmin(authentication)")
     public ResponseEntity<GeneralResponse<?>> deleteUserByName(@PathVariable String id) {
         GeneralResponse<?> g = userService.deleteEateryAdminWithResources(id);
         log.debug("Deleted user with id [{}]", id);
