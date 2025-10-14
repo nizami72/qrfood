@@ -45,8 +45,7 @@ ALTER TABLE dish DROP COLUMN is_available;
 # Table in an eatery
 ALTER TABLE table_in_eatery MODIFY COLUMN status VARCHAR(255) NOT NULL;
 
-alter table table_in_eatery
-    drop constraint table_in_eatery_chk_1;
+alter table table_in_eatery drop constraint table_in_eatery_chk_1;
 
 
 # Category modidieng
