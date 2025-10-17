@@ -78,4 +78,17 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             @Param("eateryId") Long eateryId);
 
 
+    @Query("""
+           SELECT c
+           FROM Category c
+           LEFT JOIN FETCH c.items d
+           WHERE c.eatery.id = :eateryId
+           AND c.categoryStatus = :categoryStatus
+           AND d.dishStatus = :dishStatus
+           """)
+    List<Category> findCategoryAndDishesByStatus(
+            @Param ("categoryStatus") CategoryStatus categoryStatus,
+            @Param("eateryId") Long eateryId,
+            @Param("dishStatus") DishStatus dishStatus);
+
 }

@@ -55,7 +55,7 @@ public class FrontendPathConfig {
     @Value("${full.path.fe.delete.menu-item}")
     private String urlDeleteMenuItem;
     @Value("${api.client.eatery.table}")
-    private String clientGetMenuUrl;
+    private String apiClientEateryTable;
 
     // New API path segments (from application.properties)
     @Value("${eatery}")
@@ -155,7 +155,7 @@ public class FrontendPathConfig {
         paths.put("tables", urlApiTables);
         paths.put("urlAddDish2Order", urlAddDish2Order);
         paths.put("urlDeleteMenuItemFromOrder", urlDeleteMenuItem);
-        paths.put("clientGetMenuUrl", clientGetMenuUrl);
+        paths.put("clientGetMenuUrl", apiClientEateryTable);
         paths.put("______________", "_________________");
 
         //NEW

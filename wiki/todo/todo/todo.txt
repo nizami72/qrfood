@@ -41,8 +41,9 @@ Error: The same table name in header line 2 for orders with different tables +qr
 Add table page update via socket  +qr @feat
 
 atomic hanit
-(D) Error when try to delete dish that is referenced by order, consider make approprite message to delete first order and then dish +qr
 
-(A) add soft deletion for user +qr
-(A) add soft deletion for orders +qr
-(A) add soft deletion for Departments +qr
+
+(B) add soft deletion for user +qr
+(B) add soft deletion for orders +qr
+(B) add soft deletion for Departments +qr
+(A) filter soft deleted dishes and categories from the client menu requested form client mobile device +qr

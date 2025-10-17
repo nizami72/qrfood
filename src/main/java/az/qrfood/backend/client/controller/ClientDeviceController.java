@@ -86,7 +86,7 @@ public class ClientDeviceController {
             log.debug("The table doesnt exists [{}]", tableId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        List<CategoryDto> id = categoryService.findAllCategoryForEatery(eateryId);
+        List<CategoryDto> id = categoryService.findAllActiveCategoryAndDishes(eateryId);
         String eateryName = eateryService.getEateryById(eateryId).getName();
         Menu menu = new Menu(eateryId, tableId, eateryName, table.get().number(), id);
         return ResponseEntity.ok(menu);

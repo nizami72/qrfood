@@ -167,6 +167,28 @@ public class CategoryService {
         return convertCategoryToDto(categories);
     }
 
+
+    /**
+     * Finds all active categories and dishes associated with a specific eatery.
+     *
+     * @param eateryId The ID of the eatery.
+     * @return A list of {@link CategoryDto} representing the categories for the specified eatery.
+     * @throws EntityNotFoundException if the eatery with the given ID is not found.
+     */
+    public List<CategoryDto> findAllActiveCategoryAndDishes(long eateryId) {
+
+        List<Category> categories = categoryRepository.findCategoryAndDishesByStatus(
+                CategoryStatus.ACTIVE,
+                eateryId,
+                DishStatus.AVAILABLE);
+        if (categories.isEmpty()) {
+            String error = String.format("Eatery [%s] has no any category and dish", eateryId);
+            log.warn(error);
+            return List.of();
+        }
+        return convertCategoryToDto(categories);
+    }
+
     /**
      * Converts a list of {@link Category} entities to a list of {@link CategoryDto}s.
      *
