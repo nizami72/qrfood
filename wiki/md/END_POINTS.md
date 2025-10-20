@@ -31,8 +31,8 @@
 * /api/eatery/{eateryId}/order-item/order/{orderId}
 * /api/eatery/{eateryId}/order-item/{orderItemId}
 * /api/eatery/{eateryId}/order/post
-* /api/eatery/{eateryId}/order/status/created
 * /api/eatery/{eateryId}/order/status/{status}
+* /api/eatery/{eateryId}/order/status/{status}/auth
 * /api/eatery/{eateryId}/order/{orderId}
 * /api/eatery/{eateryId}/order/{orderId}/add-dishes
 * /api/eatery/{eateryId}/order/{orderId}/delete
@@ -44,6 +44,7 @@
 * /api/eatery/{eateryId}/table-assignment/waiter/{waiterId}
 * /api/eatery/{eateryId}/table-assignment/{assignmentId}
 * /api/eatery/{eateryId}/table/{tableId}
+* /api/eatery/{eateryId}/table/{tableId}/device-orders
 * /api/eatery/{eateryId}/user
 * /api/eatery/{eateryId}/user/name/{userName}
 * /api/eatery/{eateryId}/user/register/general

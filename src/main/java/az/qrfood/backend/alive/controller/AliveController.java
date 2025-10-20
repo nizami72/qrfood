@@ -22,7 +22,7 @@ public class AliveController {
     @Value("${spring.application.name}")
     private String applicationName;
     private final GitProperties gitProperties;
-    private Map<String, Object> m = new HashMap<>();
+    private final Map<String, Object> m = new HashMap<>();
 
     public AliveController(GitProperties gitProperties) {
         this.gitProperties = gitProperties;

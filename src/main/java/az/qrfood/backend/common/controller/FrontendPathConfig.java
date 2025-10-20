@@ -159,7 +159,6 @@ public class FrontendPathConfig {
         paths.put("______________", "_________________");
 
         //NEW
-        paths.put("EATERY", "--------------------");
         paths.put("eatery", eatery);
         paths.put("eateryId", eateryId);
         paths.put("eateryOwner", eateryOwner);
@@ -173,7 +172,6 @@ public class FrontendPathConfig {
         paths.put("tableAssignmentWaiter", tableAssignmentWaiter);
         paths.put("tableAssignmentTable", tableAssignmentTable);
         paths.put("tableAssignmentId", tableAssignmentId);
-        paths.put("ORDERS", "--------------------");
         paths.put("orderStatus", orderStatus);
         paths.put("orderId", orderId);
         paths.put("orderIdDelete", orderIdDelete);
@@ -182,11 +180,9 @@ public class FrontendPathConfig {
         paths.put("order", order);
         paths.put("orders", orders);
         paths.put("orderPost", orderPost);
-        paths.put("ORDER ITEMS", "--------------------");
         paths.put("orderItem", orderItem);
         paths.put("orderItemId", orderItemId);
         paths.put("orderItemOrderId", orderItemOrderId);
-        paths.put("USERS", "--------------------");
         paths.put("userN", userN);
         paths.put("users", users);
         paths.put("userId", userId);
@@ -198,7 +194,6 @@ public class FrontendPathConfig {
         paths.put("apiUser", apiUser);
         paths.put("reCreateTokenOnEateryChangeUrl", reCreateTokenOnEateryChangeUrl);
         paths.put("orderIdAddDishes", orderIdAddDishes);
-        paths.put("Kitchen Departments", "--------------------");
         paths.put("eateryIdKitchenDepartment",eateryIdKitchenDepartment );
         paths.put("eateryIdKitchenDepartmentId",eateryIdKitchenDepartmentId );
 //        paths.put("", );
