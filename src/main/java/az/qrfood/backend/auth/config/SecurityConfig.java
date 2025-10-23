@@ -47,6 +47,8 @@ public class SecurityConfig {
     String apiUserRegister;
     @Value("${api.eatery}")
     String apiEateryArgCategoryArg;
+    @Value("${api.eatery.order.status.created}")
+    private String deviceOrders;
 
     /**
      * Constructs the SecurityConfig with necessary dependencies.
@@ -127,7 +129,7 @@ public class SecurityConfig {
                 );
 
         http
-                .addFilterBefore(new JwtRequestFilter(userDetailsService, jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtRequestFilter(deviceOrders, userDetailsService, jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(new EateryIdCheckFilter(jwtUtil), JwtRequestFilter.class);
         return http.build();
     }
@@ -151,7 +153,7 @@ public class SecurityConfig {
     }
 
     public JwtRequestFilter jwtRequestFilter() {
-        return new JwtRequestFilter(userDetailsService, jwtUtil);
+        return new JwtRequestFilter(deviceOrders, userDetailsService, jwtUtil);
     }
 
     public EateryIdCheckFilter eateryIdCheckFilter() {

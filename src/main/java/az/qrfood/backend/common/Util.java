@@ -1,5 +1,12 @@
 package az.qrfood.backend.common;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.BeanUtils;
+import org.springframework.web.multipart.MultipartFile;
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -11,17 +18,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
-import javax.imageio.ImageIO;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.BeanUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * A utility class providing various helper methods for common tasks
@@ -233,13 +234,11 @@ public class Util {
         }
     }
 
-
-
     /**
      * Serializes a given object to a JSON file.
      *
      * @param object The object to serialize.
-     * @param <T> The type of the object.
+     * @param <T>    The type of the object.
      * @throws RuntimeException if an error occurs during serialization or file writing.
      */
     public static <T> String toJsonString(T object) {
@@ -261,21 +260,42 @@ public class Util {
      * Checks if a given LocalDateTime is not older than a specified duration from the current time.
      *
      * @param dateTime The LocalDateTime to check.
-     * @param period The period of time to subtract from the current time.
-     * @param unit The unit of the period (e.g., ChronoUnit.MINUTES, ChronoUnit.HOURS, ChronoUnit.DAYS).
+     * @param period   The period of time to subtract from the current time.
+     * @param unit     The unit of the period (e.g., ChronoUnit.MINUTES, ChronoUnit.HOURS, ChronoUnit.DAYS).
      * @return true if the dateTime is not older than now minus the specified period, false otherwise.
      */
-    public static boolean isNotOlder(LocalDateTime dateTime, long period, ChronoUnit unit) {
+    public static boolean isNotOlder(LocalDateTime dateTime, long period, ChronoUnit unit, Long dayStartsAtHour) {
         if (dateTime == null || period < 0 || !isSupportedUnit(unit)) {
             throw new IllegalArgumentException("Invalid arguments provided.");
         }
 
-        LocalDateTime threshold = LocalDateTime.now().minus(period, unit);
+        LocalDateTime threshold = LocalDateTime.now().minus(period, unit).plusHours(dayStartsAtHour);
         return !dateTime.isBefore(threshold);
     }
 
     private static boolean isSupportedUnit(ChronoUnit unit) {
         return unit == ChronoUnit.MINUTES || unit == ChronoUnit.HOURS || unit == ChronoUnit.DAYS;
+    }
+
+    /**
+     * Проверяет, находится ли указанная дата в интервале
+     * [сегодня 06:00:00, завтра 06:00:00).
+     *
+     * @param dateTimeToCheck Дата для проверки.
+     * @return true, если дата находится в этом 24-часовом окне.
+     */
+    public static boolean isBetweenXAMTodayAnd6AMTomorrow(LocalDateTime dateTimeToCheck, int dayStartsAtHour) {
+        if (dateTimeToCheck == null) {
+            return false; // или throw new IllegalArgumentException("...");
+        }
+
+        LocalDateTime startWindow = LocalDate.now().atTime(dayStartsAtHour, 0);
+        LocalDateTime endWindow = LocalDate.now().plusDays(1).atTime(dayStartsAtHour, 0);
+
+        boolean isAtOrAfterStart = !dateTimeToCheck.isBefore(startWindow);
+        boolean isBeforeEnd = dateTimeToCheck.isBefore(endWindow);
+
+        return isAtOrAfterStart && isBeforeEnd;
     }
 }
 

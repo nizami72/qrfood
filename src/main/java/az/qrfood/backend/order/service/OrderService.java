@@ -358,7 +358,7 @@ public class OrderService {
     }
 
     /**
-     * Retrieves orders filtered by eatery ID and device UUID.
+     * Retrieves orders filtered by eatery ID and device UUID that were ordered after 6:00 AM till now.
      * <p>
      * This method is used to check if a specific device has any orders
      * at a specific eatery. It's primarily used to determine whether to show the order
@@ -380,7 +380,7 @@ public class OrderService {
                                     order.getTable() != null && order.getTable().getEatery() != null &&
                                             eateryId.equals(order.getTable().getEatery().getId()))
                             .filter(order ->
-                                    Util.isNotOlder(order.getCreatedAt(), 1, ChronoUnit.DAYS)).toList();
+                                    Util.isBetweenXAMTodayAnd6AMTomorrow(order.getCreatedAt(), 6)).toList();
 
                     return orderMapper.toDtoList(filteredOrders);
                 })

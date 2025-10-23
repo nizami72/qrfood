@@ -3,13 +3,16 @@ package az.qrfood.backend.order.controller;
 import static az.qrfood.backend.client.controller.ClientDeviceController.DEVICE;
 
 import az.qrfood.backend.client.service.ClientDeviceService;
+import az.qrfood.backend.eatery.repository.EateryRepository;
 import az.qrfood.backend.order.OrderStatus;
+import az.qrfood.backend.order.dto.ClientDeviceDto;
 import az.qrfood.backend.order.dto.OrderDto;
 import az.qrfood.backend.order.entity.Order;
 import az.qrfood.backend.order.mapper.OrderMapper;
 import az.qrfood.backend.order.service.OrderService;
 import az.qrfood.backend.service.WebSocketService;
 import az.qrfood.backend.table.entity.TableStatus;
+import az.qrfood.backend.table.repository.TableRepository;
 import az.qrfood.backend.table.service.TableService;
 import az.qrfood.backend.user.UserUtils;
 import az.qrfood.backend.user.entity.Role;
@@ -59,6 +62,8 @@ public class OrderController {
     private final ClientDeviceService clientDeviceService;
     private final WebSocketService webSocketService;
     private final TableService tableService;
+    private final EateryRepository eateryRepository;
+    private final TableRepository tableRepository;
     //</editor-fold>
 
     //<editor-fold desc="Constructor">
@@ -71,12 +76,14 @@ public class OrderController {
      * @param webSocketService    The service for sending WebSocket notifications.
      */
     public OrderController(OrderService orderService, OrderMapper orderMapper, ClientDeviceService clientDeviceService,
-                           WebSocketService webSocketService, TableService tableService) {
+                           WebSocketService webSocketService, TableService tableService, EateryRepository eateryRepository, TableRepository tableRepository) {
         this.orderService = orderService;
         this.orderMapper = orderMapper;
         this.clientDeviceService = clientDeviceService;
         this.webSocketService = webSocketService;
         this.tableService = tableService;
+        this.eateryRepository = eateryRepository;
+        this.tableRepository = tableRepository;
     }
     //</editor-fold>
 
@@ -94,10 +101,8 @@ public class OrderController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
-    @GetMapping("${order.status}")
-    public ResponseEntity<List<OrderDto>> getOrdersByStatus(@PathVariable("status") String status,
-                                                            @CookieValue(value = DEVICE, defaultValue = "") String cookie
-    ) {
+    @GetMapping("${order.status.auth}")
+    public ResponseEntity<List<OrderDto>> getOrdersByStatus(@PathVariable("status") String status) {
         log.debug("GET all order by status [{}]", status);
         return ResponseEntity.ok(orderService.getAllOrdersByStatus(status));
     }
@@ -301,12 +306,13 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("${api.eatery.order.status.created}")
+    @GetMapping("${order.status}")
     public ResponseEntity<List<OrderDto>> getOrdersByEateryIdDeviceUuid(
             @PathVariable Long eateryId,
             @CookieValue(value = DEVICE, required = false) String deviceUuid
     ) {
-        log.debug("REST request to check for created orders for eatery ID: {} and device UUID: {}", eateryId, deviceUuid);
+        log.debug("REST request to check for created orders for eatery ID: {} and device UUID: {}",
+                eateryId, deviceUuid);
 
         // If no device UUID is provided
         if (deviceUuid == null || deviceUuid.isEmpty()) {
@@ -317,9 +323,52 @@ public class OrderController {
         }
 
         // Get orders with the status "CREATED" for the specified eatery and device
-        List<OrderDto> orders = orderService.getClientOrders(
-                eateryId, deviceUuid);
+        List<OrderDto> orders = orderService.getClientOrders(eateryId, deviceUuid);
 
         return ResponseEntity.ok(orders);
     }
+
+    /**
+     * Retrieves the list of order with status "CREATED" for a specific eatery and device.
+     * <p>
+     * This endpoint is used by the client application to determine whether to show
+     * the order decision page or the menu page when a user scans a QR code.
+     * </p>
+     *
+     * @param eateryId   The ID of the eatery to check orders for.
+     * @param deviceUuid The UUID of the client device from the cookie.
+     * @return A {@link ResponseEntity} containing a list of {@link OrderDto} objects
+     * with status "CREATED" for the specified eatery and device.
+     */
+    @Operation(summary = "Check for created orders", description = "Checks if there are any orders with status" +
+            " 'CREATED' for a specific eatery and device", tags = {"Order Management"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved list of orders"),
+            @ApiResponse(responseCode = "404", description = "Eatery not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping("${api.eatery.order.status.created}")
+    public ResponseEntity<ClientDeviceDto> getOrdersByEateryIdDeviceUuid(
+            @PathVariable Long eateryId,
+            @PathVariable Long tableId,
+            @CookieValue(value = DEVICE, required = false) String deviceUuid
+    ) {
+        log.debug("Check if a client device [{}] has created orders in eatery ID: [{}]", deviceUuid, eateryId);
+
+        // If no device UUID is provided
+        if (deviceUuid == null || deviceUuid.isEmpty()) {
+            String error = String.format("Device UUID for eatery [%s] is null, unable to provide orders for" +
+                    " unknown device", eateryId);
+            log.debug(error);
+            throw new EntityNotFoundException(error);
+        }
+
+        // Get orders with the status "CREATED" for the specified eatery and device
+        boolean hasOrders  = !orderService.getClientOrders(eateryId, deviceUuid).isEmpty();
+        String eateryName = eateryRepository.findById(eateryId).orElseThrow().getName();
+        String tableName = tableRepository.findById(tableId).orElseThrow().getTableNumber();
+
+        return ResponseEntity.ok(new ClientDeviceDto(eateryId, eateryName, tableId, tableName, hasOrders));
+    }
+
 }

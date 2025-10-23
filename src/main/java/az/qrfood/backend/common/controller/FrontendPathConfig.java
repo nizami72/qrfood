@@ -128,6 +128,8 @@ public class FrontendPathConfig {
     String eateryIdKitchenDepartment;
     @Value("${eatery.id.kitchen-department.id}")
     String eateryIdKitchenDepartmentId;
+    @Value("${api.eatery.order.status.created}")
+    String deviceOrders;
     //</editor-fold>
 
     /**
@@ -196,7 +198,7 @@ public class FrontendPathConfig {
         paths.put("orderIdAddDishes", orderIdAddDishes);
         paths.put("eateryIdKitchenDepartment",eateryIdKitchenDepartment );
         paths.put("eateryIdKitchenDepartmentId",eateryIdKitchenDepartmentId );
-//        paths.put("", );
+        paths.put("deviceOrders", deviceOrders);
         //.
 
 

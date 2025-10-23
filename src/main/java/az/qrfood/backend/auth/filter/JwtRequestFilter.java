@@ -42,19 +42,7 @@ public class JwtRequestFilter extends OncePerRequestFilter implements Ordered {
 
     private final CustomUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
-    private final List<PathPattern> excluded = Stream.of(
-                    "/api/auth/login",
-                    "/api/image/**",
-                    "/api/client/eatery/{eateryId}/table/{tableId}",
-                    "/api/logs/frontend",
-                    "/api/config/image-paths",
-                    "/ui/alive",
-                    "/api/eatery/{eateryId}/order/{orderId}",
-                    "/api/eatery/{eateryId}/order/status/created",
-                    "/api/eatery/{eateryId}/order/post"
-            )
-            .map(pattern -> new PathPatternParser().parse(pattern))
-            .toList();
+    private final List<PathPattern> excluded;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -73,9 +61,25 @@ public class JwtRequestFilter extends OncePerRequestFilter implements Ordered {
      * @param userDetailsService The custom user details service for loading user data.
      * @param jwtUtil            The utility for JWT token operations.
      */
-    public JwtRequestFilter(CustomUserDetailsService userDetailsService, JwtUtil jwtUtil) {
+    public JwtRequestFilter(String deviceOrders,
+                            CustomUserDetailsService userDetailsService,
+                            JwtUtil jwtUtil) {
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
+        excluded = Stream.of(
+                        "/api/auth/login",
+                        "/api/image/**",
+                        "/api/client/eatery/{eateryId}/table/{tableId}",
+                        "/api/logs/frontend",
+                        "/api/config/image-paths",
+                        "/ui/alive",
+                        "/api/eatery/{eateryId}/order/{orderId}",
+                        deviceOrders,
+                        "/api/eatery/{eateryId}/order/post"
+                )
+                .map(pattern -> new PathPatternParser().parse(pattern))
+                .toList();
+
     }
 
     /**
@@ -130,7 +134,7 @@ public class JwtRequestFilter extends OncePerRequestFilter implements Ordered {
             jwt = authorizationHeader.substring(7); // Extract the token itself
             try {
                 username = jwtUtil.extractUsername(jwt); // Extract the username from the token
-                log.debug("Request by [{}]", username );
+                log.debug("Request by [{}]", username);
             } catch (ExpiredJwtException e) {
                 log.warn("JWT token expired for path: {}", path);
                 sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "JWT token has expired");
