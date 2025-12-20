@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Food Notification</title>
+    <style>
+        /* Стили для мобильных устройств можно оставить здесь */
+        @media only screen and (max-width: 600px) {
+            .main-table {
+                width: 100% !important;
+            }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: sans-serif;">
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f4f4f4;">
+    <tr>
+        <td align="center" style="padding: 20px 0;">
+
+            <table border="0" cellpadding="0" cellspacing="0" width="600" class="main-table"
+                   style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+
+                <tr>
+                    <td align="center" style="padding: 30px 20px; background-color: #333333;">
+                        <h2 style="margin: 0; color: #ffffff; font-size: 24px;">QR Food 🥘</h2>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 30px 40px; color: #333333; font-size: 16px; line-height: 1.5;">
+                        <div th:utext="${mainContent}"></div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="center"
+                        style="padding: 20px; background-color: #eeeeee; color: #888888; font-size: 12px;">
+                        <p style="margin: 0;">© 2025 QR Food Service</p>
+                        <p style="margin: 5px 0 0 0;">Automated message, please do not reply.</p>
+                    </td>
+                </tr>
+            </table>
+
+        </td>
+    </tr>
+</table>
+</body>
+</html>

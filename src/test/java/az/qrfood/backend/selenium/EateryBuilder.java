@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import az.qrfood.backend.selenium.dto.StaffItem;
 import az.qrfood.backend.selenium.dto.Table;
+import az.qrfood.backend.selenium.dto.Testov;
 import lombok.extern.log4j.Log4j2;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -31,10 +32,14 @@ public class EateryBuilder {
 
     static Iterator<Integer> idx = List.of(1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3).iterator();
 
+    /*
+    An old flow registration with register page.
+     */
     public static void registerEateryAdmin(
             WebDriver driver, WebDriverWait wait,
             String userName, String userPass,
             String userMail, String eateryName, String temp) {
+        String finalUrl = "/admin/register/validate-email";
 
         // 2. Enter registration details
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("name")));
@@ -57,12 +62,27 @@ public class EateryBuilder {
         SeleniumUtil.findButtonByTextAndClick(driver, "Qeydiyyatdan keçin", temp);
 
         // 4. Wait for and accept the alert
-        wait.until(ExpectedConditions.urlContains("/admin/login"));
-        // 1. Verify redirection to login page
-        assertTrue(driver.getCurrentUrl().contains("/admin/login"),
-                "URL should contain '/admin/login' after successful registration");
+        wait.until(ExpectedConditions.urlContains(finalUrl));
+        // 1. Verify redirection to the mail confirmation page
+        assertTrue(driver.getCurrentUrl().contains(finalUrl),
+                "URL should contain '/admin/register/validate-email' after successful registration");
 
     }
+
+    /*
+     * A new flow registration by magic link.
+    */
+    public static void registerEateryAdmin(WebDriver driver, WebDriverWait wait, String userMail, String temp) {
+        WebElement emailInput = driver.findElement(By.id("email-input-unified-auth"));
+        SeleniumUtil.typeIntoInput(driver, emailInput, userMail, temp);
+        SeleniumUtil.findButtonByIdAndClick(driver, "send-magic-link-button-unified-auth", temp);
+        assertEquals("Check your email for a login link.", SeleniumUtil.getTextOfElementFoundById(wait,
+                "message-container"), "Error, no message appeared");
+        log.debug("Success mail sent to [{}]", userMail);
+    }
+
+//    id="show-password-button-unified-auth"
+
 
     public static void createCategories(WebDriver driver, WebDriverWait wait, String temp) {
         navigate(driver, wait, "nav002", "/admin/categories", temp);
@@ -126,7 +146,7 @@ public class EateryBuilder {
 
             // 3. Verify restaurant header
             String actualSelectedEatery = SeleniumUtil.findSelectedOptionTextById(driver, "select-restaurant-desktop");
-            if(actualSelectedEatery == null || actualSelectedEatery.length() < 2) {
+            if (actualSelectedEatery == null || actualSelectedEatery.length() < 2) {
                 actualSelectedEatery = SeleniumUtil.findSelectedOptionTextById(driver, "select-restaurant-mobile");
             }
             assertTrue(actualSelectedEatery != null && actualSelectedEatery.length() > 2, "Actual eatery name is empty or null");
@@ -166,17 +186,20 @@ public class EateryBuilder {
         SeleniumUtil.findButtonByIdAndClick(driver, "predef-add-selected", NORM);
     }
 
-    public static void editEatery(WebDriver driver, String temp) {
-        SeleniumUtil.findButtonByTextAndClick(driver, "Redaktə et", NORM);
+    public static void editEatery(WebDriver driver, Testov testov, String temp) {
+
+        SeleniumUtil.findButtonByIdAndClick(driver, "114", NORM);
+        WebElement el1 = driver.findElement(By.id("114"));
+        SeleniumUtil.typeIntoInput(driver, el1, testov.getEatery().getName(), temp);
         WebElement el = driver.findElement(By.id("115"));
-        SeleniumUtil.typeIntoInput(driver, el, "68 Üzeyir Hacıbəyov, Bakı", temp);
+        SeleniumUtil.typeIntoInput(driver, el, testov.getEatery().getAddress(), temp);
         WebElement phone = driver.findElement(By.id("116"));
-        SeleniumUtil.typeIntoInput(driver, phone, "50 123 4578", temp);
+        SeleniumUtil.typeIntoInput(driver, phone, testov.getEateryAdmin().getProfile().getPhone(), temp);
         WebElement lat = driver.findElement(By.id("118"));
-        SeleniumUtil.typeIntoInput(driver, lat, "40.12345", temp);
+        SeleniumUtil.typeIntoInput(driver, lat, String.valueOf(testov.getEatery().getGeoLat()), temp);
         WebElement lang = driver.findElement(By.id("119"));
-        SeleniumUtil.typeIntoInput(driver, lang, "49.9876", temp);
-        SeleniumUtil.findButtonByTextAndClick(driver, "Yadda saxla", NORM);
+        SeleniumUtil.typeIntoInput(driver, lang, String.valueOf(testov.getEatery().getGeoLng()), temp);
+        SeleniumUtil.findButtonByIdAndClick(driver, "120", NORM);
     }
 
     public static void createUser(WebDriver driver, WebDriverWait wait, StaffItem stuffItem, String temp) {

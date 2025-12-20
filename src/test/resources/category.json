@@ -53,7 +53,7 @@
         "descriptionEn": "Classic lentil soup",
         "nameRu": "Чечевичный суп",
         "descriptionRu": "Классический чечевичный суп",
-        "image": "lentil_soup.webp",
+        "image": "lentil-soup.webp",
         "price": 4.00,
         "isAvailable": true
       },
@@ -64,7 +64,7 @@
         "descriptionEn": "Homemade chicken soup",
         "nameRu": "Куриный суп",
         "descriptionRu": "Домашний куриный суп",
-        "image": "chicken_soup.webp",
+        "image": "chicken-soup.webp",
         "price": 4.50,
         "isAvailable": true
       },
@@ -86,7 +86,7 @@
         "descriptionEn": "Creamy soup from fresh tomatoes",
         "nameRu": "Томатный суп",
         "descriptionRu": "Крем-суп из свежих помидоров",
-        "image": "tomato_soup.webp",
+        "image": "tomato-soup.webp",
         "price": 4.80,
         "isAvailable": true
       }
@@ -96,7 +96,7 @@
     "nameAz": "Əsas yeməklər",
     "nameEn": "Main Courses",
     "nameRu": "Основные блюда",
-    "image": "main_course.webp",
+    "image": "main-course.webp",
     "dishes": [
       {
         "nameAz": "Toyuq kababı",
@@ -105,7 +105,7 @@
         "descriptionEn": "Chicken kebab cooked on charcoal",
         "nameRu": "Куриный кебаб",
         "descriptionRu": "Куриный кебаб, приготовленный на мангале",
-        "image": "chicken_kebab.webp",
+        "image": "chicken-kebab.webp",
         "price": 10.00,
         "isAvailable": true
       },
@@ -116,7 +116,7 @@
         "descriptionEn": "Lamb kebab cooked on charcoal",
         "nameRu": "Бараний кебаб",
         "descriptionRu": "Бараний кебаб, приготовленный на мангале",
-        "image": "lamb_kebab.webp",
+        "image": "lamb-kebab.webp",
         "price": 14.50,
         "isAvailable": true
       },
@@ -149,7 +149,7 @@
         "descriptionEn": "Lamb, vegetables and potatoes cooked on saj",
         "nameRu": "Садж ичи",
         "descriptionRu": "Баранина, овощи и картофель, приготовленные на садже",
-        "image": "saj_ichi.webp",
+        "image": "saj-ichi.webp",
         "price": 25.00,
         "isAvailable": true
       }
@@ -209,7 +209,7 @@
         "descriptionEn": "Classic Azerbaijani black tea",
         "nameRu": "Черный чай",
         "descriptionRu": "Классический азербайджанский черный чай",
-        "image": "black_tea.webp",
+        "image": "black-tea.webp",
         "price": 1.50,
         "isAvailable": true
       },
@@ -242,7 +242,7 @@
         "descriptionEn": "Orange, apple or pomegranate",
         "nameRu": "Свежевыжатый сок",
         "descriptionRu": "Апельсиновый, яблочный или гранатовый",
-        "image": "fresh_juice.webp",
+        "image": "fresh-juice.webp",
         "price": 5.00,
         "isAvailable": true
       }
@@ -272,7 +272,7 @@
         "descriptionEn": "Eggs, sausage, tomatoes, cucumbers",
         "nameRu": "Завтрак сет",
         "descriptionRu": "Яйца, сосиски, помидоры, огурцы",
-        "image": "breakfast_set.webp",
+        "image": "breakfast-set.webp",
         "price": 9.50,
         "isAvailable": true
       },
@@ -365,7 +365,7 @@
         "descriptionEn": "With four types of cheese",
         "nameRu": "Пицца Четыре сыра",
         "descriptionRu": "С четырьмя видами сыра",
-        "image": "four_cheese.webp",
+        "image": "four-cheese.webp",
         "price": 14.00,
         "isAvailable": true
       },
@@ -376,7 +376,7 @@
         "descriptionEn": "Chicken fillet, mushrooms and bell pepper",
         "nameRu": "Пицца с курицей",
         "descriptionRu": "Куриное филе, грибы и перец",
-        "image": "chicken_pizza.webp",
+        "image": "chicken-pizza.webp",
         "price": 12.50,
         "isAvailable": true
       }
@@ -395,7 +395,7 @@
         "descriptionEn": "Salmon steak with vegetables",
         "nameRu": "Стейк из лосося",
         "descriptionRu": "Стейк из лосося с овощами",
-        "image": "salmon_steak.webp",
+        "image": "salmon-steak.webp",
         "price": 18.00,
         "isAvailable": true
       },
@@ -406,7 +406,7 @@
         "descriptionEn": "Grilled shrimp in lemon sauce",
         "nameRu": "Креветки гриль",
         "descriptionRu": "Креветки гриль в лимонном соусе",
-        "image": "grilled_shrimp.webp",
+        "image": "grilled-shrimp.webp",
         "price": 16.50,
         "isAvailable": true
       },
@@ -417,7 +417,7 @@
         "descriptionEn": "Various seafood",
         "nameRu": "Ассорти из морепродуктов",
         "descriptionRu": "Различные морепродукты",
-        "image": "seafood_assortment.webp",
+        "image": "seafood-assortment.webp",
         "price": 22.00,
         "isAvailable": true
       },
@@ -439,7 +439,7 @@
         "descriptionEn": "Grilled tuna steak",
         "nameRu": "Стейк из тунца",
         "descriptionRu": "Жареный стейк из тунца",
-        "image": "tuna_steak.webp",
+        "image": "tuna-steak.webp",
         "price": 19.50,
         "isAvailable": true
       }

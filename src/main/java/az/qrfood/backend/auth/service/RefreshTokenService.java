@@ -4,9 +4,9 @@ import az.qrfood.backend.auth.entity.RefreshToken;
 import az.qrfood.backend.auth.exception.TokenRefreshException;
 import az.qrfood.backend.auth.repository.RefreshTokenRepository;
 import az.qrfood.backend.user.entity.User;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -59,21 +59,22 @@ public class RefreshTokenService {
      * @param activeEateryId The ID of the eatery associated with this token, if applicable.
      * @return The created RefreshToken.
      */
+    @Transactional
     public RefreshToken createRefreshToken(User user, Long activeEateryId) {
-        // Check if a user already has a refresh token
-        Optional<RefreshToken> existingToken = refreshTokenRepository.findByUser(user);
+        Long userId = user.getId();
+        if (userId == null) throw new IllegalArgumentException("User id must not be null");
 
-        // If exists, delete it
-        existingToken.ifPresent(refreshTokenRepository::delete);
+        int i = refreshTokenRepository.deleteByUser(user); // or create deleteByUserId(userId)
+        refreshTokenRepository.flush();
+        assert i == 1;
 
-        // Create a new refresh token
-        RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setUser(user);
-        refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
-        refreshToken.setToken(UUID.randomUUID().toString());
-        if(activeEateryId != null) refreshToken.setActiveEateryId(activeEateryId);
+        RefreshToken rt = new RefreshToken();
+        rt.setUser(user);
+        rt.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
+        rt.setToken(UUID.randomUUID().toString());
+        if (activeEateryId != null) rt.setActiveEateryId(activeEateryId);
 
-        return refreshTokenRepository.save(refreshToken);
+        return refreshTokenRepository.save(rt);
     }
 
     /**

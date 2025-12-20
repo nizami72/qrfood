@@ -30,7 +30,6 @@ import java.util.Map;
 @Getter
 @RestController
 @Log4j2
-@RequestMapping("/api/config")
 @Tag(name = "Frontend Configuration", description = "API endpoints for retrieving frontend path configurations")
 public class FrontendPathConfig {
 
@@ -110,18 +109,14 @@ public class FrontendPathConfig {
     String orderItem;
     @Value("${user.n}")
     String userN;
-    @Value("${users}")
-    String users;
     @Value("${user.id}")
     String userId;
     @Value("${user.general}")
     String userGeneral;
     @Value("${usr}")
     String usr;
-    @Value("${admin.api.eatery}")
+    @Value("${user.and.eatery}")
     String apiAdminEatery;
-    @Value("${api.user}")
-    String apiUser;
     @Value("${auth.refresh}")
     String reCreateTokenOnEateryChangeUrl;
     @Value("${eatery.id.kitchen-department}")
@@ -130,6 +125,12 @@ public class FrontendPathConfig {
     String eateryIdKitchenDepartmentId;
     @Value("${api.eatery.order.status.created}")
     String deviceOrders;
+    @Value("${dish.common.category.id}")
+    String dishCommonCategoryId;
+    @Value("${dish.common.category.name}")
+    String dishCommonCategoryName;
+    @Value("${dish.common.eatery.id.category.id}")
+    String dishCommonEateryIdCategoryId;
     //</editor-fold>
 
     /**
@@ -146,7 +147,7 @@ public class FrontendPathConfig {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved path configurations"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("/image-paths")
+    @GetMapping("${api.config.image-paths}")
     public Map<String, String> getImagePaths() {
         Map<String, String> paths = new LinkedHashMap<>();
 
@@ -186,19 +187,24 @@ public class FrontendPathConfig {
         paths.put("orderItemId", orderItemId);
         paths.put("orderItemOrderId", orderItemOrderId);
         paths.put("userN", userN);
-        paths.put("users", users);
-        paths.put("userId", userId);
+        paths.put("urlUserId", userId);
         paths.put("userGeneral", userGeneral);
         paths.put("usr", usr);
         paths.put("apiAdminEatery", apiAdminEatery);
         paths.put("predefinedCat", imagesPredefinedCategoryUri);
         paths.put("predefinedDish", imagesPredefinedDishUri);
-        paths.put("apiUser", apiUser);
         paths.put("reCreateTokenOnEateryChangeUrl", reCreateTokenOnEateryChangeUrl);
         paths.put("orderIdAddDishes", orderIdAddDishes);
         paths.put("eateryIdKitchenDepartment",eateryIdKitchenDepartment );
         paths.put("eateryIdKitchenDepartmentId",eateryIdKitchenDepartmentId );
         paths.put("deviceOrders", deviceOrders);
+        paths.put("dishCommonCategoryId", dishCommonCategoryId);
+        paths.put("dishCommonCategoryName", dishCommonCategoryName);
+        paths.put("dishCommonEateryIdCategoryId", dishCommonEateryIdCategoryId);
+//        paths.put("", );
+//        paths.put("", );
+//        paths.put("", );
+//        paths.put("", );
         //.
 
 

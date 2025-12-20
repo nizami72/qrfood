@@ -35,7 +35,7 @@
     "nameAz": "Əsas yeməklər",
     "nameEn": "Main Courses",
     "nameRu": "Основные блюда",
-    "image" : "main_courses.webp",
+    "image" : "main-courses.webp",
     "dishes": [
       {
         "nameAz": "Plov",
@@ -66,7 +66,7 @@
         "descriptionEn": "Mix of fried vegetables and chicken",
         "nameRu": "Курица с овощами",
         "descriptionRu": "Смесь жареных овощей и курицы",
-        "image": "chicken_veggie.webp",
+        "image": "chicken-veggie.webp",
         "price": 13.00,
         "isAvailable": true
       }
@@ -77,7 +77,7 @@
     "nameAz": "Əsas yeməklər",
     "nameEn": "Main Courses",
     "nameRu": "Основные блюда",
-    "image" : "main_courses.webp",
+    "image" : "main-courses.webp",
     "dishes": [
       {
         "nameAz": "Plov",
@@ -108,7 +108,7 @@
         "descriptionEn": "Mix of fried vegetables and chicken",
         "nameRu": "Курица с овощами",
         "descriptionRu": "Смесь жареных овощей и курицы",
-        "image": "chicken_veggie.webp",
+        "image": "chicken-veggie.webp",
         "price": 13.00,
         "isAvailable": true
       }
@@ -159,7 +159,7 @@
         "descriptionEn": "Thin lavash roll with cheese inside",
         "nameRu": "Лаваш с сыром",
         "descriptionRu": "Тонкий рулет из лаваша с сыром внутри",
-        "image": "cheese_roll.webp",
+        "image": "cheese-roll.webp",
         "price": 2.90,
         "isAvailable": true
       },
@@ -254,7 +254,7 @@
     "nameAz": "Fast food",
     "nameEn": "Fast Food",
     "nameRu": "Фастфуд",
-    "image" : "fast_food.webp",
+    "image" : "fast-food.webp",
     "dishes": [
       {
         "nameAz": "Burger",

@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.info.GitProperties;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
@@ -23,10 +26,19 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
+import org.springframework.web.servlet.i18n.CookieLocaleResolver;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+import org.thymeleaf.templateresolver.ITemplateResolver;
+import org.thymeleaf.templateresolver.StringTemplateResolver;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 /**
  * Main Spring configuration class for the QR Food Order backend application.
@@ -104,8 +116,10 @@ public class Configuration {
      */
     @Bean
     public LocaleResolver localeResolver() {
-        AcceptHeaderLocaleResolver resolver = new AcceptHeaderLocaleResolver();
-        resolver.setDefaultLocale(new Locale("az"));
+        CookieLocaleResolver resolver = new CookieLocaleResolver("language"); // Cookie name
+        resolver.setDefaultLocale(Locale.of("az")); // Default to Azerbaijani
+        resolver.setCookieMaxAge(Duration.ofDays(30)); // Remember for 30 days
+        resolver.setCookiePath("/"); // Available everywhere
         return resolver;
     }
 
@@ -136,7 +150,7 @@ public class Configuration {
                 "http://192.168.1.76:5173",
                 "http://127.0.0.1:5173",
                 "https://qrfood.az"
-                ));
+        ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true); // Must be false when using "*" for allowed origins
@@ -154,4 +168,50 @@ public class Configuration {
             properties.load(stream);
         }
         return new GitProperties(properties);
-    }}
+    }
+
+    // Настраиваем пул потоков, чтобы почта не тормозила основной сервер
+    @Bean(name = "emailExecutor")
+    public Executor emailExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(10);
+        executor.setQueueCapacity(500);
+        executor.setThreadNamePrefix("EmailWorker-");
+        executor.initialize();
+        return executor;
+    }
+
+    // 2. Специальный движок для обработки строк из БД (решает проблему Resolve)
+    @Bean(name = "textTemplateEngine")
+    public TemplateEngine textTemplateEngine(MessageSource messageSource) {
+        SpringTemplateEngine engine = new SpringTemplateEngine();
+        StringTemplateResolver resolver = new StringTemplateResolver();
+        resolver.setTemplateMode(TemplateMode.HTML);
+        resolver.setCacheable(false);
+        engine.setTemplateResolver(resolver);
+        engine.setTemplateEngineMessageSource(messageSource);
+        return engine;
+    }
+
+    @Bean(name = "springTemplateEngine")
+    @Primary
+    public TemplateEngine springTemplateEngine() {
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.addTemplateResolver(htmlTemplateResolver());
+        return templateEngine;
+    }
+
+    private ITemplateResolver htmlTemplateResolver() {
+        ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
+        resolver.setPrefix("/templates/"); // Папка, где лежат файлы
+        resolver.setSuffix(".html");       // Расширение, которое мы не пишем в коде
+        resolver.setTemplateMode(TemplateMode.HTML);
+        resolver.setCharacterEncoding("UTF-8");
+        resolver.setCacheable(false);      // Выключи кэш для разработки
+        return resolver;
+    }
+
+}
+
+

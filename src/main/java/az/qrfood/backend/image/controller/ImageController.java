@@ -1,5 +1,6 @@
 package az.qrfood.backend.image.controller;
 
+import az.qrfood.backend.constant.ApiRoutes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -60,7 +61,7 @@ public class ImageController {
             @ApiResponse(responseCode = "404", description = "Image not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = {"${api.image.eatery}"})
+    @GetMapping(value = {ApiRoutes.IMAGE_EATERY})
     public ResponseEntity<byte[]> getEateryImageN(@PathVariable("eateryId") String eateryId,
                                                   @PathVariable("fileName") String photo, HttpServletResponse response) {
         String path = String.format(eateryUploadsPath, eateryId) + "/" + photo;
@@ -83,7 +84,7 @@ public class ImageController {
             @ApiResponse(responseCode = "404", description = "Image not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = {"${api.image.category}"})
+    @GetMapping(value = {ApiRoutes.IMAGE_CATEGORY})
     public ResponseEntity<byte[]> getCategoryImageN(@PathVariable("eateryId") String eateryId,
                                                     @PathVariable("categoryId") String categoryId,
                                                     @PathVariable("fileName") String photo, HttpServletResponse response) {
@@ -108,7 +109,7 @@ public class ImageController {
             @ApiResponse(responseCode = "404", description = "Image not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = {"${api.image.dish}"})
+    @GetMapping(value = {ApiRoutes.IMAGE_DISH})
     public ResponseEntity<byte[]> getDishImageN(@PathVariable("eateryId") String eateryId,
                                                 @PathVariable("dishId") String dishId,
                                                 @PathVariable("fileName") String photo, HttpServletResponse response) {
@@ -123,7 +124,7 @@ public class ImageController {
             @ApiResponse(responseCode = "404", description = "Image not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = {"${api.image.categories.p}"})
+    @GetMapping(value = {ApiRoutes.IMAGE_PREDEFINED_CAT})
     public ResponseEntity<byte[]> getPredefinedCatImage(@PathVariable("fileName") String fileName,
                                                         HttpServletResponse response) {
 
@@ -138,7 +139,7 @@ public class ImageController {
             @ApiResponse(responseCode = "404", description = "Image not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = {"${api.image.dishes.p}"})
+    @GetMapping(value = {ApiRoutes.IMAGE_PREDEFINED_DISH})
     public ResponseEntity<byte[]> getPredefinedDishImage(@PathVariable("fileName") String fileName,
                                                          HttpServletResponse response) {
 

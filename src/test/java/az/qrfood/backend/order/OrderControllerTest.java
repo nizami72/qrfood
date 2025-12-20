@@ -28,6 +28,8 @@ class OrderControllerTest extends AbstractTest {
 
     @Value("${order.id}")
     String orderIdEndPoint;
+    @Value("${order.id.put}")
+    String orderIdPut;
 
     Long tableId = 1L; // Use an existing table ID
     String jwtToken;
@@ -201,7 +203,7 @@ class OrderControllerTest extends AbstractTest {
                 .contentType("application/json")
                 .body(statusUpdate)
                 .when()
-                .put(baseUrl + "/api/orders/" + orderId + "/status") // Using a direct path as per controller
+                .put(orderIdPut, eateryId, orderId) // Using a direct path as per controller
                 .then()
                 .log().all()
                 .statusCode(200)

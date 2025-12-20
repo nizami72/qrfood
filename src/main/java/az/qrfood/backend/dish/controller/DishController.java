@@ -7,6 +7,7 @@ import az.qrfood.backend.dish.entity.DishEntity;
 import az.qrfood.backend.dish.entity.DishStatus;
 import az.qrfood.backend.dish.repository.DishRepository;
 import az.qrfood.backend.dish.service.DishService;
+import az.qrfood.backend.constant.ApiRoutes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -65,9 +66,9 @@ public class DishController {
             @ApiResponse(responseCode = "200", description = "Dish found and returned successfully"),
             @ApiResponse(responseCode = "404", description = "Dish or category not found")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER')")
-    @GetMapping("${eatery.id.category.id.dish.id}")
-    public DishDto getDish(@PathVariable Long categoryId, @PathVariable Long dishId) {
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER')")
+    @GetMapping(ApiRoutes.DISH_BY_ID)
+    public DishDto getDish(@PathVariable Long eateryId, @PathVariable Long categoryId, @PathVariable Long dishId) {
         log.debug("Requested dish [{}] form category [{}]", dishId, categoryId);
         DishEntity d = getDishOrThrow(categoryId, dishId);
         return DishService.convertEntityToDto(d);
@@ -83,9 +84,9 @@ public class DishController {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Restaurant was not found")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
-    @GetMapping("${eatery.id.category.id.dish}")
-    public ResponseEntity<List<DishDto>> getDishes(@PathVariable Long categoryId) {
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
+    @GetMapping(ApiRoutes.DISH_BASE)
+    public ResponseEntity<List<DishDto>> getDishes(@PathVariable Long eateryId, @PathVariable Long categoryId) {
         log.debug("Retrieve the category dish by ID");
 
         List<DishDto> dishInCategory = dishService.getAllDishesInCategory(categoryId);
@@ -104,9 +105,10 @@ public class DishController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "404", description = "Category not found")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @PostMapping(value = "${eatery.id.category.id.dish}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Long> createDish(@PathVariable("categoryId") Long categoryId,
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN')")
+    @PostMapping(value = ApiRoutes.DISH_BASE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Long> createDish(@PathVariable("eateryId") Long eateryId,
+                                           @PathVariable("categoryId") Long categoryId,
                                            @Valid @RequestPart("data") DishDto dishDto,
                                            @RequestPart(value = "image", required = false) MultipartFile file) {
         dishDto.setCategoryId(categoryId);
@@ -128,9 +130,11 @@ public class DishController {
             @ApiResponse(responseCode = "404", description = "Dish or category not found")
     })
     @Transactional
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @DeleteMapping("${eatery.id.category.id.dish.id}")
-    public ResponseEntity<String> deleteDishItemById(@PathVariable Long categoryId, @PathVariable Long dishId) {
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN')")
+    @DeleteMapping(ApiRoutes.DISH_BY_ID)
+    public ResponseEntity<String> deleteDishItemById(@PathVariable Long eateryId,
+                                                     @PathVariable Long categoryId,
+                                                     @PathVariable Long dishId) {
         log.debug("Requested to delete dish [{}] from category [{}]", dishId, categoryId);
         return dishService.updateDishStatus(dishId, DishStatus.ARCHIVED);
     }
@@ -150,9 +154,10 @@ public class DishController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "404", description = "Dish or category not found")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @PutMapping(value = "${eatery.id.category.id.dish.id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Long> putDish(@PathVariable("categoryId") Long categoryId,
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN')")
+    @PutMapping(value = ApiRoutes.DISH_BY_ID, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Long> putDish(@PathVariable("eateryId") Long eateryId,
+            @PathVariable("categoryId") Long categoryId,
                                         @PathVariable("dishId") Long dishId,
                                         @Valid @RequestPart("data") DishDto dishDto,
                                         @RequestPart(value = "image", required = false) MultipartFile file) {

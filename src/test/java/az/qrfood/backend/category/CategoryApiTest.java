@@ -156,13 +156,15 @@ public class CategoryApiTest extends AbstractTest {
                 .statusCode(200);
 
         // Verify the deletion
-        given()
-                .baseUri(baseUrl)
-                .header("Authorization", "Bearer " + jwtToken)
-                .when()
-                .get(uriEateryIdCategoryId, eateryId.toString(), categoryId.toString())
-                .then()
-                .log().all()
-                .statusCode(404);
+
+        String url = TestUtil.formatUrl(uriEateryIdCategoryId, eateryId.toString(), categoryId.toString());
+        Response registerResponse = ApiUtils.sendGetRequest(baseUrl, jwtToken, url, 200);
+        CategoryDto categoryDto = registerResponse.as(CategoryDto.class);
+
+        assertEquals("ARCHIVED", categoryDto.getCategoryStatus().toString());
+
+        log.debug("After deletion the category is [{}]", categoryDto);
+
+
     }
 }

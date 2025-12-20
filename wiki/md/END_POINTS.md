@@ -1,24 +1,31 @@
 ### End Points
-* /api/admin/eatery
 * /api/admin/eatery-admin/{admin}
 * /api/admin/eatery/{eateryId}
 * /api/admin/eatery/{eateryId}/details
 * /api/admin/eatery/{eateryId}/resources
+* /api/auth/change-password
 * /api/auth/login
 * /api/auth/logout
+* /api/auth/magic-link
+* /api/auth/oauth/google
+* /api/auth/password-reset/complete
+* /api/auth/password-reset/request
 * /api/auth/recreate-token-on-eatery-change
 * /api/auth/refresh-token
 * /api/auth/status
+* /api/auth/test-magic-link
+* /api/auth/verify-token
 * /api/category/common
 * /api/client
 * /api/client/eatery/{eateryId}
 * /api/client/eatery/{eateryId}/table/{tableId}
 * /api/client/{id}
 * /api/config/image-paths
-* /api/dish/common/{categoryId}
+* /api/dish/common/eatery/{eateryId}/category/{categoryId}
 * /api/dish/common/{categoryName}
 * /api/eatery
 * /api/eatery/owner/{ownerId}
+* /api/eatery/status/{eateryId}
 * /api/eatery/{eateryId}
 * /api/eatery/{eateryId}/category
 * /api/eatery/{eateryId}/category/predefined
@@ -48,7 +55,6 @@
 * /api/eatery/{eateryId}/user
 * /api/eatery/{eateryId}/user/name/{userName}
 * /api/eatery/{eateryId}/user/register/general
-* /api/eatery/{eateryId}/user/users
 * /api/eatery/{eateryId}/user/{userId}
 * /api/image/eatery/{eateryId}/category/{categoryId}/file/{fileName}
 * /api/image/eatery/{eateryId}/dish/{dishId}/file/{fileName}
@@ -61,3 +67,4 @@
 * /api/user
 * /api/user/{id}
 * /ui/alive
+* /user/eatery

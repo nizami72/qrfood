@@ -6,6 +6,7 @@ import az.qrfood.backend.client.dto.ClientDeviceRequestDto;
 import az.qrfood.backend.client.dto.ClientDeviceResponseDto;
 import az.qrfood.backend.client.dto.Menu;
 import az.qrfood.backend.client.service.ClientDeviceService;
+import az.qrfood.backend.constant.ApiRoutes;
 import az.qrfood.backend.eatery.service.EateryService;
 import az.qrfood.backend.table.dto.TableDto;
 import az.qrfood.backend.table.service.TableService;
@@ -73,7 +74,7 @@ public class ClientDeviceController {
             @ApiResponse(responseCode = "404", description = "Table not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("${api.client.eatery.table}")
+    @GetMapping(ApiRoutes.CLIENT_BY_TABLE)
     // [[eateryCategories]]
     public ResponseEntity<Menu> eateryCategories(
             @Parameter(description = "ID of the eatery") @PathVariable(value = "eateryId") Long eateryId,
@@ -106,7 +107,7 @@ public class ClientDeviceController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("${api.client.eatery}")
+    @GetMapping(ApiRoutes.CLIENT_BY_EATERY)
     @PreAuthorize("@authz.isSuperAdmin(authentication)")
     public ResponseEntity<List<CategoryDto>> eateryCategories(@Parameter(description = "ID of the eatery") @PathVariable(value = "eateryId") Long eateryId){
         log.debug("Find all categories for eatery when table and eatery already known in the device");
@@ -127,7 +128,7 @@ public class ClientDeviceController {
             @ApiResponse(responseCode = "404", description = "Client device not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("${api.client.id}")
+    @GetMapping(ApiRoutes.CLIENT_BY_ID)
     @PreAuthorize("@authz.isSuperAdmin(authentication)")
     public ResponseEntity<ClientDeviceResponseDto> getById(@Parameter(description = "ID of the client device") @PathVariable Long id) {
         return ResponseEntity.ok(service.getById(id));
@@ -144,7 +145,7 @@ public class ClientDeviceController {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved list of client devices"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("${api.client}")
+    @GetMapping(ApiRoutes.CLIENT_BASE)
     @PreAuthorize("@authz.isSuperAdmin(authentication)")
     public ResponseEntity<List<ClientDeviceResponseDto>> getAll() {
         return ResponseEntity.ok(service.getAll());
@@ -166,7 +167,7 @@ public class ClientDeviceController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PreAuthorize("@authz.isSuperAdmin(authentication)")
-    @PutMapping("${api.client.id}")
+    @PutMapping(ApiRoutes.CLIENT_BY_ID)
     public ResponseEntity<ClientDeviceResponseDto> update(
             @Parameter(description = "ID of the client device") @PathVariable Long id,
             @Parameter(description = "Updated client device details") @RequestBody ClientDeviceRequestDto dto) {
@@ -187,7 +188,7 @@ public class ClientDeviceController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PreAuthorize("@authz.isSuperAdmin(authentication)")
-    @DeleteMapping("${api.client.id}")
+    @DeleteMapping(ApiRoutes.CLIENT_BY_ID)
     public ResponseEntity<Void> delete(@Parameter(description = "ID of the client device") @PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();

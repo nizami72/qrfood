@@ -1,5 +1,6 @@
 package az.qrfood.backend.orderitem.controller;
 
+import az.qrfood.backend.constant.ApiRoutes;
 import az.qrfood.backend.order.dto.OrderItemDTO;
 import az.qrfood.backend.order.entity.OrderItem;
 import az.qrfood.backend.orderitem.service.OrderItemService;
@@ -46,10 +47,10 @@ public class OrderItemController {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved list of order items"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @GetMapping("${order.item}")
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN')")
+    @GetMapping(ApiRoutes.ORDER_ITEM)
     // [[getAllOrderItems]]
-    public ResponseEntity<List<OrderItemDTO>> getAllOrderItems() {
+    public ResponseEntity<List<OrderItemDTO>> getAllOrderItems(@PathVariable Long eateryId) {
         log.debug("REST request to get all OrderItems");
         return ResponseEntity.ok(orderItemService.getAllOrderItems());
     }
@@ -66,9 +67,9 @@ public class OrderItemController {
             @ApiResponse(responseCode = "404", description = "Order not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
-    @GetMapping("${order.item.order.id}")
-    public ResponseEntity<List<OrderItemDTO>> getOrderItemsByOrderId(@PathVariable Long orderId) {
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
+    @GetMapping(ApiRoutes.ORDER_ITEM_BY_ORDER_ID)
+    public ResponseEntity<List<OrderItemDTO>> getOrderItemsByOrderId(@PathVariable Long eateryId, @PathVariable Long orderId) {
         log.debug("REST request to get OrderItems for order ID: {}", orderId);
         return ResponseEntity.ok(orderItemService.getOrderItemsByOrderId(orderId));
     }
@@ -85,9 +86,9 @@ public class OrderItemController {
             @ApiResponse(responseCode = "404", description = "Order item not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
-    @GetMapping("${order.item.id}")
-    public ResponseEntity<OrderItemDTO> getOrderItemById(@PathVariable Long orderItemId) {
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
+    @GetMapping(ApiRoutes.ORDER_ITEM_BY_ID)
+    public ResponseEntity<OrderItemDTO> getOrderItemById(@PathVariable Long eateryId, @PathVariable Long orderItemId) {
         log.debug("REST request to get OrderItem : {}", orderItemId);
         return ResponseEntity.ok(orderItemService.getOrderItemById(orderItemId));
     }
@@ -104,19 +105,20 @@ public class OrderItemController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'WAITER')")
-    @PostMapping("${order.item.order.id}")
-    public ResponseEntity<OrderItemDTO> postOrderItem(@RequestBody OrderItemDTO orderItemDTO) {
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN', 'WAITER')")
+    @PostMapping(ApiRoutes.ORDER_ITEM_BY_ORDER_ID)
+    public ResponseEntity<OrderItemDTO> postOrderItem(@PathVariable Long eateryId,
+                                                      @RequestBody OrderItemDTO orderItemDTO) {
         log.debug("REST request to create OrderItem : {}", orderItemDTO);
         OrderItemDTO result = orderItemService.createOrderItem(orderItemDTO);
 
         // Get the order item entity to extract the eatery ID
         OrderItem orderItem = orderItemService.getOrderItemEntityById(result.getId());
         Long orderId = orderItem.getOrder().getId();
-        Long eateryId = orderItem.getOrder().getTable().getEatery().getId();
+        Long eateryId1 = orderItem.getOrder().getTable().getEatery().getId();
 
         // Send WebSocket notification about the updated order
-        webSocketService.notifyOrderUpdate(String.valueOf(eateryId), orderId, null);
+        webSocketService.notifyOrderUpdate(String.valueOf(eateryId1), orderId, null);
 
         return ResponseEntity.ok(result);
     }
@@ -135,23 +137,23 @@ public class OrderItemController {
             @ApiResponse(responseCode = "404", description = "Order item not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'WAITER')")
-    @PutMapping("${order.item.id}")
-    public ResponseEntity<OrderItemDTO> putOrderItem(
-            @PathVariable Long orderItemId,
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN', 'WAITER')")
+    @PutMapping(ApiRoutes.ORDER_ITEM_BY_ID)
+    public ResponseEntity<OrderItemDTO> putOrderItem(@PathVariable Long eateryId,
+                                                     @PathVariable Long orderItemId,
             @RequestBody OrderItemDTO orderItemDTO) {
         log.debug("REST request to update OrderItem : {}", orderItemId);
 
         // Get the order item entity before update to extract the eatery ID and order ID
         OrderItem orderItem = orderItemService.getOrderItemEntityById(orderItemId);
         Long orderId = orderItem.getOrder().getId();
-        Long eateryId = orderItem.getOrder().getTable().getEatery().getId();
+        Long eateryId1 = orderItem.getOrder().getTable().getEatery().getId();
 
         // Update the order item
         OrderItemDTO result = orderItemService.updateOrderItem(orderItemId, orderItemDTO);
 
         // Send WebSocket notification about the updated order
-        webSocketService.notifyOrderUpdate(String.valueOf(eateryId), orderId, null);
+        webSocketService.notifyOrderUpdate(String.valueOf(eateryId1), orderId, null);
 
         return ResponseEntity.ok(result);
     }
@@ -168,21 +170,21 @@ public class OrderItemController {
             @ApiResponse(responseCode = "404", description = "Order item not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'WAITER')")
-    @DeleteMapping("${order.item.id}")
-    public ResponseEntity<Void> deleteOrderItem(@PathVariable Long orderItemId) {
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN', 'WAITER')")
+    @DeleteMapping(ApiRoutes.ORDER_ITEM_BY_ID)
+    public ResponseEntity<Void> deleteOrderItem(@PathVariable Long eateryId, @PathVariable Long orderItemId) {
         log.debug("Deleting OrderItem [{}]", orderItemId);
 
         // Get the order item entity before deletion to extract the eatery ID and order ID
         OrderItem orderItem = orderItemService.getOrderItemEntityById(orderItemId);
         Long orderId = orderItem.getOrder().getId();
-        Long eateryId = orderItem.getOrder().getTable().getEatery().getId();
+        Long eateryId1 = orderItem.getOrder().getTable().getEatery().getId();
 
         // Delete the order item
         orderItemService.deleteOrderItem(orderItemId);
 
         // Send WebSocket notification about the updated order
-        webSocketService.notifyOrderUpdate(String.valueOf(eateryId), orderId, null);
+        webSocketService.notifyOrderUpdate(String.valueOf(eateryId1), orderId, null);
 
         return ResponseEntity.ok().build();
     }

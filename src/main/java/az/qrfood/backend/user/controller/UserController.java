@@ -1,5 +1,6 @@
 package az.qrfood.backend.user.controller;
 
+import az.qrfood.backend.constant.ApiRoutes;
 import az.qrfood.backend.user.dto.GeneralResponse;
 import az.qrfood.backend.user.dto.OnUpdate;
 import az.qrfood.backend.user.dto.RegisterRequest;
@@ -41,32 +42,13 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved list of users"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("${api.user}")
+    @GetMapping(ApiRoutes.API_USER)
     @PreAuthorize("@authz.isSuperAdmin(authentication)")
     // [[getAllUsersFromAllEateries]]
     public ResponseEntity<List<UserResponse>> getAllUsersFromAllEateries() {
         List<UserResponse> responses = userService.getAllUsers();
         return ResponseEntity.ok(responses);
     }
-
-    /**
-     * Get all users.
-     *
-     * @return list of user responses
-     */
-    @Operation(summary = "Get all users", description = "Retrieves a list of all users")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved list of users"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    @PreAuthorize("@authz.isSuperAdmin(authentication)")
-    @GetMapping("${users}")
-    // [[getAllUsers]]
-    public ResponseEntity<List<UserResponse>> getAllUsers() {
-        List<UserResponse> responses = userService.getAllUsers();
-        return ResponseEntity.ok(responses);
-    }
-
 
     /**
      * Get all users of the eatery.
@@ -79,8 +61,8 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'CASHIER', 'WAITER', 'KITCHEN_ADMIN')")
-    @GetMapping("${usr}")
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN', 'CASHIER', 'WAITER', 'KITCHEN_ADMIN')")
+    @GetMapping(ApiRoutes.USER_BY_EATERY)
     public ResponseEntity<List<UserResponse>> getAllEateryUsers(@PathVariable Long eateryId) {
         List<UserResponse> responses = userService.getAllUsers(eateryId);
         return ResponseEntity.ok(responses);
@@ -98,9 +80,9 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @GetMapping("${user.id}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable Long userId) {
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN')")
+    @GetMapping(ApiRoutes.USER_BY_ID)
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long eateryId, @PathVariable Long userId) {
         UserResponse response = userService.getUserById(userId);
         return ResponseEntity.ok(response);
     }
@@ -117,9 +99,9 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @GetMapping("${user.n}")
-    public ResponseEntity<UserResponse> getUserByUsername(@PathVariable String userName) {
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN')")
+    @GetMapping(ApiRoutes.USER_BY_NAME)
+    public ResponseEntity<UserResponse> getUserByUsername(@PathVariable Long eateryId, @PathVariable String userName) {
         UserResponse response = userService.getUserByUsername(userName);
         return ResponseEntity.ok(response);
     }
@@ -138,9 +120,10 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PutMapping("${user.id}")
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    @PutMapping(ApiRoutes.USER_BY_ID)
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN')")
     public ResponseEntity<UserResponse> putUser(
+            @PathVariable Long eateryId,
             @PathVariable Long userId,
             @Validated(OnUpdate.class) @RequestBody UserRequest request) {
         UserResponse response = userService.updateUser(userId, request);
@@ -159,8 +142,8 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @DeleteMapping("${user.id}")
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    @DeleteMapping(ApiRoutes.USER_BY_ID)
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long eateryId, @PathVariable Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
@@ -179,9 +162,9 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @PostMapping("${user.general}")
-    public ResponseEntity<?> registerEateryStaff(@RequestBody RegisterRequest registerRequest, @PathVariable Long eateryId) {
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication,#eateryId, 'EATERY_ADMIN')")
+    @PostMapping(ApiRoutes.USER_GENERAL_REGISTER)
+    public ResponseEntity<?> postEateryStaff(@RequestBody RegisterRequest registerRequest, @PathVariable Long eateryId) {
         return userService.registerEateryStaff(registerRequest, eateryId);
     }
 
@@ -197,7 +180,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping("${admin.api.eatery}")
+    @PostMapping(ApiRoutes.USER_AND_EATERY)
     public ResponseEntity<?> postEateryAdminUser(@RequestBody RegisterRequest registerRequest) {
         return userService.registerAdminAndEatery(registerRequest, false);
     }
@@ -214,7 +197,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping("${usr.delete}")
+    @DeleteMapping(ApiRoutes.USER_DELETE_GLOBAL)
     @PreAuthorize("@authz.isSuperAdmin(authentication)")
     public ResponseEntity<GeneralResponse<?>> deleteUserByName(@PathVariable String id) {
         GeneralResponse<?> g = userService.deleteEateryAdminWithResources(id);

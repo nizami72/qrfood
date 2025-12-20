@@ -4,6 +4,7 @@ import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.common.Util;
 import az.qrfood.backend.common.service.StorageService;
 import az.qrfood.backend.eatery.dto.EateryDto;
+import az.qrfood.backend.eatery.dto.OnboardingStatus;
 import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.eatery.entity.EateryPhone;
 import az.qrfood.backend.eatery.repository.EateryRepository;
@@ -13,15 +14,12 @@ import az.qrfood.backend.user.entity.Role;
 import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.entity.UserProfile;
 import az.qrfood.backend.user.repository.UserProfileRepository;
-import az.qrfood.backend.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Service class for managing {@link Eatery} entities.
@@ -39,7 +37,7 @@ public class EateryService {
     private final TableService tableService;
     private final StorageService storageService;
     private final UserProfileRepository userProfileRepository;
-    private final UserRepository userRepository;
+    private final EateryLifecycleService eateryLifecycleService;
 
     /**
      * Constructs an EateryService with necessary dependencies.
@@ -48,17 +46,17 @@ public class EateryService {
      * @param tableService          The service for managing tables within an eatery.
      * @param storageService        The service for handling storage operations (e.g., creating eatery folders).
      * @param userProfileRepository The repository for UserProfile entities.
-     * @param userRepository        The repository for User entities.
      */
     public EateryService(EateryRepository eateryRepository,
                          TableService tableService,
                          StorageService storageService,
-                         UserProfileRepository userProfileRepository, UserRepository userRepository) {
+                         UserProfileRepository userProfileRepository,
+                         EateryLifecycleService eateryLifecycleService) {
         this.eateryRepository = eateryRepository;
         this.tableService = tableService;
         this.storageService = storageService;
         this.userProfileRepository = userProfileRepository;
-        this.userRepository = userRepository;
+        this.eateryLifecycleService = eateryLifecycleService;
     }
 
     /**
@@ -120,8 +118,10 @@ public class EateryService {
         Eatery eatery = Util.copyProperties(restaurantDTO, Eatery.class);
         eatery = eateryRepository.save(eatery);
         populatePhoneEntities(eatery, restaurantDTO.getPhones());
-        populateTables(eatery, restaurantDTO.getNumberOfTables());
         eatery = eateryRepository.save(eatery);
+        if(eatery.getOnboardingStatus() == null) {
+            eateryLifecycleService.promoteStatus(eatery.getId(), OnboardingStatus.EATERY_CREATED);
+        }
         EateryDto dto = convertToDTO(eatery);
         storageService.createEateryFolder(dto.getId());
         return eatery.getId();
@@ -187,21 +187,6 @@ public class EateryService {
     }
 
     /**
-     * Populates the tables for a given eatery.
-     *
-     * @param eatery The {@link Eatery} entity for which to create tables.
-     * @param tables The number of tables to create.
-     */
-    private void populateTables(Eatery eatery, int tables) {
-        List<TableInEatery> tableList = eatery.getTables();
-        AtomicInteger idx = new AtomicInteger(1);
-        IntStream.range(0, tables).forEach(table -> {
-            tableList.add(tableService.createTableInEatery(eatery, String.valueOf(idx.getAndIncrement())));
-        });
-    }
-
-
-    /**
      * Deletes an eatery by its ID.
      *
      * @param id The ID of the eatery to delete.
@@ -262,7 +247,7 @@ public class EateryService {
      * @throws EntityNotFoundException if the user profile with the given ID is not found.
      */
     public List<EateryDto> findEateriesByUserProfileId(Long id) {
-        UserProfile userProfile = userProfileRepository.findById(id)
+        UserProfile userProfile = userProfileRepository.findByUserId(id)
                 .orElseThrow(() -> new EntityNotFoundException("User profile with id not found: " + id));
         if (userProfile.getUser().getRoles().contains(Role.SUPER_ADMIN)) {
             log.debug("Super admin is trying to find all eateries");

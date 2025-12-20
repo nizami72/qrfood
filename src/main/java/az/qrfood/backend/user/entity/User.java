@@ -4,11 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -43,13 +41,17 @@ public class User implements UserDetails {
     private String username;
 
     /**
-     * The encoded password of the user.
-     * This field must not be null.
+     * The encoded password of the user. Nullable for passwordless accounts.
      */
-    @Column(nullable = false)
     private String password;
 
     /**
+     * Google account ID (sub). Nullable and unique when present.
+     */
+    @Column(name = "google_id", unique = true)
+    private String googleId;
+
+     /**
      * The set of roles assigned to the user.
      * <p>
      * Roles are fetched eagerly when the user is loaded.
@@ -139,6 +141,7 @@ public class User implements UserDetails {
                 + ",         \"password\":\"" + getPassword() + "\""
                 + ",         \"username\":\"" + getUsername() + "\""
                 + ",         \"id\":\"" + getId() + "\""
+                + ",         \"googleId\":\"" + getGoogleId() + "\""
                 + "\n}\n}";
     }
 }

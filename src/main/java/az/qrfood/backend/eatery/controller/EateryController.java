@@ -1,7 +1,10 @@
 package az.qrfood.backend.eatery.controller;
 
+import az.qrfood.backend.constant.ApiRoutes;
 import az.qrfood.backend.eatery.dto.EateryDto;
+import az.qrfood.backend.eatery.dto.OnboardingStatus;
 import az.qrfood.backend.eatery.service.EateryService;
+import az.qrfood.backend.user.service.AdminService;
 import az.qrfood.backend.user.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,6 +41,8 @@ public class EateryController {
     private final EateryService eateryService;
     private final UserProfileService userProfileService;
 
+    private final AdminService adminService;
+
     /**
      * Constructs an EateryController with necessary service and repository dependencies.
      *
@@ -44,9 +50,10 @@ public class EateryController {
      * @param userProfileService The service for managing user profiles.
      */
     public EateryController(EateryService eateryService,
-                            UserProfileService userProfileService) {
+                            UserProfileService userProfileService, AdminService adminService) {
         this.eateryService = eateryService;
         this.userProfileService = userProfileService;
+        this.adminService = adminService;
     }
 
     /**
@@ -61,8 +68,8 @@ public class EateryController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PreAuthorize("@authz.isSuperAdmin(authentication)")
-    @GetMapping("${eatery}")
-    public ResponseEntity<List<EateryDto>> getAllRestaurants() {
+    @GetMapping(ApiRoutes.EATERY)
+    public ResponseEntity<List<EateryDto>> getAllEateries() {
         return ResponseEntity.ok(eateryService.getAllRestaurants());
     }
 
@@ -81,7 +88,7 @@ public class EateryController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN','WAITER','KITCHEN_ADMIN','CASHIER')")
-    @GetMapping("${eatery.owner}")
+    @GetMapping(ApiRoutes.EATERY_BY_OWNER)
     public ResponseEntity<List<EateryDto>> getEateriesByOwnerId(@PathVariable("ownerId") Long userProfileId) {
         log.debug("Request to get all eateries of owner with profile ID [{}]", userProfileId);
         return ResponseEntity.ok(eateryService.findEateriesByUserProfileId(userProfileId));
@@ -100,8 +107,8 @@ public class EateryController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @GetMapping("${eatery.id}")
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #id,  'EATERY_ADMIN')")
+    @GetMapping(ApiRoutes.EATERY_BY_ID)
     public ResponseEntity<EateryDto> getEateryById(@PathVariable("eateryId") Long id) {
         log.debug("Request to get Eatery : {}", id);
         return ResponseEntity.ok(eateryService.getEateryById(id));
@@ -122,9 +129,9 @@ public class EateryController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @PostMapping(value = "${eatery}", consumes = "application/json")
-    public ResponseEntity<Long> createRestaurant(@RequestBody EateryDto eateryDto,
-                                                 @AuthenticationPrincipal UserDetails userDetails
+    @PostMapping(value = ApiRoutes.EATERY, consumes = "application/json")
+    public ResponseEntity<Long> postEatery(@RequestBody EateryDto eateryDto,
+                                           @AuthenticationPrincipal UserDetails userDetails
     ) {
         log.debug("Request to create eatery [{}]", eateryDto);
         Long eateryId = eateryService.createEatery(eateryDto);
@@ -147,10 +154,11 @@ public class EateryController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @DeleteMapping("${eatery.id}")
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #id, 'EATERY_ADMIN')")
+    @DeleteMapping(ApiRoutes.EATERY_BY_ID)
     public ResponseEntity<Long> deleteEatery(@PathVariable("eateryId") Long id) {
-        return ResponseEntity.ok(eateryService.deleteEatery(id));
+        adminService.deleteEatery(id);
+        return ResponseEntity.ok(id);
     }
 
     /**
@@ -168,10 +176,28 @@ public class EateryController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @PutMapping(value = "${eatery.id}", consumes = "application/json")
-    public ResponseEntity<Long> updateEatery(@PathVariable("eateryId") Long id, @RequestBody EateryDto eateryDTO) {
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #id, 'EATERY_ADMIN')")
+    @PutMapping(value = ApiRoutes.EATERY_BY_ID, consumes = "application/json")
+    public ResponseEntity<Long> putEatery(@PathVariable("eateryId") Long id, @RequestBody EateryDto eateryDTO) {
         log.debug("Request to update eatery with ID [{}]: {}", id, eateryDTO);
         return ResponseEntity.ok(eateryService.updateEatery(id, eateryDTO));
+    }
+
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #id, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
+    @GetMapping(value = ApiRoutes.EATERY_STATUS)
+    public ResponseEntity<EateryDto> getEateryStatus(@PathVariable("eateryId") Long id, Authentication authentication) {
+
+        boolean isSuperAdmin = authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("SUPER_ADMIN"));
+
+        if (isSuperAdmin) {
+            return ResponseEntity.ok(EateryDto.builder()
+                    .onboardingStatus(OnboardingStatus.USER_ADDED)
+                    .build());
+        }
+
+        return ResponseEntity.ok(EateryDto.builder()
+                .onboardingStatus(eateryService.getEateryById(id).getOnboardingStatus())
+                .build());
     }
 }

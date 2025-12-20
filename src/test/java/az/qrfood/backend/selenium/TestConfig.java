@@ -24,7 +24,7 @@ public interface TestConfig extends Config {
     @Key("admin.eatery.admin.eateries")
     String eateryAdminEateries();
 
-    @Key("admin.api.eatery")
+    @Key("user.and.eatery")
     String eateryAdminUrl();
 
     @Key("api.qr-code.contents")

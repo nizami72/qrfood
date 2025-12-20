@@ -1,0 +1,50 @@
+@startuml
+title "4. Вход: Email + Пароль (Legacy)"
+
+actor User as "Пользователь"
+participant "React App" as React
+participant "Spring Boot API" as API
+database "MySQL DB" as DB
+
+skinparam handwritten false
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 10
+skinparam participantpadding 20
+
+User -> React: Кликает "Войти с помощью пароля"
+activate React
+React -> User: Показывает поле для пароля
+User -> React: Вводит "existing-user@email.com"\nи "*********\nНажимает [Войти]
+React -> API: POST /api/auth/login\n(email, password)
+activate API
+
+API -> DB: findUserByEmail("existing-user@email.com")
+activate DB
+DB --> API: User (id: 456, hash: "$2a$...", status: ACTIVE)
+deactivate DB
+
+API -> API: passwordEncoder.matches(password, hash)
+
+alt **Пароль ВЕРНЫЙ**
+
+    API --> API: true
+    API -> API: generateJWT(userId: 456, status: ACTIVE)
+    API --> React: 200 OK (jwt, user: {status: "ACTIVE"})
+    deactivate API
+
+    React -> React: login(data)
+    React -> React: ProtectedRoute: видит 'ACTIVE'
+    React -> User: **Редирект на '/admin/dashboard'**
+    deactivate React
+
+else **Пароль НЕВЕРНЫЙ**
+
+    API --> API: false
+    API --> React: 401 Unauthorized
+    deactivate API
+    React -> User: Показывает "Неверный email или пароль"
+    deactivate React
+
+end
+
+@enduml

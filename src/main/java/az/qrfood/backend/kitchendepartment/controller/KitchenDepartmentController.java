@@ -1,5 +1,6 @@
 package az.qrfood.backend.kitchendepartment.controller;
 
+import az.qrfood.backend.constant.ApiRoutes;
 import az.qrfood.backend.kitchendepartment.dto.CreateDepartmentRequestDto;
 import az.qrfood.backend.kitchendepartment.dto.KitchenDepartmentDto;
 import az.qrfood.backend.kitchendepartment.dto.UpdateDepartmentRequestDto;
@@ -25,16 +26,15 @@ public class KitchenDepartmentController {
     }
 
 
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
-    @GetMapping("${eatery.id.kitchen-department}")
-    public List<KitchenDepartmentDto> getDepartmentsForRestaurant
-            (@PathVariable(value = "eateryId", required = true) @NotNull Long eateryId) {
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
+    @GetMapping(ApiRoutes.KITCHEN_DEPT)
+    public List<KitchenDepartmentDto> getDepartmentsForRestaurant(@PathVariable(value = "eateryId") @NotNull Long eateryId) {
         log.debug("Get departments for eatery [{}]", eateryId);
         return departmentService.findByRestaurantId(eateryId);
     }
 
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN')")
-    @PostMapping("${eatery.id.kitchen-department}")
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN', 'KITCHEN_ADMIN')")
+    @PostMapping(ApiRoutes.KITCHEN_DEPT)
     public KitchenDepartmentDto createDepartment(@PathVariable(value = "eateryId") Long eateryId,
                                                  @RequestBody CreateDepartmentRequestDto request) {
 
@@ -43,8 +43,8 @@ public class KitchenDepartmentController {
         return departmentService.create(request);
     }
 
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN')")
-    @PutMapping("${eatery.id.kitchen-department.id}")
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN', 'KITCHEN_ADMIN')")
+    @PutMapping(ApiRoutes.KITCHEN_DEPT_ID)
     public KitchenDepartmentDto updateDepartment(@PathVariable("eateryId") Long eateryId,
                                                  @PathVariable("departmentId") Long id,
                                                  @Valid @RequestBody UpdateDepartmentRequestDto request) {
@@ -52,8 +52,8 @@ public class KitchenDepartmentController {
         return departmentService.update(id, request);
     }
 
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN')")
-    @DeleteMapping("${eatery.id.kitchen-department.id}")
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN', 'KITCHEN_ADMIN')")
+    @DeleteMapping(ApiRoutes.KITCHEN_DEPT_ID)
     public void deleteDepartment(@PathVariable("eateryId") Long eateryId,
                                  @PathVariable("departmentId") Long id) {
         departmentService.delete(id, eateryId);

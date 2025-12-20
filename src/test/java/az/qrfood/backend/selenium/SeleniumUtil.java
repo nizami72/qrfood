@@ -1,6 +1,7 @@
 package az.qrfood.backend.selenium;
 
 import static az.qrfood.backend.selenium.TestTestovCreator.visualEffect;
+
 import lombok.extern.log4j.Log4j2;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -127,7 +128,6 @@ public class SeleniumUtil {
         e.click();
     }
 
-
     public static void findButtonByTextAndClick(WebDriver driver, String text, String temp) {
         WebElement button = driver.findElement(By.xpath("//button[text()='arg123']".replace("arg123", text)));
         highlight2(driver, button, temp);
@@ -140,8 +140,6 @@ public class SeleniumUtil {
         highlight2(driver, button, temp);
         button.click();
         pause(m.get(temp).get(BETWEEN_STEP));
-        pause(m.get(temp).get(BETWEEN_STEP));
-        pause(m.get(temp).get(BETWEEN_STEP));
     }
 
     public static void findElementByTextAndClick(WebDriver driver, String element, String text, String temp) {
@@ -149,6 +147,11 @@ public class SeleniumUtil {
         highlight2(driver, button, temp);
         button.click();
         pause(m.get(temp).get(BETWEEN_STEP));
+    }
+
+    public static String getTextOfElementFoundById(WebDriverWait wait, String elementId) {
+        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(elementId)));
+        return element.getText();
     }
 
     public static void findButtonsByTextAndClick(WebDriver driver, String text, int buttonIndex, String temp) {

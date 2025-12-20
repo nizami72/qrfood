@@ -1,0 +1,68 @@
+@startuml
+title "2. Вход: Magic Link (Существующий пользователь)"
+
+actor User as "Пользователь"
+participant "React App" as React
+participant "Spring Boot API" as API
+database "MySQL DB" as DB
+participant "Email Service" as Email
+
+skinparam handwritten false
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 10
+skinparam participantpadding 20
+
+User -> React: Вводит "existing-user@email.com"\nНажимает [Продолжить с Email]
+activate React
+React -> API: POST /api/auth/magic-link\n(email: "existing-user@email.com")
+activate API
+
+API -> DB: findUserByEmail("existing-user@email.com")
+activate DB
+DB --> API: User (id: 456, status: ACTIVE)
+deactivate DB
+
+API -> API: generateToken(userId: 456)
+API -> DB: saveToken(hashed_token, userId: 456)
+activate DB
+DB --> API: OK
+deactivate DB
+
+API -> Email: sendMagicLink(email, token)
+API --> React: 200 OK ({"message": "Check your email"})
+deactivate API
+React -> User: Показывает "Проверьте почту"
+deactivate React
+
+...Спустя время...
+
+User -> React: Кликает ссылку в письме\n( /auth/verify?token=... )
+activate React
+React -> API: POST /api/auth/verify-token\n(token: "...")
+activate API
+
+API -> DB: findToken(hashed_token)
+activate DB
+DB --> API: Token (valid, userId: 456)
+deactivate DB
+
+API -> DB: deleteToken(token)
+activate DB
+DB --> API: OK
+deactivate DB
+
+API -> DB: findUserById(456)
+activate DB
+DB --> API: User (status: ACTIVE)
+deactivate DB
+
+API -> API: generateJWT(userId: 456, status: ACTIVE)
+API --> React: 200 OK (jwt, user: {status: "ACTIVE"})
+deactivate API
+
+React -> React: login(data) [Сохраняет JWT и User]
+React -> React: ProtectedRoute: видит 'ACTIVE'
+React -> User: **Прямой редирект на '/admin/dashboard'**
+deactivate React
+
+@enduml

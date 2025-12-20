@@ -45,11 +45,10 @@ public class OrderItemControllerTest {
     Long orderId = 20L; // Assuming order with ID 1 exists
 
     // the login end point
-    String segmentApiAuth = "/api/auth/login";
-    //? POST new and GET all order items into order /api/eatery/{eateryId}/order-item/order/{orderId}
+    @Value("${auth.login}")
+    String segmentApiAuth;
     @Value("${order.item.order.id}")
     String orderItemOrderId;
-    //? DELETE, PUT, GET by id /api/eatery/{eateryId}/order-item/{orderItemId}
     @Value("${order.item.id}")
     String orderItemId;
     // Authentication

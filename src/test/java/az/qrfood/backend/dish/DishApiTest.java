@@ -41,6 +41,12 @@ public class DishApiTest extends AbstractTest {
     private String eateryIdCategoryIdDishId;
     @Value("${eatery.id.category}")
     String eateryIdCategory;
+    @Value("${dish.common.category.id}")
+    String dishCommonCategoryId;
+    @Value("${dish.common.category.name}")
+    String dishCommonCategoryName;
+    @Value("${dish.common.eatery.id.category.id}")
+    String dishCommonEateryIdCategoryId;
     private Long categoryId; // Default category ID for tests
     private Long dishId; // Will be set during test execution
     //</editor-fold>
@@ -206,7 +212,8 @@ public class DishApiTest extends AbstractTest {
     @Order(8)
     void shouldGetCommonDishes() {
         log.debug("\n========== 📤 Getting common dishes ==========");
-        Response res = ApiUtils.sendGetRequest(baseUrl, jwtToken, "/api/dish/common/Salads", 200);
+        String url = dishCommonCategoryName.replace("{categoryName}", "Salads");
+        Response res = ApiUtils.sendGetRequest(baseUrl, jwtToken, url, 200);
         List<CommonDishDto> idList = res.as(new io.restassured.common.mapper.TypeRef<>() {
         });
         assertFalse(idList.isEmpty(), "List of predefined dishes in category should not be empty");
@@ -218,6 +225,9 @@ public class DishApiTest extends AbstractTest {
     void shouldCreateDishesFromTemplates() {
         log.debug("\n========== 📤 Creating dishes from templates ==========");
 
+        String url = dishCommonEateryIdCategoryId
+                .replace("{eateryId}", eateryId.toString())
+                .replace("{categoryId}", categoryId.toString());
         List<DishDto> dishes = List.of(DishDto.builder()
                 .nameAz("Updated Test Dish Az")
                 .nameEn("Updated Test Dish En")
@@ -235,7 +245,7 @@ public class DishApiTest extends AbstractTest {
                 .contentType("application/json")
                 .body(dishes)
                 .when()
-                .post("/api/dish/common/" + categoryId)
+                .post(url)
                 .then()
                 .log().all()
                 .statusCode(200)

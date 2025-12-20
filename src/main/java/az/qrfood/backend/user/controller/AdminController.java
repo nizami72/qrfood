@@ -1,7 +1,5 @@
 package az.qrfood.backend.user.controller;
 
-import az.qrfood.backend.auth.service.CustomUserDetailsService;
-import az.qrfood.backend.auth.util.JwtUtil;
 import az.qrfood.backend.category.dto.CategoryDto;
 import az.qrfood.backend.category.service.CategoryService;
 import az.qrfood.backend.dish.dto.DishDto;
@@ -9,16 +7,14 @@ import az.qrfood.backend.dish.service.DishService;
 import az.qrfood.backend.eatery.dto.EateryDto;
 import az.qrfood.backend.eatery.service.EateryService;
 import az.qrfood.backend.order.dto.OrderDto;
-import az.qrfood.backend.order.dto.OrderItemDTO;
 import az.qrfood.backend.order.service.OrderService;
-import az.qrfood.backend.orderitem.service.OrderItemService;
 import az.qrfood.backend.table.dto.TableDto;
 import az.qrfood.backend.table.service.TableService;
-import az.qrfood.backend.tableassignment.dto.TableAssignmentDto;
-import az.qrfood.backend.tableassignment.service.TableAssignmentService;
 import az.qrfood.backend.user.dto.UserResponse;
 import az.qrfood.backend.user.entity.Role;
+import az.qrfood.backend.user.service.AdminService;
 import az.qrfood.backend.user.service.UserService;
+import az.qrfood.backend.constant.ApiRoutes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -27,12 +23,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,34 +44,27 @@ import java.util.stream.Collectors;
 public class AdminController {
 
     //<editor-fold desc="Fields">
-    private final CustomUserDetailsService userDetailsService;
-    private final JwtUtil jwtUtil;
     private final CategoryService categoryService;
     private final DishService dishService;
     private final UserService userService;
     private final EateryService eateryService;
     private final TableService tableService;
     private final OrderService orderService;
-    private final OrderItemService orderItemService;
-    private final TableAssignmentService tableAssignmentService;
+    private final AdminService adminService;
     //</editor-fold>
 
     //<editor-fold desc="Constructor">
-    public AdminController(CustomUserDetailsService userDetailsService, JwtUtil jwtUtil,
-                           CategoryService categoryService, DishService dishService,
+    public AdminController(CategoryService categoryService, DishService dishService,
                            UserService userService, EateryService eateryService, TableService tableService,
-                           OrderService orderService, OrderItemService orderItemService,
-                           TableAssignmentService tableAssignmentService) {
-        this.userDetailsService = userDetailsService;
-        this.jwtUtil = jwtUtil;
+                           OrderService orderService,
+                           AdminService adminService) {
+        this.adminService = adminService;
         this.categoryService = categoryService;
         this.dishService = dishService;
         this.userService = userService;
         this.eateryService = eateryService;
         this.tableService = tableService;
         this.orderService = orderService;
-        this.orderItemService = orderItemService;
-        this.tableAssignmentService = tableAssignmentService;
     }
     //</editor-fold>
 
@@ -99,7 +85,7 @@ public class AdminController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Not authorized to access this eatery"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("${admin.resources}")
+    @GetMapping(ApiRoutes.ADMIN_EATERY_RESOURCES)
     @PreAuthorize("@authz.isSuperAdmin(authentication)")
     public ResponseEntity<?> getEateryResources(@PathVariable Long eateryId) {
         log.info("Retrieving all resources for eatery with ID: {}", eateryId);
@@ -162,7 +148,7 @@ public class AdminController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Not authorized to access this eatery"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("${admin.eatery.details}")
+    @GetMapping(ApiRoutes.ADMIN_EATERY_DETAILS)
     @PreAuthorize("@authz.isSuperAdmin(authentication)")
     public ResponseEntity<?> getEateryDetails(@PathVariable Long eateryId) {
         log.info("Retrieving detailed information for eatery with ID: {}", eateryId);
@@ -214,77 +200,16 @@ public class AdminController {
             @ApiResponse(responseCode = "403", description = "Forbidden - Not authorized to delete this eatery"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @DeleteMapping("${admin.eatery}")
+    @DeleteMapping(ApiRoutes.ADMIN_EATERY)
     @PreAuthorize("@authz.isSuperAdmin(authentication)")
 //    @Transactional
     public ResponseEntity<?> deleteEatery(@PathVariable Long eateryId) {
-        log.info("Deleting eatery with ID: {} and all related data", eateryId);
 
-        // Get eatery details
-        EateryDto eatery = eateryService.getEateryById(eateryId);
-
-        // Delete all order items for the eatery
-        List<OrderDto> orders = orderService.getOrdersByEateryId(eateryId);
-        for (OrderDto order : orders) {
-            List<OrderItemDTO> orderItems = order.getItems();
-            for (OrderItemDTO item : orderItems) {
-                orderItemService.deleteOrderItem(item.getId());
-            }
-        }
-
-        // Now delete all orders for the eatery
-        for (OrderDto order : orders) {
-            orderService.deleteOrder(order.getId());
-        }
-        log.info("Deleted {} orders for eatery ID: {}", orders.size(), eateryId);
-
-        // Delete all tables and tables assigment for the eatery
-        List<TableDto> tables = tableService.listTablesForEatery(eateryId);
-        for (TableDto table : tables) {
-            List<TableAssignmentDto> tableAssignments =
-                    tableAssignmentService.getTableAssignmentsByTableId(table.id());
-            for (TableAssignmentDto tableAssignment : tableAssignments) {
-                log.debug("Deleting teble assigment [{}]", tableAssignment.getId());
-                tableAssignmentService.deleteTableAssignment(tableAssignment.getId());
-            }
-            log.debug("Deleting table [{}]", table.id());
-            tableService.deleteTable(table.id());
-        }
-        log.info("Deleted {} tables for eatery ID: {}", tables.size(), eateryId);
-
-        // Delete all dishes in each category
-        List<CategoryDto> categories = categoryService.findAllCategoryForEatery(eateryId);
-        for (CategoryDto category : categories) {
-            // Get and delete all dishes in the category
-            List<DishDto> dishes = dishService.getAllDishesInCategory(category.getCategoryId());
-            for (DishDto dish : dishes) {
-                dishService.deleteDishItemById(category.getCategoryId(), dish.getDishId());
-            }
-            log.info("Deleted {} dishes in category ID: {}", dishes.size(), category.getCategoryId());
-        }
-
-        // Delete all categories after all dishes have been deleted
-        for (CategoryDto category : categories) {
-            categoryService.deleteCategory(category.getCategoryId());
-        }
-        log.info("Deleted {} categories for eatery ID: {}", categories.size(), eateryId);
-
-        // Delete all users for the eatery
-        List<UserResponse> users = userService.getAllUsers(eateryId);
-        for (UserResponse user : users) {
-            userService.deleteUser(user.getId());
-        }
-        log.info("Deleted {} users for eatery ID: {}", users.size(), eateryId);
-
-        // Finally, delete the eatery
-        eateryService.deleteEatery(eateryId);
-        log.info("Deleted eatery ID: {}", eateryId);
-
+        adminService.deleteEatery(eateryId);
         // Create the response
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Eatery and all related data deleted successfully");
         response.put("eateryId", eateryId);
-
         return ResponseEntity.ok(response);
     }
 
@@ -293,9 +218,9 @@ public class AdminController {
      *
      * @param admin the username of the admin whose associated eateries are to be retrieved
      * @return a ResponseEntity containing a list of EateryDto objects representing the eateries associated with the user,
-     *         or a NOT_FOUND response if the user does not have the required roles
+     * or a NOT_FOUND response if the user does not have the required roles
      */
-    @GetMapping("${admin.eatery.admin.eateries}")
+    @GetMapping(ApiRoutes.ADMIN_EATERY_ADMINS)
     @PreAuthorize("@authz.isSuperAdmin(authentication)")
     public ResponseEntity<List<EateryDto>> getEateryBelongToUser(@PathVariable String admin) {
 

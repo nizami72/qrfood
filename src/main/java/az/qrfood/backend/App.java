@@ -22,6 +22,7 @@ import java.util.Set;
  * </p>
  */
 @SpringBootApplication
+@org.springframework.scheduling.annotation.EnableAsync
 @Log4j2
 public class App {
 

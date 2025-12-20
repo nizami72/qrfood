@@ -6,9 +6,11 @@ import az.qrfood.backend.auth.dto.RecreateTokenOnEateryChangeRequest;
 import az.qrfood.backend.auth.dto.TokenRefreshResponse;
 import az.qrfood.backend.auth.entity.RefreshToken;
 import az.qrfood.backend.auth.exception.TokenRefreshException;
+import az.qrfood.backend.auth.service.AuthHybridService;
 import az.qrfood.backend.auth.service.CustomUserDetailsService;
 import az.qrfood.backend.auth.service.RefreshTokenService;
 import az.qrfood.backend.auth.util.JwtUtil;
+import az.qrfood.backend.constant.ApiRoutes;
 import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.user.entity.Role;
 import az.qrfood.backend.user.entity.User;
@@ -24,12 +26,14 @@ import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,13 +57,18 @@ import java.util.stream.Collectors;
 @Tag(name = "Auth", description = "API endpoints for managing auth calls")
 public class AuthController {
 
+    //<editor-fold desc="Fields">
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final UserProfileService userProfileService;
     private final RefreshTokenService refreshTokenService;
+    private final AuthHybridService authHybridService;
+    private final PasswordEncoder passwordEncoder;
+    //</editor-fold>
 
+    //<editor-fold desc="Constructor">
     /**
      * Constructs the AuthController with necessary dependencies.
      *
@@ -75,14 +84,19 @@ public class AuthController {
                           JwtUtil jwtUtil,
                           UserRepository userRepository,
                           UserProfileService userProfileService,
-                          RefreshTokenService refreshTokenService) {
+                          RefreshTokenService refreshTokenService,
+                          AuthHybridService authHybridService,
+                          PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
         this.userProfileService = userProfileService;
         this.refreshTokenService = refreshTokenService;
+        this.authHybridService = authHybridService;
+        this.passwordEncoder = passwordEncoder;
     }
+    //</editor-fold>
 
     /**
      * Endpoint for user login.
@@ -97,11 +111,12 @@ public class AuthController {
      * user ID, and eatery ID on success, or an error message with {@code HttpStatus.UNAUTHORIZED}
      * if authentication fails.
      */
-    @PostMapping("${auth.login}")
+    @PostMapping(ApiRoutes.AUTH_LOGIN)
     @Operation(summary = "Logins a user", description = "Logins user, use email as login and password")
     // [[login]]
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         log.debug("Login request: {}", loginRequest);
+        User user = null;
         try {
             log.debug("Attempting to authenticate user using AuthenticationManager");
             authenticationManager.authenticate(
@@ -117,18 +132,16 @@ public class AuthController {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
 
         // Get user ID and record login in the user profile
-        Long userId = null;
         Long eateryId = loginRequest.getEateryId();
         Optional<User> userOptional = userRepository.findByUsername(loginRequest.getEmail());
         if (userOptional.isPresent()) {
-            User user = userOptional.get();
+            user = userOptional.get();
             userProfileService.recordLogin(user);
 
             // Get the user profile to get the ID
             Optional<UserProfile> userProfileOptional = userProfileService.findProfileByUser(user);
             if (userProfileOptional.isPresent()) {
                 UserProfile userProfile = userProfileOptional.get();
-                userId = userProfile.getId();
 
                 // If eateryId is not provided in the request, but a user has restaurants, use the first one as default
                 if (eateryId == null && userProfile.getEateries() != null && !userProfile.getEateries().isEmpty()) {
@@ -145,25 +158,13 @@ public class AuthController {
                         eateryId = null; // Reset eateryId if the user doesn't have access
                     }
                 }
+            } else {
+                log.debug("User profile not found for user: {}", loginRequest.getEmail());
+                throw new RuntimeException("todo User profile not found for user: " + loginRequest.getEmail());
             }
         }
 
-        log.debug("Generating JWT Token with eateryId: {}", eateryId);
-        final String jwt = jwtUtil.generateToken(userDetails, eateryId);
-
-        // Generate refresh token
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userOptional.get(), eateryId);
-
-        log.debug("Set refresh token in a secure httpOnly cookie");
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken.getToken());
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true); // Enable for HTTPS
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(604800); // 7 days in seconds
-        response.addCookie(refreshTokenCookie);
-
-        log.debug("Return token, user ID, and eatery ID (refresh token is in cookie)");
-        LoginResponse loginResponse = new LoginResponse(jwt, userId, eateryId);
+        LoginResponse loginResponse = authHybridService.createLoginResponse(user, eateryId, response);
         return ResponseEntity.ok(loginResponse);
     }
 
@@ -178,7 +179,7 @@ public class AuthController {
      * @return A {@link ResponseEntity} with user information if authenticated,
      * or a message indicating that the user is not authenticated.
      */
-    @GetMapping("${auth.status}")
+    @GetMapping(ApiRoutes.AUTH_STATUS)
     public ResponseEntity<?> status() {
         // Get the current authentication from the security context
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -211,7 +212,7 @@ public class AuthController {
                     userInfo.put("phones", userProfile.getPhones());
                     userInfo.put("isActive", userProfile.getIsActive());
                     userInfo.put("lastLogin", userProfile.getLastLogin());
-                    // Extract eatery IDs from the eateries list
+                    // Extract eatery IDs from the eatery list
                     List<Long> restaurantIds = userProfile.getEateries().stream()
                             .map(Eatery::getId)
                             .collect(Collectors.toList());
@@ -240,7 +241,7 @@ public class AuthController {
      * {@code HttpStatus.NOT_FOUND} if user or profile not found, or {@code HttpStatus.FORBIDDEN}
      * if the user does not have access to the specified eatery.
      */
-    @PostMapping("${auth.refresh}")
+    @PostMapping(ApiRoutes.AUTH_REFRESH_ON_EATERY_CHANGE)
 //    [[recreateTokenOnEateryChange]]
     public ResponseEntity<?> recreateTokenOnEateryChange(@Valid @RequestBody RecreateTokenOnEateryChangeRequest request) {
         Long eateryId = request.getEateryId();
@@ -277,7 +278,6 @@ public class AuthController {
         }
 
         UserProfile userProfile = userProfileOptional.get();
-        Long userId = userProfile.getId();
 
         // Verify that the user has access to the specified eatery
         if (eateryId != null) {
@@ -301,7 +301,7 @@ public class AuthController {
 
         // Return the new token
         log.debug("Return new token with eatery ID");
-        LoginResponse response = new LoginResponse(jwt, userId, eateryId);
+        LoginResponse response = new LoginResponse(jwt, user.getId(), eateryId);
         return ResponseEntity.ok(response);
     }
 
@@ -316,7 +316,7 @@ public class AuthController {
      * @return A {@link ResponseEntity} containing a {@link TokenRefreshResponse} with the new access token.
      * Returns {@code HttpStatus.FORBIDDEN} if the refresh token is invalid or expired.
      */
-    @PostMapping("${auth.token.refresh}")
+    @PostMapping(ApiRoutes.AUTH_REFRESH_TOKEN)
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         // Extract refresh token from cookies
         String requestRefreshToken = null;
@@ -332,6 +332,7 @@ public class AuthController {
         }
 
         if (requestRefreshToken == null) {
+            log.warn("Refresh token is null or missing!");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Refresh token is missing"));
         }
@@ -369,6 +370,35 @@ public class AuthController {
     }
 
     /**
+     * Change a user's password by email. Accessible only by SUPER_ADMIN.
+     * Accepts JSON with keys: "email" and "newPassword".
+     * Returns plain text "ok" on success.
+     */
+    @PostMapping(ApiRoutes.AUTH_CHANGE_PASSWORD)
+    @Operation(summary = "Change user password", description = "Super admin only: change a user's password by email")
+    @PreAuthorize("@authz.isSuperAdmin(authentication)")
+    public ResponseEntity<?> changeUserPassword(@Valid @RequestBody LoginRequest body) {
+        if (body == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Request body is required"));
+        }
+        String email = body.getEmail();
+        String newPassword = body.getPassword();
+        if (email == null || email.isBlank() || newPassword == null || newPassword.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Fields 'email' and 'newPassword' are required"));
+        }
+
+        Optional<User> userOptional = userRepository.findByUsername(email);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "User not found"));
+        }
+
+        User user = userOptional.get();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return ResponseEntity.ok("ok");
+    }
+
+    /**
      * Endpoint for user logout.
      * <p>
      * In a JWT-based authentication system, the server typically doesn't maintain session state.
@@ -380,7 +410,7 @@ public class AuthController {
      * @param response The HttpServletResponse for clearing the refresh token cookie.
      * @return A {@link ResponseEntity} with a success message confirming the logout action.
      */
-    @GetMapping("${auth.logout}")
+    @GetMapping(ApiRoutes.AUTH_LOGOUT)
     //[[logout]]
     public ResponseEntity<?> logout(HttpServletResponse response) {
         // Get the current authentication from the security context
@@ -411,4 +441,5 @@ public class AuthController {
         // Return success response
         return ResponseEntity.ok(Map.of("success", true, "message", "Logout successful"));
     }
+
 }

@@ -1,5 +1,6 @@
 package az.qrfood.backend.tableassignment.controller;
 
+import az.qrfood.backend.constant.ApiRoutes;
 import az.qrfood.backend.tableassignment.dto.CreateTableAssignmentDto;
 import az.qrfood.backend.tableassignment.dto.TableAssignmentDto;
 import az.qrfood.backend.tableassignment.service.TableAssignmentService;
@@ -56,8 +57,8 @@ public class TableAssignmentController {
             @ApiResponse(responseCode = "404", description = "Waiter or table not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping("${table.assignment}")
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    @PostMapping(ApiRoutes.TABLE_ASSIGNMENT)
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN')")
     public ResponseEntity<TableAssignmentDto> createTableAssignment(
             @PathVariable Long eateryId,
             @Valid @RequestBody CreateTableAssignmentDto createDto) {
@@ -85,8 +86,8 @@ public class TableAssignmentController {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved list of table assignments"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("${table.assignment}")
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'CASHIER', 'WAITER')")
+    @GetMapping(ApiRoutes.TABLE_ASSIGNMENT)
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'CASHIER', 'WAITER')")
     // [getAllTableAssignments(Long)]
     public ResponseEntity<List<TableAssignmentDto>> getAllTableAssignments(@PathVariable Long eateryId) {
         try {
@@ -139,8 +140,8 @@ public class TableAssignmentController {
             @ApiResponse(responseCode = "404", description = "Table assignment not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("${table.assignment.id}")
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER')")
+    @GetMapping(ApiRoutes.TABLE_ASSIGNMENT_BY_ID)
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER')")
     public ResponseEntity<TableAssignmentDto> getTableAssignmentById(
             @PathVariable Long eateryId,
             @PathVariable Long assignmentId) {
@@ -166,8 +167,8 @@ public class TableAssignmentController {
             @ApiResponse(responseCode = "404", description = "Waiter not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("${table.assignment.waiter}")
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER')")
+    @GetMapping(ApiRoutes.TABLE_ASSIGNMENT_WAITER)
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER')")
     public ResponseEntity<List<TableAssignmentDto>> getTableAssignmentsByWaiterId(
             @PathVariable Long eateryId,
             @PathVariable Long waiterId) {
@@ -193,8 +194,8 @@ public class TableAssignmentController {
             @ApiResponse(responseCode = "404", description = "Table not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("${table.assignment.table}")
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER')")
+    @GetMapping(ApiRoutes.TABLE_ASSIGNMENT_TABLE)
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER')")
     public ResponseEntity<List<TableAssignmentDto>> getTableAssignmentsByTableId(
             @PathVariable Long eateryId,
             @PathVariable Long tableId) {
@@ -220,8 +221,8 @@ public class TableAssignmentController {
             @ApiResponse(responseCode = "404", description = "Table assignment not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @DeleteMapping("${table.assignment.id}")
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
+    @DeleteMapping(ApiRoutes.TABLE_ASSIGNMENT_BY_ID)
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN')")
     public ResponseEntity<Void> deleteTableAssignment(
             @PathVariable Long eateryId,
             @PathVariable Long assignmentId) {

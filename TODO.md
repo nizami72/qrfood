@@ -1,0 +1,36 @@
+### TODO List
+
+- [ ] (1) Fix: A big photo gives an error when trying to load to remote service
+- [ ] (A) Check KitchenDepartmenController for hasAnyRoleAccess feature 
+- [ ] (A) Check OrderController for hasAnyRoleAccess feature 
+- [ ] (A) Check OrderItemController for hasAnyRoleAccess feature 
+- [ ] (A) TableAssigmentController for hasAnyRoleAccess feature 
+- [ ] (A) TableTableController for hasAnyRoleAccess feature 
+- [ ] (A) filter soft deleted dishes and categories from the client menu requested from a client mobile device 
+- [ ] (B) Interceptor for /api/eatery/{eateryId}/user/name/{userName} 
+- [ ] (B) add soft deletion for Departments 
+- [ ] (B) add soft deletion for orders 
+- [ ] (B) add soft deletion for the user 
+- [ ] (C) Detalize what role can do what 
+- [ ] (D) Login as a kitchen and check operations 
+- [ ] (D) Login as admin and check operations 
+- [ ] (D) Login as cashier and check operations 
+- [ ] (D) Login as waiter and check operations 
+- [ ] (E) Add page refresh on the phone orders page 
+- [ ] (F) Token and refresh token feature 
+- [ ] (G) Waiter can see only its own tables and can create order for its tables 
+- [ ] Add table page update via socket   @feat
+- [ ] Cloudflare Turnstile 
+- [ ] Create information entries on the eatery editing page 
+- [ ] Error: The same table name in header line 2 for orders with different tables @fix
+- [ ] Error: when an order by the same phone from another table  @fix
+- [ ] Feature: Reassign order to another table 
+- [ ] For the request /api/eatery/2/order-item/order/4 what is dishItemId 
+- [ ] Implement post put data validation 
+- [ ] In an orders menu set the default date today 
+- [ ] Paid Order shown as Accepted on a client device 
+- [ ] Status order 
+- [ ] To secure public API methods from scam and overloading 
+- [ ] often asked questions 
+- [ ] we can do all things for you, send your menu, then change the password
+- [x] (A) Delete EateryIdCheckerFilter due to hasAnyRoleAccess feature implementation 

@@ -31,7 +31,9 @@ public class KitchenDepartmentService {
         if (profileOpt.isEmpty()) {
             throw new org.springframework.security.access.AccessDeniedException("Unauthorized");
         }
-        boolean hasAccess = profileOpt.get().getEateries().stream().anyMatch(e -> e.getId().equals(restaurantId));
+        boolean hasAccess = profileOpt.get().getEateries()
+                .stream()
+                .anyMatch(e -> e.getId().equals(restaurantId));
         if (!hasAccess) {
             throw new org.springframework.security.access.AccessDeniedException("You do not have access to this restaurant");
         }

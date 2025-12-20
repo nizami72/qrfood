@@ -70,6 +70,13 @@ public enum ResponseCodes {
             "User attempted to delete dish referenced by order items"
     ),
 
+    TOKEN_NOT_FOUND(
+            false,
+                    "Token not found",
+                    "response.notValidatedUser",
+            HttpStatus.FORBIDDEN,
+            "User attempted to access an unvalidated account"
+    )
 
 
 

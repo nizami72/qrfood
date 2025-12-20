@@ -731,7 +731,7 @@
   ],
   "staff": [
     {
-      "email": "AdminMestMestov@mail.az",
+      "email": "AdminMestMestov@yopmail.com",
       "password": "qqqq1111",
       "roles": [
         "EATERY_ADMIN"
@@ -742,7 +742,7 @@
       }
     },
     {
-      "email": "KitchenMestMestov@mail.az",
+      "email": "KitchenMestMestov@yopmail.com",
       "password": "qqqq1111",
       "roles": [
         "KITCHEN_ADMIN"
@@ -753,7 +753,7 @@
       }
     },
     {
-      "email": "CashierMestMestov@mail.az",
+      "email": "CashierMestMestov@yopmail.com",
       "password": "qqqq1111",
       "roles": [
         "CASHIER"
@@ -764,7 +764,7 @@
       }
     },
     {
-      "email": "WaiterFirstMestov@mail.az",
+      "email": "WaiterFirstMestov@yopmail.com",
       "password": "qqqq1111",
       "roles": [
         "WAITER"
@@ -775,7 +775,7 @@
       }
     },
     {
-      "email": "WaiterSeconMestov@mail.az",
+      "email": "WaiterSeconMestov@yopmail.com",
       "password": "qqqq1111",
       "roles": [
         "WAITER"
@@ -786,7 +786,7 @@
       }
     },
     {
-      "email": "WaiterThirdMestov@mail.az",
+      "email": "WaiterThirdMestov@yopmail.com",
       "password": "qqqq1111",
       "roles": [
         "WAITER"

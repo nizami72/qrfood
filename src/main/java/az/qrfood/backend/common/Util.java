@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A utility class providing various helper methods for common tasks
@@ -296,6 +297,60 @@ public class Util {
         boolean isBeforeEnd = dateTimeToCheck.isBefore(endWindow);
 
         return isAtOrAfterStart && isBeforeEnd;
+    }
+
+    /**
+     * Gets a random integer between min (inclusive) and max (inclusive).
+     *
+     * @param min The minimum inclusive value.
+     * @param max The maximum inclusive value.
+     * @return A random integer in the range [min, max].
+     */
+    public static int getRandomInt(int min, int max) {
+        // ThreadLocalRandom.current().nextInt(origin, bound)
+        // 'origin' is inclusive, but 'bound' is exclusive.
+        // We add 1 to max to make the 'max' value inclusive.
+        return ThreadLocalRandom.current().nextInt(min, max + 1);
+    }
+
+    public static String parseDeviceInfo(String userAgent) {
+        if (userAgent == null || userAgent.isEmpty()) {
+            return "Unknown Device";
+        }
+
+        String browser = "Unknown Browser";
+        String os = "Unknown OS";
+
+        // 1. Определение Операционной Системы
+        if (userAgent.contains("Windows")) {
+            os = "Windows";
+        } else if (userAgent.contains("Mac")) {
+            os = "macOS"; // Включает iPad если он запрашивает десктопную версию
+            if (userAgent.contains("iPhone") || userAgent.contains("iPad")) {
+                os = "iOS";
+            }
+        } else if (userAgent.contains("Android")) {
+            os = "Android";
+        } else if (userAgent.contains("Linux")) {
+            os = "Linux";
+        }
+
+        // 2. Определение Браузера (Порядок важен! Chrome есть почти везде)
+        if (userAgent.contains("Edg")) {
+            browser = "Edge";
+        } else if (userAgent.contains("SamsungBrowser")) {
+            browser = "Samsung Internet";
+        } else if (userAgent.contains("Chrome") && !userAgent.contains("Edg")) {
+            browser = "Chrome";
+        } else if (userAgent.contains("Firefox")) {
+            browser = "Firefox";
+        } else if (userAgent.contains("Safari") && !userAgent.contains("Chrome")) {
+            browser = "Safari";
+        } else if (userAgent.contains("Trident")) { // IE 11
+            browser = "Internet Explorer";
+        }
+
+        return browser + " on " + os;
     }
 }
 

@@ -1,7 +1,9 @@
 package az.qrfood.backend.table.service;
 
+import az.qrfood.backend.eatery.dto.OnboardingStatus;
 import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.eatery.repository.EateryRepository;
+import az.qrfood.backend.eatery.service.EateryLifecycleService;
 import az.qrfood.backend.qr.dto.QrCodeDto;
 import az.qrfood.backend.qr.entity.QrCode;
 import az.qrfood.backend.qr.service.QrService;
@@ -13,7 +15,6 @@ import az.qrfood.backend.tableassignment.dto.TableAssignmentDto;
 import az.qrfood.backend.tableassignment.service.TableAssignmentService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -32,12 +33,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TableService {
 
-    @Value("${host.name}")
-    private String baseUrl;
     private final QrService qrService;
     private final TableRepository tableRepository;
     private final EateryRepository eateryRepository;
     private final TableAssignmentService assignmentService;
+    private final EateryLifecycleService eateryLifecycleService;
 
 
     /**
@@ -47,11 +47,12 @@ public class TableService {
      * @param tableRepository  The repository for TableInEatery entities.
      * @param eateryRepository The repository for Eatery entities.
      */
-    public TableService(QrService qrService, TableRepository tableRepository, EateryRepository eateryRepository, TableAssignmentService assignmentService) {
+    public TableService(QrService qrService, TableRepository tableRepository, EateryRepository eateryRepository, TableAssignmentService assignmentService, EateryLifecycleService eateryLifecycleService) {
         this.qrService = qrService;
         this.tableRepository = tableRepository;
         this.eateryRepository = eateryRepository;
         this.assignmentService = assignmentService;
+        this.eateryLifecycleService = eateryLifecycleService;
     }
 
     /**
@@ -116,6 +117,9 @@ public class TableService {
 
         TableInEatery savedTable = tableRepository.save(table);
         table.setQrCode(qrService.createQrCodeEntity(eatery.getId(), table.getId()));
+        if(eatery.getOnboardingStatus() != OnboardingStatus.TABLES_READY) {
+            eateryLifecycleService.tryPromoteStatus(eatery.getId(), OnboardingStatus.TABLES_READY);
+        }
         return convertToDto(savedTable);
     }
 

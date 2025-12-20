@@ -30,7 +30,7 @@
           "descriptionRu": "Салат из свежих овощей",
           "price": 8.50,
           "image": "vegetarian.webp",
-          "isAvailable": true
+          "available": true
         },
         {
           "dishId": 2,
@@ -43,7 +43,7 @@
           "descriptionRu": "Салат с куриным мясом",
           "price": 10.00,
           "image": "chicken_salad.jpg",
-          "isAvailable": true
+          "available": true
         },
         {
           "dishId": 3,
@@ -56,7 +56,7 @@
           "descriptionRu": "Закуска из различных видов сыра",
           "price": 15.00,
           "image": "cheese_platter.jpg",
-          "isAvailable": true
+          "available": true
         },
         {
           "dishId": 4,
@@ -69,7 +69,7 @@
           "descriptionRu": "Закуска из различных видов оливок",
           "price": 7.50,
           "image": "olive_assortment.jpg",
-          "isAvailable": true
+          "available": true
         }
       ]
     },
@@ -92,7 +92,7 @@
           "descriptionRu": "Куриный кебаб на гриле",
           "price": 18.00,
           "image": "chicken_kebab.jpg",
-          "isAvailable": true
+          "available": true
         },
         {
           "dishId": 6,
@@ -105,7 +105,7 @@
           "descriptionRu": "Кебаб из баранины на гриле",
           "price": 22.00,
           "image": "lamb_kebab.jpg",
-          "isAvailable": true
+          "available": true
         },
         {
           "dishId": 7,
@@ -118,7 +118,7 @@
           "descriptionRu": "Свежая рыба на гриле",
           "price": 20.00,
           "image": "fish_skewer.jpg",
-          "isAvailable": true
+          "available": true
         },
         {
           "dishId": 8,
@@ -131,7 +131,7 @@
           "descriptionRu": "Овощной кебаб на гриле",
           "price": 15.00,
           "image": "vegetable_kebab.jpg",
-          "isAvailable": true
+          "available": true
         }
       ]
     },
@@ -154,7 +154,7 @@
           "descriptionRu": "Традиционный освежающий напиток",
           "price": 3.00,
           "image": "ayran.jpg",
-          "isAvailable": true
+          "available": true
         },
         {
           "dishId": 10,
@@ -167,7 +167,7 @@
           "descriptionRu": "Освежающий напиток из фруктов",
           "price": 4.00,
           "image": "compote.jpg",
-          "isAvailable": true
+          "available": true
         },
         {
           "dishId": 11,
@@ -180,7 +180,7 @@
           "descriptionRu": "Традиционный азербайджанский чай",
           "price": 2.50,
           "image": "tea.jpg",
-          "isAvailable": true
+          "available": true
         },
         {
           "dishId": 12,
@@ -193,7 +193,7 @@
           "descriptionRu": "Свежесваренный кофе",
           "price": 5.00,
           "image": "coffee.jpg",
-          "isAvailable": true
+          "available": true
         }
       ]
     }

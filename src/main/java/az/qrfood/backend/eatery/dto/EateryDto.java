@@ -2,6 +2,7 @@ package az.qrfood.backend.eatery.dto;
 
 import az.qrfood.backend.category.dto.CategoryDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
  */
 @Data
 @AllArgsConstructor
+@Builder
 public class EateryDto {
 
     /**
@@ -75,6 +77,8 @@ public class EateryDto {
     private Long ownerProfileId;
 
     private String ownerMail;
+
+    private OnboardingStatus onboardingStatus;
 
     /**
      * Default constructor. Initializes lists to prevent NullPointerExceptions.

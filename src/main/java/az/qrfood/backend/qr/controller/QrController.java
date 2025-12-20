@@ -1,5 +1,6 @@
 package az.qrfood.backend.qr.controller;
 
+import az.qrfood.backend.constant.ApiRoutes;
 import az.qrfood.backend.qr.service.QrService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,7 +45,7 @@ public class QrController {
      * </p>
      *
      * @param eateryId    The ID of the eatery.
-     * @param tableNumber The number of the table for which to generate the QR code.
+     * @param tableId The number of the table for which to generate the QR code.
      * @return A {@link ResponseEntity} containing the QR code image as a byte array (PNG format).
      */
     @Operation(summary = "Generate QR code for table", description = "Generates a QR code image for a specific eatery table")
@@ -53,12 +54,12 @@ public class QrController {
             @ApiResponse(responseCode = "404", description = "Eatery or table not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @GetMapping(value = "${api.qr-code}")
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication,#eateryId, 'EATERY_ADMIN')")
+    @GetMapping(value = ApiRoutes.QR_CODE)
     public ResponseEntity<byte[]> getQrImage(@PathVariable("eateryId") Long eateryId,
-                                             @PathVariable("tableId") Integer tableNumber) {
-        log.debug("Requested QR image for eatery [{}] and table [{}]", eateryId, tableNumber);
-        byte[] qrCode = qrService.getQrImage(eateryId, tableNumber);
+                                             @PathVariable("tableId") Long tableId) {
+        log.debug("Requested QR image for eatery [{}] and table [{}]", eateryId, tableId);
+        byte[] qrCode = qrService.getQrImage(eateryId, tableId);
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.IMAGE_PNG)
@@ -72,7 +73,7 @@ public class QrController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PreAuthorize("@authz.isSuperAdmin(authentication)")
-    @GetMapping(value = "${api.qr-code.contents}")
+    @GetMapping(value = ApiRoutes.QR_CODE_CONTENTS)
     public ResponseEntity<List<String>> getQrContents(@PathVariable("eateryId") Long eateryId) {
         List<String> contents = qrService.getAllQrContents(eateryId);
         return ResponseEntity.ok(contents);

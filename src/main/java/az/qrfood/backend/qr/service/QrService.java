@@ -65,30 +65,30 @@ public class QrService {
             throw new RuntimeException("Failed to generate QR code", e);
         }
         code.setContent(qrContent);
-//        String s = qrContent.replace("192.168.1.76:8081", "127.0.0.1:5173");
+//        String s = qrContent.replace("192.168.1.76:8081", "localhost:5173");
 //        Util.saveLinkToFile(s);
 //        log.debug("Menu link [{}]", s);
 
         return code;
     }
 
-    /**
+      /**
      * Retrieves the QR code image (as a byte array) for a specific eatery and table number.
      *
      * @param eateryId    The ID of the eatery.
-     * @param tableNumber The number of the table.
+     * @param tableId The number of the table.
      * @return A byte array representing the QR code image.
      * @throws EntityNotFoundException if the eatery or the table/QR code for the given eatery and table number is not found.
      */
-    public byte[] getQrImage(Long eateryId, Integer tableNumber) {
+    public byte[] getQrImage(Long eateryId, Long tableId) {
         Eatery eatery = eateryRepository.findById(eateryId).orElseThrow(EntityNotFoundException::new);
         List<TableInEatery> tableInEateryList = eatery.getTables();
         Optional<TableInEatery> op = tableInEateryList.stream()
-                .filter(t -> t.getTableNumber().equals(String.valueOf(tableNumber)))
+                .filter(t -> t.getId().equals(tableId))
                 .findFirst();
         if(op.isEmpty()) {
             throw new EntityNotFoundException(String.format("Qr code for eatery [%s] and table [%s} could not be found",
-                    eateryId, tableNumber));
+                    eateryId, tableId));
         }
         return op.get().getQrCode().getQrCodeAsBytes();
     }

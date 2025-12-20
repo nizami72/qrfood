@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import az.qrfood.backend.user.dto.RegisterRequest;
@@ -13,6 +14,7 @@ import az.qrfood.backend.user.dto.RegisterResponse;
 import az.qrfood.backend.user.dto.UserRequest;
 import az.qrfood.backend.user.dto.UserResponse;
 import az.qrfood.backend.user.entity.Role;
+import az.qrfood.backend.util.AbstractTest;
 import az.qrfood.backend.util.TestUtil;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -28,68 +30,71 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
  * Integration test for the User API.
  * This test covers the following operations for the User entity:
- * - Create a user
+ * - Create users with different roles (WAITER, CASHIER, KITCHEN_ADMIN)
+ * - Get all users for an eatery
  * - Get a user by ID
- * - Get all users
+ * - Get a user by username
  * - Update a user
  * - Delete a user
+ * - Test forbidden access for SUPER_ADMIN endpoints with EATERY_ADMIN token
  */
-@SpringBootTest(properties = "spring.config.name=application")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Log4j2
-public class UserApiTest {
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class UserApiTest extends AbstractTest {
 
-    //<editor-fold desc="Field">
     private static PrintStream fileLog;
-    @Value("${admin}")
-    String uriSuperAdminRegister;
+
+    @Value("${user.and.eatery}")
+    String uriAdminApiEatery;
     @Value("${admin.eatery}")
     String uriAdminEateryRegister;
-
-
-    @Value("${base.url}")
-    String baseUrl;
     @Value("${usr}")
-    String controllerPath1;
+    String uriEateryUserBase;
     @Value("${user.general}")
-    String userRegisterGeneral;
-    @Value("${user.n}")
-    String userN;
-    @Value("${users}")
-    String users;
+    String uriUserGeneral;
     @Value("${user.id}")
-    String userId;
+    String uriUserId;
+    @Value("${user.n}")
+    String uriUserN;
+    @Value("${api.user}")
+    String uriUserAll;
+    @Value("${usr.delete}")
+    String uriUserDeleteById;
 
-    String jwtToken;
-    //    String uniqueUsername;
-    String role = Role.WAITER.name();
-    String eateryId = "2";
-    String controllerPath;
-    RegisterRequest adminRegisterRequest;
-    RegisterResponse registerResponse;
-    RegisterResponse adminRegisterResponse;
-    List<RegisterResponse> generalUserRegisterResponses;
+    static class UserTestData {
+        RegisterRequest request;
+        RegisterResponse response;
 
-    //</editor-fold>
+        public UserTestData(RegisterRequest request, RegisterResponse response) {
+            this.request = request;
+            this.response = response;
+        }
 
-    //<editor-fold desc="Before All Setup">
-    @BeforeAll
-    void setupPaths() {
-        controllerPath = controllerPath1.replace("{eateryId}", eateryId);
+        public RegisterRequest getRequest() {
+            return request;
+        }
+
+        public RegisterResponse getResponse() {
+            return response;
+        }
     }
+
+    List<UserTestData> userTestDataSet;
 
     @BeforeAll
     void setupLogging() throws Exception {
@@ -100,199 +105,112 @@ public class UserApiTest {
         );
     }
 
-    @BeforeAll
-    void login() {
-//       jwtToken = login("nizami.budagov@gmail.com", "qqqq1111");
-    }
-    //</editor-fold>
-
     /**
-     * Test creating a user.
-     * Expected: 201 Created response with the new user's ID.
+     * Test creating users with WAITER, CASHIER, KITCHEN_ADMIN roles.
+     * These users are associated with the eatery created in AbstractTest.
      */
     @Test
     @Order(1)
-    void postJustUser() {
-        fileLog.println("\n !!Test1 ==================== 📥 POST User Order =====================");
-        // Generate a unique username to avoid conflicts
-        String uniqueUsername = "testuser_" + UUID.randomUUID().toString().substring(0, 8);
-
-        Set<Role> roles = new HashSet<>();
-        roles.add(Role.valueOf(role));
-
-        UserRequest request = new UserRequest();
-        request.setUsername(uniqueUsername);
-        request.setPassword("password123");
-        request.setRoles(roles);
-
-        Response response = given()
-                .baseUri(baseUrl)
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when()
-                .post(uriSuperAdminRegister)
-                .then()
-                .statusCode(201)
-                .body("id", notNullValue())
-                .body("username", equalTo(uniqueUsername))
-                .body("roles", hasItem(role))
-                .extract()
-                .response();
-
-        Long createdUserId = response.jsonPath().getLong("id");
-        log.debug(" Created User ID [{}]", createdUserId);
-
-        String pass = "qqqq1111";
-        String mail = "nizami.budagov@gmail.com";
-        String jwt = login(mail, pass);
-
-        fileLog.println("\n==================== 📥 Get User by ID =====================");
-        UserResponse userResponse = getUserById(createdUserId);
-        assertEquals(uniqueUsername, userResponse.getUsername());
-
-        fileLog.println("\n==================== 📥 Delete user =====================");
-        given()
-                .baseUri(baseUrl)
-                .header("Authorization", "Bearer " + jwt)
-                .when()
-                .delete(uriSuperAdminRegister + "/" + userResponse.getId().toString())
-                .then()
-                .statusCode(204);
-    }
-
-    /**
-     * Registers a new user with the restaurant.
-     */
-    @Test
-    @Order(2)
-    void postEateryAdmin() {
-        fileLog.println("\n !!Test2 ==================== 📥 POST Admin User with Eatery =====================");
-        // login as super admin
-        String superAdminPassword = "qqqq1111";
-        String superAdminMail = "nizami.budagov@gmail.com";
-        String superAdminJwt = login(superAdminMail, superAdminPassword);
-
-        // create admin and eatery
-        adminRegisterRequest = TestUtil.createRegisterRequest(true);
-        adminRegisterResponse = postUserAndEateryAsAdmin(superAdminJwt, adminRegisterRequest,
-                uriSuperAdminRegister + uriAdminEateryRegister)
-                .as(RegisterResponse.class);
-        assertTrue(adminRegisterResponse.success());
-        fileLog.println("Created eatery and its admin: " + adminRegisterResponse);
-    }
-
-    @Test
-    @Order(3)
     void createEateryOtherUsers() {
-        fileLog.println("\n !!Test3 ============== 📥 POST create a couple of users with different roles -3- ==========");
-        Long eatery = adminRegisterResponse.eateryId();
-        String adminJwt = login(adminRegisterRequest.getUser().getEmail(), adminRegisterRequest.getUser().getPassword());
+        fileLog.println("\n !!Test1 ============== POST create a couple of users with different roles ==========");
+        String adminJwt = super.jwtToken;
+        Long currentEateryId = super.eateryId;
+
         List<RegisterRequest> requests = List.of(
                 TestUtil.createRegisterRequest(Set.of(Role.WAITER), false),
                 TestUtil.createRegisterRequest(Set.of(Role.CASHIER), false),
                 TestUtil.createRegisterRequest(Set.of(Role.KITCHEN_ADMIN), false)
         );
-        generalUserRegisterResponses = requests.stream()
+
+        userTestDataSet = requests.stream()
                 .map(r -> {
-                    RegisterResponse response = postGeneralUser(adminJwt, r, eatery).as(RegisterResponse.class);
-                    log.debug("Created user: {}", response);
-                    return response;
+                    Response response = postGeneralUser(adminJwt, r, currentEateryId);
+                    RegisterResponse rr = response.as(RegisterResponse.class);
+                    log.debug("Created user: {}", rr);
+                    return new UserTestData(r, rr);
                 })
                 .collect(Collectors.toCollection(ArrayList::new));
-        assertEquals(3, generalUserRegisterResponses.size(), "Should be 4 members");
-    }
-
-    // check created delete users
-    // delete admin and eatery
-
-    @Test
-    @Order(4)
-    void getAllUsers() {
-        fileLog.println("\n !! Test4 ==================== 📥 Get all users of the eatery =====================");
-
-        String jwt = login(adminRegisterRequest.getUser().getEmail(), adminRegisterRequest.getUser().getPassword());
-        List<UserResponse> users = findAllUsersForEatery(jwt, adminRegisterResponse.eateryId());
-        // Verify the list contains the created user
-        boolean found = users.stream()
-                .anyMatch(user -> user.getId().equals(adminRegisterResponse.userId()));
-        log.debug("Found User in list [{}]", found);
-        assertEquals(4, users.size());
-        assertTrue(found, "Created user not found in the list");
+        assertEquals(3, userTestDataSet.size(), "Should be 3 members");
     }
 
     /**
-     * Test updating a user.
-     * Expected: 200 OK response with the updated data.
+     * Helper method to register a general user (WAITER, CASHIER, KITCHEN_ADMIN)
+     * with an existing eatery.
      */
-    @Test
-    @Order(5)
-    void putUser() {
-        fileLog.println("\n !!Test5 ==================== 📥 Updating User =====================");
-        RegisterResponse u = generalUserRegisterResponses.get(0);
-        Long eatery = adminRegisterResponse.eateryId();
-
-        int initV = u.userId().intValue();
-        String updatedUsername = u.name() + "_updated";
-        Set<Role> updatedRoles = new HashSet<>();
-        updatedRoles.add(Role.WAITER);
-
-        UserRequest request = new UserRequest();
-        request.setUsername(updatedUsername);
-        request.setPassword("newpassword123");
-        request.setRoles(updatedRoles);
-
-        given()
+    private Response postGeneralUser(String jwt, RegisterRequest registerRequest, Long eateryId) {
+        fileLog.println("\n==================== POST User with Eatery Order =====================\n" +
+                "Registering user: " + registerRequest.getUser().getEmail() + " with roles: " + registerRequest.getUser().getRoles());
+        return given()
                 .baseUri(baseUrl)
-                .header("Authorization", "Bearer " + jwtToken)
+                .header("Authorization", "Bearer " + jwt)
                 .contentType(ContentType.JSON)
-                .body(request)
+                .body(registerRequest)
                 .when()
-                .put(controllerPath1.replace("{eateryId}", eatery.toString())
-                        + userId.replace("{userId}", u.userId().toString()))
+                .post(uriUserGeneral.replace("{eateryId}", eateryId.toString()))
                 .then()
-                .statusCode(200)
-                .body("id", equalTo(initV))
-                .body("username", equalTo(updatedUsername))
-                .body("roles", hasItems(role, "WAITER"));
+                .statusCode(201)
+                .body("success", equalTo(true))
+                .body("message", equalTo("User registered successfully"))
+                .extract()
+                .response();
     }
 
-    String createdUserId = "todo";
-
-
     /**
-     * Test deleting a user.
-     * Expected: 204 No Content response.
+     * Test retrieving all users for the eatery.
+     * Verifies that the admin user and the newly created general users are present.
      */
     @Test
-    @Order(6)
-    void deleteUser() {
-        fileLog.println("\n !!Test6 ==================== 📥 =====================");
-        Long eateryId = adminRegisterResponse.eateryId();
-        RegisterResponse u = generalUserRegisterResponses.get(2);
-        assertEquals(4, findAllUsersForEatery(jwtToken, eateryId).size());
-        given()
-                .baseUri(baseUrl)
-                .header("Authorization", "Bearer " + jwtToken)
-                .when()
-                .delete(controllerPath1.replace("{eateryId", eateryId.toString())
-                        + userId.replace("{userId}", u.userId().toString()))
-                .then()
-                .statusCode(204);
-        assertEquals(3, findAllUsersForEatery(jwtToken, eateryId).size());
+    @Order(2)
+    void testGetAllEateryUsers() {
+        fileLog.println("\n !!Test2 ==================== Get all users of the eatery =====================\n");
+        String adminJwt = super.jwtToken;
+        Long currentEateryId = super.eateryId;
+
+        List<UserResponse> users = findAllUsersForEatery(adminJwt, currentEateryId);
+
+        assertEquals(1 + userTestDataSet.size(), users.size()); // 1 admin + 3 general users
+
+        assertTrue(users.stream().anyMatch(user -> user.getId().equals(super.userId)), "Admin user not found in the list");
+
+        for (UserTestData testData : userTestDataSet) {
+            assertTrue(users.stream().anyMatch(user -> user.getId().equals(testData.getResponse().userId())), "General user " + testData.getResponse().userId() + " not found in the list");
+        }
     }
 
+    /**
+     * Test retrieving a specific user by their ID.
+     */
+    @Test
+    @Order(3)
+    void testGetUserById() {
+        fileLog.println("\n !!Test3 ==================== Get User by ID =====================\n");
+        String adminJwt = super.jwtToken;
+        Long currentEateryId = super.eateryId;
+        UserTestData targetUserTestData = userTestDataSet.get(0); // Get the first general user
+        RegisterResponse targetUserResponse = targetUserTestData.getResponse();
+        RegisterRequest targetUserRequest = targetUserTestData.getRequest();
+
+        UserResponse userResponse = getUserById(adminJwt, currentEateryId, targetUserResponse.userId());
+
+        assertEquals(targetUserResponse.userId(), userResponse.getId());
+        assertEquals(targetUserResponse.name(), userResponse.getName());
+        assertTrue(userResponse.getRoles().containsAll(targetUserRequest.getUser().getRoles()
+                .stream()
+                .map(Enum::name)
+                .collect(Collectors.toSet()))
+        );
+    }
 
     /**
-     * Get a user by ID.
-     * Expected: 200 OK responses with the user data corresponding to what was sent in step 1.
+     * Helper method to get a user by ID.
      */
-    private UserResponse getUserById(Long userId1) {
-        String s = userId1.toString();
+    private UserResponse getUserById(String jwt, Long eateryId, Long userId) {
+        fileLog.println("Getting user by ID: " + userId);
         Response response = given()
                 .baseUri(baseUrl)
-                .header("Authorization", "Bearer " + jwtToken)
+                .header("Authorization", "Bearer " + jwt)
                 .when()
-                .get(controllerPath + userId.replace("{userId}", s))
+                .get(uriUserId.replace("{eateryId}", eateryId.toString()).replace("{userId}", userId.toString()))
                 .then()
                 .statusCode(200)
                 .extract()
@@ -300,78 +218,166 @@ public class UserApiTest {
         return response.as(UserResponse.class);
     }
 
-    private String login(String mail, String password) {
+    /**
+     * Test retrieving a specific user by their username.
+     */
+    @Test
+    @Order(4)
+    void testGetUserByUsername() {
+        fileLog.println("\n !!Test4 ==================== Get User by Username =====================\n");
+        String adminJwt = super.jwtToken;
+        Long currentEateryId = super.eateryId;
+        UserTestData targetUserTestData = userTestDataSet.get(1); // Get the second general user
+        RegisterResponse targetUserResponse = targetUserTestData.getResponse();
+        RegisterRequest targetUserRequest = targetUserTestData.getRequest();
+        UserResponse userResponse = getUserByUsername(adminJwt, currentEateryId, targetUserRequest.getUser().getEmail());
+        assertEquals(targetUserResponse.userId(), userResponse.getId());
+        assertEquals(targetUserResponse.name(), userResponse.getName());
+        assertTrue(userResponse.getRoles().containsAll(targetUserRequest.getUser().getRoles()
+                .stream()
+                .map(Enum::name)
+                .collect(Collectors.toSet())));
+    }
 
-        fileLog.println("\n==================== 📥 LOGIN =====================");
-
-        String arg = """
-                {
-                  "email": "%s",
-                  "password": "%s"
-                }
-                """;
-        String authPayload = String.format(arg, mail, password);
-
-        Response authResponse = given()
+    /**
+     * Helper method to get a user by username.
+     */
+    private UserResponse getUserByUsername(String jwt, Long eateryId, String username) {
+        fileLog.println("Getting user by username: " + username);
+        Response response = given()
                 .baseUri(baseUrl)
-                .contentType("application/json")
-                .body(authPayload)
+                .header("Authorization", "Bearer " + jwt)
                 .when()
-                .post("/api/auth/login")
+                .get(uriUserN.replace("{eateryId}", eateryId.toString()).replace("{userName}", username))
                 .then()
                 .statusCode(200)
                 .extract()
                 .response();
-
-        jwtToken = authResponse.jsonPath().getString("jwt");
-
-        fileLog.println("\n==================== 📥 Login Success =====================");
-        return jwtToken;
+        return response.as(UserResponse.class);
     }
 
-    private Response postUserAndEateryAsAdmin(String jwt, RegisterRequest registerRequest, String uri) {
-        fileLog.println("\n==================== 📥 POST User with Eatery Order =====================");
-        return given()
+    /**
+     * Test updating an existing user.
+     */
+    @Test
+    @Order(5)
+    void testUpdateUser() {
+        fileLog.println("\n !!Test5 ==================== Updating User =====================\n");
+        String adminJwt = super.jwtToken;
+        Long currentEateryId = super.eateryId;
+        UserTestData userToUpdateTestData = userTestDataSet.get(0); // Update the first general user
+        RegisterResponse userToUpdateResponse = userToUpdateTestData.getResponse();
+
+        String updatedUsername = userToUpdateResponse.name() + "_updated";
+        Set<Role> updatedRoles = new HashSet<>();
+        updatedRoles.add(Role.WAITER);
+        updatedRoles.add(Role.CASHIER); // Add another role
+
+        UserRequest request = new UserRequest();
+        request.setUsername(updatedUsername);
+        request.setPassword("newpassword123"); // Password update might not be reflected in UserResponse
+        request.setRoles(updatedRoles);
+
+        given()
                 .baseUri(baseUrl)
-                .header("Authorization", "Bearer " + jwt)
+                .header("Authorization", "Bearer " + adminJwt)
                 .contentType(ContentType.JSON)
-                .body(registerRequest)
+                .body(request)
                 .when()
-                .post(uri)
+                .put(uriUserId.replace("{eateryId}", currentEateryId.toString()).replace("{userId}", userToUpdateResponse.userId().toString()))
                 .then()
-                .statusCode(201)
-                .extract()
-                .response();
+                .statusCode(200)
+                .body("id", equalTo(userToUpdateResponse.userId().intValue()))
+                .body("username", equalTo(updatedUsername))
+                .body("roles", hasItems(Role.WAITER.name(), Role.CASHIER.name()));
+
+        // Verify the update by getting the user again
+        UserResponse updatedUser = getUserById(adminJwt, currentEateryId, userToUpdateResponse.userId());
+        assertEquals(updatedUsername, updatedUser.getUsername());
+        assertTrue(updatedUser.getRoles().containsAll(updatedRoles.stream().map(Enum::name).collect(Collectors.toSet())));
     }
 
-    private Response postGeneralUser(String jwt, RegisterRequest registerRequest, Long eateryId) {
-        fileLog.println("\n==================== 📥 POST User with Eatery Order =====================");
-        return given()
+    /**
+     * Test deleting a user.
+     */
+    @Test
+    @Order(6)
+    void testDeleteUser() {
+        fileLog.println("\n !!Test6 ==================== Deleting User =====================\n");
+        String adminJwt = super.jwtToken;
+        Long currentEateryId = super.eateryId;
+        UserTestData userToDeleteTestData = userTestDataSet.get(2); // Delete the third general user
+        RegisterResponse userToDeleteResponse = userToDeleteTestData.getResponse();
+
+        int initialUserCount = findAllUsersForEatery(adminJwt, currentEateryId).size();
+
+        given()
                 .baseUri(baseUrl)
-                .header("Authorization", "Bearer " + jwt)
-                .contentType(ContentType.JSON)
-                .body(registerRequest)
+                .header("Authorization", "Bearer " + adminJwt)
                 .when()
-                .post(controllerPath1.replace("{eateryId}", eateryId.toString()) + userRegisterGeneral)
+                .delete(uriUserId.replace("{eateryId}", currentEateryId.toString()).replace("{userId}", userToDeleteResponse.userId().toString()))
                 .then()
-                .statusCode(201)
-                .body("success", equalTo(true))
-                .body("message", equalTo("User and a eatery successfully created!"))
-                .extract()
-                .response();
+                .statusCode(204);
+
+        // Verify deletion
+        List<UserResponse> remainingUsers = findAllUsersForEatery(adminJwt, currentEateryId);
+        assertEquals(initialUserCount - 1, remainingUsers.size());
+        assertFalse(remainingUsers.stream().anyMatch(user -> user.getId().equals(userToDeleteResponse.userId())), "Deleted user still found in the list");
     }
 
+    /**
+     * Test attempting to get all users from all eateries with an EATERY_ADMIN token.
+     * Expects a 403 Forbidden status code.
+     */
+    @Test
+    @Order(7)
+    void testGetAllUsersFromAllEateriesForbidden() {
+        fileLog.println("\n !!Test7 ==================== Get all users from all eateries (Forbidden) =====================\n");
+        String adminJwt = super.jwtToken;
+
+        given()
+                .baseUri(baseUrl)
+                .header("Authorization", "Bearer " + adminJwt)
+                .when()
+                .get(uriUserAll)
+                .then()
+                .statusCode(403); // Expect Forbidden
+    }
+
+    /**
+     * Test attempting to delete a user by name (SUPER_ADMIN endpoint) with an EATERY_ADMIN token.
+     * Expects a 403 Forbidden status code.
+     */
+    @Test
+    @Order(8)
+    void testDeleteEateryAdminWithResourcesForbidden() {
+        fileLog.println("\n !!Test8 ==================== Delete user by name (Forbidden) =====================\n");
+        String adminJwt = super.jwtToken;
+        // Try to delete the admin user created by AbstractTest setup
+        String adminUserIdString = super.userId.toString();
+
+        given()
+                .baseUri(baseUrl)
+                .header("Authorization", "Bearer " + adminJwt)
+                .when()
+                .post(uriUserDeleteById.replace("{id}", adminUserIdString))
+                .then()
+                .statusCode(403); // Expect Forbidden
+    }
+
+    /**
+     * Helper method to find all users for a specific eatery.
+     */
     private List<UserResponse> findAllUsersForEatery(String jwt, Long eateryId) {
         Response response = given()
                 .baseUri(baseUrl)
                 .header("Authorization", "Bearer " + jwt)
                 .when()
-                .get(controllerPath1.replace("{eateryId}", eateryId.toString()))
+                .get(uriEateryUserBase.replace("{eateryId}", eateryId.toString()))
                 .then()
                 .statusCode(200)
                 .extract()
                 .response();
         return response.jsonPath().getList("", UserResponse.class);
     }
-
 }

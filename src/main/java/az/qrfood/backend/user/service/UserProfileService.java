@@ -8,6 +8,7 @@ import az.qrfood.backend.user.entity.UserProfile;
 import az.qrfood.backend.user.repository.UserProfileRepository;
 import az.qrfood.backend.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,6 +79,33 @@ public class UserProfileService {
         return userProfileRepository.save(profile);
     }
 
+    public UserProfile createUserProfile(User user, String userName) {
+        if (userProfileRepository.existsByUser(user)) {
+            throw new IllegalStateException("User profile already exists for user: " + user.getUsername());
+        }
+        UserProfile profile = new UserProfile();
+        profile.setUser(user);
+        profile.setIsActive(true);
+        profile.setName(userName);
+        profile.setCreated(LocalDateTime.now());
+        profile.setUpdated(LocalDateTime.now());
+        profile.setLocale(LocaleContextHolder.getLocale().getLanguage());
+        return userProfileRepository.save(profile);
+    }
+
+    public UserProfile createUserProfile(User user) {
+        if (userProfileRepository.existsByUser(user)) {
+            throw new IllegalStateException("User profile already exists for user: " + user.getUsername());
+        }
+        UserProfile profile = new UserProfile();
+        profile.setUser(user);
+        profile.setIsActive(true);
+        profile.setCreated(LocalDateTime.now());
+        profile.setUpdated(LocalDateTime.now());
+        profile.setLocale(LocaleContextHolder.getLocale().getLanguage());
+        return userProfileRepository.save(profile);
+    }
+
     /**
      * Adds a restaurant to the user profile's list of associated restaurants.
      *
@@ -86,7 +114,7 @@ public class UserProfileService {
      * @throws EntityNotFoundException if the restaurant with the given ID is not found.
      */
     @Transactional
-    public void addRestaurantToProfile(UserProfile profile, Long restaurantId) {
+    public Eatery addRestaurantToProfile(UserProfile profile, Long restaurantId) {
         Eatery eatery = eateryRepository.findById(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException("Restaurant not found with id: " + restaurantId));
 
@@ -94,7 +122,19 @@ public class UserProfileService {
             profile.getEateries().add(eatery);
             userProfileRepository.save(profile);
         }
+        return eatery;
     }
+
+    public void removeRestaurantFromProfile(UserProfile profile, Long eateryId) {
+        Eatery eatery = eateryRepository.findById(eateryId)
+                .orElseThrow(() -> new EntityNotFoundException("Restaurant not found with id: " + eateryId));
+
+        if (profile.getEateries().contains(eatery)) {
+            profile.getEateries().remove(eatery);
+            userProfileRepository.save(profile);
+        }
+    }
+
 
     /**
      * Adds a restaurant to the user profile associated with the given {@link UserDetails}.
@@ -162,5 +202,9 @@ public class UserProfileService {
         String username = userDetails.getUsername();
         return userRepository.findByUsername(username)
                 .flatMap(userProfileRepository::findByUser);
+    }
+
+    public Optional<UserProfile> findProfileByUserWithEateries(User user) {
+        return userProfileRepository.findByUserWithEateries(user);
     }
 }

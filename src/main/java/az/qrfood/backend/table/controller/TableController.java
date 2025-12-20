@@ -1,5 +1,6 @@
 package az.qrfood.backend.table.controller;
 
+import az.qrfood.backend.constant.ApiRoutes;
 import az.qrfood.backend.table.dto.TableDto;
 import az.qrfood.backend.table.entity.TableStatus;
 import az.qrfood.backend.table.service.TableService;
@@ -53,8 +54,8 @@ public class TableController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping("${table}")
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'WAITER', 'KITCHEN_ADMIN', 'CASHIER')")
+    @GetMapping(ApiRoutes.TABLE)
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication,#eateryId, 'EATERY_ADMIN', 'WAITER', 'KITCHEN_ADMIN', 'CASHIER')")
     public ResponseEntity<List<TableDto>> getTables(@PathVariable Long eateryId) {
         try {
             // Get the current authenticated user
@@ -115,8 +116,8 @@ public class TableController {
             @ApiResponse(responseCode = "404", description = "Table not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'WAITER', 'KITCHEN_ADMIN', 'CASHIER')")
-    @GetMapping("${table.id}")
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication,#eateryId, 'EATERY_ADMIN', 'WAITER', 'KITCHEN_ADMIN', 'CASHIER')")
+    @GetMapping(ApiRoutes.TABLE_BY_ID)
     public ResponseEntity<TableDto> getTable(@PathVariable Long tableId) {
         return tableService.findById(tableId)
                 .map(ResponseEntity::ok)
@@ -132,9 +133,9 @@ public class TableController {
             @ApiResponse(responseCode = "400", description = "Invalid input data or eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @PostMapping("${table}")
-    public ResponseEntity<TableDto> createTable(@RequestBody TableDto tableDto) {
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication,#eateryId, 'EATERY_ADMIN')")
+    @PostMapping(ApiRoutes.TABLE)
+    public ResponseEntity<TableDto> postTable(@PathVariable Long eateryId, @RequestBody TableDto tableDto) {
         try {
             TableDto createdTable = tableService.createTable(tableDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdTable);
@@ -154,9 +155,9 @@ public class TableController {
             @ApiResponse(responseCode = "404", description = "Table not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @PutMapping("${table.id}")
-    public ResponseEntity<TableDto> updateTable(@PathVariable Long tableId, @RequestBody TableDto tableDto) {
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN')")
+    @PutMapping(ApiRoutes.TABLE_BY_ID)
+    public ResponseEntity<TableDto> putTable(@PathVariable Long eateryId, @PathVariable Long tableId, @RequestBody TableDto tableDto) {
         try {
             TableDto updatedTable = tableService.updateTable(tableId, tableDto);
             return ResponseEntity.ok(updatedTable);
@@ -174,8 +175,8 @@ public class TableController {
             @ApiResponse(responseCode = "404", description = "Table not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @DeleteMapping("${table.id}")
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication,#eateryId, 'EATERY_ADMIN')")
+    @DeleteMapping(ApiRoutes.TABLE_BY_ID)
     public ResponseEntity<Void> deleteTable(@PathVariable Long tableId) {
         try {
             tableService.updateTableStatus(tableId, TableStatus.ARCHIVED);

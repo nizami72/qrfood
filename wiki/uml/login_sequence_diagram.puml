@@ -1,0 +1,32 @@
+@startuml
+title Login Sequence Diagram
+
+actor User
+participant "UnifiedAuthPage" as Frontend
+participant "AuthHybridController" as BackendController
+participant "AuthHybridService" as BackendService
+participant "EmailService" as EmailService
+
+User -> Frontend: Enters email and clicks "Continue with email"
+Frontend -> BackendController: POST /api/auth/magic-link with email
+BackendController -> BackendService: magicLink(email)
+BackendService -> BackendService: Generate token
+BackendService -> EmailService: sendMagicLink(email, token)
+EmailService -> User: Sends email with magic link
+
+User -> Frontend: Clicks magic link in email
+Frontend -> BackendController: POST /api/auth/verify-token with token
+BackendController -> BackendService: verifyToken(token)
+BackendService -> BackendService: Validate token
+alt token is valid
+    BackendService -> BackendService: Generate JWT
+    BackendService -> BackendController: return HybridLoginResponse with JWT
+    BackendController -> Frontend: return HybridLoginResponse with JWT
+    Frontend -> User: Stores JWT and logs in user
+else token is invalid
+    BackendService -> BackendController: throw exception
+    BackendController -> Frontend: return error
+    Frontend -> User: Show error message
+end
+
+@enduml

@@ -5,6 +5,7 @@ import az.qrfood.backend.category.dto.CategoryPredefined;
 import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.category.entity.CategoryStatus;
 import az.qrfood.backend.category.service.CategoryService;
+import az.qrfood.backend.constant.ApiRoutes;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,7 +15,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,9 +40,7 @@ public class CategoryController {
 
     @Value("${app.home.folder}")
     private String appHomeFolder;
-
     private static final String COMMON_CATEGORIES_FILE = "CommonCategories.json";
-
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public CategoryController(CategoryService categoryService) {
@@ -61,8 +59,8 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
-    @GetMapping("${eatery.id.category}")
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER')")
+    @GetMapping(ApiRoutes.EATERY_CATEGORY)
     public ResponseEntity<List<CategoryDto>> getEateryCategories(@PathVariable(value = "eateryId") Long eateryId) {
         log.debug("Find all categories for eatery [{}]", eateryId);
         List<CategoryDto> id = categoryService.findAllCategoryForEatery(eateryId);
@@ -81,9 +79,10 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER', 'SUPER_ADMIN')")
-    @GetMapping(value = "${eatery.id.category.id}")
-    public ResponseEntity<CategoryDto> getCategoryById(@PathVariable(value = "categoryId") Long categoryId) {
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN', 'KITCHEN_ADMIN', 'WAITER', 'CASHIER', 'SUPER_ADMIN')")
+    @GetMapping(ApiRoutes.EATERY_CATEGORY_BY_ID)
+    public ResponseEntity<CategoryDto> getCategoryById(@PathVariable(value = "eateryId") Long eateryId,
+                                                       @PathVariable(value = "categoryId") Long categoryId) {
         log.debug("Find the category by ID {}", categoryId);
         CategoryDto category = categoryService.findCategoryById(categoryId);
         return ResponseEntity.ok(category);
@@ -103,11 +102,11 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping(value = "${eatery.id.category}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    public ResponseEntity<Long> createDishCategory(@PathVariable Long eateryId,
-                                                   @Valid @RequestPart("data") CategoryDto dishCategoryDto,
-                                                   @RequestParam(name="image",required = false) MultipartFile file) {
+    @PostMapping(ApiRoutes.EATERY_CATEGORY)
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN')")
+    public ResponseEntity<Long> postDishCategory(@PathVariable Long eateryId,
+                                                 @Valid @RequestPart("data") CategoryDto dishCategoryDto,
+                                                 @RequestParam(name = "image", required = false) MultipartFile file) {
         dishCategoryDto.setEateryId(eateryId);
         log.debug("Create category item: {}", dishCategoryDto);
         Category cid = categoryService.createCategory(dishCategoryDto, file);
@@ -130,11 +129,10 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Eatery not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping(value = "${eatery.id.category.predefined}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    public ResponseEntity<Long> createDishCategoryNoImage(@PathVariable Long eateryId,
-                                                   @Valid @RequestPart("data") CategoryDto dishCategoryDto)
-    {
+    @PostMapping(ApiRoutes.EATERY_CATEGORY_PREDEFINED)
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN')")
+    public ResponseEntity<Long> postDishCategoryNoImage(@PathVariable Long eateryId,
+                                                        @Valid @RequestPart("data") CategoryDto dishCategoryDto) {
         dishCategoryDto.setEateryId(eateryId);
         log.debug("Create predefined category item: {}", dishCategoryDto);
         Category cid = categoryService.createCategory(dishCategoryDto, null);
@@ -154,9 +152,10 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @DeleteMapping(value = "${eatery.id.category.id}")
-    public ResponseEntity<String> deleteCategory(@PathVariable(value = "categoryId") Long categoryId) {
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN')")
+    @DeleteMapping(ApiRoutes.EATERY_CATEGORY_BY_ID)
+    public ResponseEntity<String> deleteCategory(@PathVariable(value = "eateryId") Long eateryId,
+                                                 @PathVariable(value = "categoryId") Long categoryId) {
         log.debug("Delete category: {}", categoryId);
         return categoryService.updateCategoryStatus(categoryId, CategoryStatus.ARCHIVED);
     }
@@ -176,11 +175,12 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @PutMapping(value = "${eatery.id.category.id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Long> updateCategory(@PathVariable(value = "categoryId") Long categoryId,
-                                               @Valid @RequestPart("data") CategoryDto dishCategoryDto,
-                                               @RequestPart(value = "image", required = false) MultipartFile file) {
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN')")
+    @PutMapping(ApiRoutes.EATERY_CATEGORY_BY_ID)
+    public ResponseEntity<Long> putCategory(@PathVariable(value = "eateryId") Long eateryId,
+                                            @PathVariable(value = "categoryId") Long categoryId,
+                                            @Valid @RequestPart("data") CategoryDto dishCategoryDto,
+                                            @RequestPart(value = "image", required = false) MultipartFile file) {
         log.debug("Update category: {}", categoryId);
         dishCategoryDto.setCategoryId(categoryId);
         Category updatedCategory = categoryService.updateCategory(dishCategoryDto, file);
@@ -199,7 +199,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "Internal server error or file not found")
     })
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @GetMapping("/api/category/common")
+    @GetMapping(ApiRoutes.API_CATEGORY_COMMON)
     public ResponseEntity<List<CategoryPredefined>> getCommonCategories() {
         log.debug("Fetching common categories from {}", appHomeFolder + File.separator + COMMON_CATEGORIES_FILE);
 
@@ -212,7 +212,7 @@ public class CategoryController {
             }
 
             List<CategoryPredefined> categories = objectMapper.readValue(
-                commonCategoriesFile,
+                    commonCategoriesFile,
                     new TypeReference<>() {
                     }
             );

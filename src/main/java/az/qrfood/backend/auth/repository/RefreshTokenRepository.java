@@ -13,7 +13,7 @@ import java.util.Optional;
  */
 @Repository
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
-    
+
     /**
      * Find a refresh token by its token value.
      *
@@ -21,7 +21,7 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
      * @return An Optional containing the found RefreshToken, or empty if not found.
      */
     Optional<RefreshToken> findByToken(String token);
-    
+
     /**
      * Find a refresh token by its associated user.
      *
@@ -29,13 +29,13 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
      * @return An Optional containing the found RefreshToken, or empty if not found.
      */
     Optional<RefreshToken> findByUser(User user);
-    
+
     /**
      * Delete all refresh tokens associated with a specific user.
      *
      * @param user The user whose refresh tokens should be deleted.
      * @return The number of tokens deleted.
      */
-    @Modifying
+    @Modifying(clearAutomatically = true)
     int deleteByUser(User user);
 }

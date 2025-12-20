@@ -1,5 +1,6 @@
 package az.qrfood.backend.log.controller;
 
+import az.qrfood.backend.constant.ApiRoutes;
 import az.qrfood.backend.log.dto.FrontendLogDTO;
 import az.qrfood.backend.log.service.FrontendLogService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +23,6 @@ import java.time.LocalDateTime;
  * Provides endpoints for the frontend to send logs to the backend.
  */
 @RestController
-@RequestMapping("/api/logs")
 @Log4j2
 @RequiredArgsConstructor
 @Tag(name = "Frontend Log Management", description = "API endpoints for receiving frontend logs")
@@ -43,7 +43,7 @@ public class FrontendLogController {
             @ApiResponse(responseCode = "400", description = "Invalid log data"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping("/frontend")
+    @PostMapping(ApiRoutes.LOGS_FRONTEND)
     public ResponseEntity<Void> logFrontendMessage(
             @RequestBody FrontendLogDTO logDTO,
             HttpServletRequest request) {

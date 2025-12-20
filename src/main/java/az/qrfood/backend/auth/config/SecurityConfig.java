@@ -1,10 +1,9 @@
 package az.qrfood.backend.auth.config;
 
-import az.qrfood.backend.auth.filter.EateryIdCheckFilter;
 import az.qrfood.backend.auth.filter.JwtRequestFilter;
 import az.qrfood.backend.auth.service.CustomUserDetailsService;
 import az.qrfood.backend.auth.util.JwtUtil;
-import az.qrfood.backend.common.CustomAuthenticationEntryPoint;
+import az.qrfood.backend.constant.ApiRoutes;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
+import java.util.List;
 
 /**
  * Spring Security configuration for the QR Food Order backend application.
@@ -34,41 +34,60 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-// Enables Spring Security's pre/post annotations for method-level security
 public class SecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
-    private final CustomAuthenticationEntryPoint customEntryPoint;
     private final CustomUserDetailsService userDetailsService;
     private final CorsConfigurationSource corsConfig;
     private final JwtUtil jwtUtil;
-
-    @Value("${api.user.register}")
-    String apiUserRegister;
-    @Value("${api.eatery}")
-    String apiEateryArgCategoryArg;
-    @Value("${api.eatery.order.status.created}")
-    private String deviceOrders;
+    private final List<String> excludedFromJwtRequestFilter;
 
     /**
      * Constructs the SecurityConfig with necessary dependencies.
      *
      * @param passwordEncoder    The password encoder for user authentication.
-     * @param customEntryPoint   The custom authentication entry point for handling unauthorized access.
      * @param userDetailsService The custom user details service for loading user-specific data.
      * @param corsConfig         The CORS configuration source.
      */
-    public SecurityConfig(
+  public SecurityConfig(
             PasswordEncoder passwordEncoder,
-            CustomAuthenticationEntryPoint customEntryPoint,
             CustomUserDetailsService userDetailsService,
             @Qualifier("cors") CorsConfigurationSource corsConfig,
-            JwtUtil jwtUtil) {
+            JwtUtil jwtUtil,
+            // INJECT VALUES HERE ------------------------------------------
+            @Value("${api.eatery.order.status.created}") String deviceOrders,
+            @Value("${auth.login}") String authLogin,
+            @Value("${api.image}") String apiImage,
+            @Value("${api.client.eatery.table}") String apiClientEateryTable,
+            @Value("${api.logs.frontend}") String apiLogsFrontend,
+            @Value("${api.config.image-paths}") String apiImagePath,
+            @Value("${ui.alive}") String uiAlive,
+            @Value("${order.id}") String orderId,
+            @Value("${order.post}") String orderPost
+            // -------------------------------------------------------------
+            ) {
         this.passwordEncoder = passwordEncoder;
-        this.customEntryPoint = customEntryPoint;
         this.userDetailsService = userDetailsService;
         this.corsConfig = corsConfig;
         this.jwtUtil = jwtUtil;
+
+        // Now these variables contain the actual string values, not null
+        this.excludedFromJwtRequestFilter = List.of(
+                authLogin,
+                apiImage,
+                apiClientEateryTable,
+                apiLogsFrontend,
+                apiImagePath,
+                uiAlive,
+                orderId,
+                deviceOrders,
+                orderPost,
+                ApiRoutes.AUTH_MAGIC_LINK,
+                ApiRoutes.AUTH_VERIFY_TOKEN,
+                ApiRoutes.AUTH_OAUTH_GOOGLE,
+                ApiRoutes.AUTH_PASSWORD_RESET_REQUEST,
+                ApiRoutes.AUTH_PASSWORD_RESET_COMPLETE
+        );
     }
 
     /**
@@ -111,13 +130,6 @@ public class SecurityConfig {
                                 .requestMatchers("/swagger-ui/index.html").permitAll()
                                 .requestMatchers("/v3/api-docs/**").permitAll()
                                 .requestMatchers("/v3/api-docs").permitAll()
-                                // ============================================================================    ADMIN SECTION
-                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                                // ===================================================================    USER AND ADMIN SECTION
-                                .requestMatchers("/api/user/**").hasAnyRole("USER", "EATERY_ADMIN")
-                                .requestMatchers("/api/table/**").hasAnyRole("EATERY_ADMIN", "SUPER_ADMIN")
-                                .requestMatchers("/api/order-items/**").hasAnyRole("USER", "ADMIN")
-                                // ==============================================================    ALL OTHERS NEED TO HAVE JWT
                                 // All other requests require authentication (presence of a valid JWT)
                                 .anyRequest().authenticated()
                 )
@@ -129,8 +141,7 @@ public class SecurityConfig {
                 );
 
         http
-                .addFilterBefore(new JwtRequestFilter(deviceOrders, userDetailsService, jwtUtil), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new EateryIdCheckFilter(jwtUtil), JwtRequestFilter.class);
+                .addFilterBefore(new JwtRequestFilter(excludedFromJwtRequestFilter, userDetailsService, jwtUtil), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -150,14 +161,6 @@ public class SecurityConfig {
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
-    }
-
-    public JwtRequestFilter jwtRequestFilter() {
-        return new JwtRequestFilter(deviceOrders, userDetailsService, jwtUtil);
-    }
-
-    public EateryIdCheckFilter eateryIdCheckFilter() {
-        return new EateryIdCheckFilter(jwtUtil);
     }
 
 }

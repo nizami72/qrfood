@@ -38,4 +38,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
         """, nativeQuery = true)
     Optional<User> findByEateryIdAndUserId(@Param("eateryId") Long eateryId,
                                          @Param("userId") Long userId);
+
+    Optional<User> findByGoogleId(String googleId);
+
 }

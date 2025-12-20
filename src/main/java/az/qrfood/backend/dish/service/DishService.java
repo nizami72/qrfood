@@ -4,15 +4,20 @@ import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.category.repo.CategoryRepository;
 import az.qrfood.backend.common.Util;
 import az.qrfood.backend.common.service.StorageService;
-import az.qrfood.backend.dish.entity.DishStatus;
-import az.qrfood.backend.dish.exception.QrFoodDataIntegrityViolation;
-import az.qrfood.backend.lang.Language;
+import az.qrfood.backend.dish.dto.CommonDishDto;
 import az.qrfood.backend.dish.dto.DishDto;
 import az.qrfood.backend.dish.entity.DishEntity;
 import az.qrfood.backend.dish.entity.DishEntityTranslation;
+import az.qrfood.backend.dish.entity.DishStatus;
+import az.qrfood.backend.dish.exception.QrFoodDataIntegrityViolation;
+import az.qrfood.backend.dish.interceptor.NotYourResourceException;
 import az.qrfood.backend.dish.repository.DishRepository;
+import az.qrfood.backend.eatery.dto.OnboardingStatus;
+import az.qrfood.backend.eatery.entity.Eatery;
+import az.qrfood.backend.eatery.service.EateryLifecycleService;
 import az.qrfood.backend.kitchendepartment.entity.KitchenDepartmentEntity;
 import az.qrfood.backend.kitchendepartment.repository.KitchenDepartmentRepository;
+import az.qrfood.backend.lang.Language;
 import az.qrfood.backend.order.repository.OrderItemRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
@@ -22,6 +27,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -38,35 +45,38 @@ import java.util.Optional;
 @Log4j2
 public class DishService {
 
+    //<editor-fold desc="Fields">
     private final DishRepository dishRepository;
     private final CategoryRepository categoryRepository;
     private final StorageService storageService;
     private final OrderItemRepository orderItemRepository;
     private final KitchenDepartmentRepository kitchenDepartmentRepository;
-
+    private final EateryLifecycleService eateryLifecycleService;
     @Value("${folder.predefined.dish.images}")
     private String appHomeFolderImage;
     @Value("${default.dish.image}")
     private String defaultDishImage;
+    //</editor-fold>
 
     /**
      * Constructs a DishService with necessary dependencies.
      *
-     * @param dishRepository     The repository for Dish entities.
-     * @param categoryRepository The repository for Category entities.
-     * @param storageService     The service for handling file storage operations.
+     * @param dishRepository      The repository for Dish entities.
+     * @param categoryRepository  The repository for Category entities.
+     * @param storageService      The service for handling file storage operations.
      * @param orderItemRepository The repository for OrderItem entities.
      */
     public DishService(DishRepository dishRepository,
                        CategoryRepository categoryRepository,
                        StorageService storageService,
                        OrderItemRepository orderItemRepository,
-                       KitchenDepartmentRepository kitchenDepartmentRepository) {
+                       KitchenDepartmentRepository kitchenDepartmentRepository, EateryLifecycleService eateryLifecycleService) {
         this.dishRepository = dishRepository;
         this.categoryRepository = categoryRepository;
         this.storageService = storageService;
         this.orderItemRepository = orderItemRepository;
         this.kitchenDepartmentRepository = kitchenDepartmentRepository;
+        this.eateryLifecycleService = eateryLifecycleService;
     }
 
     /**
@@ -78,7 +88,7 @@ public class DishService {
      */
     public List<DishDto> getAllDishesInCategory(Long categoryId) {
         Optional<Category> categories = categoryRepository.findById(categoryId);
-        if(categories.isEmpty()) {
+        if (categories.isEmpty()) {
             throw new EntityNotFoundException("Category with id " + categoryId + " not found");
         }
 
@@ -113,7 +123,7 @@ public class DishService {
         DishEntity dishEntity = Util.copyProperties(dto, DishEntity.class);
         dishEntity.setTranslations(new ArrayList<>());
         dishEntity.setCategory(optionalCategory.get());
-        
+
         // Set kitchen department if provided
         if (dto.getKitchenDepartmentId() != null) {
             KitchenDepartmentEntity kd = kitchenDepartmentRepository.findById(dto.getKitchenDepartmentId())
@@ -135,11 +145,14 @@ public class DishService {
         dishEntity.getTranslations().addAll(translations);
 
         saveImage(multipartFile, dishEntity);
-
+        Eatery eatery = dishEntity.getCategory().getEatery();
+        if (eatery.getOnboardingStatus() != OnboardingStatus.DISH_CREATED) {
+            eateryLifecycleService.tryPromoteStatus(eatery.getId(), OnboardingStatus.DISH_CREATED);
+        }
         return dishRepository.save(dishEntity);
     }
 
-      /**
+    /**
      * Converts a {@link DishEntity} to a {@link DishDto}.
      * <p>
      * This is a static method, allowing it to be called directly without an instance of {@code DishService}.
@@ -190,7 +203,7 @@ public class DishService {
      * @param categoryId The ID of the category from which to delete the dish.
      * @param dishId     The ID of the dish to delete.
      * @return A {@link ResponseEntity} with a success message.
-     * @throws EntityNotFoundException if the category or the dish within the category is not found.
+     * @throws EntityNotFoundException         if the category or the dish within the category is not found.
      * @throws DataIntegrityViolationException if the dish is referenced by any order items.
      */
     @Transactional
@@ -229,7 +242,7 @@ public class DishService {
      * @param dishId the unique identifier of the dish whose status needs to be updated
      * @param status the new status to be applied to the dish
      * @return a ResponseEntity containing a confirmation message indicating the dish ID and
-     *         that the status has been successfully updated
+     * that the status has been successfully updated
      */
     public ResponseEntity<String> updateDishStatus(Long dishId, DishStatus status) {
         DishEntity dish = dishRepository.findById(dishId)
@@ -272,7 +285,7 @@ public class DishService {
 
         // Update the dish properties
         dishEntity.setPrice(dto.getPrice());
-        if (dto.isIsAvailable()) {
+        if (dto.isAvailable()) {
             dishEntity.setDishStatus(DishStatus.AVAILABLE);
         } else {
             dishEntity.setDishStatus(DishStatus.OUT_OF_STOCK);
@@ -301,7 +314,7 @@ public class DishService {
             }
         });
 
-        if(multipartFile != null && !multipartFile.isEmpty()) {
+        if (multipartFile != null && !multipartFile.isEmpty()) {
             saveImage(multipartFile, dishEntity);
         }
 
@@ -324,8 +337,56 @@ public class DishService {
             if (dishEntity.getImage() == null) dishEntity.setImage(defaultDishImage);
             String fileName = dishEntity.getImage();
             String sourceFile = appHomeFolderImage + fileName;
-            storageService.saveFile(folder, sourceFile, fileName);
+            if (!new File(sourceFile).exists()) {
+                dishEntity.setImage(defaultDishImage);
+                log.warn("The file [{}] doesnt exists", sourceFile);
+            } else {
+                storageService.saveFile(folder, sourceFile, fileName);
+            }
         }
     }
+
+
+    @Transactional
+    public List<Long> createDishesFromTemplates(Long eateryId, Long categoryId, List<CommonDishDto> selectedDishes) {
+        // 1. Validate that the category belongs to the eatery
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new EntityNotFoundException("Category with id " + categoryId + " not found"));
+
+        if (!category.getEatery().getId().equals(eateryId)) {
+            throw new NotYourResourceException("Category " + categoryId + " does not belong to eatery " + eateryId);
+        }
+
+        List<Long> createdDishIds = new ArrayList<>();
+
+        for (CommonDishDto template : selectedDishes) {
+            DishDto dishDto = DishDto.builder()
+                    .categoryId(categoryId)
+                    .nameAz(template.getNameAz())
+                    .nameEn(template.getNameEn())
+                    .nameRu(template.getNameRu())
+                    .descriptionAz(template.getDescriptionAz())
+                    .descriptionEn(template.getDescriptionEn())
+                    .descriptionRu(template.getDescriptionRu())
+                    .price(template.getPrice() != null ? template.getPrice() : BigDecimal.ZERO)
+                    .image(template.getImage())
+                    .available(true)
+                    .build();
+
+            try {
+                // Use the existing addDish service method
+                DishEntity createdDish = addDish(dishDto, null);
+                createdDishIds.add(createdDish.getId());
+
+            } catch (Exception e) {
+                log.error("Error creating dish from template: {}", template, e);
+                // Re-throw to trigger a transactional rollback
+                throw new RuntimeException("Failed to create dish from template: " + template.getNameEn(), e);
+
+            }
+        }
+        return createdDishIds;
+    }
+
 
 }

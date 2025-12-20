@@ -1,0 +1,32 @@
+@startuml
+title Magic Link Verification Sequence Diagram
+
+actor User
+participant "Browser" as Browser
+participant "VerifyMagicLinkPage" as FrontendPage
+participant "AuthContext" as AuthContext
+participant "AuthHybridController" as BackendController
+participant "AuthHybridService" as BackendService
+
+User -> Browser: Clicks magic link in email
+Browser -> FrontendPage: Opens page with token in URL
+
+FrontendPage -> FrontendPage: Extracts token from URL
+FrontendPage -> BackendController: POST /api/auth/verify-token with token
+BackendController -> BackendService: verifyToken(token)
+BackendService -> BackendService: Validate token
+
+alt token is valid
+    BackendService -> BackendService: Generate JWT
+    BackendService -> BackendController: return HybridLoginResponse with JWT
+    BackendController -> FrontendPage: return HybridLoginResponse with JWT
+    FrontendPage -> AuthContext: login(response)
+    AuthContext -> AuthContext: Stores JWT
+    FrontendPage -> Browser: navigate to /admin/restaurants
+else token is invalid
+    BackendService -> BackendController: throw exception
+    BackendController -> FrontendPage: return error
+    FrontendPage -> User: Show error message
+end
+
+@enduml

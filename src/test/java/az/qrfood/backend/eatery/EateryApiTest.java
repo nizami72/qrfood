@@ -51,7 +51,7 @@ public class EateryApiTest {
     @Value("${auth.login}")
     String loginUrl;
 
-    @Value("${admin.api.eatery}")
+    @Value("${user.and.eatery}")
     String adminApiEateryUrl;
 
     String baseUrl;
@@ -61,6 +61,8 @@ public class EateryApiTest {
     String uriEateryOwner;
     @Value("${auth.refresh}")
     String uriRecreateTokenOnEateryChange;
+    @Value("${eatery.id}")
+    String eateryIdU;
 
     List<Eatery> eateryList;
     String jwtToken;
@@ -232,7 +234,7 @@ public class EateryApiTest {
                 .baseUri(baseUrl)
                 .header("Authorization", "Bearer " + jwtToken)
                 .when()
-                .delete("/api/eatery/{id}", eateryId)
+                .delete(eateryIdU, eateryId)
                 .then()
                 .log().all() // лог всего ответа
                 .statusCode(200); // Или 204, если возвращается No Content

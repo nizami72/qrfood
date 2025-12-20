@@ -31,7 +31,7 @@ public abstract class AbstractTest {
     protected int port;
     @Value("${test.data.json-source}")
     protected String jsonSourceFile;
-    @Value("${admin.api.eatery}")
+    @Value("${user.and.eatery}")
     String adminApiEateryUrl;
     @Value("${auth.login}")
     String loginUrl;
@@ -51,9 +51,10 @@ public abstract class AbstractTest {
         System.out.println("Test server running on: " + baseUrl); // For debugging
 
         testov = TestUtil.json2Pojo(TestUtil.readFileFromResources(jsonSourceFile), Testov.class);
+        assert testov != null;
         admin = testov.getStaff().stream().filter(s -> s.getRoles().contains("EATERY_ADMIN")).findFirst()
                 .orElseThrow();
-        ci = testov.getCategories().get(0);
+        ci = testov.getCategories().getFirst();
         registerUserAndEatery();
         login();
     }

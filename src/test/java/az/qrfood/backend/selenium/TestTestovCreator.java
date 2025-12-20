@@ -24,22 +24,45 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.ActiveProfiles;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@ActiveProfiles("test2")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Log4j2
 public class TestTestovCreator {
 
+    @LocalServerPort
+    private int port;
+
     //<editor-fold desc="Fields">
+    @Value("${api.auth.test-magic-link}")
+    private String testMagicLinkUrl;
+    @Value("${mail.hog.server.url}")
+    String mailHogUrl;
     private final TestConfig config = ConfigFactory.create(TestConfig.class);
     private WebDriver driver;
     private WebDriverWait wait;
@@ -58,7 +81,7 @@ public class TestTestovCreator {
 
     @BeforeEach
     public void setUp() throws IOException {
-        String fileWithData = System.getenv("JSON_SOURCE");
+        String fileWithData = "fakeData/Testov3Dishes3Tables.json";
         howFast = System.getenv("HOW_FAST");
         host = System.getenv("HOST");
 
@@ -112,13 +135,15 @@ public class TestTestovCreator {
         deleteEateryBeforeCreation();
 
         // ================== REGISTER USER ==================
-        registerUser();
+//        registerUser();
 
         // ================== LOGIN USER ==================
-        login();
+        fireMagicLinkSending();
+
+        loginAndOpenViaMagikLink();
 
         // ================= EDIT EATERY ==================
-        editEatery();
+        editEatery(testov);
 
         // ================== CREATE CATEGORY ==================
         createCategories();
@@ -135,22 +160,73 @@ public class TestTestovCreator {
     }
 
     private void registerUser() {
-        EateryBuilder.openPage(driver, host, "register", howFast);
-        EateryBuilder.registerEateryAdmin(driver, wait, admin.getProfile().getName(), admin.getPassword(), admin.getEmail(),
-                testov.getEatery().getName(), howFast);
+        EateryBuilder.openPage(driver, host, "login", howFast);
+        EateryBuilder.registerEateryAdmin(driver, wait, admin.getEmail(), howFast);
         pause(howFast);
         totalTime += markTime(PHASE_REGISTRATION);
     }
 
+    /**
+     * Pause the flow for delay seconds.
+     *
+     * @param delay delay in seconds
+     */
+    private void pauseToConfirmEmail(long delay) {
+        log.debug("Confirm email sent to [{}]", admin.getEmail());
+        pause(delay * 1000);
+    }
+
+    private void fireMagicLinkSending() {
+        EateryBuilder.openPage(driver, host, "auth", howFast);
+        SeleniumUtil.typeIntoInput(driver, driver.findElement(By.id("email-input-unified-auth")), admin.getEmail(), howFast);
+        SeleniumUtil.findButtonByIdAndClick(driver, "send-magic-link-button-unified-auth", howFast);
+        pause(howFast);
+        totalTime += markTime(PHASE_LOGIN);
+    }
+
     private void login() {
-        EateryBuilder.openPage(driver, host, "login", howFast);
+        EateryBuilder.openPage(driver, host, "auth", howFast);
+        SeleniumUtil.findButtonByIdAndClick(driver, "show-password-button-unified-auth", howFast);
+        SeleniumUtil.typeIntoInput(driver, driver.findElement(By.id("email-input-unified-auth")), admin.getEmail(), howFast);
+        SeleniumUtil.typeIntoInput(driver, driver.findElement(By.id("password-input-unified-auth")), admin.getPassword(), howFast);
+        SeleniumUtil.findButtonByIdAndClick(driver, "sign-in-button-unified-auth", howFast);
         EateryBuilder.login(driver, wait, admin.getEmail(), admin.getPassword(), testov.getEatery().getName(), howFast);
         pause(howFast);
         totalTime += markTime(PHASE_LOGIN);
     }
 
-    private void editEatery() {
-        EateryBuilder.editEatery(driver, howFast);
+    private void openMailAndClickLink() {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(mailHogUrl))
+                .build();
+
+        String responseBody = "";
+        try {
+            Thread.sleep(1000);
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            responseBody = response.body();
+        } catch (Exception e) {
+            throw new RuntimeException("Could not fetch emails from MailHog", e);
+        }
+
+       Pattern linkPattern = Pattern.compile("http://127\\.0\\.0\\.1:5173/auth/verify\\?token=[0-9a-z\\-]{0,36}");
+        Matcher linkMatcher = linkPattern.matcher(responseBody);
+
+        String confirmationLink = "";
+        if (linkMatcher.find()) {
+            confirmationLink = linkMatcher.group(0);
+            System.out.println("Found confirmation link: " + confirmationLink);
+        } else {
+            throw new RuntimeException("Could not find confirmation link in email body!");
+        }
+
+        driver.get(confirmationLink);
+
+    }
+
+    private void editEatery(Testov testov) {
+        EateryBuilder.editEatery(driver, testov, howFast);
         pause(howFast);
         totalTime += markTime(PHASE_EDIT_EATERY);
 
@@ -197,27 +273,53 @@ public class TestTestovCreator {
     }
 
     private void deleteEateryBeforeCreation() {
-        String jwt = ApiUtils.login(superAdminMail, superAdminPass, null, host, loginUrl);
-        Long id = getEateryId(jwt, testov.getEatery().getName(), host, Utils.replacePlaceHolders(eateriesByAdminUrl, admin.getEmail()));
-        if(id==null) {
+        String baseUrl = "http://localhost:" + port;
+        String jwt = ApiUtils.login(superAdminMail, superAdminPass, null, baseUrl, loginUrl);
+        Long id = findEateryIdByName(jwt, testov.getEatery().getName(), baseUrl, Utils.replacePlaceHolders(eateriesByAdminUrl, admin.getEmail()));
+        if (id == null) {
             log.debug("No Testov eatery found so nothing to delete");
             return;
         }
-        ApiUtils.sendDeleteRequest(host, jwt, eateryAdminUrl + "/" + id, 200);
+        ApiUtils.sendDeleteRequest(baseUrl, jwt, eateryAdminUrl + "/" + id, 200);
     }
 
-    public static Long getEateryId(String jwt, String eateryName, String host, String url) {
-        Response res = ApiUtils.sendGetRequest(host, jwt, url);
-        if (res.statusCode() != 200) return null;
-        List<Map<String, Object>> d = res.as(List.class);
-        Object id = d.stream()
-                .filter(eateryDto -> eateryDto
-                        .get("name")
-                        .equals(eateryName))
-                .findFirst()
-                .orElseThrow()
-                .get("id");
-        return Long.valueOf(id.toString());
+    private void loginAndOpenViaMagikLink() {
+        String baseUrl = "http://localhost:" + port;
+        String jwt = ApiUtils.login(superAdminMail, superAdminPass, null, baseUrl, loginUrl);
+        Response res = ApiUtils.sendGetRequest(host, jwt, testMagicLinkUrl);
+        driver.get(res.asString());
+    }
+
+    public static Long findEateryIdByName(String jwt, String eateryName, String host, String url) {
+        try {
+            Response res = ApiUtils.sendGetRequest(host, jwt, url);
+            if (res.statusCode() != 200) {
+                return null;
+            }
+
+            List<Map<String, Object>> d = res.as(List.class);
+
+            // Use Optional to safely handle the stream result
+            Optional<Map<String, Object>> foundEatery = d.stream()
+                    .filter(eateryDto -> eateryDto != null && eateryDto.get("name") != null &&
+                            eateryDto.get("name").equals(eateryName))
+                    .findFirst();
+
+            if (foundEatery.isEmpty()) {
+                return null; // Return null if not found (instead of orElseThrow())
+            }
+
+            Object id = foundEatery.get().get("id");
+            if (id == null) {
+                return null; // Return null if "id" key doesn't exist or its value is null
+            }
+
+            return Long.valueOf(id.toString());
+
+        } catch (Exception e) {
+            // Catch any exception (e.g., network error, parsing error, ClassCastException, NumberFormatException)
+            return null;
+        }
     }
 
 

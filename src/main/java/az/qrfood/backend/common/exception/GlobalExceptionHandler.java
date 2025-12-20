@@ -1,5 +1,6 @@
 package az.qrfood.backend.common.exception;
 
+import az.qrfood.backend.auth.exception.TokenException;
 import az.qrfood.backend.common.response.ApiResponse;
 import az.qrfood.backend.common.response.ResponseCodes;
 import az.qrfood.backend.dish.exception.QrFoodDataIntegrityViolation;
@@ -163,6 +164,15 @@ public class GlobalExceptionHandler {
         log.warn("Client aborted the connection: {}", ex.getMessage());
     }
 
+    @ExceptionHandler(TokenException.class)
+    public ResponseEntity<ApiResponse<Void>> handleTokenNotFound(TokenException ex) {
+        log.error(ex.getMessage());
+        return ResponseEntity
+                .status(ResponseCodes.TOKEN_NOT_FOUND.getHttpStatus())
+                .header("X-Error-Code", ResponseCodes.TOKEN_NOT_FOUND.getMessage())
+                .body(new ApiResponse<>(ResponseCodes.TOKEN_NOT_FOUND));
+    }
+
     /**
      * Catches all other unhandled {@link Exception} types and returns a generic 500 Internal Server Error response.
      *
@@ -171,7 +181,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneral(Exception ex) {
-        log.error("An unexpected error occurred", ex); // Log the full exception stack trace
+        log.error("Exception", ex); // Log the full exception stack trace
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .header(org.springframework.http.HttpHeaders.CONTENT_TYPE, org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
                 .body(ApiResponse.fail("Internal server error.", 500));

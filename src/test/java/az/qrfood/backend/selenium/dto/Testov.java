@@ -24,4 +24,9 @@ public class Testov{
 	public List<az.qrfood.backend.category.dto.CategoryDto> getCategories(){
 		return categories;
 	}
+
+    public StaffItem getEateryAdmin(){
+        return getStaff().stream().filter(s -> s.getRoles().contains("EATERY_ADMIN")).findFirst()
+                .orElseThrow();
+    }
 }

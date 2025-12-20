@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="q2 BE&amp;FE" type="CompoundRunConfigurationType">
-    <toRun name="q3 Front Non Strict" type="js.build_tools.npm" />
-    <toRun name="q1 App" type="SpringBootApplicationConfigurationType" />
+    <toRun name="q4 FE Strict" type="js.build_tools.npm" />
+    <toRun name="q1 App Mail Hog" type="SpringBootApplicationConfigurationType" />
     <method v="2" />
   </configuration>
 </component>

@@ -48,4 +48,11 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
      */
     @Query("SELECT up FROM UserProfile up JOIN up.eateries e WHERE e.id = :restaurantId")
     List<UserProfile> findByRestaurantId(@Param("restaurantId") Long restaurantId);
+
+    // In UserProfileRepository.java
+    @Query("SELECT up FROM UserProfile up LEFT JOIN FETCH up.eateries WHERE up.user = :user")
+    Optional<UserProfile> findByUserWithEateries(@Param("user") User user);
+
+    Optional<UserProfile> findByUserId(@Param("user") Long userId);
+
 }

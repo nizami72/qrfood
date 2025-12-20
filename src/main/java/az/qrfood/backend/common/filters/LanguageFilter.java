@@ -1,11 +1,16 @@
 package az.qrfood.backend.common.filters;
 
 import jakarta.servlet.*;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -18,6 +23,12 @@ import java.util.Locale;
  */
 @Component
 public class LanguageFilter implements Filter {
+
+    private final LocaleResolver localeResolver;
+
+    public LanguageFilter(LocaleResolver localeResolver) {
+        this.localeResolver = localeResolver;
+    }
 
     /**
      * Performs the filtering logic for setting the locale.
@@ -37,10 +48,35 @@ public class LanguageFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        if (request instanceof HttpServletRequest httpRequest) {
-            String langHeader = httpRequest.getHeader("Accept-Language");
-            Locale locale = Locale.forLanguageTag(langHeader != null ? langHeader : "az");
-            LocaleContextHolder.setLocale(locale);
+        if (request instanceof HttpServletRequest httpRequest && response instanceof HttpServletResponse httpResponse) {
+
+            List<String> supportedLangs = Arrays.asList("en", "ru", "az");
+            String selectedLang = null;
+
+            if (httpRequest.getCookies() != null) {
+                selectedLang = Arrays.stream(httpRequest.getCookies())
+                        .filter(c -> "language".equals(c.getName())) // Assuming cookie name is "lang"
+                        .map(Cookie::getValue)
+                        .filter(supportedLangs::contains) // Ensure it is explicitly en, ru, or az
+                        .findFirst()
+                        .orElse(null);
+            }
+
+            if (selectedLang == null) {
+                Locale browserLocale = httpRequest.getLocale();
+                String headerLang = browserLocale.getLanguage(); // Gets just "en", "ru", etc.
+
+                if (supportedLangs.contains(headerLang)) {
+                    selectedLang = headerLang;
+                }
+            }
+
+            if (selectedLang == null) {
+                selectedLang = "az";
+            }
+            Locale newLocale = Locale.of(selectedLang); // e.g., "az"
+            localeResolver.setLocale(httpRequest, httpResponse, newLocale);
+            LocaleContextHolder.setLocale(Locale.of((selectedLang)));
         }
 
         try {

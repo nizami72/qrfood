@@ -37,6 +37,8 @@ public class UserProfile {
      */
     private String name;
 
+    private String locale;
+
     /**
      * The {@link User} entity associated with this profile.
      * This is a one-to-one relationship, where each user has one profile.

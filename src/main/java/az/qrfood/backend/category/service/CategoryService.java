@@ -8,8 +8,10 @@ import az.qrfood.backend.category.repo.CategoryRepository;
 import az.qrfood.backend.common.Util;
 import az.qrfood.backend.common.service.StorageService;
 import az.qrfood.backend.dish.entity.DishStatus;
+import az.qrfood.backend.eatery.dto.OnboardingStatus;
 import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.eatery.repository.EateryRepository;
+import az.qrfood.backend.eatery.service.EateryLifecycleService;
 import az.qrfood.backend.lang.Language;
 import az.qrfood.backend.dish.service.DishService;
 import jakarta.persistence.EntityNotFoundException;
@@ -38,6 +40,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final EateryRepository eateryRepository;
     private final StorageService storageService;
+    private final EateryLifecycleService eateryLifecycleService;
 
     @Value("${folder.predefined.category.images}")
     private String appHomeFolderImage;
@@ -53,10 +56,11 @@ public class CategoryService {
      * @param storageService     The service for handling file storage operations.
      */
     public CategoryService(CategoryRepository categoryRepository,
-                           EateryRepository eateryRepository, StorageService storageService) {
+                           EateryRepository eateryRepository, StorageService storageService, EateryLifecycleService eateryLifecycleService) {
         this.categoryRepository = categoryRepository;
         this.eateryRepository = eateryRepository;
         this.storageService = storageService;
+        this.eateryLifecycleService = eateryLifecycleService;
     }
 
     /**
@@ -82,9 +86,10 @@ public class CategoryService {
             throw new EntityNotFoundException(String.format(
                     "Cant create category for eatery %s, eatery not found", eateryId));
         }
+        Eatery eatery = eateryOp.get();
 
         Category category = Category.builder()
-                .eatery(eateryOp.get())
+                .eatery(eatery)
                 .build();
 
         category.setCategoryImageFileName(Util.generateFileName() + ".webp");
@@ -98,6 +103,9 @@ public class CategoryService {
         category.setTranslations(categoryTranslations);
         category.setCategoryStatus(CategoryStatus.ACTIVE);
         categoryRepository.save(category);
+        if(eatery.getOnboardingStatus() != OnboardingStatus.CATEGORY_CREATED) {
+            eateryLifecycleService.tryPromoteStatus(eatery.getId(), OnboardingStatus.CATEGORY_CREATED);
+        }
         log.debug("Dish category created [{}]", category);
 
         String destinationFolder = storageService.createCategoryFolder(eateryId, category.getId());
@@ -127,7 +135,7 @@ public class CategoryService {
      * @throws EntityNotFoundException if the category with the given ID is not found.
      */
     public CategoryDto findCategoryById(Long id) {
-        Optional<Category> category = categoryRepository.findById(id);
+        Optional<Category> category = categoryRepository.findById(id);// todo do not get archived items
         if (category.isEmpty()) {
             throw new EntityNotFoundException(
                     String.format("The category with id [%s] not fount", id));
@@ -223,6 +231,7 @@ public class CategoryService {
         );
         dto.setCategoryId(category.getId());
         dto.setImage(category.getCategoryImageFileName());
+        dto.setCategoryStatus(category.getCategoryStatus());
 
         category.getTranslations().forEach(t -> {
             if (t.getLang().equals(Language.az.name())) {

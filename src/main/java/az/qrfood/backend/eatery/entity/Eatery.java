@@ -1,10 +1,14 @@
 package az.qrfood.backend.eatery.entity;
 
+import az.qrfood.backend.eatery.dto.OnboardingStatus;
 import az.qrfood.backend.table.entity.TableInEatery;
 import az.qrfood.backend.category.entity.Category;
 import az.qrfood.backend.user.entity.UserProfile;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -92,6 +96,10 @@ public class Eatery {
      * Useful for location-based services and validation.
      */
     private Double geoLng;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "onboarding_status", nullable = false)
+    private OnboardingStatus onboardingStatus;
 
     /**
      * A list of user profiles associated with this eatery.

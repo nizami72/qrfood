@@ -38,7 +38,7 @@ public class CreateAllFakeDataTest {
     private static PrintStream fileLog;
     @Value("${base.url}")
     String baseUrl;
-    @Value("${admin.api.eatery}")
+    @Value("${user.and.eatery}")
     String fullAdminEatery;
     @Value("${eatery.id.category.id.dish}")
     String urlPostDish;
@@ -46,6 +46,8 @@ public class CreateAllFakeDataTest {
     String segmentEateries;
     @Value("${category}")
     String componentCategories;
+    @Value("${auth.login}")
+    String apiAuthLogin;
     List<Eatery> eateries;
     String jwtToken;
     Long userId;
@@ -202,7 +204,7 @@ public class CreateAllFakeDataTest {
                 .contentType("application/json")
                 .body(loginRequest)
                 .when()
-                .post("/api/auth/login")
+                .post(apiAuthLogin)
                 .then()
                 .statusCode(200)
                 .extract()

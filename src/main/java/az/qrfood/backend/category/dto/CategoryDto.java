@@ -1,5 +1,6 @@
 package az.qrfood.backend.category.dto;
 
+import az.qrfood.backend.category.entity.CategoryStatus;
 import az.qrfood.backend.dish.dto.DishDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -30,6 +31,8 @@ public class CategoryDto {
     private String nameRu;
 
     private String image;
+
+    private CategoryStatus categoryStatus;
     private List<DishDto> dishes;
 
 }

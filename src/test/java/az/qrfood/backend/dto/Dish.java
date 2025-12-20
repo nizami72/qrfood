@@ -8,6 +8,6 @@ public record Dish(String nameAz,
                    String descriptionRu,
                    String image,
                    double price,
-                   boolean isAvailable) {
+                   boolean available) {
 
 }

@@ -31,6 +31,8 @@ public class TableApiTest {
     String tableEndpoint;
     @Value("${table.id}")
     String tableIdEndpoint;
+    @Value("${auth.login}")
+    String apiAuthLogin;
 
     String jwtToken;
     Long userId;
@@ -58,7 +60,7 @@ public class TableApiTest {
                 .contentType("application/json")
                 .body(authPayload)
                 .when()
-                .post("/api/auth/login")
+                .post(apiAuthLogin)
                 .then()
                 .statusCode(200)
                 .extract()

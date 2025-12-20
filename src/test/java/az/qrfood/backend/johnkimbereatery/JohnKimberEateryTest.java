@@ -48,7 +48,7 @@ public class JohnKimberEateryTest {
     // API endpoints
     @Value("${localhost}")
     private String baseUrl;
-    @Value("${admin.api.eatery}")
+    @Value("${user.and.eatery}")
     private String fullAdminEatery;
     @Value("${eatery.id.category.id.dish}")
     private String urlPostDish;
@@ -56,6 +56,8 @@ public class JohnKimberEateryTest {
     private String segmentEateries;
     @Value("${category}")
     private String componentCategories;
+    @Value("${auth.login}")
+    private String authLogin;
 
     private String jwtToken;
     private Long userId;
@@ -225,7 +227,7 @@ public class JohnKimberEateryTest {
                 .contentType("application/json")
                 .body(loginRequest)
                 .when()
-                .post("/api/auth/login")
+                .post(authLogin)
                 .then()
                 .statusCode(200)
                 .extract()

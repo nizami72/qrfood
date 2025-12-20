@@ -13,7 +13,7 @@ public class Utils {
      * Replaces placeholders like {someString} in a URL sequentially with the given arguments.
      * The first occurrence of a placeholder is replaced by args[0], the second by args[1], and so on.
      *
-     * @param url  The string containing placeholders, e.g., "/api/users/{userId}/posts/{postId}"
+     * @param url  The string containing placeholders, e.g., "/zzz/xxx/{userId}/posts/{postId}"
      * @param args The values to substitute into the placeholders.
      * @return The formatted string with placeholders replaced.
      */

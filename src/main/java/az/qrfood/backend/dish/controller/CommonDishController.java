@@ -1,8 +1,8 @@
 package az.qrfood.backend.dish.controller;
 
+import az.qrfood.backend.constant.ApiRoutes;
 import az.qrfood.backend.dish.dto.CommonDishCategoryDto;
 import az.qrfood.backend.dish.dto.CommonDishDto;
-import az.qrfood.backend.dish.dto.DishDto;
 import az.qrfood.backend.dish.service.DishService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,10 +19,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -39,7 +37,6 @@ public class CommonDishController {
     private String appHomeFolder;
 
     private static final String COMMON_DISHES_FILE = "CommonCategories.json";
-
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public CommonDishController(DishService dishService) {
@@ -58,10 +55,8 @@ public class CommonDishController {
             @ApiResponse(responseCode = "500", description = "Internal server error or file not found")
     })
     @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @GetMapping("/api/dish/common/{categoryName}")
-    public ResponseEntity<List<CommonDishDto>> getCommonDishesForCategory(
-            @PathVariable String categoryName,
-            @CookieValue(value = "language", defaultValue = "en") String lang) {
+    @GetMapping(ApiRoutes.DISH_COMMON_BY_CAT_NAME)
+    public ResponseEntity<List<CommonDishDto>> getCommonDishesForCategory(@PathVariable String categoryName) {
 
         log.debug("Fetching common dishes for category {} from {}", categoryName, appHomeFolder + File.separator + COMMON_DISHES_FILE);
 
@@ -75,18 +70,11 @@ public class CommonDishController {
 
             List<CommonDishCategoryDto> categories = objectMapper.readValue(
                     commonDishesFile,
-                    new TypeReference<List<CommonDishCategoryDto>>() {
+                    new TypeReference<>() {
                     }
             );
 
-            Function<CommonDishCategoryDto, String> nameGetter;
-
-            switch (lang) {
-                case "az" -> nameGetter = CommonDishCategoryDto::getNameAz;
-                case "ru" -> nameGetter = CommonDishCategoryDto::getNameRu;
-                case "en" -> nameGetter = CommonDishCategoryDto::getNameEn;
-                default -> nameGetter = CommonDishCategoryDto::getNameEn; // fallback
-            }
+            Function<CommonDishCategoryDto, String> nameGetter = CommonDishCategoryDto::getNameEn;
 
             // Find the category that matches the requested categoryId
             List<CommonDishDto> dishes = categories.stream()
@@ -115,41 +103,15 @@ public class CommonDishController {
             @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PreAuthorize("@authz.hasAnyRole(authentication, 'EATERY_ADMIN')")
-    @PostMapping("/api/dish/common/{categoryId}")
+    @PreAuthorize("@authz.hasAnyRoleAndAccess(authentication, #eateryId, 'EATERY_ADMIN')")
+    @PostMapping(ApiRoutes.DISH_COMMON_FROM_TEMPLATE)
     public ResponseEntity<List<Long>> createDishesFromTemplates(
+            @PathVariable Long eateryId,
             @PathVariable Long categoryId,
             @RequestBody List<CommonDishDto> selectedDishes) {
 
-        log.debug("Creating {} dishes from templates for category {}", selectedDishes.size(), categoryId);
-
-        List<Long> createdDishIds = new ArrayList<>();
-
-        for (CommonDishDto template : selectedDishes) {
-            // Convert CommonDishDto to DishDto
-            DishDto dishDto = DishDto.builder()
-                    .categoryId(categoryId)
-                    .nameAz(template.getNameAz())
-                    .nameEn(template.getNameEn())
-                    .nameRu(template.getNameRu())
-                    .descriptionAz(template.getDescriptionAz())
-                    .descriptionEn(template.getDescriptionEn())
-                    .descriptionRu(template.getDescriptionRu())
-                    .price(template.getPrice() != null ? template.getPrice() : BigDecimal.ZERO)
-                    .image(template.getImage())
-                    .available(true)
-                    .build();
-
-            try {
-                // Create the dish using the existing service
-                var createdDish = dishService.addDish(dishDto, null);
-                createdDishIds.add(createdDish.getId());
-            } catch (Exception e) {
-                log.error("Error creating dish from template: {}", template, e);
-                // Continue with the next dish even if one fails
-            }
-        }
-
+        log.debug("Creating [{}] dishes from templates for category [{}]", selectedDishes.size(), categoryId);
+        List<Long> createdDishIds = dishService.createDishesFromTemplates(eateryId, categoryId, selectedDishes);
         return ResponseEntity.ok(createdDishIds);
     }
 }

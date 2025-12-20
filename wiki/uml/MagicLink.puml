@@ -1,0 +1,93 @@
+@startuml
+title "1. Регистрация: Magic Link (Новый пользователь)"
+
+actor User as "Пользователь"
+participant "React App" as React
+participant "Spring Boot API" as API
+database "MySQL DB" as DB
+participant "Email Service" as Email
+
+skinparam handwritten false
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 10
+skinparam participantpadding 20
+
+User -> React: Вводит "new-user@email.com"\nНажимает [Продолжить с Email]
+activate React
+React -> API: POST /api/auth/magic-link\n(email: "new-user@email.com")
+activate API
+
+API -> DB: findUserByEmail("new-user@email.com")
+activate DB
+DB --> API: null (Пользователь не найден)
+deactivate DB
+
+API -> DB: createUser(email, status: PENDING_SETUP, password: null)
+activate DB
+DB --> API: new User (id: 123)
+deactivate DB
+
+API -> API: generateToken(userId: 123)
+API -> DB: saveToken(hashed_token, userId: 123)
+activate DB
+DB --> API: OK
+deactivate DB
+
+API -> Email: sendMagicLink(email, token)
+API --> React: 200 OK ({"message": "Check your email"})
+deactivate API
+React -> User: Показывает "Проверьте почту"
+deactivate React
+
+...Спустя время...
+
+User -> React: Кликает ссылку в письме\n( /auth/verify?token=... )
+activate React
+React -> API: POST /api/auth/verify-token\n(token: "...")
+activate API
+
+API -> DB: findToken(hashed_token)
+activate DB
+DB --> API: Token (valid, userId: 123)
+deactivate DB
+
+API -> DB: deleteToken(token)
+activate DB
+DB --> API: OK
+deactivate DB
+
+API -> DB: findUserById(123)
+activate DB
+DB --> API: User (status: PENDING_SETUP)
+deactivate DB
+
+API -> API: generateJWT(userId: 123, status: PENDING_SETUP)
+API --> React: 200 OK (jwt, user: {status: "PENDING_SETUP"})
+deactivate API
+
+React -> React: login(data) [Сохраняет JWT и User]
+React -> React: ProtectedRoute: видит 'PENDING_SETUP'
+React -> User: **Принудительный редирект на '/welcome/setup'**
+deactivate React
+
+User -> React: Заполняет форму "Мастера Настройки"\n(restaurantName, address...)
+activate React
+React -> API: PUT /api/users/me/setup\n(restaurantName: "...", address: "...")
+activate API
+
+API -> DB: updateUser(123, status: ACTIVE)
+activate DB
+DB --> API: OK
+deactivate DB
+
+API -> DB: createRestaurant(userId: 123, name: "...")
+activate DB
+DB --> API: new Restaurant
+deactivate DB
+
+API --> React: 200 OK
+deactivate API
+React -> User: **Редирект на '/admin/dashboard'**
+deactivate React
+
+@enduml

@@ -32,7 +32,6 @@ public class OrderWebMvcConfig implements WebMvcConfigurer {
     private String orderIdAddDishesPath;
 
     @Value("${order.item.order.id}")
-///api/eatery/{eateryId}/order-item/order/{orderId}
     private String orderItemPath;
 
 

@@ -61,40 +61,16 @@ public class JwtRequestFilter extends OncePerRequestFilter implements Ordered {
      * @param userDetailsService The custom user details service for loading user data.
      * @param jwtUtil            The utility for JWT token operations.
      */
-    public JwtRequestFilter(String deviceOrders,
+    public JwtRequestFilter(List<String> excluded1,
                             CustomUserDetailsService userDetailsService,
                             JwtUtil jwtUtil) {
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
-        excluded = Stream.of(
-                        "/api/auth/login",
-                        "/api/image/**",
-                        "/api/client/eatery/{eateryId}/table/{tableId}",
-                        "/api/logs/frontend",
-                        "/api/config/image-paths",
-                        "/ui/alive",
-                        "/api/eatery/{eateryId}/order/{orderId}",
-                        deviceOrders,
-                        "/api/eatery/{eateryId}/order/post"
-                )
+        excluded = excluded1.stream()
                 .map(pattern -> new PathPatternParser().parse(pattern))
                 .toList();
 
     }
-
-    /**
-     * Performs the internal filtering logic for each request.
-     * <p>
-     * This method extracts the JWT from the request, validates it, and if valid,
-     * sets up the authentication in the {@link SecurityContextHolder}.
-     * </p>
-     *
-     * @param request     The HTTP servlet request.
-     * @param response    The HTTP servlet response.
-     * @param filterChain The filter chain to proceed with.
-     * @throws ServletException If a servlet-related error occurs.
-     * @throws IOException      If an I/O error occurs.
-     */
 
     /**
      * Sends an error response to the client.

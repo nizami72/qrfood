@@ -55,3 +55,6 @@ build/
 /wiki/MAC_APP_ROOT/
 /wiki/MAC_APP_ROOT (Nizami Budagov's conflicted copy 2025-09-15)
 /simulation_results.csv
+/frontend/src/api/generated/
+/frontend/openapitools.json
+/wiki/client_secret_303814364167-4lika9vvac2nri5i9395d7dqtojpbcel.apps.googleusercontent.com.json

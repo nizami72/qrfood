@@ -53,11 +53,6 @@ public class DishDto {
 
     private boolean available = true;
 
-
-    public boolean isIsAvailable(){
-        return available;
-    }
-
     @Override
     public String toString() {
         return String.format("""

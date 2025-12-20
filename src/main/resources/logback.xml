@@ -14,7 +14,7 @@
         </filter>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <pattern>
-                %d{HH:mm:ss.SSS} %highlight(%-5level) [%cyan(%.20t)] %magenta(%logger{24}:%line) %msg%n
+                %d{HH:mm:ss.SSS} %highlight(%-5level) [%cyan(%.20t)] [%X{requestId}] %magenta(%logger{24}:%line) %msg%n
             </pattern>
         </layout>
     </appender>
@@ -28,7 +28,7 @@
         </filter>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-                %d{HH:mm:ss.SSS} %highlight(%-5level) [%cyan(%.20t)] %magenta(%logger{24}:%line) %msg%n
+                %d{HH:mm:ss.SSS} %highlight(%-5level) [%cyan(%.20t)] [%X{requestId}] %magenta(%logger{24}:%line) %msg%n
             </Pattern>
         </layout>
     </appender>
@@ -45,7 +45,7 @@
             <totalSizeCap>20GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{dd/MM HH:mm:ss} [%-5level] %logger{24}.%M ${prefix} %msg%n</pattern>
+            <pattern>%d{dd/MM HH:mm:ss} [%-5level] %logger{24}.%M [%X{requestId}]  ${prefix} %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -63,7 +63,7 @@
             <totalSizeCap>20GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{dd/MM HH:mm:ss} [%-5level] %logger{24}.%M ${prefix} %msg%n</pattern>
+            <pattern>%d{dd/MM HH:mm:ss} [%-5level] %logger{24}.%M [%X{requestId}] ${prefix} %msg%n</pattern>
         </encoder>
     </appender>
 

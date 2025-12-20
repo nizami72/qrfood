@@ -1,10 +1,12 @@
 package az.qrfood.backend.user.dto;
 
-import az.qrfood.backend.user.entity.Role;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -12,29 +14,16 @@ import java.util.Set;
  */
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserResponse {
-
-    public UserResponse(Long id, String username, String name, Set<String> roles, boolean hasProfile) {
-        this.id = id;
-        this.username = username;
-        this.name = name;
-        this.roles = roles;
-        this.hasProfile = hasProfile;
-    }
-
-    public UserResponse(Long id, String username, String name, Set<String> roles, boolean hasProfile, String phone) {
-        this.id = id;
-        this.username = username;
-        this.name = name;
-        this.roles = roles;
-        this.hasProfile = hasProfile;
-        this.phone = phone;
-    }
 
     /**
      * The ID of the user.
      */
     private Long id;
+
+    private List<Long> eateryIds;
 
     /**
      * The username of the user that is unique mail.
@@ -54,10 +43,16 @@ public class UserResponse {
     /**
      * Flag indicating if the user has a profile.
      */
-    private boolean hasProfile;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean hasProfile;
 
     /**
      * The phone number of the user.
      */
-    private String phone;
+    private List<String> phone;
+
+    private String registered;
+
+    private String lastLogin;
+
 }

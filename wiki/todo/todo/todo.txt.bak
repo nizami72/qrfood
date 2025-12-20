@@ -45,5 +45,12 @@ atomic hanit
 
 (B) add soft deletion for user +qr
 (B) add soft deletion for orders +qr
-(A) add soft deletion for Departments +qr
+(B) add soft deletion for Departments +qr
 (A) filter soft deleted dishes and categories from the client menu requested form client mobile device +qr
+(A) Check KitchenDepartmenController for hasAnyRoleAccess feture +qr
+(A) Check OrderController for hasAnyRoleAccess feture +qr
+(A) Check OrderItemController for hasAnyRoleAccess feture +qr
+(A) TableAssigmentController for hasAnyRoleAccess feture +qr
+(A) TableTableController for hasAnyRoleAccess feture +qr
+(A) Delete EateryIdCheckerFilter due to hasAnyRoleAccess feture implementation +qr
+Eatery admin cant reassign its own role +qrfood

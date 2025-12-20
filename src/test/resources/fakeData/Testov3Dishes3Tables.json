@@ -1,0 +1,294 @@
+{
+  "eatery": {
+    "id": 1,
+    "name": "Test Testov Resaturant",
+    "address": "123 Main Street, Baku, Azerbaijan",
+    "phones": [
+      "+994 50 123 4567",
+      "+994 55 987 6543"
+    ],
+    "geoLat": 40.3776,
+    "geoLng": 49.8925
+  },
+  "categories": [
+    {
+      "nameAz": "Burgerlər",
+      "nameEn": "Burgers",
+      "nameRu": "Бургеры",
+      "image": "Burgers.webp",
+      "dishes": [
+        {
+          "nameAz": "Pendir Burger",
+          "nameEn": "Cheese Burger",
+          "nameRu": "Чизбургер",
+          "descriptionAz": "Mal əti, pendir, kahı, pomidor, turşu xiyar, xüsusi sous",
+          "descriptionEn": "Beef, cheese, lettuce, tomato, pickles, special sauce",
+          "descriptionRu": "Говядина, сыр, салат, помидор, соленые огурцы, специальный соус",
+          "price": 1.99,
+          "image": "cheese_burger.webp"
+        },
+        {
+          "nameAz": "Toyuq Burger",
+          "nameEn": "Chicken Burger",
+          "nameRu": "Куриный Бургер",
+          "descriptionAz": "Qızardılmış toyuq filesi, kahı, pomidor, mayonez",
+          "descriptionEn": "Grilled chicken fillet, lettuce, tomato, mayonnaise",
+          "descriptionRu": "Жареное куриное филе, салат, помидор, майонез",
+          "price": 1.99,
+          "image": "chicken_burger.webp"
+        },
+        {
+          "nameAz": "Vegeterian Burger",
+          "nameEn": "Vegetarian Burger",
+          "nameRu": "Вегетарианский Бургер",
+          "descriptionAz": "Tərəvəz kotleti, kahı, pomidor, soğan, xüsusi sous",
+          "descriptionEn": "Vegetable patty, lettuce, tomato, onion, special sauce",
+          "descriptionRu": "Овощная котлета, салат, помидор, лук, специальный соус",
+          "price": 1.99,
+          "image": "vegetarian_burger.webp"
+        },
+        {
+          "nameAz": "Cüt Burger",
+          "nameEn": "Double Burger",
+          "nameRu": "Двойной Бургер",
+          "descriptionAz": "İkiqat mal əti, cüt pendir, kahı, pomidor, xüsusi sous",
+          "descriptionEn": "Double beef patty, double cheese, lettuce, tomato, special sauce",
+          "descriptionRu": "Двойная говяжья котлета, двойной сыр, салат, помидор, специальный соус",
+          "price": 1.99,
+          "image": "double_burger.webp"
+        }
+      ]
+    },
+    {
+      "nameAz": "Pizza",
+      "nameEn": "Pizza",
+      "nameRu": "Пицца",
+      "image": "Pizza.webp",
+      "dishes": [
+        {
+          "nameAz": "Marqarita Pizza",
+          "nameEn": "Margherita Pizza",
+          "nameRu": "Пицца Маргарита",
+          "descriptionAz": "Pomidor sousu, mozzarella pendiri, reyhan",
+          "descriptionEn": "Tomato sauce, mozzarella cheese, basil",
+          "descriptionRu": "Томатный соус, сыр моцарелла, базилик",
+          "price": 1.99,
+          "image": "margherita_pizza.webp"
+        },
+        {
+          "nameAz": "Pepperoni Pizza",
+          "nameEn": "Pepperoni Pizza",
+          "nameRu": "Пицца Пепперони",
+          "descriptionAz": "Pomidor sousu, mozzarella pendiri, pepperoni kolbasası",
+          "descriptionEn": "Tomato sauce, mozzarella cheese, pepperoni sausage",
+          "descriptionRu": "Томатный соус, сыр моцарелла, колбаса пепперони",
+          "price": 1.99,
+          "image": "pepperoni_pizza.webp"
+        },
+        {
+          "nameAz": "Toyuq BBQ Pizza",
+          "nameEn": "BBQ Chicken Pizza",
+          "nameRu": "Пицца Курица Барбекю",
+          "descriptionAz": "BBQ sousu, toyuq filesi, qırmızı soğan, mozzarella",
+          "descriptionEn": "BBQ sauce, chicken fillet, red onion, mozzarella",
+          "descriptionRu": "Соус барбекю, куриное филе, красный лук, моцарелла",
+          "price": 1.99,
+          "image": "bbq_chicken_pizza.webp"
+        },
+        {
+          "nameAz": "Qarışıq Pizza",
+          "nameEn": "Mixed Pizza",
+          "nameRu": "Пицца Ассорти",
+          "descriptionAz": "Pomidor sousu, mozzarella, sosiska, göbələk, zeytun, bolqar bibəri",
+          "descriptionEn": "Tomato sauce, mozzarella, sausage, mushrooms, olives, bell peppers",
+          "descriptionRu": "Томатный соус, моцарелла, колбаса, грибы, оливки, болгарский перец",
+          "price": 1.99,
+          "image": "mixed_pizza.webp"
+        },
+        {
+          "nameAz": "Dəniz Məhsulları Pizza",
+          "nameEn": "Seafood Pizza",
+          "nameRu": "Пицца Морепродукты",
+          "descriptionAz": "Pomidor sousu, mozzarella, krevet, kalamar, midye",
+          "descriptionEn": "Tomato sauce, mozzarella, shrimp, calamari, mussels",
+          "descriptionRu": "Томатный соус, моцарелла, креветки, кальмары, мидии",
+          "price": 1.99,
+          "image": "seafood_pizza.webp"
+        }
+      ]
+    },
+    {
+      "nameAz": "Kabablar",
+      "nameEn": "Kebabs",
+      "nameRu": "Кебабы",
+      "image": "Kebabs.webp",
+      "dishes": [
+        {
+          "nameAz": "Tikə Kabab",
+          "nameEn": "Tike Kebab",
+          "nameRu": "Тике Кебаб",
+          "descriptionAz": "Quzu ətindən hazırlanmış tikə kabab",
+          "descriptionEn": "Lamb kebab pieces",
+          "descriptionRu": "Кусочки шашлыка из баранины",
+          "price": 1.99,
+          "image": "tike_kebab.webp"
+        },
+        {
+          "nameAz": "Lülə Kabab",
+          "nameEn": "Lula Kebab",
+          "nameRu": "Люля Кебаб",
+          "descriptionAz": "Çəkilmiş quzu ətindən lülə kabab",
+          "descriptionEn": "Minced lamb lula kebab",
+          "descriptionRu": "Люля кебаб из рубленой баранины",
+          "price": 1.99,
+          "image": "lula_kebab.webp"
+        },
+        {
+          "nameAz": "Toyuq Kababı",
+          "nameEn": "Chicken Kebab",
+          "nameRu": "Куриный Кебаб",
+          "descriptionAz": "Toyuq filesindən hazırlanmış kabab",
+          "descriptionEn": "Chicken fillet kebab",
+          "descriptionRu": "Шашлык из куриного филе",
+          "price": 1.99,
+          "image": "chicken_kebab.webp"
+        },
+        {
+          "nameAz": "Dana Basdırma",
+          "nameEn": "Beef Basturma Kebab",
+          "nameRu": "Кебаб из Бастурмы",
+          "descriptionAz": "Ədviyyatlı dana ətindən kabab",
+          "descriptionEn": "Spicy beef kebab",
+          "descriptionRu": "Шашлык из пряной говядины",
+          "price": 1.99,
+          "image": "beef_basturma_kebab.webp"
+        },
+        {
+          "nameAz": "Sebzeli Kabab",
+          "nameEn": "Vegetable Kebab",
+          "nameRu": "Овощной Кебаб",
+          "descriptionAz": "Pomidor, badımcan, bibər və göbələk kababı",
+          "descriptionEn": "Tomato, eggplant, pepper, and mushroom kebab",
+          "descriptionRu": "Шашлык из помидоров, баклажанов, перца и грибов",
+          "price": 1.99,
+          "image": "vegetable_kebab.webp"
+        }
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "id": 1,
+      "number": "1",
+      "seats": 4,
+      "note": "Window view",
+      "status": "ACTIVE",
+      "eateryId": 1,
+      "qrCodeDto": {
+        "id": 1,
+        "qrCodeAsBytes": null,
+        "validFrom": "2023-01-01T00:00:00",
+        "validTo": "2025-01-01T00:00:00",
+        "content": "https://qrfood.az/table/1"
+      }
+    },
+    {
+      "id": 2,
+      "number": "2",
+      "seats": 2,
+      "note": "Near entrance",
+      "status": "ACTIVE",
+      "eateryId": 1,
+      "qrCodeDto": {
+        "id": 2,
+        "qrCodeAsBytes": null,
+        "validFrom": "2023-01-01T00:00:00",
+        "validTo": "2025-01-01T00:00:00",
+        "content": "https://qrfood.az/table/2"
+      }
+    },
+    {
+      "id": 3,
+      "number": "3",
+      "seats": 6,
+      "note": "Large table",
+      "status": "ACTIVE",
+      "eateryId": 1,
+      "qrCodeDto": {
+        "id": 3,
+        "qrCodeAsBytes": null,
+        "validFrom": "2023-01-01T00:00:00",
+        "validTo": "2025-01-01T00:00:00",
+        "content": "https://qrfood.az/table/3"
+      }
+    }
+  ],
+  "staff": [
+    {
+      "email": "AdminTestTestov@mail.az",
+      "password": "qqqq1111",
+      "roles": [
+        "EATERY_ADMIN"
+      ],
+      "profile": {
+        "name": "Admin Test Testov",
+        "phone": "+994 55 333 4444"
+      }
+    },
+    {
+      "email": "KitchenTestTestov@mail.az",
+      "password": "qqqq1111",
+      "roles": [
+        "KITCHEN_ADMIN"
+      ],
+      "profile": {
+        "name": "Kitchen Test Testov",
+        "phone": "+994 55 333 4444"
+      }
+    },
+    {
+      "email": "CashierTestTestov@mail.az",
+      "password": "qqqq1111",
+      "roles": [
+        "CASHIER"
+      ],
+      "profile": {
+        "name": "Cashier Test Testov",
+        "phone": "+994 70 555 6666"
+      }
+    },
+    {
+      "email": "WaiterFirstTestov@mail.az",
+      "password": "qqqq1111",
+      "roles": [
+        "WAITER"
+      ],
+      "profile": {
+        "name": "Waiter First Testov",
+        "phone": "+994 77 777 8888"
+      }
+    },
+    {
+      "email": "WaiterSeconTestov@mail.az",
+      "password": "qqqq1111",
+      "roles": [
+        "WAITER"
+      ],
+      "profile": {
+        "name": "Waiter Second Testov",
+        "phone": "+994 51 999 0000"
+      }
+    },
+    {
+      "email": "WaiterThirdTestov@mail.az",
+      "password": "qqqq1111",
+      "roles": [
+        "WAITER"
+      ],
+      "profile": {
+        "name": "Waiter Third Testov",
+        "phone": "+994 50 123 4567"
+      }
+    }
+  ]
+}

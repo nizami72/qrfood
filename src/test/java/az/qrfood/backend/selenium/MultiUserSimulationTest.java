@@ -315,7 +315,7 @@ public class MultiUserSimulationTest {
     private List<String> menuUrls() {
         String jwt = ApiUtils.login(superAdminMail, superAdminPass, null, host, loginUrl);
 
-        Long id = TestTestovCreator.getEateryId(jwt, testov.getEatery().getName(), host,
+        Long id = TestTestovCreator.findEateryIdByName(jwt, testov.getEatery().getName(), host,
                 Utils.replacePlaceHolders(eateriesByAdminUrl, admin.getEmail()));
 
         Assertions.assertNotNull(id);
