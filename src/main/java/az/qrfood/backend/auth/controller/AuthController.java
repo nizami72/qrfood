@@ -129,7 +129,6 @@ public class AuthController {
         }
 
         log.debug("Attempting to authenticate user using CustomUserDetailsService");
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
 
         // Get user ID and record login in the user profile
         Long eateryId = loginRequest.getEateryId();
@@ -164,6 +163,7 @@ public class AuthController {
             }
         }
 
+        assert user != null;
         LoginResponse loginResponse = authHybridService.createLoginResponse(user, eateryId, response);
         return ResponseEntity.ok(loginResponse);
     }
