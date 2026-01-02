@@ -7,6 +7,7 @@ import az.qrfood.backend.dish.service.DishService;
 import az.qrfood.backend.eatery.dto.EateryDto;
 import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.eatery.service.EateryService;
+import az.qrfood.backend.mail.service.NotificationLogService;
 import az.qrfood.backend.order.dto.OrderDto;
 import az.qrfood.backend.order.dto.OrderItemDTO;
 import az.qrfood.backend.order.service.OrderService;
@@ -15,6 +16,7 @@ import az.qrfood.backend.table.dto.TableDto;
 import az.qrfood.backend.table.service.TableService;
 import az.qrfood.backend.tableassignment.dto.TableAssignmentDto;
 import az.qrfood.backend.tableassignment.service.TableAssignmentService;
+import az.qrfood.backend.user.entity.Role;
 import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.entity.UserProfile;
 import lombok.extern.log4j.Log4j2;
@@ -35,8 +37,9 @@ public class AdminService {
     private final DishService dishService;
     private final UserService userService;
     private final UserProfileService userProfileService;
+    private final NotificationLogService notificationLogService;
 
-    public AdminService(EateryService eateryService, OrderService orderService, OrderItemService orderItemService, TableService tableService, TableAssignmentService tableAssignmentService, CategoryService categoryService, DishService dishService, UserService userService, UserProfileService userProfileService) {
+    public AdminService(EateryService eateryService, OrderService orderService, OrderItemService orderItemService, TableService tableService, TableAssignmentService tableAssignmentService, CategoryService categoryService, DishService dishService, UserService userService, UserProfileService userProfileService, NotificationLogService notificationLogService) {
         this.eateryService = eateryService;
         this.orderService = orderService;
         this.orderItemService = orderItemService;
@@ -46,6 +49,7 @@ public class AdminService {
         this.dishService = dishService;
         this.userService = userService;
         this.userProfileService = userProfileService;
+        this.notificationLogService = notificationLogService;
     }
 
 
@@ -115,6 +119,11 @@ public class AdminService {
                 userProfileService.removeRestaurantFromProfile(userProfile, eateryId);
             }
         }
+
+        // delete all notification logs of deleted eatery admin
+        Optional<User> user = users.stream().filter(u -> u.getRoles().contains(Role.EATERY_ADMIN)).findFirst();
+        user.ifPresent(value -> notificationLogService.deleteByEateryId(value.getUsername()));
+
 
         log.info("Deleted [{}] users for eatery ID [{}] ", users.size(), eateryId);
 

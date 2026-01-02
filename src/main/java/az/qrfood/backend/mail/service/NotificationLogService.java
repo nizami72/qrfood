@@ -62,4 +62,10 @@ public class NotificationLogService {
             log.error("CRITICAL: Failed to save notification audit log to DB for user {}", to, e);
         }
     }
+
+    @Transactional
+    public void deleteByEateryId(String email) {
+        logRepository.deleteAllByUserEmail(email);
+    }
+
 }
