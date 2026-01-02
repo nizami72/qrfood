@@ -1,10 +1,24 @@
 package az.qrfood.backend.mail.service;
 
+import az.qrfood.backend.auth.repository.AuthTokenRepository;
+import az.qrfood.backend.auth.service.AuthTokenService;
+import az.qrfood.backend.common.Util;
+import az.qrfood.backend.mail.dto.EventType;
+import az.qrfood.backend.mail.dto.events.EmailEvent;
 import az.qrfood.backend.mail.entity.EmailTemplate;
 import az.qrfood.backend.mail.repository.EmailTemplateRepository;
+import az.qrfood.backend.user.entity.User;
+import az.qrfood.backend.user.entity.UserProfile;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Email service.
@@ -13,60 +27,60 @@ import java.util.Map;
 @Service
 public class EmailService {
 
-    private final EmailTemplateRepository templateRepository;
+    //<editor-fold desc="Fields">
     private final NotificationLogService logService;
-    private final TemplateRenderer renderer;
     private final SmtpMailTransport transport;
+    private final TemplateRenderer renderer;
+    //</editor-fold>
 
-    public EmailService(EmailTemplateRepository templateRepository,
-                        NotificationLogService logService,
+    //<editor-fold desc="Constructor">
+    public EmailService(NotificationLogService logService,
                         TemplateRenderer renderer,
                         SmtpMailTransport transport) {
-        this.templateRepository = templateRepository;
         this.logService = logService;
         this.renderer = renderer;
         this.transport = transport;
     }
+    //</editor-fold>
 
     /**
      * Executes the email sending process based on a template.
      * <p>
      * The method performs the following steps:
      * <ol>
-     * <li>Searches for a template by key and locale. If the template for the specified locale is not found,
+     * <li>Searches for a template by eventType and locale. If the template for the specified locale is not found,
      * it falls back to the default locale template ({@code DEFAULT_LOCALE}).</li>
      * <li>Prepares the context and substitutes variables into the email body and subject.</li>
      * <li>Renders the HTML.</li>
      * <li>Sends the email.</li>
-     * <li>Saves the operation result (Success/Failure) to the event log.</li>
+     * <li>Saves the operation result (Success/Failure) to the eventType log.</li>
      * </ol>
      * <p>
      * If any errors occur during the process (missing template, rendering error, SMTP failure),
      * the exception is caught, logged, and the status is saved as {@code FAILED} in the history.
      *
-     * @param to          The recipient's email address.
+     * @param event All data required to send email.
      */
-    public void sendEmailI18n(String to, TemplateKey key, String lang, Map<String, Object> vars) {
-        try {
-            // 1. Fetch
-            EmailTemplate template = templateRepository.findByTemplateKey(key)
-                    .orElseThrow(() -> new RuntimeException("Template not found: " + key));
+    public void sendEmailI18n(EmailEvent event) {
+        EmailTemplate template = event.template();
+        Map<String, Object> map = event.map();
+        String lang = event.locale();
+        String to = event.email();
+        EventType eventType = event.event();
 
+        try {
             // 2. Render (Delegated to our new class)
-            String finalHtml = renderer.render(template, lang, vars);
-            String subject = renderer.renderSubject(template, lang, vars);
+            String finalHtml = renderer.render(template, lang, map);
+            String subject = renderer.renderSubject(template, lang, map);
 
             // 3. Send it (Delegated to transport)
             transport.send(to, subject, finalHtml);
-
-            // 4. Log Success
-            logService.logSuccess(to, key, lang);
+            logService.logSuccess(to, eventType, lang);
 
         } catch (Exception e) {
             log.error("Failed to send email to {}", to, e);
-            logService.logFailure(to, key, lang, e.getMessage());
+            logService.logFailure(to, eventType, lang, e.getMessage());
         }
     }
-
 
 }

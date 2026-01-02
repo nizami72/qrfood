@@ -54,5 +54,16 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
     Optional<UserProfile> findByUserWithEateries(@Param("user") User user);
 
     Optional<UserProfile> findByUserId(@Param("user") Long userId);
+    
+    @Query("SELECT up FROM UserProfile up " +
+           "JOIN up.user u " +
+           "WHERE az.qrfood.backend.user.entity.Role.EATERY_ADMIN MEMBER OF u.roles " +
+           "AND up.eateries IS EMPTY " +
+           "AND up.created <= :cutoff " +
+           "AND MOD(COALESCE(up.emailSubscription, 0) / 16, 2) = 1 " +
+           "AND (SELECT COUNT(nl) FROM NotificationLog nl " +
+           "     WHERE nl.userEmail = u.username " +
+           "     AND nl.eventType = az.qrfood.backend.mail.dto.EventType.CREATE_EATERY) = 0")
+    List<UserProfile> findEateryAdminsWithoutEateryAndNotNotified(@Param("cutoff") java.time.LocalDateTime cutoff);
 
 }

@@ -157,3 +157,10 @@ values ('magic_link',
 alter table qrfood.eatery
     add onboarding_status varchar(64) not null;
 
+ALTER TABLE notification_logs
+    ADD COLUMN user_profile_id BIGINT NOT NULL default 1,
+    ADD CONSTRAINT fk_notification_logs_user
+        FOREIGN KEY (user_profile_id) REFERENCES users(id)
+
+alter table email_templates
+    change template_key event varchar(50) not null;

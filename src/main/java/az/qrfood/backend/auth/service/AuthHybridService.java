@@ -1,5 +1,7 @@
 package az.qrfood.backend.auth.service;
 
+import static az.qrfood.backend.auth.util.Util.sha256;
+
 import az.qrfood.backend.auth.dto.LoginResponse;
 import az.qrfood.backend.auth.entity.AuthToken;
 import az.qrfood.backend.auth.entity.AuthToken.TokenType;
@@ -7,8 +9,7 @@ import az.qrfood.backend.auth.entity.RefreshToken;
 import az.qrfood.backend.auth.exception.TokenException;
 import az.qrfood.backend.auth.repository.AuthTokenRepository;
 import az.qrfood.backend.auth.util.JwtUtil;
-import az.qrfood.backend.common.Util;
-import az.qrfood.backend.mail.dto.MagicLinkCreationEvent;
+import az.qrfood.backend.mail.EventPublisherHelper;
 import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.entity.UserProfile;
 import az.qrfood.backend.user.repository.UserProfileRepository;
@@ -21,24 +22,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -53,43 +46,28 @@ public class AuthHybridService {
     private final CustomUserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
-    private final ApplicationEventPublisher eventPublisher;
-    @Value("${default.locale}")
-    private String defaultLocale;
     @Value("${host.name.redirect}")
     private String frontendBaseUrl;
+    @Value("${default.locale}")
+    private String defaultLocale;
     private final GoogleIdTokenVerifier googleIdTokenVerifier;
     private final RefreshTokenService refreshTokenService;
+    private final AuthTokenService authTokenService;
+    private final EventPublisherHelper eventPublisherHelper;
     //</editor-fold>
 
     @Transactional
     public String createMicLinkAndPublishEvent(String email, String ipAddress, String userAgent) {
-        User user = userRepository.findByUsername(email).orElseGet(() -> userService.createUserAndProfile(email, null));
-        UserProfile userProfile = user.getProfile();
-        String name = Optional.ofNullable(userProfile)
-                .map(UserProfile::getName)
-                .orElse(email);
-        String locale = Optional.ofNullable(user.getProfile())
-                .map(UserProfile::getLocale)
-                .orElse(defaultLocale);
-        String token = UUID.randomUUID().toString();
-        String tokenHash = sha256(token);
-        AuthToken authToken = new AuthToken();
-        authToken.setTokenHash(tokenHash);
-        authToken.setUser(user);
-        authToken.setTokenType(TokenType.MAGIC_LINK);
-        authToken.setExpiryDate(Instant.now().plus(30, ChronoUnit.MINUTES));
-        authTokenRepository.save(authToken);
-        String link = String.format("%s/auth/verify?token=%s", frontendBaseUrl, token);
-        eventPublisher.publishEvent(new MagicLinkCreationEvent(email, locale, link, Map.of(
-                "adminName", name,
-                "magicLinkUrl", link,
-                "requestTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm")),
-                "deviceInfo", Util.parseDeviceInfo(userAgent),
-                "ipAddress", ipAddress)));
-
-        log.info("Magic link generated for {} and sent to email", email);
-        return link;
+        Optional<User> userOpt = userRepository.findByUsername(email);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            UserProfile profile = user.getProfile();
+            String name = (profile != null && profile.getName() != null) ? profile.getName() : email;
+            String locale = (profile != null && profile.getLocale() != null) ? profile.getLocale() : defaultLocale;
+            return eventPublisherHelper.createMicLinkAndPublishEvent(user, name, email, ipAddress, userAgent, locale);
+        }
+        userService.createUserAndProfile(email, null);
+        return null;
     }
 
     @Transactional
@@ -103,6 +81,7 @@ public class AuthHybridService {
         }
         User user = authToken.getUser();
         authTokenRepository.delete(authToken);
+        user.getProfile().setLastLogin(LocalDateTime.now());
         return createLoginResponse(user, null, response);
     }
 
@@ -181,24 +160,10 @@ public class AuthHybridService {
     public void requestPasswordReset(String email, String ipAddress, String userAgent) {
         User user = userRepository.findByUsername(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        String token = UUID.randomUUID().toString();
-        String tokenHash = sha256(token);
-        AuthToken entity = new AuthToken();
-        entity.setTokenHash(tokenHash);
-        entity.setUser(user);
-        entity.setTokenType(TokenType.PASSWORD_RESET);
-        entity.setExpiryDate(Instant.now().plus(30, ChronoUnit.MINUTES));
-        authTokenRepository.save(entity);
+        String token = authTokenService.createMagicLinkToken(user);
         String link = String.format("%s/auth/verify?token=%s", frontendBaseUrl, token);
 
-// todo publish event
-//        eventPublisher.publishEvent(new UserRegisteredEvent(u.get.getUsername(),name, locale, "https://qrfood.az/auth"));
-//        emailService.sendEmailI18n(email, TemplateKey.MAGIC_LINK, "az", Map.of(
-//                "adminName", "todo name",
-//                "magicLinkUrl", link,
-//                "requestTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm")),
-//                "deviceInfo", Util.parseDeviceInfo(userAgent),
-//                "ipAddress", ipAddress));
+        // todo publish event
     }
 
     @Transactional
@@ -216,21 +181,6 @@ public class AuthHybridService {
         authTokenRepository.delete(authToken);
     }
 
-    private String sha256(String token) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(token.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public LoginResponse createLoginResponse(User user, Long eateryId, HttpServletResponse response) {
 

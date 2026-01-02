@@ -7,5 +7,4 @@ public enum OnboardingStatus {
     DISH_CREATED,
     TABLES_READY,
     USER_ADDED,
-    FULLY_ACTIVE
 }

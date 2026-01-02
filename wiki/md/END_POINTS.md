@@ -65,6 +65,7 @@
 * /api/qrcode/eatery/{eateryId}/contents
 * /api/qrcode/eatery/{eateryId}/table/{tableId}
 * /api/user
+* /api/user/settings/notifications
 * /api/user/{id}
 * /ui/alive
 * /user/eatery

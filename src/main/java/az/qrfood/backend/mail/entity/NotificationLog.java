@@ -1,5 +1,6 @@
 package az.qrfood.backend.mail.entity;
 
+import az.qrfood.backend.mail.dto.EventType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -18,7 +19,8 @@ public class NotificationLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String userEmail;
-    private String templateKey;
+    @Enumerated(EnumType.STRING)
+    private EventType eventType;
     private String localeUsed;
     @Enumerated(EnumType.STRING)
     private NotifStatus status;

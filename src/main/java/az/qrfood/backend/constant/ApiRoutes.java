@@ -111,4 +111,6 @@ public final class ApiRoutes {
     public static final String ALIVE = API + "/alive";
     public static final String LOGS_FRONTEND = API + "/logs/frontend";
     public static final String CONFIG_IMAGE_PATHS = API + "/config/image-paths";
+    public static final String EMAIL_SUBSCRIPTION = API + "/user/settings/notifications";
+
 }

@@ -1,6 +1,6 @@
 package az.qrfood.backend.mail.entity;
 
-import az.qrfood.backend.mail.service.TemplateKey;
+import az.qrfood.backend.mail.dto.EventType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -21,9 +21,9 @@ public class EmailTemplate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "event")
     @Enumerated(EnumType.STRING)
-    private TemplateKey templateKey;
+    private EventType eventType;
 
     private String subjectTemplate;
     

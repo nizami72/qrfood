@@ -46,6 +46,9 @@ public class AuthHybridController {
         return magicLink;
     }
 
+    /*
+     * Verify magic link token and login
+     */
     @PostMapping(ApiRoutes.AUTH_VERIFY_TOKEN)
     @Operation(summary = "Verify magic link token and login")
     public ResponseEntity<LoginResponse> verifyToken(@RequestBody VerifyTokenRequest request, HttpServletResponse response) {

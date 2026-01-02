@@ -33,4 +33,5 @@
 - [ ] To secure public API methods from scam and overloading 
 - [ ] often asked questions 
 - [ ] we can do all things for you, send your menu, then change the password
+- [ ] define where from I need to get local, from the profile or request cookie
 - [x] (A) Delete EateryIdCheckerFilter due to hasAnyRoleAccess feature implementation 

@@ -13,6 +13,7 @@
 - [FrontendPathConfig](#frontendpathconfig)
 - [ImageController](#imagecontroller)
 - [KitchenDepartmentController](#kitchendepartmentcontroller)
+- [NotificationSettingsController](#notificationsettingscontroller)
 - [OrderController](#ordercontroller)
 - [OrderItemController](#orderitemcontroller)
 - [QrController](#qrcontroller)
@@ -186,6 +187,17 @@
 | [GET getDepartmentsForRestaurant(Long)](../../src/main/java/az/qrfood/backend/kitchendepartment/controller/KitchenDepartmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN, WAITER, CASHIER` | `/api/eatery/{eateryId}/kitchen-department` |
 | [POST createDepartment(Long, CreateDepartmentRequestDto)](../../src/main/java/az/qrfood/backend/kitchendepartment/controller/KitchenDepartmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN` | `/api/eatery/{eateryId}/kitchen-department` |
 | [PUT updateDepartment(Long, Long, UpdateDepartmentRequestDto)](../../src/main/java/az/qrfood/backend/kitchendepartment/controller/KitchenDepartmentController.java) | `EATERY_ADMIN, KITCHEN_ADMIN` | `/api/eatery/{eateryId}/kitchen-department/{departmentId}` |
+
+###### [🔝](#navigation)
+
+---
+
+### NotificationSettingsController
+
+| Method | Role(s) | URL Path |
+|--------|---------|----------|
+| [GET getSubscriptions(UserDetails)](../../src/main/java/az/qrfood/backend/mail/controller/NotificationSettingsController.java) | `public` | `/api/user/settings/notifications` |
+| [PATCH updateSubscription(SubscriptionUpdateRequest, UserDetails)](../../src/main/java/az/qrfood/backend/mail/controller/NotificationSettingsController.java) | `public` | `/api/user/settings/notifications` |
 
 ###### [🔝](#navigation)
 

@@ -39,6 +39,9 @@ public class UserProfile {
 
     private String locale;
 
+    @Column(name = "email_subscription")
+    private Integer emailSubscription;
+
     /**
      * The {@link User} entity associated with this profile.
      * This is a one-to-one relationship, where each user has one profile.
@@ -101,7 +104,9 @@ public class UserProfile {
      */
     @PrePersist
     protected void onCreate() {
-        created = LocalDateTime.now();
+        if (created == null) {
+            created = LocalDateTime.now();
+        }
         updated = LocalDateTime.now();
     }
 

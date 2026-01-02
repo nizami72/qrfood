@@ -2,6 +2,7 @@ package az.qrfood.backend.user.service;
 
 import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.eatery.repository.EateryRepository;
+import az.qrfood.backend.mail.dto.SubscriptionType;
 import az.qrfood.backend.user.dto.RegisterRequest;
 import az.qrfood.backend.user.entity.User;
 import az.qrfood.backend.user.entity.UserProfile;
@@ -103,6 +104,7 @@ public class UserProfileService {
         profile.setCreated(LocalDateTime.now());
         profile.setUpdated(LocalDateTime.now());
         profile.setLocale(LocaleContextHolder.getLocale().getLanguage());
+        profile.setEmailSubscription(SubscriptionType.ONBOARDING_NUDGE.getValue());
         return userProfileRepository.save(profile);
     }
 

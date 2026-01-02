@@ -7,7 +7,9 @@ import az.qrfood.backend.eatery.dto.OnboardingStatus;
 import az.qrfood.backend.eatery.entity.Eatery;
 import az.qrfood.backend.eatery.service.EateryLifecycleService;
 import az.qrfood.backend.eatery.service.EateryService;
-import az.qrfood.backend.mail.dto.UserRegisteredEvent;
+import az.qrfood.backend.mail.EventPublisherHelper;
+import az.qrfood.backend.mail.dto.EventType;
+import az.qrfood.backend.mail.service.EmailService;
 import az.qrfood.backend.tableassignment.entity.TableAssignment;
 import az.qrfood.backend.user.UserUtils;
 import az.qrfood.backend.user.dto.GeneralResponse;
@@ -25,7 +27,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -38,7 +39,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -64,8 +64,8 @@ public class UserService {
     private final az.qrfood.backend.tableassignment.repository.TableAssignmentRepository tableAssignmentRepository;
     private final RefreshTokenService refreshTokenService;
     private final AuthTokenRepository authTokenRepository;
-    private final ApplicationEventPublisher eventPublisher;
     private final EateryLifecycleService eateryLifecycleService;
+    private final EventPublisherHelper eventPublisherHelper;
     //</editor-fold>
 
     /**
@@ -411,26 +411,15 @@ public class UserService {
      */
     public User createUserAndProfile(String email, String googleId) {
         User u = new User();
-        String name = "Hörmətli müştəri";
         u.setUsername(email);
         u.setGoogleId(googleId);
         u.setPassword(null);
         u.setRoles(Set.of(Role.EATERY_ADMIN));
-        User userSaved = userRepository.save(u);
-        UserProfile userProfile = userProfileService.createUserProfile(userSaved);
-        String locale = userProfile.getLocale();
-        if (locale.equals("en")) {
-            name = "Dear customer";
-        } else if (locale.equals("ru")) {
-            name = "Уважаемый клиент";
-        }
-        String link = "/auth";
-        eventPublisher.publishEvent(new UserRegisteredEvent(u.getUsername(),
-                locale,
-                Map.of("adminName", name,
-                        "magicLinkUrl", link)));
-
-        return userSaved;
+        User savedUser = userRepository.save(u);
+        UserProfile profile = userProfileService.createUserProfile(savedUser);
+        savedUser.setProfile(profile);
+        eventPublisherHelper.publishEmailEvent(savedUser, EventType.REGISTRATION);
+        return savedUser;
     }
 
 

@@ -1,5 +1,6 @@
 package az.qrfood.backend.mail.service;
 
+import az.qrfood.backend.mail.dto.EventType;
 import az.qrfood.backend.mail.entity.NotifStatus;
 import az.qrfood.backend.mail.entity.NotificationLog;
 import az.qrfood.backend.mail.repository.NotificationLogRepository;
@@ -22,7 +23,7 @@ public class NotificationLogService {
      * independent of any other active transaction.
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void logSuccess(String to, TemplateKey key, String locale) {
+    public void logSuccess(String to, EventType key, String locale) {
         saveLog(to, key, locale, NotifStatus.SENT, null);
     }
 
@@ -30,7 +31,7 @@ public class NotificationLogService {
      * Logs a failed email attempt.
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void logFailure(String to, TemplateKey key, String locale, String errorMessage) {
+    public void logFailure(String to, EventType key, String locale, String errorMessage) {
         // Safety: Truncate very long stack traces so they don't crash the DB insert
         String safeError = (errorMessage != null && errorMessage.length() > 2000)
                 ? errorMessage.substring(0, 2000) + "..."
@@ -43,13 +44,13 @@ public class NotificationLogService {
      * Internal helper to construct and save the entity.
      * Wrapped in try-catch because logging failures should NEVER crash the application.
      */
-    private void saveLog(String to, TemplateKey key, String locale, NotifStatus status, String error) {
+    private void saveLog(String to, EventType key, String locale, NotifStatus status, String error) {
         try {
             NotificationLog logEntry = new NotificationLog();
             logEntry.setUserEmail(to);
             // Assuming your Entity stores the Key as a String. 
             // If it stores the Enum directly, remove .name()
-            logEntry.setTemplateKey(key.name()); 
+            logEntry.setEventType(key);
             logEntry.setLocaleUsed(locale);
             logEntry.setStatus(status);
             logEntry.setErrorMessage(error);
